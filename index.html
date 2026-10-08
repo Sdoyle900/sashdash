@@ -669,7 +669,7 @@ function todayYmd(){ return ymd(new Date()); }
 function roleLabel(r){return r==='admin'?'Office':r==='service_office'?'Service dept':'';}
 function firstName(n){return (n||'').split(' ')[0];}
 function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
-function msgCount(j){return (j.comments&&j.comments[0]&&j.comments[0].count)||0;}
+function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 function uuid(){return (crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return (c==='x'?r:(r&3|8)).toString(16);}));}
 function sashIcon(size,colour){return `<svg width="${size}" height="${size}" style="color:${colour}"><use href="#sash"/></svg>`;}
@@ -856,7 +856,7 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+',comments(count)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+',comments(kind)').order('created_at',{ascending:false})
   ]);
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
@@ -2135,12 +2135,12 @@ async function saveMarkup(){ if(blockPreview()) return;
 }
 
 // ── Conversation ──────────────────────────────────────────────────
-let shownComments=new Set();
+let shownComments=new Set(), shownMsgs=0;
 async function loadComments(){
   const id=job.id;
   const { data, error }=await sb.from('comments').select('*').eq('job_id',id).order('created_at');
   if(!job||job.id!==id) return;
-  shownComments=new Set(); $('chat-list').innerHTML='';
+  shownComments=new Set(); shownMsgs=0; $('chat-count').textContent=''; $('chat-list').innerHTML='';
   if(error){ $('chat-list').innerHTML=`<div class="loading">${esc(error.message)}</div>`; return; }
   if(!data.length) $('chat-list').innerHTML='<div class="loading" id="chat-empty">No messages yet. Ask a question or leave an update about this job.</div>';
   data.forEach(c=>appendComment(c,false));
@@ -2157,7 +2157,8 @@ function appendComment(c, scroll){
     el.innerHTML=`${mine?'':`<div class="who">${esc(a.full_name)}${roleLabel(a.role)?' · '+roleLabel(a.role):''}</div>`}<div class="bub ${c.photo_path?'has-photo':''}">${photo}${c.body?`<div class="cap">${esc(c.body)}</div>`:''}</div><div class="when">${fmtWhen(c.created_at)}</div>`;
     if(c.photo_path) loadChatPhoto(el.querySelector('img'), scroll); }
   const l=$('chat-list'); l.appendChild(el);
-  const n=[...shownComments].length; $('chat-count').textContent=n?`(${n})`:'';
+  if(c.kind!=='event') shownMsgs++;
+  $('chat-count').textContent=shownMsgs?`(${shownMsgs})`:'';
   if(scroll) l.scrollTop=l.scrollHeight;
 }
 async function sendMessage(){ if(blockPreview()) return;
