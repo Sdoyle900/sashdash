@@ -764,26 +764,27 @@ async function signOut(){
 // Who the screen is drawn for. Normally you; in "View as" it's the person picked.
 function applyIdentity(p){
   me=p; isAdmin = p.role==='admin'; isCallsOffice = p.role==='service_office'; isOffice = isAdmin||isCallsOffice;
-  dept = isCallsOffice ? 'calls' : (p.role==='serviceman' && p.on_sites===false ? 'calls' : 'sites');
+  dept = (isCallsOffice || realMe.role==='service_office') ? 'calls' : (p.role==='serviceman' && p.on_sites===false ? 'calls' : 'sites');
   currentTechId=null; currentSiteId=null; calWeek=null; jobFilter='open';
   if(typeof searchQ!=='undefined'){ searchQ.sites=''; searchQ.calls=''; const si=$('dash-search'); if(si) si.value=''; }
   $('user-name').textContent = realMe.full_name || '';
   $('role-badge').classList.toggle('hidden', !(realMe.role!=='serviceman')); $('role-badge').textContent = realMe.role==='service_office'?'SERVICE DEPT':'OFFICE';
   $('admin-nav').classList.toggle('hidden', !isOffice);
   document.querySelectorAll('.admin-only').forEach(el=>el.classList.toggle('hidden', !isOffice));
-  $('viewas-wrap').classList.toggle('hidden', realMe.role!=='admin');
+  $('viewas-wrap').classList.toggle('hidden', !['admin','service_office'].includes(realMe.role));
   document.body.classList.toggle('previewing', previewing);
   const bn=$('preview-banner');
   if(previewing){ bn.classList.remove('hidden');
-    bn.innerHTML=`<span>👁 Viewing as <b>${esc(p.full_name)}</b> — ${p.role==='serviceman'?'exactly what he sees on his phone':p.role==='service_office'?'what the service department sees':'their view'}. View-only.</span><button onclick="exitViewAs()">✕ Exit</button>`;
+    bn.innerHTML=`<span>👁 Viewing as <b>${esc(p.full_name)}</b> — ${p.role==='serviceman'?(realMe.role==='service_office'?'what he sees in Private Calls on his phone':'exactly what he sees on his phone'):p.role==='service_office'?'what the service department sees':'their view'}. View-only.</span><button onclick="exitViewAs()">✕ Exit</button>`;
   } else bn.classList.add('hidden');
 }
 // ── "View as" (office only) ───────────────────────────────────────
 function toggleViewAs(e){ e.stopPropagation(); const m=$('viewas-menu');
   if(m.classList.contains('hidden')) renderViewAsMenu(); m.classList.toggle('hidden'); }
 function renderViewAsMenu(){
-  const men=profiles.filter(p=>p.role==='serviceman'), offices=profiles.filter(p=>p.role==='service_office');
-  const item=p=>`<button class="${previewing&&me.id===p.id?'on':''}" onclick="enterViewAs('${p.id}')"><span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span><span>${esc(p.full_name)}<small>${p.role==='service_office'?'Service department':[p.on_sites!==false?'Sites':'',p.on_calls!==false?'Private Calls':''].filter(Boolean).join(' + ')}</small></span></button>`;
+  const svc=realMe.role==='service_office';   // service department: Private Calls men only
+  const men=profiles.filter(p=>p.role==='serviceman' && (!svc || p.on_calls!==false)), offices=svc?[]:profiles.filter(p=>p.role==='service_office');
+  const item=p=>`<button class="${previewing&&me.id===p.id?'on':''}" onclick="enterViewAs('${p.id}')"><span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span><span>${esc(p.full_name)}<small>${p.role==='service_office'?'Service department':svc?'Private Calls':[p.on_sites!==false?'Sites':'',p.on_calls!==false?'Private Calls':''].filter(Boolean).join(' + ')}</small></span></button>`;
   $('viewas-menu').innerHTML=`<div class="va-h">View SashDash as…</div>
     ${previewing?`<button onclick="exitViewAs()" class="va-exit">↩ Back to my own view</button>`:''}
     ${men.length?`<div class="va-sub">Service men</div>${men.map(item).join('')}`:''}
@@ -954,7 +955,7 @@ function showDashboard(){
 // ── Department switch: Sites / Private Calls ─────────────────────
 function deptsForMe(){
   if(isAdmin) return ['sites','calls'];
-  if(isCallsOffice) return ['calls'];
+  if(isCallsOffice || realMe.role==='service_office') return ['calls'];
   const d=[]; if(me.on_sites!==false||sites.some(s=>deptOf(s)==='sites')) d.push('sites');
   if(me.on_calls!==false&&(sites.some(s=>deptOf(s)==='calls')||me.on_calls===true)) d.push('calls');
   return d.length?d:['sites'];
@@ -1465,37 +1466,52 @@ async function setRequestStatus(id,st){
   const r=orderReqs.find(x=>x.id===id); if(r) r.status=st; renderDashboard(); renderFolderPanel();
   toast(st==='sent'?'📤 Marked as sent for approval':'Status updated');
 }
-// ✅ Order approved → the order goes into the man's site tab as a new job (he gets a notification)
+// ✅ Order approved → upload the office's pen-marked copy, which is sent to the man as a new job in his site tab
 async function approveRequest(id){
   const r=orderReqs.find(x=>x.id===id); if(!r) return;
   const t=prof(r.serviceman_id), first=t.full_name.split(' ')[0];
   const options=sites.filter(x=>x.serviceman_id===r.serviceman_id && deptOf(x)===r.department && (r.department==='calls'?!!x.work_date:!x.work_date) && !x.archived);
-  let site=options.find(x=>x.id===r.site_id);
   if(!options.length) return toast(`${first} has no ${r.department==='calls'?'days':'sites'} to send this to — add one first.`,6000);
-  const label=x=>x.work_date?dayLabel(x.work_date):x.name;
-  const sid=await new Promise(res=>{
-    openModal(`<h2>✅ Order approved</h2>
-      <p style="color:var(--slate);margin:-4px 0 14px">Order <b>${esc(r.title)}</b> will be sent to ${esc(first)} as a new job in this tab. He gets a notification.</p>
-      <div class="field-group"><label>${r.department==='calls'?'Day':'Site'}</label><select id="ap-site">${options.map(x=>`<option value="${x.id}" ${site&&x.id===site.id?'selected':''}>${esc(label(x))}</option>`).join('')}</select></div>
-      <div class="modal-actions"><button class="btn-outline" id="ap-no">Cancel</button><button class="btn-primary" id="ap-yes">Send to ${esc(first)} ➤</button></div>`);
-    $('ap-no').onclick=()=>{ closeModal(); res(null); }; $('ap-yes').onclick=()=>res($('ap-site').value);
-  });
-  if(!sid) return;
-  site=sites.find(x=>x.id===sid); const btn=$('ap-yes'); if(btn){ btn.disabled=true; btn.innerHTML='<span class="spin"></span> Sending…'; }
+  const label=x=>x.work_date?dayLabel(x.work_date):x.name, cur=options.find(x=>x.id===r.site_id);
+  const title=/^order\b/i.test(r.title) ? `${r.title} — approved ✅` : `Order ${r.title} — approved ✅`;
+  pendingFiles=[];
+  openModal(`<h2>✅ Order approved → ${esc(first)}</h2>
+    <p style="color:var(--slate);margin:-4px 0 12px;font-size:14px">Upload the order with your pen changes. It's sent to ${esc(first)} as a new job and he gets a notification.
+      <a href="#" onclick="viewRequest('${r.id}');return false">👁 Open his scan</a></p>
+    <label class="drop" id="m-drop" for="m-file" data-empty="Drag the approved order here">
+      <span class="drop-icon">📄</span>
+      <span class="drop-main">Drag the approved order here</span>
+      <span class="drop-sub">or click to choose · PDF or photos (several photos become one PDF)</span>
+    </label>
+    <input type="file" id="m-file" accept="application/pdf,image/*" multiple style="display:none" onchange="filesPicked(this.files);this.value=''">
+    <div class="file-list" id="m-files"></div>
+    <div class="field-group"><label>${r.department==='calls'?'Day':'Site'}</label><select id="ap-site">${options.map(x=>`<option value="${x.id}" ${cur&&x.id===cur.id?'selected':''}>${esc(label(x))}</option>`).join('')}</select></div>
+    <div class="field-group"><label>Job title</label><input id="m-title" value="${esc(title)}"></div>
+    <div class="field-group"><label>Note to ${esc(first)} <span class="optional">(optional — starts the conversation)</span></label><textarea id="m-notes" rows="2"></textarea></div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="sendApproved('${r.id}')">⬆ Send to ${esc(first)}</button></div>`);
+  attachDrop();
+}
+async function sendApproved(id){
+  const r=orderReqs.find(x=>x.id===id); if(!r) return;
+  if(!pendingFiles.length) return toast('Upload the approved order first (drag it into the box).');
+  const site=sites.find(x=>x.id===$('ap-site').value), first=prof(r.serviceman_id).full_name.split(' ')[0];
+  const title=$('m-title').value.trim()||`Order ${r.title} — approved ✅`, note=$('m-notes').value.trim();
+  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Sending…';
   try{
-    const dl=await sb.storage.from(BUCKET).download(r.pdf_path); if(dl.error) throw dl.error;
     const jobId=uuid(), path=`${filePrefix(r.department, r.serviceman_id)}/${jobId}/original.pdf`;
-    const up=await sb.storage.from(BUCKET).upload(path, dl.data, {contentType:'application/pdf'}); if(up.error) throw up.error;
-    const title=/^order\b/i.test(r.title) ? `${r.title} — approved ✅` : `Order ${r.title} — approved ✅`;
-    const ins=await sb.from('jobs').insert({ id:jobId, site_id:site.id, serviceman_id:r.serviceman_id, title, ref_no:r.title, notes:r.note||null, pdf_path:path, pdf_bytes:r.pdf_bytes||dl.data.size, created_by:me.id });
+    const bytes=await buildUploadPdf(pendingFiles);
+    const up=await sb.storage.from(BUCKET).upload(path, new Blob([bytes],{type:'application/pdf'}), {contentType:'application/pdf'}); if(up.error) throw up.error;
+    const ins=await sb.from('jobs').insert({ id:jobId, site_id:site.id, serviceman_id:r.serviceman_id, title, ref_no:r.title, notes:null, pdf_path:path, pdf_bytes:bytes.length, created_by:me.id });
     if(ins.error){ await sb.storage.from(BUCKET).remove([path]); throw ins.error; }
-    const upd={status:'approved', handled_at:new Date().toISOString(), site_id:site.id, site_name:label(site), job_id:jobId};
+    if(note) await sb.from('comments').insert({job_id:jobId, author_id:me.id, body:note});
+    const sname=site.work_date?dayLabel(site.work_date):site.name;
+    const upd={status:'approved', handled_at:new Date().toISOString(), site_id:site.id, site_name:sname, job_id:jobId};
     let u=await sb.from('order_requests').update(upd).eq('id',id);
     if(u.error && /job_id/.test(u.error.message)){ delete upd.job_id; u=await sb.from('order_requests').update(upd).eq('id',id); }
     if(u.error) throw u.error;
-    Object.assign(r, upd); closeModal(); await loadData(); renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0);
-    toast(`✅ Sent to ${first} — ${label(site)}`,4000);
-  }catch(e){ if(btn){ btn.disabled=false; btn.textContent='Try again'; } toast('Not sent: '+(e.message||e)+(/check|constraint/i.test(e.message||'')?' — run update-9 in Supabase':''),7000); }
+    Object.assign(r, upd); pendingFiles=[]; closeModal(); await loadData(); renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0);
+    toast(`✅ Approved order sent to ${first} — ${sname}`,4000);
+  }catch(e){ btn.disabled=false; btn.textContent='⬆ Try again'; toast('Not sent: '+(e.message||e)+(/check|constraint/i.test(e.message||'')?' — run update-9 in Supabase':''),7000); }
 }
 // ⬇ Download all & clear: every order request into one folder (a sub-folder per man), then empty the list
 async function downloadAllRequests(){
