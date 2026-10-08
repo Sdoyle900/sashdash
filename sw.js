@@ -1,6 +1,6 @@
 // SashDash service worker — caches the app shell so it opens instantly on site
 // and survives a weak signal. Live data and PDFs (Supabase) always go to the network.
-const CACHE_NAME = 'sashdash-shell-v2';
+const CACHE_NAME = 'sashdash-shell-v3';
 const SHELL_FILES = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './sdwindows-logo.png'];
 
 self.addEventListener('install', (event) => {
@@ -22,7 +22,7 @@ self.addEventListener('fetch', (event) => {
   const isShell = SHELL_FILES.some((f) => url.pathname.endsWith(f.replace('./', '/'))) || url.pathname.endsWith('/');
   if (!isShell) return;
   event.respondWith(
-    fetch(req).then((res) => {
+    fetch(req, { cache: 'no-store' }).then((res) => {   // always get the newest app when online
       const copy = res.clone();
       caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
       return res;

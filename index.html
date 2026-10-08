@@ -162,6 +162,7 @@
     .s-day{background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;font-weight:700;font-size:13px;border-radius:8px;padding:5px 10px;cursor:pointer;white-space:nowrap;font-family:inherit}.s-day:hover{background:#ffedd5;border-color:#ea580c}
     .s-day mark{background:#fde68a}
     @keyframes jobflash{0%,100%{box-shadow:0 0 0 0 rgba(234,88,12,0)}30%,70%{box-shadow:0 0 0 5px rgba(234,88,12,.55)}}.flash{animation:jobflash 1.3s ease 2}
+    .update-pill{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;background:#4f46e5;color:#fff;border:0;border-radius:999px;padding:12px 20px;font-weight:800;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer}
     .sf-wide{grid-column:1/-1}
     .slot:has(.slot-actions) .slot-cc{margin-bottom:34px}
     .cc{display:inline-flex;align-items:center;gap:4px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap}.cc:hover{background:#d1fae5}
@@ -722,12 +723,31 @@ function firstName(n){return (n||'').split(' ')[0];}
 function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+// ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
+const APP_BUILD='2026-10-08-1200';   // bump on every release (YYYY-MM-DD-HHMM)
+let updating=false;
+async function checkForUpdate(){
+  if(updating || !navigator.onLine) return;
+  try{
+    const r=await fetch('index.html?v='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
+    const m=/const APP_BUILD='([^']+)'/.exec(await r.text()); if(!m || m[1]<=APP_BUILD) return;   // only ever move forward
+    try{ if(sessionStorage.getItem('sd-upd')===m[1]) return; sessionStorage.setItem('sd-upd',m[1]); }catch(e){}   // one try per new version
+    updating=true;
+    if(navigator.serviceWorker){ const reg=await navigator.serviceWorker.getRegistration(); if(reg) await reg.update().catch(()=>{}); }
+    const busy=()=> (typeof dirty!=='undefined' && dirty) || !!($('modal-root')&&$('modal-root').innerHTML) || !!document.querySelector('#chat-input:focus, textarea:focus') || ($('chat-input')&&$('chat-input').value.trim()) || document.body.classList.contains('scanning');
+    if(!busy()){ toast('🔄 Updating SashDash…',2000); setTimeout(()=>location.reload(),900); }
+    else { const b=document.createElement('button'); b.className='update-pill'; b.textContent='🔄 New version — tap to update'; b.onclick=()=>location.reload(); document.body.appendChild(b); }
+  }catch(e){}
+}
 function uuid(){return (crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return (c==='x'?r:(r&3|8)).toString(16);}));}
 function sashIcon(size,colour){return `<svg width="${size}" height="${size}" style="color:${colour}"><use href="#sash"/></svg>`;}
 
 // ── Boot ───────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  setTimeout(checkForUpdate, 4000);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') checkForUpdate(); });
+  setInterval(checkForUpdate, 15*60*1000);
   if (SUPABASE_URL.includes('YOUR-PROJECT')) {
     showAuthError('SashDash isn\'t connected to Supabase yet — add your project URL and anon key at the top of the script in index.html.');
   }
