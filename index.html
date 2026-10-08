@@ -318,6 +318,30 @@
     .done-btn{border:2px solid #475569;background:transparent;color:#e2e8f0;padding:7px 14px;border-radius:30px;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;flex:none}
     .done-btn .box{width:18px;height:18px;border-radius:5px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
     .done-btn.on{background:var(--green);border-color:var(--green);color:#fff}
+    .oc-group{display:flex;gap:6px;flex:none}
+    .done-btn.oc-rebook.on{background:#d97706;border-color:#d97706}
+    .done-btn.oc-nothome.on{background:var(--red);border-color:var(--red)}
+    .folders{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:-6px 0 14px}
+    .folder-box{display:flex;align-items:center;gap:12px;text-align:left;border:2px solid;border-radius:14px;padding:14px 16px;cursor:pointer;font-family:inherit;background:#fff;transition:transform .12s,box-shadow .12s}
+    .folder-box:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(15,23,42,.08)}
+    .folder-box .f-ico{font-size:28px}
+    .folder-box .f-txt{flex:1;display:flex;flex-direction:column}
+    .folder-box .f-txt b{font-size:16px;color:var(--navy)} .folder-box .f-txt small{font-size:12px;color:var(--slate)}
+    .folder-box .f-n{font-size:26px;font-weight:900;min-width:44px;text-align:center;border-radius:12px;padding:2px 8px;color:#fff}
+    .folder-box .f-arrow{color:var(--slate);font-size:14px}
+    .f-red{border-color:#fca5a5} .f-red .f-n{background:var(--red)} .f-red.open{background:#fef2f2}
+    .f-amber{border-color:#fcd34d} .f-amber .f-n{background:#d97706} .f-amber.open{background:#fffbeb}
+    .folder-box.empty{border-color:var(--border)} .folder-box.empty .f-n{background:#cbd5e1}
+    .folder-panel{margin:-4px 0 18px}
+    .fp-head{font-weight:800;font-size:14px;margin:0 2px 8px} .fp-head span{font-weight:500;color:var(--slate);font-size:12px}
+    .fp-note{max-width:280px;font-size:13px}
+    .fp-act{white-space:nowrap} .fp-act button{padding:6px 10px;font-size:12px;margin-left:4px}
+    .folder-panel .s-table tbody tr{cursor:default}
+    @media (max-width:720px){ .folder-panel .s-table th:nth-child(4),.folder-panel .s-table td:nth-child(4){display:table-cell} }
+    @media (max-width:720px){ .folders{grid-template-columns:1fr} .folder-panel .s-table th:nth-child(2),.folder-panel .s-table td:nth-child(2){display:none} .fp-act{white-space:normal} .fp-act button{margin:2px 0;width:100%} }
+    .slot.oc-rebook{background:#fffbeb;border-color:#fcd34d}
+    .slot.oc-not_home{background:#fef2f2;border-color:#fca5a5}
+    .tag.amber{background:#fef3c7;color:#92400e}
     .menu-wrap{position:relative}
     .menu{position:absolute;right:0;top:44px;background:#fff;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.25);min-width:210px;padding:6px;z-index:5}
     .menu button{display:block;width:100%;text-align:left;background:none;border:none;padding:10px 12px;border-radius:7px;font-size:14px;color:var(--navy);cursor:pointer}
@@ -424,6 +448,10 @@
       .page{padding:16px 14px calc(40px + var(--safe-b))}
       .pdf-scroll{padding:8px}
       .done-btn{padding:7px 11px;font-size:12px}
+      .jv-bar{flex-wrap:wrap}
+      .oc-group{order:5;width:100%;gap:5px;padding-top:6px}
+      .oc-group .done-btn{flex:1;justify-content:center;padding:7px 4px;font-size:11px;gap:4px}
+      .oc-group .done-btn .box{width:15px;height:15px}
       .team-row{grid-template-columns:34px 1fr 1fr}
       .team-row input[type=tel]{grid-column:2 / 3}
       .team-row .tr-role{grid-column:3 / 4}
@@ -509,7 +537,11 @@
       <div class="jv-title" id="jv-title"></div>
       <div class="jv-sub" id="jv-sub"></div>
     </div>
-    <button class="done-btn" id="done-btn" onclick="toggleComplete()"><span class="box">✓</span><span class="lbl">Mark complete</span></button>
+    <div class="oc-group" id="oc-group">
+      <button class="done-btn oc-done" data-o="done" onclick="setOutcome('done')" title="All done — job finished"><span class="box"></span><span class="lbl">All done</span></button>
+      <button class="done-btn oc-rebook" data-o="rebook" onclick="setOutcome('rebook')" title="Re-book — job unfinished"><span class="box"></span><span class="lbl">Re-book unfinished</span></button>
+      <button class="done-btn oc-nothome" data-o="not_home" onclick="setOutcome('not_home')" title="Customer not home"><span class="box"></span><span class="lbl">Customer not home</span></button>
+    </div>
     <div class="menu-wrap">
       <button class="jv-back" onclick="toggleMenu(event)" aria-label="More">⋯</button>
       <div class="menu hidden" id="jv-menu">
@@ -609,7 +641,7 @@ let origBytes = null, pdfDoc = null, pageViews = [];
 let strokes = [], dirty = false, marking = false, tool = 'line', colour = '#e11d48';
 let zoomLevel = 1, renderToken = 0, reloadTimer = null, realtime = null;
 
-const JOB_COLS = 'id,department,site_id,serviceman_id,title,ref_no,notes,pdf_path,pdf_bytes,marked_path,marked_bytes,completed,completed_at,admin_unread,tech_unread,last_activity_at,created_at';
+const JOB_COLS = 'id,department,outcome,site_id,serviceman_id,title,ref_no,notes,pdf_path,pdf_bytes,marked_path,marked_bytes,completed,completed_at,admin_unread,tech_unread,last_activity_at,created_at';
 
 // ── Helpers ────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
@@ -842,7 +874,7 @@ function scheduleReload(){
 }
 function rerenderCurrent(){
   if(!me) return;
-  if(!$('view-dashboard').classList.contains('hidden')) renderDashboard();
+  if(!$('view-dashboard').classList.contains('hidden')){ renderDashboard(); if(openFolder) renderFolderPanel(); }
   if(!$('view-portal').classList.contains('hidden')) renderPortal();
   renderDeptBar();
 }
@@ -933,7 +965,7 @@ function renderDashboardFor(jobs, sites, allJobs){
     return `<div class="act-row" onclick="openJob('${j.id}')">
       <div class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</div>
       <div class="act-main"><div class="act-title">${esc(j.title)}</div><div class="act-meta">${esc(t.full_name)} · ${esc(s.name||'')} · ${fmtWhen(j.last_activity_at)}</div></div>
-      ${j.admin_unread?'<span class="tag red">New</span>':''}${j.completed?'<span class="tag green">Done</span>':''}
+      ${j.admin_unread?'<span class="tag red">New</span>':''}${outcomeTag(j)}
     </div>`;}).join('');
   ensureSearchBar();
   $('dash-head').innerHTML = `
@@ -946,10 +978,46 @@ function renderDashboardFor(jobs, sites, allJobs){
       <div class="stat"><div class="n" style="color:${unread?'var(--red)':'inherit'}">${unread}</div><div class="l">Jobs with news</div></div>
       <div class="stat"><div class="n" style="font-size:20px;padding-top:4px">${fmtBytes(bytes)}</div><div class="l">Storage used of 1 GB</div><div class="meter"><div style="width:${pct.toFixed(1)}%"></div></div></div>
     </div>
+    ${dept==='calls'?folderBoxes(jobs):''}
     <div class="section-h">Team</div>
     ${team.length?`<div class="team-grid">${cards}</div>`:`<div class="empty" style="margin-bottom:24px"><div class="big">👷</div>No men in ${D.label} yet.${isAdmin?' Click <b>Manage team</b> to add them.':' Ask the office to add them.'}</div>`}
     <div class="section-h">Latest activity</div>
     ${recent.length?`<div class="activity">${act}</div>`:`<div class="empty">Nothing yet — upload a job to get started.</div>`}`;
+}
+
+// ── Folders: Customers not home / Re-book unfinished (Private Calls) ──
+let openFolder=null;
+function folderBoxes(list){
+  const nh=list.filter(j=>jobOutcome(j)==='not_home'), rb=list.filter(j=>jobOutcome(j)==='rebook');
+  if(openFolder && !(openFolder==='not_home'?nh:rb).length) openFolder=null;
+  const box=(key,icon,label,arr,cls)=>`<button class="folder-box ${cls} ${openFolder===key?'open':''} ${arr.length?'':'empty'}" onclick="toggleFolder('${key}')">
+      <span class="f-ico">${icon}</span><span class="f-txt"><b>${label}</b><small>${arr.length?`${arr.length} job${arr.length===1?'':'s'} to re-book`:'Nothing here'}</small></span>
+      <span class="f-n">${arr.length}</span><span class="f-arrow">${openFolder===key?'▴':'▾'}</span></button>`;
+  return `<div class="folders">${box('not_home','🚪','Customers not home',nh,'f-red')}${box('rebook','🔁','Re-book unfinished',rb,'f-amber')}</div>
+    ${openFolder?`<div class="folder-panel" id="folder-panel"><div class="loading">Loading…</div></div>`:''}`;
+}
+function toggleFolder(k){ openFolder = openFolder===k ? null : k; renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0); }
+async function renderFolderPanel(){
+  const el=$('folder-panel'); if(!el||!openFolder) return;
+  const key=openFolder, list=dJobs().filter(j=>jobOutcome(j)===key)
+    .sort((a,b)=>new Date(b.last_activity_at)-new Date(a.last_activity_at));
+  // the man's note is on the status entry he added
+  let notes={};
+  if(list.length){
+    const { data }=await sb.from('comments').select('job_id,body,created_at').in('job_id',list.map(j=>j.id)).eq('kind','event').order('created_at');
+    for(const c of (data||[])){ if(/^(🔁|🚪)/.test(c.body||'')) notes[c.job_id]={note:(c.body.split(' — ').slice(key==='rebook'?2:1).join(' — ')), at:c.created_at}; }
+  }
+  if(openFolder!==key || !$('folder-panel')) return;
+  el.innerHTML = `<div class="fp-head">${key==='not_home'?'🚪 Customers not home':'🔁 Re-book unfinished'} <span>— reschedule to put a job back in a day; it then leaves this folder</span></div>
+    <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Job</th><th>Service man</th><th>Was booked</th><th>Note from site</th><th></th></tr></thead><tbody>
+    ${list.map(j=>{ const st=sites.find(x=>x.id===j.site_id)||{}, t=prof(j.serviceman_id), n=notes[j.id]||{};
+      return `<tr>
+        <td class="s-title">${esc(j.title)}${st.address?`<div class="s-sub">${esc(st.address)}</div>`:''}</td>
+        <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(t.full_name)}</td>
+        <td>${st.work_date?esc(dayLabel(st.work_date)):esc(st.name||'')}${n.at?`<div class="s-sub">flagged ${fmtWhen(n.at)}</div>`:''}</td>
+        <td class="fp-note">${n.note?esc(n.note):'<span class="s-sub">—</span>'}</td>
+        <td class="fp-act"><button class="btn-primary" onclick="openReschedule('${j.id}')">📅 Reschedule</button><button class="btn-outline" onclick="goToJob('${j.id}')">Open</button></td></tr>`; }).join('')}
+    </tbody></table></div>`;
 }
 
 // ── Search (separate for Sites and Private Calls) ──────────────────
@@ -1015,7 +1083,7 @@ async function renderSearch(){
         <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${hl(t.full_name)}</td>
         <td>${st.work_date?hl(dayLabel(st.work_date)):hl(st.name)}${st.address?`<div class="s-sub">${hl(st.address)}</div>`:''}</td>
         <td>${hl(j.ref_no||'—')}</td>
-        <td>${j.completed?'<span class="tag green">✓ Done</span>':'<span class="tag">Open</span>'}${unreadForMe(j)?' <span class="tag red">New</span>':''}</td>
+        <td>${outcomeTag(j)||'<span class="tag">Open</span>'}${unreadForMe(j)?' <span class="tag red">New</span>':''}</td>
         <td class="s-where">${where.join(', ')}</td></tr>`; }).join('')}
     </tbody></table></div>`
     : `<div class="s-none">No ${D.label} jobs match “${esc(q)}”.</div>`;
@@ -1130,8 +1198,8 @@ function nextJobNo(siteId){ const sj=jobs.filter(j=>j.site_id===siteId); return 
 function slotCard(j,n){
   const u=unreadForMe(j), c=msgCount(j);
   const extra=(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'');
-  return `<div class="slot ${j.completed?'done':''} ${u?'unread':''}" onclick="openJob('${j.id}')">
-    <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${j.completed?'<span class="tag green">✓ Done</span>':''}</div>
+  return `<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'}" onclick="openJob('${j.id}')">
+    <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${outcomeTag(j)}</div>
     <div class="slot-pdf">📄</div>
     <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>
     <div class="job-meta" style="justify-content:center">${c?`<span>💬 ${c}</span>`:''}${j.marked_path?'<span>✏️ Marked</span>':''}</div>
@@ -1163,6 +1231,7 @@ function jobCard(j){
     <div style="flex:1;min-width:0">
       <div class="job-title">${esc(j.title)}</div>
       <div class="job-meta">${j.ref_no?`<span>#${esc(j.ref_no)}</span>`:''}<span>Sent ${fmtDate(j.created_at)}</span>${n?`<span>💬 ${n}</span>`:''}${j.marked_path?'<span>✏️ Marked up</span>':''}${j.completed?`<span>✓ Done ${fmtDate(j.completed_at)}</span>`:''}</div>
+      ${jobOutcome(j)&&jobOutcome(j)!=='done'?`<div style="margin-top:4px">${outcomeTag(j)}</div>`:''}
     </div>
     ${u?'<span class="tag red">New</span>':''}
     ${isOffice?`<div class="job-actions">
@@ -1242,10 +1311,10 @@ async function buildWeekZip(week, techId, onStep){
 <tr><td>Day</td><td>${esc(dayLong(d.work_date))}</td></tr>
 <tr><td>Docket / ref</td><td>${esc(j.ref_no||'—')}</td></tr>
 <tr><td>Sent</td><td>${new Date(j.created_at).toLocaleString('en-IE')}</td></tr>
-<tr><td>Status</td><td>${j.completed?'Completed '+new Date(j.completed_at).toLocaleString('en-IE'):'Not completed'}</td></tr></table>
+<tr><td>Status</td><td>${outcomeText(j)}${j.completed?' — '+new Date(j.completed_at).toLocaleString('en-IE'):''}</td></tr></table>
 <p>📄 <a href="sheet-original.pdf">Original sheet</a>${j.marked_path?' · ✏️ <a href="sheet-marked-up.pdf">Marked-up sheet</a>':''}</p>
 <h3>Conversation</h3>${chat||'<p><i>No messages.</i></p>'}`);
-      index+=`<li>${esc(t.full_name)} · ${esc(dayLabel(d.work_date))} · <a href="${encodeURI(safeName(t.full_name)+'/'+safeName(dayLabel(d.work_date))+'/'+safeName(j.title)+'/report.html')}">${esc(j.title)}</a>${j.completed?' ✔':' (not completed)'}</li>`;
+      index+=`<li>${esc(t.full_name)} · ${esc(dayLabel(d.work_date))} · <a href="${encodeURI(safeName(t.full_name)+'/'+safeName(dayLabel(d.work_date))+'/'+safeName(j.title)+'/report.html')}">${esc(j.title)}</a> — ${outcomeText(j)}</li>`;
     }
   }
   root.file('index.html', `<!doctype html><meta charset="utf-8"><title>Week of ${weekName(week)}</title><body style="font-family:Arial;max-width:820px;margin:20px auto">${index}</ul></body>`);
@@ -1299,7 +1368,8 @@ async function checkCleanupDue(){
   if(previewing || !realMe || !['admin','service_office'].includes(realMe.role)) return;   // office or service department
   if(!window.matchMedia('(pointer:fine)').matches) return;            // a computer, not a phone
   const cutoff=cleanupCutoff();
-  const due=[...new Set(sites.filter(x=>deptOf(x)==='calls'&&x.work_date&&x.work_date<cutoff).map(x=>weekOf(x.work_date)))].sort();
+  const flaggedDay=id=>jobs.some(j=>j.site_id===id && ['rebook','not_home'].includes(jobOutcome(j)));
+  const due=[...new Set(sites.filter(x=>deptOf(x)==='calls'&&x.work_date&&x.work_date<cutoff&&!flaggedDay(x.id)).map(x=>weekOf(x.work_date)))].sort();
   if(!due.length) return;
   const nj=jobs.filter(j=>sites.some(x=>x.id===j.site_id&&deptOf(x)==='calls'&&x.work_date&&x.work_date<cutoff)).length;
   const folder=await kvGet('archiveDir');
@@ -1337,6 +1407,8 @@ async function runArchiveAndClean(){
   toast(`✅ Archived to your computer and cleared ${due.length} week${due.length===1?'':'s'} from the server`,6000);
 }
 async function deleteWeekData(days){
+  // keep any day that still has a job waiting in Not home / Re-book — it's cleared once rescheduled
+  days=days.filter(d=>!jobs.some(j=>j.site_id===d.id && ['rebook','not_home'].includes(jobOutcome(j))));
   const ids=days.map(x=>x.id), oj=jobs.filter(j=>ids.includes(j.site_id));
   const paths=[...oj.flatMap(j=>[j.pdf_path,j.marked_path]), ...await chatPhotoPaths(oj.map(j=>j.id))].filter(Boolean);
   for(let i=0;i<paths.length;i+=100){ const r=await sb.storage.from(BUCKET).remove(paths.slice(i,i+100)); if(r.error) throw r.error; }
@@ -1721,9 +1793,8 @@ function updateJobHeader(){
   const s=sites.find(x=>x.id===job.site_id)||{}, t=prof(job.serviceman_id);
   $('jv-title').textContent=job.title;
   $('jv-sub').textContent=[DEPT[deptOf(job)].label, s.name, isOffice?t.full_name:null, job.ref_no?('#'+job.ref_no):null].filter(Boolean).join(' · ');
-  const b=$('done-btn'); b.classList.toggle('on',!!job.completed);
-  b.querySelector('.lbl').textContent=job.completed?'Completed':(window.innerWidth<720?'Complete':'Mark complete');
-  b.querySelector('.box').textContent=job.completed?'✓':'';
+  const cur=jobOutcome(job);
+  document.querySelectorAll('#oc-group .done-btn').forEach(b=>{ const on=b.dataset.o===cur; b.classList.toggle('on',on); b.querySelector('.box').textContent=on?'✓':''; });
   $('dl-marked').classList.toggle('hidden',!job.marked_path);
   $('mi-resched').classList.toggle('hidden', !(isOffice && s.work_date));
 }
@@ -1744,6 +1815,46 @@ function setJvTab(t){
 }
 function toggleMenu(e){ e.stopPropagation(); $('jv-menu').classList.toggle('hidden'); }
 
+// ── Job outcome: All done / Re-book unfinished / Customer not home ──
+const OUTCOME={ done:{label:'All done',tag:'green',icon:'✅'}, rebook:{label:'Re-book',tag:'amber',icon:'🔁'}, not_home:{label:'Not home',tag:'red',icon:'🚪'} };
+function jobOutcome(j){ return j.outcome || (j.completed?'done':null); }
+function outcomeTag(j){ const o=jobOutcome(j); return o?`<span class="tag ${OUTCOME[o].tag}">${OUTCOME[o].icon} ${OUTCOME[o].label}</span>`:''; }
+function outcomeText(j){ const o=jobOutcome(j); return o==='done'?'All done':o==='rebook'?'Re-book — unfinished':o==='not_home'?'Customer not home':'Open'; }
+async function setOutcome(o){ if(blockPreview()) return;
+  const cur=jobOutcome(job), want = cur===o ? null : o;   // tapping the ticked one again clears it
+  let note=null;
+  if(want==='done'){
+    const ok=await confirmBox({icon:'✅', title:'All done?',
+      body:`Do you want to proceed with this, as it will remove the file from the dashboard?<br><span style="font-size:12px">It moves to the <b>Done</b> tab — nothing is deleted.</span>`,
+      ok:'✓ Yes, all done', okClass:'btn-primary'});
+    if(!ok) return;
+  } else if(want){
+    const r=await outcomeNoteBox(want); if(r===null) return; note=r;
+  } else {
+    const ok=await confirmBox({icon:'↩️', title:'Clear "'+OUTCOME[cur].label+'"?', body:'The job goes back to open with no status ticked.', ok:'Clear it', okClass:'btn-primary'});
+    if(!ok) return;
+  }
+  if(dirty) await saveMarkup();     // don't lose any unsaved marks
+  let { error }=await sb.rpc('set_job_outcome',{p_job:job.id, p_outcome:want, p_note:note});
+  if(error && /set_job_outcome|function/i.test(error.message) && (want==='done'||want===null)){   // database not updated yet
+    ({ error }=await sb.rpc('set_job_complete',{p_job:job.id,p_done:want==='done'}));
+  }
+  if(error) return toast('Error: '+error.message+(/outcome/i.test(error.message)?' — run update-7 in Supabase':''),7000);
+  job.outcome=want; job.completed=want==='done'; job.completed_at=want==='done'?new Date().toISOString():null; updateJobHeader();
+  toast(want?`${OUTCOME[want].icon} ${outcomeText(job)}`:'Status cleared'); scheduleReload();
+}
+function outcomeNoteBox(o){
+  return new Promise(res=>{
+    const t = o==='rebook' ? 'Re-book — job unfinished?' : 'Customer not home?';
+    const ph = o==='rebook' ? 'e.g. need 2 more hinges, back Tuesday' : 'e.g. called twice, left a card';
+    openModal(`<div style="text-align:center"><div style="font-size:40px">${OUTCOME[o].icon}</div><h2 style="margin:6px 0 4px">${t}</h2>
+      <p style="color:var(--slate);font-size:13px;margin-bottom:12px">The job stays open and is flagged <b>${OUTCOME[o].label}</b> so the office can re-book it.</p></div>
+      <div class="field-group"><label>Note for the office <span class="optional">(optional)</span></label><textarea id="oc-note" rows="2" placeholder="${ph}"></textarea></div>
+      <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="oc-ok">${OUTCOME[o].icon} Confirm</button></div>`);
+    window._confirmResolve=v=>res(v===false?null:v);
+    $('oc-ok').onclick=()=>{ const n=$('oc-note').value.trim(); window._confirmResolve=null; $('modal-root').innerHTML=''; res(n); };
+  });
+}
 async function toggleComplete(){ if(blockPreview()) return;
   const want=!job.completed;
   if(want){
@@ -2153,6 +2264,8 @@ async function doReschedule(){
     const n=nextJobNo(target.id), rest=(j.title||'').replace(/^job\s*\d+\s*/i,'');
     const newTitle=/^job\s*\d+/i.test(j.title||'') ? `Job ${n}${rest?' '+rest:''}` : j.title;
     const upd={site_id:target.id, title:newTitle, tech_unread:true, last_activity_at:new Date().toISOString()};
+    const wasFlagged=['rebook','not_home'].includes(jobOutcome(j));
+    if(wasFlagged){ upd.outcome=null; upd.completed=false; upd.completed_at=null; }   // back in the diary → out of the folder
     let movedPhotos=[];
     if(manChange){
       // files live in each man's own folder — move them so the new man can open them
@@ -2172,10 +2285,11 @@ async function doReschedule(){
     if(manChange) parts.push(`from ${prof(oldTid).full_name} to ${prof(tid).full_name}`);
     await sb.from('comments').insert({job_id:j.id, author_id:me.id, body:`📅 Rescheduled ${parts.join(', and ')}${why?' — '+why:''}`});
     closeModal();
+    const fromFolder=!$('view-dashboard').classList.contains('hidden');
     calWeek=ymd(mondayOf(parseYmd(day))); currentSiteId=target.id; currentTechId=tid;
     if(job&&job.id===j.id){ Object.assign(job,upd); updateJobHeader(); }
-    await loadData(); rerenderCurrent();
-    toast(`Moved to ${manChange?firstName(prof(tid).full_name)+' · ':''}${dayLong(day)} ✓`);
+    await loadData(); rerenderCurrent(); if(fromFolder&&openFolder) renderFolderPanel();
+    toast(`Moved to ${manChange?firstName(prof(tid).full_name)+' · ':''}${dayLong(day)} ✓${wasFlagged?' — removed from the folder':''}`);
   }catch(e){ btn.disabled=false; btn.textContent='📅 Move job'; toast('Could not reschedule: '+(e.message||e),6000); }
 }
 
@@ -2218,7 +2332,7 @@ async function printJob(id){
       <table class="p-info">
         <tr><td>Service man</td><td>${esc(t.full_name)}${t.phone?' · '+esc(t.phone):''}</td><td>Department</td><td>${D.label}</td></tr>
         <tr><td>${site.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1)}</td><td>${esc(where)}</td><td>Docket / ref</td><td>${esc(j.ref_no||'—')}</td></tr>
-        <tr><td>Sent</td><td>${fmtD(j.created_at)}</td><td>Status</td><td>${j.completed?'<b>✔ Completed</b> '+fmtD(j.completed_at):'Open'}</td></tr>
+        <tr><td>Sent</td><td>${fmtD(j.created_at)}</td><td>Status</td><td><b>${outcomeText(j)}</b>${j.completed?' '+fmtD(j.completed_at):''}</td></tr>
         ${site.address||site.contact?`<tr><td>Address</td><td>${esc(site.address||'—')}</td><td>Contact</td><td>${esc(site.contact||'—')}</td></tr>`:''}
       </table>
       <h2 class="p-h">Sheet ${marks.length?'(with mark-ups)':''}</h2>
