@@ -159,6 +159,9 @@
     .dept-btn.on .dc{background:rgba(255,255,255,.22);color:#fff}
     .dept-btn .dot{position:absolute;top:-4px;right:-4px;width:12px;height:12px}
     .tag.amber{background:#fef3c7;color:#92400e}
+    .slot-ref{font-size:12px;color:#92400e;font-weight:700;margin-top:2px}
+    .slot-form{display:grid;grid-template-columns:1fr 1.4fr;gap:12px}@media(max-width:560px){.slot-form{grid-template-columns:1fr}}
+    .slot-new{cursor:pointer}
     .rq-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.rq-head .btn-primary{padding:8px 14px;font-size:13px}
     .fp-act .rq-sent{border-color:#f59e0b;color:#92400e}.fp-act .rq-approve{border-color:#16a34a;color:#166534;font-weight:700}.fp-act .rq-approve:hover{background:#dcfce7}
     .fp-empty{padding:18px;text-align:center;color:#64748b}
@@ -1716,10 +1719,9 @@ function renderPortal(){
     const list=ordered.filter(j=>shown.includes(j));
     const next=nextJobNo(site.id);
     html+=`<div class="slot-grid">${list.map(j=>slotCard(j,num.get(j.id))).join('')}
-      ${isOffice&&jobFilter!=='done'?`<label class="slot-new" id="slot-new" for="slot-file">
+      ${isOffice&&jobFilter!=='done'?`<div class="slot-new" id="slot-new" role="button" tabindex="0" onclick="openSlotModal()">
         <span class="slot-no">JOB ${next}</span><span class="slot-plus">＋</span>
-        <span class="slot-hint">Drag the PDF here<br>or click to choose</span>
-        <input type="file" id="slot-file" accept="application/pdf,image/*" multiple style="display:none" onchange="slotUpload(this.files);this.value=''"></label>`:''}
+        <span class="slot-hint">Click to add job ${next}<br>or drag the PDF here</span></div>`:''}
       ${!list.length&&!(isOffice&&jobFilter!=='done')?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>No jobs for this day${jobFilter==='done'?' are done yet':' yet'}.</div>`:''}
     </div>`;
     $('view-portal').innerHTML=html; attachSlotDrop(); return;
@@ -1737,7 +1739,7 @@ function slotCard(j,n){
   return `<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'}" onclick="openJob('${j.id}')">
     <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${outcomeTag(j)}</div>
     <div class="slot-pdf">📄</div>
-    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>
+    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}
     <div class="job-meta" style="justify-content:center">${c?`<span>💬 ${c}</span>`:''}${j.marked_path?'<span>✏️ Marked</span>':''}</div>
     ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button><button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
@@ -1747,17 +1749,40 @@ function attachSlotDrop(){
   z.addEventListener('dragenter',e=>{ if(!hasFiles(e)) return; e.preventDefault(); depth++; z.classList.add('over'); });
   z.addEventListener('dragover', e=>{ if(!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
   z.addEventListener('dragleave',e=>{ if(!hasFiles(e)) return; depth=Math.max(0,depth-1); if(!depth) z.classList.remove('over'); });
-  z.addEventListener('drop',     e=>{ if(!hasFiles(e)) return; e.preventDefault(); depth=0; z.classList.remove('over'); slotUpload(e.dataTransfer.files); });
+  z.addEventListener('drop',     e=>{ if(!hasFiles(e)) return; e.preventDefault(); depth=0; z.classList.remove('over'); openSlotModal(e.dataTransfer.files); });
 }
-async function slotUpload(fl){ if(blockPreview()) return;
-  const files=Array.from(fl||[]).filter(f=>f.type==='application/pdf'||f.type.startsWith('image/')||/\.(pdf|jpe?g|png|heic)$/i.test(f.name));
-  if(!files.length) return toast('Only PDFs or photos can be uploaded.');
-  const z=$('slot-new'), n=nextJobNo(currentSiteId);
-  if(z){ z.classList.add('busy'); z.querySelector('.slot-hint').innerHTML='<span class="spin" style="border-color:#c7d2fe;border-top-color:#4f46e5"></span><br>Uploading…'; }
+// Click (or drop a PDF on) the next Job box → fill in job no. + customer, add the PDF, send
+function openSlotModal(fl){ if(blockPreview()) return;
+  const n=nextJobNo(currentSiteId), t=prof(currentTechId), s=sites.find(x=>x.id===currentSiteId);
+  pendingFiles=[];
+  openModal(`<h2>Job ${n} → ${esc(firstName(t.full_name))} · ${s&&s.work_date?dayLong(s.work_date):esc(s?s.name:'')}</h2>
+    <div class="slot-form">
+      <div class="field-group"><label>Job number</label><input id="m-ref" placeholder="e.g. 4521" autocomplete="off"></div>
+      <div class="field-group"><label>Customer name</label><input id="m-cust" placeholder="e.g. Mary Kelly" autocomplete="off"></div>
+    </div>
+    <label class="drop" id="m-drop" for="m-file">
+      <span class="drop-icon">📄</span>
+      <span class="drop-main">Drag the job sheet here</span>
+      <span class="drop-sub">or click to choose · PDF or photos (several photos become one PDF)</span>
+    </label>
+    <input type="file" id="m-file" accept="application/pdf,image/*" multiple style="display:none" onchange="filesPicked(this.files);this.value=''">
+    <div class="file-list" id="m-files"></div>
+    <div class="field-group"><label>Note to ${esc(firstName(t.full_name))} <span class="optional">(optional — starts the conversation)</span></label><textarea id="m-notes" rows="2"></textarea></div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="slotUpload(${n})">⬆ Send job ${n} to ${esc(firstName(t.full_name))}</button></div>`);
+  attachDrop();
+  if(fl && fl.length) filesPicked(fl);
+  setTimeout(()=>{ const r=$('m-ref'); if(r) r.focus(); },50);
+}
+async function slotUpload(n){ if(blockPreview()) return;
+  const ref=$('m-ref').value.trim(), cust=$('m-cust').value.trim(), note=$('m-notes').value.trim();
+  if(!ref && !cust) return toast('Add the job number or the customer name.');
+  if(!pendingFiles.length) return toast('Add the job sheet (PDF or photo) first.');
+  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Uploading…';
   try{
-    await doUpload({files, title:`Job ${n}`});
-    toast(`Job ${n} sent to ${firstName(prof(currentTechId).full_name)} ✓`);
-  }catch(e){ toast('Upload failed: '+(e.message||e),6000); }
+    n=nextJobNo(currentSiteId);   // stays in order even if another job was added meanwhile
+    await doUpload({files:pendingFiles, title:`Job ${n}${cust?' – '+cust:''}`, ref, note});
+    pendingFiles=[]; closeModal(); toast(`Job ${n} sent to ${firstName(prof(currentTechId).full_name)} ✓`);
+  }catch(e){ btn.disabled=false; btn.textContent='⬆ Try again'; return toast('Upload failed: '+(e.message||e),6000); }
   await loadData(); renderPortal();
 }
 function jobCard(j){
@@ -2157,7 +2182,7 @@ function filesPicked(fl){
   if(fl.length && !ok.length) toast('Only PDFs or photos can be uploaded.');
   pendingFiles=[...pendingFiles, ...ok];
   renderPendingFiles();
-  if(!$('m-title').value && pendingFiles[0]) $('m-title').value=pendingFiles[0].name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').slice(0,80);
+  if($('m-title') && !$('m-title').value && pendingFiles[0]) $('m-title').value=pendingFiles[0].name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').slice(0,80);
 }
 function removePending(i){ pendingFiles.splice(i,1); renderPendingFiles(); }
 function renderPendingFiles(){
