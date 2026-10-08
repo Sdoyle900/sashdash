@@ -339,6 +339,41 @@
     .folder-panel .s-table tbody tr{cursor:default}
     @media (max-width:720px){ .folder-panel .s-table th:nth-child(4),.folder-panel .s-table td:nth-child(4){display:table-cell} }
     @media (max-width:720px){ .folders{grid-template-columns:1fr} .folder-panel .s-table th:nth-child(2),.folder-panel .s-table td:nth-child(2){display:none} .fp-act{white-space:normal} .fp-act button{margin:2px 0;width:100%} }
+    .folders.three{grid-template-columns:1fr 1fr 1fr} .folders.one{grid-template-columns:minmax(0,480px)}
+    .f-blue{border-color:#a5b4fc} .f-blue .f-n{background:var(--indigo)} .f-blue.open{background:#eef2ff}
+    .rq-done td{opacity:.6}
+    .order-req-btn{display:flex;align-items:center;gap:10px;width:100%;margin:16px 0 0;padding:14px 16px;border:2px solid #a5b4fc;background:#eef2ff;border-radius:14px;font-family:inherit;font-weight:800;font-size:17px;color:#3730a3;cursor:pointer;text-align:left}
+    .order-req-btn span{font-size:26px} .order-req-btn small{display:block;font-weight:500;font-size:12px;color:#4f46e5;margin-left:auto;text-align:right}
+    .order-req-btn:active{transform:scale(.99)}
+    .or-pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-bottom:10px}
+    .or-page{position:relative;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:#f8fafc;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center}
+    .or-page img{width:100%;height:100%;object-fit:cover}
+    .or-pdf{display:flex;flex-direction:column;align-items:center;font-size:30px} .or-pdf small{font-size:10px;padding:0 4px;text-align:center;word-break:break-all}
+    .or-pno{position:absolute;top:4px;left:4px;background:var(--navy);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:0 6px}
+    .or-pacts{position:absolute;bottom:4px;right:4px;display:flex;gap:3px}
+    .or-pacts button{border:none;background:rgba(255,255,255,.92);border-radius:6px;width:28px;height:28px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    .or-empty{grid-column:1/-1;font-size:13px;color:var(--slate);background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:10px;padding:14px;text-align:center}
+    .or-add{display:flex;gap:8px;margin-bottom:6px} .or-add .or-scan{flex:1;justify-content:center;font-size:15px;padding:12px}
+    .or-add label{cursor:pointer}
+    .or-h-row{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px;font-weight:600}
+    .or-h-row small{display:block;font-weight:500;color:var(--slate);font-size:11px}
+    /* scanner */
+    .scanner{position:fixed;inset:0;z-index:170;background:#0b1020;display:flex;flex-direction:column;color:#fff}
+    .sc-bar{display:flex;align-items:center;gap:10px;padding:calc(10px + var(--safe-t)) 12px 10px;font-size:15px}
+    .sc-btn{border:none;background:rgba(255,255,255,.14);color:#fff;border-radius:10px;min-width:42px;height:42px;font-size:18px;cursor:pointer;font-family:inherit;font-weight:700;padding:0 12px}
+    .sc-btn.wide{font-size:14px}
+    .sc-stage{position:relative;flex:1;overflow:hidden;touch-action:none}
+    .sc-stage canvas{position:absolute} .sc-stage svg{position:absolute;inset:0}
+    .sc-h{cursor:grab;touch-action:none}
+    .sc-preview{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;overflow:auto}
+    .sc-preview img{max-width:100%;max-height:100%;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+    .sc-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px calc(12px + var(--safe-b))}
+    .sc-go{margin-left:auto;border:none;background:var(--indigo);color:#fff;font-weight:800;font-size:16px;border-radius:12px;padding:12px 20px;cursor:pointer;font-family:inherit}
+    .sc-modes{display:flex;background:rgba(255,255,255,.12);border-radius:10px;padding:3px;width:100%}
+    .sc-modes button{flex:1;border:none;background:none;color:#cbd5e1;font-weight:700;padding:8px;border-radius:8px;cursor:pointer;font-family:inherit}
+    .sc-modes button.on{background:#fff;color:var(--navy)}
+    body.scanning{overflow:hidden}
+    @media (max-width:720px){ .folders.three{grid-template-columns:1fr} .order-req-btn small{display:none} }
     .slot.oc-rebook{background:#fffbeb;border-color:#fcd34d}
     .slot.oc-not_home{background:#fef2f2;border-color:#fca5a5}
     .tag.amber{background:#fef3c7;color:#92400e}
@@ -634,7 +669,7 @@ const DEPT = {
   sites:{label:'Sites',         icon:'🏗️', one:'site',     many:'Sites',     pin:'📍'},
   calls:{label:'Private Calls', icon:'🏠', one:'customer', many:'Customers', pin:'🏠'}
 };
-let profiles = [], sites = [], jobs = [];
+let profiles = [], sites = [], jobs = [], orderReqs = [];
 let currentTechId = null, currentSiteId = null, jobFilter = 'open', calWeek = null;
 let job = null;                       // the open job
 let origBytes = null, pdfDoc = null, pageViews = [];
@@ -844,7 +879,12 @@ async function toggleNotifications(){
 // Tapping a notification opens SashDash at ?job=… — jump straight to that job
 function openJobFromLink(url){
   try{
-    const u=new URL(url||location.href); const id=u.searchParams.get('job'); if(!id) return;
+    const u=new URL(url||location.href);
+    const rq=u.searchParams.get('request');
+    if(rq && isOffice){ if(!url) history.replaceState(null,'',location.pathname);
+      const r=orderReqs.find(x=>x.id===rq); if(r && r.department!==dept){ dept=r.department; renderDeptBar(); }
+      openFolder='requests'; if(job){ dirty=false; closeJob(); } showDashboard(); setTimeout(renderFolderPanel,0); return; }
+    const id=u.searchParams.get('job'); if(!id) return;
     if(!url) history.replaceState(null,'',location.pathname);
     if(jobs.find(j=>j.id===id)) goToJob(id); else toast('That job is no longer available.');
   }catch(e){}
@@ -861,6 +901,7 @@ async function loadData(){
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
   profiles=pr.data; sites=si.data; jobs=jo.data;
+  { const r=await sb.from('order_requests').select('*').order('created_at',{ascending:false}).limit(300); orderReqs = r.error ? [] : (r.data||[]); }
   if(previewing){   // show only what that person's own login is allowed to see
     if(me.role==='serviceman'){ sites=sites.filter(x=>x.serviceman_id===me.id); jobs=jobs.filter(x=>x.serviceman_id===me.id); }
     else if(me.role==='service_office'){ sites=sites.filter(x=>deptOf(x)==='calls'); jobs=jobs.filter(x=>deptOf(x)==='calls'); }
@@ -894,6 +935,7 @@ function subscribeRealtime(){
       scheduleReload();
     })
     .on('postgres_changes',{event:'*',schema:'public',table:'sites'}, ()=>scheduleReload())
+    .on('postgres_changes',{event:'*',schema:'public',table:'order_requests'}, ()=>scheduleReload())
     .subscribe();
 }
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && me) scheduleReload(); });
@@ -978,7 +1020,7 @@ function renderDashboardFor(jobs, sites, allJobs){
       <div class="stat"><div class="n" style="color:${unread?'var(--red)':'inherit'}">${unread}</div><div class="l">Jobs with news</div></div>
       <div class="stat"><div class="n" style="font-size:20px;padding-top:4px">${fmtBytes(bytes)}</div><div class="l">Storage used of 1 GB</div><div class="meter"><div style="width:${pct.toFixed(1)}%"></div></div></div>
     </div>
-    ${dept==='calls'?folderBoxes(jobs):''}
+    ${folderBoxes(jobs)}
     <div class="section-h">Team</div>
     ${team.length?`<div class="team-grid">${cards}</div>`:`<div class="empty" style="margin-bottom:24px"><div class="big">👷</div>No men in ${D.label} yet.${isAdmin?' Click <b>Manage team</b> to add them.':' Ask the office to add them.'}</div>`}
     <div class="section-h">Latest activity</div>
@@ -989,7 +1031,13 @@ function renderDashboardFor(jobs, sites, allJobs){
 let openFolder=null;
 function folderBoxes(list){
   const nh=list.filter(j=>jobOutcome(j)==='not_home'), rb=list.filter(j=>jobOutcome(j)==='rebook');
-  if(openFolder && !(openFolder==='not_home'?nh:rb).length) openFolder=null;
+  const rq=deptRequests(), rqNew=rq.filter(r=>r.status!=='ordered');
+  if(openFolder==='requests' ? !rq.length : (openFolder && !(openFolder==='not_home'?nh:rb).length)) openFolder=null;
+  const reqBox=`<button class="folder-box f-blue ${openFolder==='requests'?'open':''} ${rqNew.length?'':'empty'}" onclick="toggleFolder('requests')">
+      <span class="f-ico">📋</span><span class="f-txt"><b>Order requests</b><small>${rqNew.length?`${rqNew.length} new from the men`:rq.length?'All ordered':'Nothing here'}</small></span>
+      <span class="f-n">${rqNew.length}</span><span class="f-arrow">${openFolder==='requests'?'▴':'▾'}</span></button>`;
+  if(dept!=='calls'){ if(!isAdmin) return ''; return `<div class="folders one">${reqBox}</div>${openFolder?`<div class="folder-panel" id="folder-panel"><div class="loading">Loading…</div></div>`:''}`; }
+  if(openFolder==='requests') openFolder=null;
   const box=(key,icon,label,arr,cls)=>`<button class="folder-box ${cls} ${openFolder===key?'open':''} ${arr.length?'':'empty'}" onclick="toggleFolder('${key}')">
       <span class="f-ico">${icon}</span><span class="f-txt"><b>${label}</b><small>${arr.length?`${arr.length} job${arr.length===1?'':'s'} to re-book`:'Nothing here'}</small></span>
       <span class="f-n">${arr.length}</span><span class="f-arrow">${openFolder===key?'▴':'▾'}</span></button>`;
@@ -999,6 +1047,7 @@ function folderBoxes(list){
 function toggleFolder(k){ openFolder = openFolder===k ? null : k; renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0); }
 async function renderFolderPanel(){
   const el=$('folder-panel'); if(!el||!openFolder) return;
+  if(openFolder==='requests') return renderRequestsPanel(el);
   const key=openFolder, list=dJobs().filter(j=>jobOutcome(j)===key)
     .sort((a,b)=>new Date(b.last_activity_at)-new Date(a.last_activity_at));
   // the man's note is on the status entry he added
@@ -1018,6 +1067,331 @@ async function renderFolderPanel(){
         <td class="fp-note">${n.note?esc(n.note):'<span class="s-sub">—</span>'}</td>
         <td class="fp-act"><button class="btn-primary" onclick="openReschedule('${j.id}')">📅 Reschedule</button><button class="btn-outline" onclick="goToJob('${j.id}')">Open</button></td></tr>`; }).join('')}
     </tbody></table></div>`;
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  Document scanner — camera photo → find the sheet → crop corners →
+//  straighten → clean up like a scan. Pages are kept as JPEG bytes.
+// ══════════════════════════════════════════════════════════════════
+const Scanner = (() => {
+  let src = null;          // {canvas, w, h}  the photo (rotated as chosen)
+  let quad = null;         // 4 corners in photo pixels [TL, TR, BR, BL]
+  let mode = 'clean';      // 'clean' | 'bw' | 'photo'
+  let onDone = null, editingIndex = -1, origFile = null;
+  let view = {scale:1, ox:0, oy:0};
+
+  function loadImage(file){
+    return new Promise((res,rej)=>{
+      const url=URL.createObjectURL(file), img=new Image();
+      img.onload=()=>{ URL.revokeObjectURL(url); res(img); };
+      img.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('Could not read that photo — try again')); };
+      img.src=url;
+    });
+  }
+  function toCanvas(img, maxSide=2000){
+    const k=Math.min(1, maxSide/Math.max(img.naturalWidth||img.width, img.naturalHeight||img.height));
+    const c=document.createElement('canvas'); c.width=Math.round((img.naturalWidth||img.width)*k); c.height=Math.round((img.naturalHeight||img.height)*k);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height); return c;
+  }
+  function rotate90(c){
+    const r=document.createElement('canvas'); r.width=c.height; r.height=c.width;
+    const x=r.getContext('2d'); x.translate(r.width,0); x.rotate(Math.PI/2); x.drawImage(c,0,0); return r;
+  }
+
+  // ── find the sheet: paper = bright, low-colour region → convex hull → best 4 corners ──
+  function detect(c){
+    const W=c.width, H=c.height, k=Math.min(1, 260/Math.max(W,H)), w=Math.max(8,Math.round(W*k)), h=Math.max(8,Math.round(H*k)), N=w*h;
+    const s=document.createElement('canvas'); s.width=w; s.height=h; const sx=s.getContext('2d'); sx.filter='blur(1px)'; sx.drawImage(c,0,0,w,h);
+    const d=sx.getImageData(0,0,w,h).data, g=new Uint8Array(N), sat=new Uint8Array(N), hist=new Array(256).fill(0);
+    for(let i=0;i<N;i++){ const r=d[i*4],gg=d[i*4+1],bb=d[i*4+2]; const v=(r*0.299+gg*0.587+bb*0.114)|0; g[i]=v; sat[i]=Math.max(r,gg,bb)-Math.min(r,gg,bb); hist[v]++; }
+    let sum=0; for(let i=0;i<256;i++) sum+=i*hist[i];
+    let sB=0,wB=0,best=0,th=128;
+    for(let t=0;t<256;t++){ wB+=hist[t]; if(!wB) continue; const wF=N-wB; if(!wF) break; sB+=t*hist[t];
+      const mB=sB/wB, mF=(sum-sB)/wF, between=wB*wF*(mB-mF)*(mB-mF); if(between>best){best=between; th=t;} }
+    // paper stays colourless even in shadow; wood/desks/brochures have colour
+    const lowT=Math.max(70, th*0.6);
+    let m=new Uint8Array(N); for(let i=0;i<N;i++) m[i]=(g[i]>lowT && sat[i]<30)?1:0;
+    const morph=(src,r,dil)=>{ // square dilate/erode, separable
+      const t=new Uint8Array(N), o=new Uint8Array(N);
+      for(let y=0;y<h;y++) for(let x=0;x<w;x++){ let v=dil?0:1; for(let j=-r;j<=r;j++){ const xx=x+j; const q=(xx<0||xx>=w)?(dil?0:0):src[y*w+xx]; if(dil){ if(q){v=1;break;} } else if(!q){v=0;break;} } t[y*w+x]=v; }
+      for(let y=0;y<h;y++) for(let x=0;x<w;x++){ let v=dil?0:1; for(let j=-r;j<=r;j++){ const yy=y+j; const q=(yy<0||yy>=h)?0:t[yy*w+x]; if(dil){ if(q){v=1;break;} } else if(!q){v=0;break;} } o[y*w+x]=v; }
+      return o; };
+    m=morph(morph(m,2,true),2,false);   // close: fill handwriting & lines
+    m=morph(morph(m,3,false),3,true);   // open: cut thin links to other bright things
+    const lab=new Int32Array(N), stack=new Int32Array(N); let bestId=0,bestN=0,id=0;
+    for(let i=0;i<N;i++){
+      if(!m[i]||lab[i]) continue; id++; let n=0,sp=0; stack[sp++]=i; lab[i]=id;
+      while(sp){ const p=stack[--sp]; n++; const x=p%w;
+        if(x>0&&m[p-1]&&!lab[p-1]){lab[p-1]=id;stack[sp++]=p-1;}
+        if(x<w-1&&m[p+1]&&!lab[p+1]){lab[p+1]=id;stack[sp++]=p+1;}
+        if(p>=w&&m[p-w]&&!lab[p-w]){lab[p-w]=id;stack[sp++]=p-w;}
+        if(p<N-w&&m[p+w]&&!lab[p+w]){lab[p+w]=id;stack[sp++]=p+w;} }
+      if(n>bestN){bestN=n;bestId=id;}
+    }
+    const inset=()=>{ const q=0.05; return [[W*q,H*q],[W*(1-q),H*q],[W*(1-q),H*(1-q)],[W*q,H*(1-q)]]; };
+    if(bestN < N*0.12) return inset();
+    // boundary points (leftmost & rightmost per row) → convex hull
+    const pts=[];
+    for(let y=0;y<h;y++){ let l=-1,r=-1; for(let x=0;x<w;x++) if(lab[y*w+x]===bestId){ if(l<0) l=x; r=x; } if(l>=0){ pts.push([l,y]); if(r!==l) pts.push([r,y]); } }
+    const hull=convexHull(pts); if(hull.length<4) return inset();
+    let H2=hull; if(H2.length>48){ const st=H2.length/48; H2=Array.from({length:48},(_,i)=>hull[Math.floor(i*st)]); }
+    // largest-area quadrilateral using hull vertices
+    const n=H2.length, tri=(a,b,c)=>Math.abs((b[0]-a[0])*(c[1]-a[1])-(c[0]-a[0])*(b[1]-a[1]))/2;
+    let bestA=-1, quad=null;
+    for(let i=0;i<n;i++) for(let j=i+2;j<n;j++){
+      let b1=-1,bi=-1; for(let t=i+1;t<j;t++){ const v=tri(H2[i],H2[t],H2[j]); if(v>b1){b1=v;bi=t;} }
+      let b2=-1,bj=-1; for(let t=j+1;t<n+i;t++){ const v=tri(H2[j],H2[t%n],H2[i]); if(v>b2){b2=v;bj=t%n;} }
+      if(bi<0||bj<0) continue; if(b1+b2>bestA){ bestA=b1+b2; quad=[H2[i],H2[bi],H2[j],H2[bj]]; }
+    }
+    if(!quad || bestA < N*0.12) return inset();
+    const q=orderCorners(quad.map(p=>[(p[0]+0.5)/k,(p[1]+0.5)/k]));
+    if(bestN > N*0.97) return inset();
+    return q;
+  }
+  function convexHull(P){
+    P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+    const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+    const lo=[],up=[];
+    for(const p of P){ while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0) lo.pop(); lo.push(p); }
+    for(let i=P.length-1;i>=0;i--){ const p=P[i]; while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0) up.pop(); up.push(p); }
+    lo.pop(); up.pop(); return lo.concat(up);
+  }
+  function orderCorners(q){ // → [topLeft, topRight, bottomRight, bottomLeft]
+    const cx=q.reduce((a,p)=>a+p[0],0)/4, cy=q.reduce((a,p)=>a+p[1],0)/4;
+    const s=q.slice().sort((a,b)=>Math.atan2(a[1]-cy,a[0]-cx)-Math.atan2(b[1]-cy,b[0]-cx)); // clockwise from left (screen coords)
+    let st=0,bm=1e18; s.forEach((p,i)=>{ const v=p[0]+p[1]; if(v<bm){bm=v;st=i;} });
+    return [0,1,2,3].map(i=>s[(st+i)%4]);
+  }
+  function polyArea(q){ let s=0; for(let i=0;i<4;i++){ const [x1,y1]=q[i],[x2,y2]=q[(i+1)%4]; s+=x1*y2-x2*y1; } return s/2; }
+
+  // ── straighten: map the 4 corners onto a flat page ──
+  function homography(srcPts, dstPts){   // returns 3x3 mapping dst → src
+    const A=[], B=[];
+    for(let i=0;i<4;i++){ const [x,y]=dstPts[i], [u,v]=srcPts[i];
+      A.push([x,y,1,0,0,0,-u*x,-u*y]); B.push(u); A.push([0,0,0,x,y,1,-v*x,-v*y]); B.push(v); }
+    const n=8; for(let i=0;i<n;i++){ let m=i; for(let r=i+1;r<n;r++) if(Math.abs(A[r][i])>Math.abs(A[m][i])) m=r;
+      [A[i],A[m]]=[A[m],A[i]]; [B[i],B[m]]=[B[m],B[i]];
+      for(let r=0;r<n;r++){ if(r===i) continue; const f=A[r][i]/A[i][i]; for(let c=i;c<n;c++) A[r][c]-=f*A[i][c]; B[r]-=f*B[i]; } }
+    const h=B.map((v,i)=>v/A[i][i]); return [h[0],h[1],h[2],h[3],h[4],h[5],h[6],h[7],1];
+  }
+  function warp(c, q){
+    const dist=(p,r)=>Math.hypot(p[0]-r[0],p[1]-r[1]);
+    let ow=Math.max(dist(q[0],q[1]),dist(q[3],q[2])), oh=Math.max(dist(q[0],q[3]),dist(q[1],q[2]));
+    const k=Math.min(1.6, 1654/Math.max(ow,oh)); ow=Math.round(ow*k); oh=Math.round(oh*k);   // ~A4 @ 200dpi max
+    const H=homography(q,[[0,0],[ow,0],[ow,oh],[0,oh]]);
+    const sd=c.getContext('2d').getImageData(0,0,c.width,c.height).data, SW=c.width, SH=c.height;
+    const out=document.createElement('canvas'); out.width=ow; out.height=oh; const ox=out.getContext('2d'), od=ox.createImageData(ow,oh), o=od.data;
+    for(let y=0;y<oh;y++){ for(let x=0;x<ow;x++){
+      const z=H[6]*x+H[7]*y+1, u=(H[0]*x+H[1]*y+H[2])/z, v=(H[3]*x+H[4]*y+H[5])/z;
+      const x0=Math.max(0,Math.min(SW-2,u|0)), y0=Math.max(0,Math.min(SH-2,v|0)), fx=Math.min(1,Math.max(0,u-x0)), fy=Math.min(1,Math.max(0,v-y0));
+      const i00=(y0*SW+x0)*4, i10=i00+4, i01=i00+SW*4, i11=i01+4, t=(y*ow+x)*4;
+      for(let ch=0;ch<3;ch++) o[t+ch]=(sd[i00+ch]*(1-fx)+sd[i10+ch]*fx)*(1-fy)+(sd[i01+ch]*(1-fx)+sd[i11+ch]*fx)*fy;
+      o[t+3]=255; } }
+    ox.putImageData(od,0,0); return out;
+  }
+  // ── clean up like a scanner: even out shadows, white paper, dark ink ──
+  function enhance(c, m){
+    if(m==='photo') return c;
+    const w=c.width, h=c.height, x=c.getContext('2d'), id=x.getImageData(0,0,w,h), d=id.data;
+    // background estimate = heavily blurred copy (shrink → grow)
+    const s=document.createElement('canvas'); s.width=Math.max(4,w>>4); s.height=Math.max(4,h>>4);
+    const sx=s.getContext('2d'); sx.imageSmoothingEnabled=true; sx.filter='blur(2px)'; sx.drawImage(c,0,0,s.width,s.height);
+    const bg=document.createElement('canvas'); bg.width=w; bg.height=h; const bx=bg.getContext('2d'); bx.imageSmoothingEnabled=true; bx.drawImage(s,0,0,w,h);
+    const b=bx.getImageData(0,0,w,h).data;
+    for(let i=0;i<d.length;i+=4){
+      if(m==='bw'){
+        const gv=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114, gb=Math.max(1,b[i]*0.299+b[i+1]*0.587+b[i+2]*0.114);
+        let v=gv/gb*255; v=(v-120)*255/(235-120); v=v<0?0:v>255?255:v; d[i]=d[i+1]=d[i+2]=v;
+      } else {
+        for(let ch=0;ch<3;ch++){ let v=d[i+ch]/Math.max(1,b[i+ch])*255; v=(v-70)*255/(240-70); d[i+ch]=v<0?0:v>255?255:v; }
+      }
+    }
+    x.putImageData(id,0,0); return c;
+  }
+  function toJpeg(c, q=0.82){ return new Promise(r=>c.toBlob(bl=>bl.arrayBuffer().then(ab=>r({bytes:new Uint8Array(ab), w:c.width, h:c.height})),'image/jpeg',q)); }
+
+  // ── the full-screen crop screen ──
+  function ui(){
+    let el=document.getElementById('scanner');
+    if(el) return el;
+    el=document.createElement('div'); el.id='scanner'; el.className='scanner hidden';
+    el.innerHTML=`
+      <div class="sc-bar"><button class="sc-btn" id="sc-cancel">✕</button><b id="sc-title">Adjust the corners</b><span class="spacer"></span><button class="sc-btn" id="sc-rotate" title="Rotate">⟳</button></div>
+      <div class="sc-stage" id="sc-stage"><canvas id="sc-photo"></canvas><svg id="sc-svg"></svg></div>
+      <div class="sc-preview hidden" id="sc-preview"><img id="sc-out" alt="Scanned page"></div>
+      <div class="sc-tools" id="sc-crop-tools">
+        <button class="sc-btn wide" id="sc-retake">📷 Retake</button>
+        <button class="sc-btn wide" id="sc-full">⤢ Whole photo</button>
+        <button class="sc-go" id="sc-next">Crop ✓</button></div>
+      <div class="sc-tools hidden" id="sc-done-tools">
+        <div class="sc-modes"><button data-m="clean">Document</button><button data-m="bw">B&amp;W</button><button data-m="photo">Photo</button></div>
+        <button class="sc-btn wide" id="sc-back">✂️ Re-crop</button>
+        <button class="sc-go" id="sc-use">Use this page ✓</button></div>
+      <input type="file" id="sc-file" accept="image/*" capture="environment" style="display:none">`;
+    document.body.appendChild(el);
+    el.querySelector('#sc-cancel').onclick=close;
+    el.querySelector('#sc-rotate').onclick=()=>{ src.canvas=rotate90(src.canvas); quad=detect(src.canvas); drawStage(); };
+    el.querySelector('#sc-retake').onclick=()=>el.querySelector('#sc-file').click();
+    el.querySelector('#sc-full').onclick=()=>{ const W=src.canvas.width,H=src.canvas.height; quad=[[0,0],[W,0],[W,H],[0,H]]; drawStage(); };
+    el.querySelector('#sc-file').onchange=async e=>{ const f=e.target.files[0]; e.target.value=''; if(f) await openWith(f); };
+    el.querySelector('#sc-next').onclick=showResult;
+    el.querySelector('#sc-back').onclick=()=>setStep('crop');
+    el.querySelector('#sc-use').onclick=finish;
+    el.querySelectorAll('.sc-modes button').forEach(b=>b.onclick=()=>{ mode=b.dataset.m; showResult(); });
+    window.addEventListener('resize',()=>{ if(!el.classList.contains('hidden')&&src) drawStage(); });
+    return el;
+  }
+  function setStep(s){
+    const el=ui(); el.querySelector('#sc-stage').classList.toggle('hidden',s!=='crop'); el.querySelector('#sc-crop-tools').classList.toggle('hidden',s!=='crop');
+    el.querySelector('#sc-preview').classList.toggle('hidden',s!=='result'); el.querySelector('#sc-done-tools').classList.toggle('hidden',s!=='result');
+    el.querySelector('#sc-rotate').classList.toggle('hidden',s!=='crop');
+    el.querySelector('#sc-title').textContent = s==='crop' ? 'Drag the corners to the edges of the sheet' : 'Check the scan';
+    if(s==='crop') drawStage();
+  }
+  function drawStage(){
+    const el=ui(), stage=el.querySelector('#sc-stage'), cv=el.querySelector('#sc-photo'), svg=el.querySelector('#sc-svg');
+    const SW=stage.clientWidth, SH=stage.clientHeight, W=src.canvas.width, H=src.canvas.height;
+    const sc=Math.min((SW-40)/W,(SH-40)/H); view={scale:sc, ox:(SW-W*sc)/2, oy:(SH-H*sc)/2};
+    cv.width=Math.round(W*sc); cv.height=Math.round(H*sc); cv.style.left=view.ox+'px'; cv.style.top=view.oy+'px';
+    cv.getContext('2d').drawImage(src.canvas,0,0,cv.width,cv.height);
+    svg.setAttribute('width',SW); svg.setAttribute('height',SH);
+    const P=quad.map(p=>[view.ox+p[0]*sc, view.oy+p[1]*sc]);
+    svg.innerHTML=`<path d="M0 0H${SW}V${SH}H0Z M${P.map(p=>p.join(' ')).join(' L')}Z" fill="rgba(0,0,0,.45)" fill-rule="evenodd"/>
+      <polygon points="${P.map(p=>p.join(',')).join(' ')}" fill="rgba(79,70,229,.12)" stroke="#818cf8" stroke-width="3"/>
+      ${P.map((p,i)=>`<circle class="sc-h" data-i="${i}" cx="${p[0]}" cy="${p[1]}" r="16" fill="rgba(255,255,255,.9)" stroke="#4f46e5" stroke-width="4"/>`).join('')}`;
+    svg.querySelectorAll('.sc-h').forEach(h=>{
+      h.addEventListener('pointerdown',e=>{ e.preventDefault(); h.setPointerCapture(e.pointerId); const i=+h.dataset.i, r=svg.getBoundingClientRect();
+        const move=ev=>{ const x=(ev.clientX-r.left-view.ox)/view.scale, y=(ev.clientY-r.top-view.oy)/view.scale;
+          quad[i]=[Math.max(0,Math.min(W,x)), Math.max(0,Math.min(H,y))]; drawStage(); };
+        const up=()=>{ window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); };
+        window.addEventListener('pointermove',move); window.addEventListener('pointerup',up); });
+    });
+  }
+  let resultCanvas=null;
+  function showResult(){
+    resultCanvas=enhance(warp(src.canvas,quad), mode);
+    const el=ui(); el.querySelector('#sc-out').src=resultCanvas.toDataURL('image/jpeg',0.85);
+    el.querySelectorAll('.sc-modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
+    setStep('result');
+  }
+  async function finish(){
+    const jpg=await toJpeg(resultCanvas);
+    const page={...jpg, thumb:resultCanvas.toDataURL('image/jpeg',0.5), file:origFile, quad:quad.map(p=>[...p]), rotated:src.rotations||0, mode, srcCanvas:src.canvas};
+    close(); onDone && onDone(page, editingIndex);
+  }
+  function close(){ ui().classList.add('hidden'); document.body.classList.remove('scanning'); }
+  async function openWith(file){
+    origFile=file;
+    const img=await loadImage(file); src={canvas:toCanvas(img)}; quad=detect(src.canvas);
+    const el=ui(); el.classList.remove('hidden'); document.body.classList.add('scanning'); setStep('crop');
+  }
+  return {
+    // start a new scan from a camera/gallery file
+    async start(file, cb){ onDone=cb; editingIndex=-1; mode='clean'; try{ await openWith(file); }catch(e){ toast(e.message||e); } },
+    // re-open an existing page to re-crop it
+    edit(page, index, cb){ onDone=cb; editingIndex=index; origFile=page.file; mode=page.mode||'clean';
+      src={canvas:page.srcCanvas}; quad=page.quad.map(p=>[...p]); const el=ui(); el.classList.remove('hidden'); document.body.classList.add('scanning'); setStep('crop'); },
+    retakeInput(){ return ui().querySelector('#sc-file'); },
+    _detect:detect, _warp:warp, _enhance:enhance
+  };
+})();
+
+// ── Order requests: men scan an order and send it to the office ──────
+function deptRequests(d=dept){ return orderReqs.filter(r=>r.department===d); }
+let orderPages=[];
+function openOrderRequest(){ if(blockPreview()) return;
+  orderPages=[];
+  const D=DEPT[dept], mine=dSites().filter(s=>s.serviceman_id===me.id);
+  const opts = dept==='calls'
+    ? mine.filter(s=>s.work_date && weekOf(s.work_date)===(calWeek||weekOf(todayYmd()))).map(s=>[s.id, dayLabel(s.work_date)])
+    : mine.filter(s=>!s.work_date).map(s=>[s.id, s.name]);
+  const mineReq=orderReqs.filter(r=>r.serviceman_id===me.id).slice(0,5);
+  openModal(`<h2>📋 Order request</h2>
+    <div class="field-group"><label>${dept==='calls'?'Day':'Site'}</label><select id="or-site">${opts.map(([id,n])=>`<option value="${id}" ${id===currentSiteId?'selected':''}>${esc(n)}</option>`).join('')}<option value="">Other / not listed</option></select></div>
+    <div class="field-group"><label>What's needed</label><input id="or-title" placeholder="e.g. 2 glazing beads 7015, 1030 long"></div>
+    <div class="field-group"><label>Note <span class="optional">(optional)</span></label><textarea id="or-note" rows="2" placeholder="Anything the office should know"></textarea></div>
+    <div class="field-group" style="margin-bottom:6px"><label>The order</label></div>
+    <div class="or-pages" id="or-pages"></div>
+    <div class="or-add">
+      <label class="btn-primary or-scan" for="or-cam">📷 Scan order</label>
+      <label class="btn-outline" for="or-file">📎 Add file</label>
+      <input type="file" id="or-cam" accept="image/*" capture="environment" style="display:none" onchange="orScan(this.files[0]);this.value=''">
+      <input type="file" id="or-file" accept="application/pdf,image/*" multiple style="display:none" onchange="orAddFiles(this.files);this.value=''">
+    </div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="or-send" onclick="sendOrderRequest()">Send to office ➤</button></div>
+    ${mineReq.length?`<div class="or-hist"><div class="section-h" style="margin:14px 0 6px">Your recent requests</div>${mineReq.map(r=>`<div class="or-h-row"><span>${esc(r.title)}<small>${fmtWhen(r.created_at)}${r.site_name?' · '+esc(r.site_name):''}</small></span>${r.status==='ordered'?'<span class="tag green">✓ Ordered</span>':'<span class="tag indigo">Sent</span>'}</div>`).join('')}</div>`:''}`);
+  renderOrderPages();
+}
+function renderOrderPages(){
+  const box=$('or-pages'); if(!box) return;
+  box.innerHTML = orderPages.length ? orderPages.map((p,i)=>`<div class="or-page">
+      ${p.thumb?`<img src="${p.thumb}" alt="Page ${i+1}">`:`<div class="or-pdf">📄<small>${esc(p.name||'PDF')}</small></div>`}
+      <span class="or-pno">${i+1}</span>
+      <div class="or-pacts">${p.srcCanvas?`<button type="button" onclick="orRecrop(${i})" title="Re-crop">✂️</button>`:''}<button type="button" onclick="orRemove(${i})" title="Remove">🗑</button></div></div>`).join('')
+    : `<div class="or-empty">No pages yet — tap <b>📷 Scan order</b> to use the camera like a scanner.</div>`;
+  const send=$('or-send'); if(send) send.textContent = orderPages.length ? `Send ${orderPages.length} page${orderPages.length===1?'':'s'} to office ➤` : 'Send to office ➤';
+}
+function orScan(f){ if(!f) return; Scanner.start(f,(page)=>{ orderPages.push(page); renderOrderPages(); }); }
+function orRecrop(i){ Scanner.edit(orderPages[i], i, (page,idx)=>{ orderPages[idx]=page; renderOrderPages(); }); }
+function orRemove(i){ orderPages.splice(i,1); renderOrderPages(); }
+async function orAddFiles(fl){
+  for(const f of Array.from(fl||[])){
+    if(f.type==='application/pdf'||/\.pdf$/i.test(f.name)) orderPages.push({pdf:f, name:f.name});
+    else if(f.type.startsWith('image/')){ await new Promise(r=>Scanner.start(f,(page)=>{ orderPages.push(page); renderOrderPages(); r(); })); }
+  }
+  renderOrderPages();
+}
+async function sendOrderRequest(){
+  if(!orderPages.length) return toast('Scan the order (or add a file) first.');
+  const title=$('or-title').value.trim()||'Order request', note=$('or-note').value.trim()||null, sid=$('or-site').value||null;
+  const st=sites.find(x=>x.id===sid), btn=$('or-send'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Sending…';
+  try{
+    const out=await PDFLib.PDFDocument.create();
+    for(const pg of orderPages){
+      if(pg.pdf){ const d=await PDFLib.PDFDocument.load(await pg.pdf.arrayBuffer(),{ignoreEncryption:true}); (await out.copyPages(d,d.getPageIndices())).forEach(x=>out.addPage(x)); }
+      else { const img=await out.embedJpg(pg.bytes); const W=595.28, H=W*pg.h/pg.w; out.addPage([W,H]).drawImage(img,{x:0,y:0,width:W,height:H}); }
+    }
+    const bytes=await out.save(), id=uuid(), path=`${filePrefix(dept,me.id)}/requests/${id}.pdf`;
+    const up=await sb.storage.from(BUCKET).upload(path,new Blob([bytes],{type:'application/pdf'}),{contentType:'application/pdf'});
+    if(up.error) throw up.error;
+    const { error }=await sb.from('order_requests').insert({id, serviceman_id:me.id, department:dept, site_id:sid, site_name: st?(st.work_date?dayLabel(st.work_date):st.name):null, title, note, pdf_path:path, pdf_bytes:bytes.length, pages:out.getPageCount(), status:'new'});
+    if(error){ await sb.storage.from(BUCKET).remove([path]); throw error; }
+    closeModal(); orderPages=[]; toast('📋 Order request sent to the office ✓',4000); scheduleReload();
+  }catch(e){ btn.disabled=false; renderOrderPages(); toast('Not sent: '+(e.message||e)+(/order_requests|relation/i.test(e.message||'')?' — run update-8 in Supabase':''),7000); }
+}
+// office: the Order requests folder
+function renderRequestsPanel(el){
+  const list=deptRequests();
+  el.innerHTML = `<div class="fp-head">📋 Order requests <span>— scanned orders sent in by the men</span></div>
+    <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Request</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>Sent</th><th>Status</th><th></th></tr></thead><tbody>
+    ${list.map(r=>{ const t=prof(r.serviceman_id); return `<tr class="${r.status==='ordered'?'rq-done':''}">
+      <td class="s-title">${esc(r.title)}${r.note?`<div class="s-sub">${esc(r.note)}</div>`:''}</td>
+      <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(t.full_name)}</td>
+      <td>${esc(r.site_name||'—')}</td>
+      <td>${fmtWhen(r.created_at)}<div class="s-sub">${r.pages} page${r.pages===1?'':'s'}</div></td>
+      <td>${r.status==='ordered'?'<span class="tag green">✓ Ordered</span>':'<span class="tag red">New</span>'}</td>
+      <td class="fp-act"><button class="btn-primary" onclick="viewRequest('${r.id}')">👁 View</button>
+        ${r.status==='ordered'?`<button class="btn-outline" onclick="setRequestStatus('${r.id}','new')">↺ Mark new</button>`:`<button class="btn-outline" onclick="setRequestStatus('${r.id}','ordered')">✓ Ordered</button>`}
+        <button class="btn-outline" onclick="deleteRequest('${r.id}')" title="Delete">🗑</button></td></tr>`; }).join('')}
+    </tbody></table></div>`;
+}
+async function viewRequest(id){
+  const r=orderReqs.find(x=>x.id===id); if(!r) return;
+  const w=window.open('','_blank');
+  try{ const u=await photoUrl(r.pdf_path); if(w) w.location=u; else location.href=u; }catch(e){ if(w) w.close(); toast('Could not open: '+(e.message||e),5000); }
+}
+async function setRequestStatus(id,st){
+  const { error }=await sb.from('order_requests').update({status:st, handled_at: st==='ordered'?new Date().toISOString():null}).eq('id',id);
+  if(error) return toast('Error: '+error.message,5000);
+  const r=orderReqs.find(x=>x.id===id); if(r) r.status=st; renderDashboard(); renderFolderPanel();
+  toast(st==='ordered'?'Marked as ordered ✓':'Marked as new');
+}
+async function deleteRequest(id){
+  const r=orderReqs.find(x=>x.id===id); if(!r) return;
+  const ok=await confirmBox({icon:'🗑', title:'Delete this request?', body:'The scanned order is removed from the server.', ok:'Delete', okClass:'btn-danger'}); if(!ok) return;
+  if(r.pdf_path) await sb.storage.from(BUCKET).remove([r.pdf_path]);
+  const { error }=await sb.from('order_requests').delete().eq('id',id); if(error) return toast('Error: '+error.message,5000);
+  orderReqs=orderReqs.filter(x=>x.id!==id); renderDashboard(); renderFolderPanel(); toast('Request deleted');
 }
 
 // ── Search (separate for Sites and Private Calls) ──────────────────
@@ -1152,6 +1526,7 @@ function renderPortal(){
     </div>`;
     if(calOpen()) html+=monthCalendar(mySites, tJobs, site);
   }
+  if(!isOffice && dept==='sites') html+=`<button class="order-req-btn" onclick="openOrderRequest()"><span>📋</span>Order request<small>Scan an order and send it to the office</small></button>`;
   html+=`<div class="site-label">${dept==='calls'?'Days':D.many}</div><div class="site-tabs">${visible.map(s=>{const sj=tJobs.filter(j=>j.site_id===s.id);const o=sj.filter(j=>!j.completed).length;const u=sj.some(unreadForMe);
       return `<button class="site-tab ${s.id===currentSiteId?'active':''}" onclick="setSite('${s.id}')" title="${o} open job${o===1?'':'s'}">${u?'<span class="dot"></span>':''}${s.work_date?`<span class="day-tab"><b>${parseYmd(s.work_date).toLocaleDateString('en-IE',{weekday:'short'})}</b><small>${parseYmd(s.work_date).toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</small></span>${s.work_date===todayYmd()?'<span class="today">TODAY</span>':''}`:`<span class="pin">${D.pin}</span>${esc(s.name)}`} <span class="cnt">${o}</span></button>`;}).join('')}
     ${isOffice&&dept!=='calls'?`<button class="site-tab add" onclick="openSiteModal()">＋ New ${D.one}</button>`:''}</div>`;
