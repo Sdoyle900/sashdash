@@ -159,6 +159,14 @@
     .dept-btn.on .dc{background:rgba(255,255,255,.22);color:#fff}
     .dept-btn .dot{position:absolute;top:-4px;right:-4px;width:12px;height:12px}
     .tag.amber{background:#fef3c7;color:#92400e}
+    .s-day{background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;font-weight:700;font-size:13px;border-radius:8px;padding:5px 10px;cursor:pointer;white-space:nowrap;font-family:inherit}.s-day:hover{background:#ffedd5;border-color:#ea580c}
+    .s-day mark{background:#fde68a}
+    @keyframes jobflash{0%,100%{box-shadow:0 0 0 0 rgba(234,88,12,0)}30%,70%{box-shadow:0 0 0 5px rgba(234,88,12,.55)}}.flash{animation:jobflash 1.3s ease 2}
+    .sf-wide{grid-column:1/-1}
+    .slot:has(.slot-actions) .slot-cc{margin-bottom:34px}
+    .cc{display:inline-flex;align-items:center;gap:4px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap}.cc:hover{background:#d1fae5}
+    .slot-cc{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:6px}.slot-cc .cc{font-size:11px;padding:2px 8px}
+    .jv-cc{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}.jv-cc .cc{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.45);color:#a7f3d0}
     .slot-ref{font-size:12px;color:#92400e;font-weight:700;margin-top:2px}
     .slot-form{display:grid;grid-template-columns:1fr 1.4fr;gap:12px}@media(max-width:560px){.slot-form{grid-template-columns:1fr}}
     .slot-new{cursor:pointer}
@@ -577,6 +585,7 @@
     <div style="flex:1;min-width:0">
       <div class="jv-title" id="jv-title"></div>
       <div class="jv-sub" id="jv-sub"></div>
+      <div class="jv-cc" id="jv-cc"></div>
     </div>
     <div class="oc-group" id="oc-group">
       <button class="done-btn oc-done" data-o="done" onclick="setOutcome('done')" title="All done — job finished"><span class="box"></span><span class="lbl">All done</span></button>
@@ -682,6 +691,7 @@ let origBytes = null, pdfDoc = null, pageViews = [];
 let strokes = [], dirty = false, marking = false, tool = 'line', colour = '#e11d48';
 let zoomLevel = 1, renderToken = 0, reloadTimer = null, realtime = null;
 
+const CONTACT_COLS = ',customer_phone,customer_phone2,customer_email'; let hasContact=true;
 const JOB_COLS = 'id,department,outcome,site_id,serviceman_id,title,ref_no,notes,pdf_path,pdf_bytes,marked_path,marked_bytes,completed,completed_at,admin_unread,tech_unread,last_activity_at,created_at';
 
 // ── Helpers ────────────────────────────────────────────────────────
@@ -903,8 +913,9 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+',comments(kind)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+',comments(kind)').order('created_at',{ascending:false})
   ]);
+  if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }   // database not updated yet (update-10)
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
   profiles=pr.data; sites=si.data; jobs=jo.data;
@@ -1589,11 +1600,12 @@ async function renderSearch(){
   for(const j of list){
     const st=sites.find(x=>x.id===j.site_id)||{}, t=prof(j.serviceman_id);
     const fields=[['Job',j.title],['Docket',j.ref_no],[st.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1), st.work_date?dayLong(st.work_date)+' '+st.work_date.split('-').reverse().join('/'):st.name],
-      ['Address',st.address],['Contact',st.contact],['Man',t.full_name+' '+(t.phone||'')]];
+      ['Address',st.address],['Contact',st.contact],['Man',t.full_name+' '+(t.phone||'')],
+      ['Phone',[j.customer_phone,j.customer_phone2].filter(Boolean).join(' ')],['Email',j.customer_email]];
     const hay=norm(fields.map(f=>f[1]).join(' '));
     const hayCompact=fields.map(f=>f[1]||'').join(' ').replace(/\s+/g,'').toLowerCase();
     if(toks.every(k=>hay.includes(k)) || (compact.length>=4 && hayCompact.includes(compact))){
-      const where=fields.filter(f=>f[1]&&toks.some(k=>norm(f[1]).includes(k))).map(f=>f[0]);
+      const where=fields.filter(f=>f[1]&&(toks.some(k=>norm(f[1]).includes(k)) || (compact.length>=4 && String(f[1]).replace(/\s+/g,'').toLowerCase().includes(compact)))).map(f=>f[0]);
       hits.set(j.id,{j, where:where.length?where:['Job']});
     }
   }
@@ -1613,12 +1625,12 @@ async function renderSearch(){
   $('dash-body').classList.add('dim');
   const hl=t=>{ let h=esc(t||''); for(const k of toks){ if(k.length<2) continue; h=h.replace(new RegExp('('+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>'); } return h; };
   box.innerHTML = rows.length ? `<div class="s-count">${rows.length} result${rows.length===1?'':'s'} for “${esc(q)}” in ${D.label}${rows.length===100?' (first 100)':''}</div>
-    <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Job</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>Docket</th><th>Status</th><th>Found in</th></tr></thead><tbody>
+    <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Job</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>${dept==='calls'?'Job no.':'Docket'}</th><th>Status</th><th>Found in</th></tr></thead><tbody>
     ${rows.map(({j,where,chat})=>{ const st=sites.find(x=>x.id===j.site_id)||{}, t=prof(j.serviceman_id);
       return `<tr onclick="goToJob('${j.id}')" title="Open this job">
         <td class="s-title">${hl(j.title)}${chat?`<div class="s-chat">💬 ${hl(chat.length>90?chat.slice(0,90)+'…':chat)}</div>`:''}</td>
         <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${hl(t.full_name)}</td>
-        <td>${st.work_date?hl(dayLabel(st.work_date)):hl(st.name)}${st.address?`<div class="s-sub">${hl(st.address)}</div>`:''}</td>
+        <td><button class="s-day" onclick="event.stopPropagation();goToDay('${j.id}')" title="Go to this ${st.work_date?'day in '+esc(firstName(t.full_name))+'\'s diary':'site'} (doesn't open the job)">${st.work_date?'📅 '+hl(dayLabel(st.work_date)):'📍 '+hl(st.name)} ›</button>${st.address?`<div class="s-sub">${hl(st.address)}</div>`:''}</td>
         <td>${hl(j.ref_no||'—')}</td>
         <td>${outcomeTag(j)||'<span class="tag">Open</span>'}${unreadForMe(j)?' <span class="tag red">New</span>':''}</td>
         <td class="s-where">${where.join(', ')}</td></tr>`; }).join('')}
@@ -1626,6 +1638,17 @@ async function renderSearch(){
     : `<div class="s-none">No ${D.label} jobs match “${esc(q)}”.</div>`;
 }
 // Jump to the man, day/site and open the job
+// Search → click the day: show that day in the man's diary, job highlighted but not opened
+function goToDay(id){
+  const j=jobs.find(x=>x.id===id); if(!j) return;
+  const st=sites.find(x=>x.id===j.site_id)||{};
+  if(deptOf(j)!==dept){ dept=deptOf(j); renderDeptBar(); }
+  if(st.work_date){ calWeek=weekOf(st.work_date); calMonth=null; }
+  jobFilter='all';
+  openPortal(j.serviceman_id, j.site_id);
+  if(st.work_date){ calMonth=st.work_date.slice(0,8)+'01'; renderPortal(); }
+  setTimeout(()=>{ const el=document.querySelector(`[data-job="${id}"]`); if(el){ el.scrollIntoView({block:'center',behavior:'smooth'}); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),2600); } },80);
+}
 function goToJob(id){
   const j=jobs.find(x=>x.id===id); if(!j) return;
   const st=sites.find(x=>x.id===j.site_id)||{};
@@ -1731,15 +1754,23 @@ function renderPortal(){
     : `<div class="empty"><div class="big">${jobFilter==='done'?'📋':'✅'}</div>${jobFilter==='done'?`No completed jobs for this ${D.one} yet.`:jobFilter==='open'?`All jobs for this ${D.one} are done.`:`No jobs for this ${D.one} yet.`}${isOffice&&jobFilter!=='done'?'<br><br><button class="btn-primary" onclick="openUploadModal()">⬆ Upload job</button>':''}</div>`;
   $('view-portal').innerHTML=html;
 }
+function telHref(p){ return 'tel:'+String(p||'').replace(/[^\d+]/g,''); }
+function contactChips(j, small){
+  const c=[];
+  if(j.customer_phone)  c.push(`<a class="cc" href="${telHref(j.customer_phone)}" onclick="event.stopPropagation()">📞 ${esc(j.customer_phone)}</a>`);
+  if(j.customer_phone2 && (!small || !j.customer_phone)) c.push(`<a class="cc" href="${telHref(j.customer_phone2)}" onclick="event.stopPropagation()">📞 ${esc(j.customer_phone2)}</a>`);
+  if(j.customer_email && !small) c.push(`<a class="cc" href="mailto:${esc(j.customer_email)}" onclick="event.stopPropagation()">✉️ ${esc(j.customer_email)}</a>`);
+  return c.join('');
+}
 function jobNo(j){ const m=/^job\s*(\d+)/i.exec(j.title||''); return m?+m[1]:null; }
 function nextJobNo(siteId){ const sj=jobs.filter(j=>j.site_id===siteId); return Math.max(sj.length, ...sj.map(j=>jobNo(j)||0))+1; }
 function slotCard(j,n){
   const u=unreadForMe(j), c=msgCount(j);
   const extra=(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'');
-  return `<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'}" onclick="openJob('${j.id}')">
+  return `<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'}" data-job="${j.id}" onclick="openJob('${j.id}')">
     <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${outcomeTag(j)}</div>
     <div class="slot-pdf">📄</div>
-    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}
+    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${j.customer_phone||j.customer_phone2?`<div class="slot-cc">${contactChips(j,true)}</div>`:''}
     <div class="job-meta" style="justify-content:center">${c?`<span>💬 ${c}</span>`:''}${j.marked_path?'<span>✏️ Marked</span>':''}</div>
     ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button><button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
@@ -1759,6 +1790,9 @@ function openSlotModal(fl){ if(blockPreview()) return;
     <div class="slot-form">
       <div class="field-group"><label>Job number</label><input id="m-ref" placeholder="e.g. 4521" autocomplete="off"></div>
       <div class="field-group"><label>Customer name</label><input id="m-cust" placeholder="e.g. Mary Kelly" autocomplete="off"></div>
+      <div class="field-group"><label>Phone number</label><input id="m-ph" type="tel" placeholder="e.g. 087 123 4567" autocomplete="off"></div>
+      <div class="field-group"><label>Second phone <span class="optional">(if any)</span></label><input id="m-ph2" type="tel" placeholder="optional" autocomplete="off"></div>
+      <div class="field-group sf-wide"><label>Email address <span class="optional">(if any)</span></label><input id="m-email" type="email" placeholder="e.g. mary@gmail.com" autocomplete="off"></div>
     </div>
     <label class="drop" id="m-drop" for="m-file">
       <span class="drop-icon">📄</span>
@@ -1775,19 +1809,21 @@ function openSlotModal(fl){ if(blockPreview()) return;
 }
 async function slotUpload(n){ if(blockPreview()) return;
   const ref=$('m-ref').value.trim(), cust=$('m-cust').value.trim(), note=$('m-notes').value.trim();
+  const contact={customer_phone:$('m-ph').value.trim()||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:$('m-email').value.trim()||null};
   if(!ref && !cust) return toast('Add the job number or the customer name.');
+  if(contact.customer_email && !/^\S+@\S+\.\S+$/.test(contact.customer_email)) return toast('That email address doesn\'t look right.');
   if(!pendingFiles.length) return toast('Add the job sheet (PDF or photo) first.');
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Uploading…';
   try{
     n=nextJobNo(currentSiteId);   // stays in order even if another job was added meanwhile
-    await doUpload({files:pendingFiles, title:`Job ${n}${cust?' – '+cust:''}`, ref, note});
+    await doUpload({files:pendingFiles, title:`Job ${n}${cust?' – '+cust:''}`, ref, note, contact});
     pendingFiles=[]; closeModal(); toast(`Job ${n} sent to ${firstName(prof(currentTechId).full_name)} ✓`);
   }catch(e){ btn.disabled=false; btn.textContent='⬆ Try again'; return toast('Upload failed: '+(e.message||e),6000); }
   await loadData(); renderPortal();
 }
 function jobCard(j){
   const u=unreadForMe(j), n=msgCount(j);
-  return `<div class="job-card ${u?'unread':''} ${j.completed?'done':''}" onclick="openJob('${j.id}')">
+  return `<div class="job-card ${u?'unread':''} ${j.completed?'done':''}" data-job="${j.id}" onclick="openJob('${j.id}')">
     <div class="tick ${j.completed?'on':''}">${j.completed?'✓':''}</div>
     <div style="flex:1;min-width:0">
       <div class="job-title">${esc(j.title)}</div>
@@ -1871,6 +1907,7 @@ async function buildWeekZip(week, techId, onStep){
 <tr><td>Service man</td><td>${esc(t.full_name)}${t.phone?' · '+esc(t.phone):''}</td></tr>
 <tr><td>Day</td><td>${esc(dayLong(d.work_date))}</td></tr>
 <tr><td>Docket / ref</td><td>${esc(j.ref_no||'—')}</td></tr>
+${j.customer_phone||j.customer_phone2?`<tr><td>Customer phone</td><td>${esc([j.customer_phone,j.customer_phone2].filter(Boolean).join(' · '))}</td></tr>`:''}${j.customer_email?`<tr><td>Customer email</td><td>${esc(j.customer_email)}</td></tr>`:''}
 <tr><td>Sent</td><td>${new Date(j.created_at).toLocaleString('en-IE')}</td></tr>
 <tr><td>Status</td><td>${outcomeText(j)}${j.completed?' — '+new Date(j.completed_at).toLocaleString('en-IE'):''}</td></tr></table>
 <p>📄 <a href="sheet-original.pdf">Original sheet</a>${j.marked_path?' · ✏️ <a href="sheet-marked-up.pdf">Marked-up sheet</a>':''}</p>
@@ -2220,13 +2257,21 @@ async function buildUploadPdf(files){
   return await out.save();
 }
 // Upload a sheet as a new job for the current man + site/day
-async function doUpload({files, title, ref, note}){
+async function doUpload({files, title, ref, note, contact}){
   const id=uuid(), path=`${filePrefix(dept,currentTechId)}/${id}/original.pdf`;
   const bytes=await buildUploadPdf(files);
   const up=await sb.storage.from(BUCKET).upload(path, new Blob([bytes],{type:'application/pdf'}), {contentType:'application/pdf'});
   if(up.error) throw up.error;
-  const ins=await sb.from('jobs').insert({ id, site_id:currentSiteId, serviceman_id:currentTechId, title, ref_no:ref||null,
-    notes:null, pdf_path:path, pdf_bytes:bytes.length, created_by:me.id });
+  const row={ id, site_id:currentSiteId, serviceman_id:currentTechId, title, ref_no:ref||null,
+    notes:null, pdf_path:path, pdf_bytes:bytes.length, created_by:me.id };
+  const hasC=contact && Object.values(contact).some(Boolean);
+  if(hasC && hasContact) Object.assign(row, contact);
+  let ins=await sb.from('jobs').insert(row);
+  if(ins.error && /customer_/i.test(ins.error.message)){ hasContact=false; ['customer_phone','customer_phone2','customer_email'].forEach(k=>delete row[k]); ins=await sb.from('jobs').insert(row); }
+  if(!ins.error && hasC && !hasContact){   // database not updated yet → job still sent, contact details go in the chat
+    await sb.from('comments').insert({job_id:id, author_id:me.id, body:'Customer contact: '+[contact.customer_phone,contact.customer_phone2,contact.customer_email].filter(Boolean).join(' · ')});
+    setTimeout(()=>toast('⚠️ Phone/email were put in the chat — run update-10 in Supabase to save them on the job',8000),1200);
+  }
   if(ins.error){ await sb.storage.from(BUCKET).remove([path]); throw ins.error; }
   if(note) await sb.from('comments').insert({job_id:id, author_id:me.id, body:note});
   return id;
@@ -2250,7 +2295,11 @@ function editJob(id){ if(blockPreview()) return;
   editingId=j.id; pendingFiles=[];
   openModal(`<h2>✎ Edit job</h2>
     <div class="field-group"><label>Job title</label><input id="m-title" value="${esc(j.title)}" /></div>
-    <div class="field-group"><label>Docket / instruction no. <span class="optional">(optional)</span></label><input id="m-ref" value="${esc(j.ref_no)}" /></div>
+    <div class="field-group"><label>${deptOf(j)==='calls'?'Job number':'Docket / instruction no. <span class="optional">(optional)</span>'}</label><input id="m-ref" value="${esc(j.ref_no)}" /></div>
+    ${hasContact?`<div class="slot-form">
+      <div class="field-group"><label>Phone number</label><input id="m-ph" type="tel" value="${esc(j.customer_phone||'')}"></div>
+      <div class="field-group"><label>Second phone</label><input id="m-ph2" type="tel" value="${esc(j.customer_phone2||'')}"></div>
+      <div class="field-group sf-wide"><label>Email address</label><input id="m-email" type="email" value="${esc(j.customer_email||'')}"></div></div>`:''}
     <div class="field-group"><label>${DEPT[deptOf(j)].one}</label><select id="m-site">${sites.filter(s=>s.serviceman_id===j.serviceman_id&&deptOf(s)===deptOf(j)).map(s=>`<option value="${s.id}" ${s.id===j.site_id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
     <div class="field-group" style="margin-bottom:6px"><label>Replace the sheet <span class="optional">(optional — only if you uploaded the wrong one)</span></label></div>
     <label class="drop has-files" id="m-drop" for="m-file" data-empty="Drag the correct sheet here">
@@ -2269,6 +2318,7 @@ function editJob(id){ if(blockPreview()) return;
 async function saveJobEdit(){
   const j=jobs.find(x=>x.id===editingId) || (job&&job.id===editingId?job:null); if(!j) return closeModal();
   const row={title:$('m-title').value.trim()||j.title, ref_no:$('m-ref').value.trim()||null, site_id:$('m-site').value};
+  if(hasContact && $('m-ph')) Object.assign(row,{customer_phone:$('m-ph').value.trim()||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:$('m-email').value.trim()||null});
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
   try{
     if(pendingFiles.length){
@@ -2362,6 +2412,7 @@ function updateJobHeader(){
   const s=sites.find(x=>x.id===job.site_id)||{}, t=prof(job.serviceman_id);
   $('jv-title').textContent=job.title;
   $('jv-sub').textContent=[DEPT[deptOf(job)].label, s.name, isOffice?t.full_name:null, job.ref_no?('#'+job.ref_no):null].filter(Boolean).join(' · ');
+  $('jv-cc').innerHTML=contactChips(job); $('jv-cc').classList.toggle('hidden', !$('jv-cc').innerHTML);
   const cur=jobOutcome(job);
   document.querySelectorAll('#oc-group .done-btn').forEach(b=>{ const on=b.dataset.o===cur; b.classList.toggle('on',on); b.querySelector('.box').textContent=on?'✓':''; });
   $('dl-marked').classList.toggle('hidden',!job.marked_path);
@@ -2903,6 +2954,7 @@ async function printJob(id){
         <tr><td>Service man</td><td>${esc(t.full_name)}${t.phone?' · '+esc(t.phone):''}</td><td>Department</td><td>${D.label}</td></tr>
         <tr><td>${site.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1)}</td><td>${esc(where)}</td><td>Docket / ref</td><td>${esc(j.ref_no||'—')}</td></tr>
         <tr><td>Sent</td><td>${fmtD(j.created_at)}</td><td>Status</td><td><b>${outcomeText(j)}</b>${j.completed?' '+fmtD(j.completed_at):''}</td></tr>
+        ${j.customer_phone||j.customer_phone2||j.customer_email?`<tr><td>Customer phone</td><td>${esc([j.customer_phone,j.customer_phone2].filter(Boolean).join(' · ')||'—')}</td><td>Email</td><td>${esc(j.customer_email||'—')}</td></tr>`:''}
         ${site.address||site.contact?`<tr><td>Address</td><td>${esc(site.address||'—')}</td><td>Contact</td><td>${esc(site.contact||'—')}</td></tr>`:''}
       </table>
       <h2 class="p-h">Sheet ${marks.length?'(with mark-ups)':''}</h2>
