@@ -1692,6 +1692,7 @@ function renderPortal(){
     ${isOffice&&dept!=='calls'?`<button class="site-tab add" onclick="openSiteModal()">＋ New ${D.one}</button>`:''}</div>`;
 
   if(!site){
+    if(isOffice && dept==='calls' && !previewing && !weeksTried.has(t.id)){ weeksTried.add(t.id); setTimeout(()=>ensureWeeks(false,t.id),0); }   // no diary yet → set it up now
     html+= isOffice
       ? (dept==='calls'
           ? `<div class="empty"><div class="big">📅</div>No days set up for ${esc(firstName(t.full_name))} yet.<br><br><button class="btn-primary wk-new" onclick="openWeekModal()">📅 New 6-day week</button></div>`
@@ -1881,21 +1882,28 @@ async function downloadWeek(week){
 // Always have 10 weeks of day tabs ready for every Private Calls man:
 // the 2 previous weeks, this week and 7 weeks ahead.
 const WEEKS_BACK=2, WEEKS_AHEAD=7;
-async function ensureWeeks(retry){
-  if(previewing || !realMe || !['admin','service_office'].includes(realMe.role)) return;
-  const mon=mondayOf(new Date()), rows=[];
-  const have=new Set(sites.filter(x=>deptOf(x)==='calls'&&x.work_date).map(x=>x.serviceman_id+'|'+x.work_date));
-  for(const t of techs('calls')){
-    for(let w=-WEEKS_BACK; w<=WEEKS_AHEAD; w++){
-      for(let i=0;i<6;i++){ const d=ymd(addDays(mon,w*7+i)); if(!have.has(t.id+'|'+d)) rows.push({serviceman_id:t.id, department:'calls', work_date:d, name:dayLabel(d)}); }
+let weeksBusy=false; const weeksTried=new Set();
+async function ensureWeeks(_retry, onlyTech){
+  if(previewing || !realMe || !['admin','service_office'].includes(realMe.role) || weeksBusy) return;
+  weeksBusy=true;
+  try{
+    const mon=mondayOf(new Date()), fails=[]; let made=0;
+    const have=new Set(sites.filter(x=>deptOf(x)==='calls'&&x.work_date).map(x=>x.serviceman_id+'|'+x.work_date));
+    // one man at a time, so a problem with one never stops the others
+    for(const t of techs('calls').filter(t=>!onlyTech||t.id===onlyTech)){
+      const rows=[];
+      for(let w=-WEEKS_BACK; w<=WEEKS_AHEAD; w++) for(let i=0;i<6;i++){ const d=ymd(addDays(mon,w*7+i)); if(!have.has(t.id+'|'+d)) rows.push({serviceman_id:t.id, department:'calls', work_date:d, name:dayLabel(d)}); }
+      if(!rows.length) continue;
+      // days that already exist are skipped, not treated as an error
+      let { error }=await sb.from('sites').upsert(rows,{onConflict:'serviceman_id,department,work_date', ignoreDuplicates:true});
+      if(error && /on conflict|no unique|constraint matching/i.test(error.message)){   // older database without the update-5 index: add one day at a time
+        error=null; for(const r of rows){ const x=await sb.from('sites').insert(r); if(x.error && !/duplicate/i.test(x.error.message)){ error=x.error; break; } }
+      }
+      if(error) fails.push(`${firstName(t.full_name)}: ${error.message}`); else made+=rows.length;
     }
-  }
-  if(!rows.length) return;
-  for(let i=0;i<rows.length;i+=200){
-    const { error }=await sb.from('sites').insert(rows.slice(i,i+200));
-    if(error){ if(!retry){ await loadData(); return ensureWeeks(true); } console.warn('Could not set up weeks',error); return; }
-  }
-  await loadData(); rerenderCurrent();
+    if(made){ await loadData(); rerenderCurrent(); }
+    if(fails.length) toast('⚠️ Could not set up the Private Calls diary for '+fails.join(' · '),9000);
+  } finally { weeksBusy=false; }
 }
 
 // Monday clean-up: office or service department login, on a computer
@@ -2295,6 +2303,7 @@ async function saveTeam(){
     if(error){ $('m-save').disabled=false; return toast('Error: '+error.message,5000); }
   }
   closeModal(); await loadData(); rerenderCurrent(); toast('Team updated');
+  ensureWeeks();   // anyone newly on Private Calls gets his 10 weeks of day tabs
 }
 
 // ── Job view ───────────────────────────────────────────────────────
