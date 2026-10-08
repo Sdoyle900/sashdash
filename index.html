@@ -1088,7 +1088,7 @@ const Scanner = (() => {
       img.src=url;
     });
   }
-  function toCanvas(img, maxSide=2000){
+  function toCanvas(img, maxSide=3400){
     const k=Math.min(1, maxSide/Math.max(img.naturalWidth||img.width, img.naturalHeight||img.height));
     const c=document.createElement('canvas'); c.width=Math.round((img.naturalWidth||img.width)*k); c.height=Math.round((img.naturalHeight||img.height)*k);
     c.getContext('2d').drawImage(img,0,0,c.width,c.height); return c;
@@ -1177,7 +1177,7 @@ const Scanner = (() => {
   function warp(c, q){
     const dist=(p,r)=>Math.hypot(p[0]-r[0],p[1]-r[1]);
     let ow=Math.max(dist(q[0],q[1]),dist(q[3],q[2])), oh=Math.max(dist(q[0],q[3]),dist(q[1],q[2]));
-    const k=Math.min(1.6, 1654/Math.max(ow,oh)); ow=Math.round(ow*k); oh=Math.round(oh*k);   // ~A4 @ 200dpi max
+    const k=Math.min(1.6, 2480/Math.max(ow,oh)); ow=Math.round(ow*k); oh=Math.round(oh*k);   // ~A4 @ 210dpi
     const H=homography(q,[[0,0],[ow,0],[ow,oh],[0,oh]]);
     const sd=c.getContext('2d').getImageData(0,0,c.width,c.height).data, SW=c.width, SH=c.height;
     const out=document.createElement('canvas'); out.width=ow; out.height=oh; const ox=out.getContext('2d'), od=ox.createImageData(ow,oh), o=od.data;
@@ -1189,26 +1189,48 @@ const Scanner = (() => {
       o[t+3]=255; } }
     ox.putImageData(od,0,0); return out;
   }
-  // ── clean up like a scanner: even out shadows, white paper, dark ink ──
+  // ── clean up like a scanner: even out shadows, white paper, crisp dark ink, keep colours ──
+  function paperBackground(c){
+    // estimate the bare-paper colour everywhere: brightest pixel per block, spread out, smoothed
+    const w=c.width, h=c.height, f=8, sw=Math.max(8,Math.round(w/f)), sh=Math.max(8,Math.round(h/f));
+    const s=document.createElement('canvas'); s.width=sw; s.height=sh; const sx=s.getContext('2d'); sx.imageSmoothingQuality='high'; sx.drawImage(c,0,0,sw,sh);
+    const sd=sx.getImageData(0,0,sw,sh).data, B=6, gw=Math.ceil(sw/B), gh=Math.ceil(sh/B), grid=new Float32Array(gw*gh*4);
+    for(let gy=0;gy<gh;gy++) for(let gx=0;gx<gw;gx++){ let bl=-1,br=0,bg=0,bb=0;
+      for(let y=gy*B;y<Math.min(sh,gy*B+B);y++) for(let x=gx*B;x<Math.min(sw,gx*B+B);x++){ const i=(y*sw+x)*4, l=sd[i]*0.3+sd[i+1]*0.59+sd[i+2]*0.11; if(l>bl){bl=l;br=sd[i];bg=sd[i+1];bb=sd[i+2];} }
+      const g=(gy*gw+gx)*4; grid[g]=br; grid[g+1]=bg; grid[g+2]=bb; grid[g+3]=bl; }
+    // spread the brightest paper over big dark areas (black banners, thick ink)
+    const R=3, sp=new Float32Array(grid.length);
+    for(let gy=0;gy<gh;gy++) for(let gx=0;gx<gw;gx++){ let best=-1,bi=0;
+      for(let y=Math.max(0,gy-R);y<=Math.min(gh-1,gy+R);y++) for(let x=Math.max(0,gx-R);x<=Math.min(gw-1,gx+R);x++){ const g=(y*gw+x)*4; if(grid[g+3]>best){best=grid[g+3];bi=g;} }
+      const o=(gy*gw+gx)*4; sp[o]=grid[bi]; sp[o+1]=grid[bi+1]; sp[o+2]=grid[bi+2]; }
+    const gc=document.createElement('canvas'); gc.width=gw; gc.height=gh; const gx2=gc.getContext('2d'), gd=gx2.createImageData(gw,gh);
+    for(let i=0;i<gw*gh;i++){ gd.data[i*4]=sp[i*4]; gd.data[i*4+1]=sp[i*4+1]; gd.data[i*4+2]=sp[i*4+2]; gd.data[i*4+3]=255; }
+    gx2.putImageData(gd,0,0);
+    const sm=document.createElement('canvas'); sm.width=gw*4; sm.height=gh*4; const smx=sm.getContext('2d'); smx.filter='blur(6px)'; smx.drawImage(gc,0,0,sm.width,sm.height);
+    const bgc=document.createElement('canvas'); bgc.width=w; bgc.height=h; const bx=bgc.getContext('2d'); bx.imageSmoothingQuality='high'; bx.drawImage(sm,0,0,w,h);
+    return bx.getImageData(0,0,w,h).data;
+  }
+  function sharpen(id, w, h, amt){
+    const d=id.data, src=new Uint8ClampedArray(d);
+    for(let y=1;y<h-1;y++) for(let x=1;x<w-1;x++){ const i=(y*w+x)*4;
+      for(let ch=0;ch<3;ch++){ const v=src[i+ch], n=(src[i-4+ch]+src[i+4+ch]+src[i-w*4+ch]+src[i+w*4+ch])/4; d[i+ch]=v+(v-n)*amt; } }
+  }
   function enhance(c, m){
     if(m==='photo') return c;
-    const w=c.width, h=c.height, x=c.getContext('2d'), id=x.getImageData(0,0,w,h), d=id.data;
-    // background estimate = heavily blurred copy (shrink → grow)
-    const s=document.createElement('canvas'); s.width=Math.max(4,w>>4); s.height=Math.max(4,h>>4);
-    const sx=s.getContext('2d'); sx.imageSmoothingEnabled=true; sx.filter='blur(2px)'; sx.drawImage(c,0,0,s.width,s.height);
-    const bg=document.createElement('canvas'); bg.width=w; bg.height=h; const bx=bg.getContext('2d'); bx.imageSmoothingEnabled=true; bx.drawImage(s,0,0,w,h);
-    const b=bx.getImageData(0,0,w,h).data;
+    const w=c.width, h=c.height, x=c.getContext('2d'), id=x.getImageData(0,0,w,h), d=id.data, b=paperBackground(c);
+    const lv=(v,lo,hi)=>{ v=(v-lo)*255/(hi-lo); return v<0?0:v>255?255:v; };
     for(let i=0;i<d.length;i+=4){
       if(m==='bw'){
         const gv=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114, gb=Math.max(1,b[i]*0.299+b[i+1]*0.587+b[i+2]*0.114);
-        let v=gv/gb*255; v=(v-120)*255/(235-120); v=v<0?0:v>255?255:v; d[i]=d[i+1]=d[i+2]=v;
+        let v=lv(gv/gb*255, 95, 228); v=255*Math.pow(v/255,1.35); d[i]=d[i+1]=d[i+2]=v;
       } else {
-        for(let ch=0;ch<3;ch++){ let v=d[i+ch]/Math.max(1,b[i+ch])*255; v=(v-70)*255/(240-70); d[i+ch]=v<0?0:v>255?255:v; }
+        for(let ch=0;ch<3;ch++){ let v=lv(d[i+ch]/Math.max(1,b[i+ch])*255, 40, 232); d[i+ch]=255*Math.pow(v/255,1.15); }
       }
     }
+    sharpen(id, w, h, m==='bw'?0.6:0.45);
     x.putImageData(id,0,0); return c;
   }
-  function toJpeg(c, q=0.82){ return new Promise(r=>c.toBlob(bl=>bl.arrayBuffer().then(ab=>r({bytes:new Uint8Array(ab), w:c.width, h:c.height})),'image/jpeg',q)); }
+  function toJpeg(c, q=0.9){ return new Promise(r=>c.toBlob(bl=>bl.arrayBuffer().then(ab=>r({bytes:new Uint8Array(ab), w:c.width, h:c.height})),'image/jpeg',q)); }
 
   // ── the full-screen crop screen ──
   function ui(){
@@ -1308,7 +1330,7 @@ function openOrderRequest(){ if(blockPreview()) return;
   const mineReq=orderReqs.filter(r=>r.serviceman_id===me.id).slice(0,5);
   openModal(`<h2>📋 Order request</h2>
     <div class="field-group"><label>${dept==='calls'?'Day':'Site'}</label><select id="or-site">${opts.map(([id,n])=>`<option value="${id}" ${id===currentSiteId?'selected':''}>${esc(n)}</option>`).join('')}<option value="">Other / not listed</option></select></div>
-    <div class="field-group"><label>What's needed</label><input id="or-title" placeholder="e.g. 2 glazing beads 7015, 1030 long"></div>
+    <div class="field-group"><label>Order number</label><input id="or-title" placeholder="e.g. 2012" inputmode="text"></div>
     <div class="field-group"><label>Note <span class="optional">(optional)</span></label><textarea id="or-note" rows="2" placeholder="Anything the office should know"></textarea></div>
     <div class="field-group" style="margin-bottom:6px"><label>The order</label></div>
     <div class="or-pages" id="or-pages"></div>
@@ -1363,7 +1385,7 @@ async function sendOrderRequest(){
 function renderRequestsPanel(el){
   const list=deptRequests();
   el.innerHTML = `<div class="fp-head">📋 Order requests <span>— scanned orders sent in by the men</span></div>
-    <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Request</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>Sent</th><th>Status</th><th></th></tr></thead><tbody>
+    <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Order no.</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>Sent</th><th>Status</th><th></th></tr></thead><tbody>
     ${list.map(r=>{ const t=prof(r.serviceman_id); return `<tr class="${r.status==='ordered'?'rq-done':''}">
       <td class="s-title">${esc(r.title)}${r.note?`<div class="s-sub">${esc(r.note)}</div>`:''}</td>
       <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(t.full_name)}</td>
