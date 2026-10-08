@@ -159,6 +159,9 @@
     .dept-btn.on .dc{background:rgba(255,255,255,.22);color:#fff}
     .dept-btn .dot{position:absolute;top:-4px;right:-4px;width:12px;height:12px}
     .tag.amber{background:#fef3c7;color:#92400e}
+    .rq-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.rq-head .btn-primary{padding:8px 14px;font-size:13px}
+    .fp-act .rq-sent{border-color:#f59e0b;color:#92400e}.fp-act .rq-approve{border-color:#16a34a;color:#166534;font-weight:700}.fp-act .rq-approve:hover{background:#dcfce7}
+    .fp-empty{padding:18px;text-align:center;color:#64748b}
     .modal:has(.team-row){max-width:700px}
     .tr-role{padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:#fff;min-width:0}
     .tr-depts{grid-column:2 / -1;display:flex;gap:16px;font-size:13px;font-weight:600;color:var(--navy)}
@@ -1031,10 +1034,10 @@ function renderDashboardFor(jobs, sites, allJobs){
 let openFolder=null;
 function folderBoxes(list){
   const nh=list.filter(j=>jobOutcome(j)==='not_home'), rb=list.filter(j=>jobOutcome(j)==='rebook');
-  const rq=deptRequests(), rqNew=rq.filter(r=>r.status!=='ordered');
+  const rq=deptRequests(), rqNew=rq.filter(r=>reqStatus(r)==='new'), rqWait=rq.filter(r=>reqStatus(r)==='sent');
   if(openFolder==='requests' ? !rq.length : (openFolder && !(openFolder==='not_home'?nh:rb).length)) openFolder=null;
   const reqBox=`<button class="folder-box f-blue ${openFolder==='requests'?'open':''} ${rqNew.length?'':'empty'}" onclick="toggleFolder('requests')">
-      <span class="f-ico">📋</span><span class="f-txt"><b>Order requests</b><small>${rqNew.length?`${rqNew.length} new from the men`:rq.length?'All ordered':'Nothing here'}</small></span>
+      <span class="f-ico">📋</span><span class="f-txt"><b>Order requests</b><small>${rqNew.length?`${rqNew.length} new from the men`:rqWait.length?`${rqWait.length} awaiting approval`:rq.length?'All approved':'Nothing here'}</small></span>
       <span class="f-n">${rqNew.length}</span><span class="f-arrow">${openFolder==='requests'?'▴':'▾'}</span></button>`;
   if(dept!=='calls'){ if(!isAdmin) return ''; return `<div class="folders one">${reqBox}</div>${openFolder?`<div class="folder-panel" id="folder-panel"><div class="loading">Loading…</div></div>`:''}`; }
   if(openFolder==='requests') openFolder=null;
@@ -1109,8 +1112,8 @@ const Scanner = (() => {
     for(let t=0;t<256;t++){ wB+=hist[t]; if(!wB) continue; const wF=N-wB; if(!wF) break; sB+=t*hist[t];
       const mB=sB/wB, mF=(sum-sB)/wF, between=wB*wF*(mB-mF)*(mB-mF); if(between>best){best=between; th=t;} }
     // paper stays colourless even in shadow; wood/desks/brochures have colour
-    const lowT=Math.max(70, th*0.6);
-    let m=new Uint8Array(N); for(let i=0;i<N;i++) m[i]=(g[i]>lowT && sat[i]<30)?1:0;
+    const P=window.__scanP||{}; const lowT=Math.max(55, th*(P.lowK??0.42));
+    let m=new Uint8Array(N); for(let i=0;i<N;i++) m[i]=(g[i]>lowT && sat[i]<Math.max(P.satMin??22, g[i]*(P.satK??0.16)))?1:0;
     const morph=(src,r,dil)=>{ // square dilate/erode, separable
       const t=new Uint8Array(N), o=new Uint8Array(N);
       for(let y=0;y<h;y++) for(let x=0;x<w;x++){ let v=dil?0:1; for(let j=-r;j<=r;j++){ const xx=x+j; const q=(xx<0||xx>=w)?(dil?0:0):src[y*w+xx]; if(dil){ if(q){v=1;break;} } else if(!q){v=0;break;} } t[y*w+x]=v; }
@@ -1144,9 +1147,43 @@ const Scanner = (() => {
       if(bi<0||bj<0) continue; if(b1+b2>bestA){ bestA=b1+b2; quad=[H2[i],H2[bi],H2[j],H2[bj]]; }
     }
     if(!quad || bestA < N*0.12) return inset();
+    quad=refineQuad(quad, pts, lab, bestId, w, h);
     const q=orderCorners(quad.map(p=>[(p[0]+0.5)/k,(p[1]+0.5)/k]));
     if(bestN > N*0.97) return inset();
     return q;
+  }
+  // paper edges are straight: fit a line to each side (ignoring bumps where something white touches the sheet), corners = where lines meet
+  function refineQuad(quad, _pts, lab, id, w, h){
+    const B=[];   // boundary points: first/last paper pixel of every row and column
+    for(let y=0;y<h;y++){ let l=-1,r=-1; for(let x=0;x<w;x++) if(lab[y*w+x]===id){ if(l<0) l=x; r=x; } if(l>=0){ B.push([l,y]); B.push([r,y]); } }
+    for(let x=0;x<w;x++){ let t=-1,u=-1; for(let y=0;y<h;y++) if(lab[y*w+x]===id){ if(t<0) t=y; u=y; } if(t>=0){ B.push([x,t]); B.push([x,u]); } }
+    const q=orderCorners(quad), lines=[];
+    const segD=(p,a,b)=>{ const dx=b[0]-a[0], dy=b[1]-a[1], L=dx*dx+dy*dy||1; let t=((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L; t=Math.max(0,Math.min(1,t)); return Math.hypot(p[0]-a[0]-t*dx, p[1]-a[1]-t*dy); };
+    for(let i=0;i<4;i++){
+      const a=q[i], b=q[(i+1)%4], len=Math.hypot(b[0]-a[0],b[1]-a[1]);
+      const side=B.filter(p=>{ const d=segD(p,a,b); if(d>Math.max(6,len*0.12)) return false; for(let j=0;j<4;j++) if(j!==i && segD(p,q[j],q[(j+1)%4])<d) return false; return true; });
+      if(side.length<8) return quad;
+      // RANSAC: the line through the most boundary points
+      let best=null, bestN=-1;
+      for(let it=0;it<160;it++){
+        const p1=side[(Math.random()*side.length)|0], p2=side[(Math.random()*side.length)|0]; const dx=p2[0]-p1[0], dy=p2[1]-p1[1], L=Math.hypot(dx,dy); if(L<len*0.25) continue;
+        const nx=-dy/L, ny=dx/L, c=-(nx*p1[0]+ny*p1[1]); let n=0; for(const p of side) if(Math.abs(nx*p[0]+ny*p[1]+c)<1.6) n++;
+        if(n>bestN){ bestN=n; best=[nx,ny,c]; } }
+      if(!best || bestN<side.length*0.3) return quad;
+      // least-squares polish on the inliers
+      const inl=side.filter(p=>Math.abs(best[0]*p[0]+best[1]*p[1]+best[2])<1.6);
+      let mx=0,my=0; inl.forEach(p=>{mx+=p[0];my+=p[1];}); mx/=inl.length; my/=inl.length;
+      let sxx=0,sxy=0,syy=0; inl.forEach(p=>{ const X=p[0]-mx,Y=p[1]-my; sxx+=X*X; sxy+=X*Y; syy+=Y*Y; });
+      const ang=0.5*Math.atan2(2*sxy,sxx-syy), dxl=Math.cos(ang), dyl=Math.sin(ang);
+      lines.push([-dyl, dxl, -(-dyl*mx+dxl*my)]);
+    }
+    const out=[];
+    for(let i=0;i<4;i++){ const L1=lines[(i+3)%4], L2=lines[i], det=L1[0]*L2[1]-L2[0]*L1[1]; if(Math.abs(det)<1e-6) return quad;
+      const x=(L1[1]*L2[2]-L2[1]*L1[2])/det, y=(L2[0]*L1[2]-L1[0]*L2[2])/det;
+      if(x<-w*0.08||x>w*1.08||y<-h*0.08||y>h*1.08) return quad;
+      if(Math.hypot(x-q[i][0],y-q[i][1])>Math.max(w,h)*0.25) return quad;
+      out.push([x,y]); }
+    return Math.abs(polyArea(out)) > Math.abs(polyArea(q))*0.6 ? out : quad;
   }
   function convexHull(P){
     P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
@@ -1194,19 +1231,34 @@ const Scanner = (() => {
     // estimate the bare-paper colour everywhere: brightest pixel per block, spread out, smoothed
     const w=c.width, h=c.height, f=8, sw=Math.max(8,Math.round(w/f)), sh=Math.max(8,Math.round(h/f));
     const s=document.createElement('canvas'); s.width=sw; s.height=sh; const sx=s.getContext('2d'); sx.imageSmoothingQuality='high'; sx.drawImage(c,0,0,sw,sh);
-    const sd=sx.getImageData(0,0,sw,sh).data, B=6, gw=Math.ceil(sw/B), gh=Math.ceil(sh/B), grid=new Float32Array(gw*gh*4);
+    const sd=sx.getImageData(0,0,sw,sh).data, B=((window.__scanP||{}).B??3), gw=Math.ceil(sw/B), gh=Math.ceil(sh/B), grid=new Float32Array(gw*gh*4);
     for(let gy=0;gy<gh;gy++) for(let gx=0;gx<gw;gx++){ let bl=-1,br=0,bg=0,bb=0;
       for(let y=gy*B;y<Math.min(sh,gy*B+B);y++) for(let x=gx*B;x<Math.min(sw,gx*B+B);x++){ const i=(y*sw+x)*4, l=sd[i]*0.3+sd[i+1]*0.59+sd[i+2]*0.11; if(l>bl){bl=l;br=sd[i];bg=sd[i+1];bb=sd[i+2];} }
       const g=(gy*gw+gx)*4; grid[g]=br; grid[g+1]=bg; grid[g+2]=bb; grid[g+3]=bl; }
-    // spread the brightest paper over big dark areas (black banners, thick ink)
-    const R=3, sp=new Float32Array(grid.length);
-    for(let gy=0;gy<gh;gy++) for(let gx=0;gx<gw;gx++){ let best=-1,bi=0;
-      for(let y=Math.max(0,gy-R);y<=Math.min(gh-1,gy+R);y++) for(let x=Math.max(0,gx-R);x<=Math.min(gw-1,gx+R);x++){ const g=(y*gw+x)*4; if(grid[g+3]>best){best=grid[g+3];bi=g;} }
-      const o=(gy*gw+gx)*4; sp[o]=grid[bi]; sp[o+1]=grid[bi+1]; sp[o+2]=grid[bi+2]; }
+    // 1) small spread: covers handwriting and printed lines, but not shadows
+    const spread=(src,R)=>{ const o=new Float32Array(src.length);
+      for(let gy=0;gy<gh;gy++) for(let gx=0;gx<gw;gx++){ let best=-1,bi=0;
+        for(let y=Math.max(0,gy-R);y<=Math.min(gh-1,gy+R);y++) for(let x=Math.max(0,gx-R);x<=Math.min(gw-1,gx+R);x++){ const g=(y*gw+x)*4; if(src[g+3]>best){best=src[g+3];bi=g;} }
+        const q=(gy*gw+gx)*4; o[q]=src[bi]; o[q+1]=src[bi+1]; o[q+2]=src[bi+2]; o[q+3]=src[bi+3]; }
+      return o; };
+    let sp=spread(grid,(window.__scanP||{}).R??1);
+    // 2) big dark blocks (black banners, stamps) are far darker than the paper around them → fill from neighbours.
+    //    Shadows fade gradually, so they stay and get divided out.
+    for(let it=0;it<3;it++){
+      const nx=new Float32Array(sp), R=4;
+      for(let gy=0;gy<gh;gy++) for(let gx=0;gx<gw;gx++){
+        const L=[]; for(let y=Math.max(0,gy-R);y<=Math.min(gh-1,gy+R);y++) for(let x=Math.max(0,gx-R);x<=Math.min(gw-1,gx+R);x++) L.push(sp[(y*gw+x)*4+3]);
+        L.sort((a,b)=>a-b); const med=L[L.length>>1], q=(gy*gw+gx)*4;
+        if(sp[q+3] < med*((window.__scanP||{}).darkK??0.62)){ let r=0,g2=0,b2=0,n2=0;
+          for(let y=Math.max(0,gy-R);y<=Math.min(gh-1,gy+R);y++) for(let x=Math.max(0,gx-R);x<=Math.min(gw-1,gx+R);x++){ const k=(y*gw+x)*4; if(sp[k+3]>=med*0.85){ r+=sp[k]; g2+=sp[k+1]; b2+=sp[k+2]; n2++; } }
+          if(n2){ nx[q]=r/n2; nx[q+1]=g2/n2; nx[q+2]=b2/n2; nx[q+3]=med; } }
+      }
+      sp=nx;
+    }
     const gc=document.createElement('canvas'); gc.width=gw; gc.height=gh; const gx2=gc.getContext('2d'), gd=gx2.createImageData(gw,gh);
     for(let i=0;i<gw*gh;i++){ gd.data[i*4]=sp[i*4]; gd.data[i*4+1]=sp[i*4+1]; gd.data[i*4+2]=sp[i*4+2]; gd.data[i*4+3]=255; }
     gx2.putImageData(gd,0,0);
-    const sm=document.createElement('canvas'); sm.width=gw*4; sm.height=gh*4; const smx=sm.getContext('2d'); smx.filter='blur(6px)'; smx.drawImage(gc,0,0,sm.width,sm.height);
+    const sm=document.createElement('canvas'); sm.width=gw*4; sm.height=gh*4; const smx=sm.getContext('2d'); smx.filter='blur(3px)'; smx.drawImage(gc,0,0,sm.width,sm.height);
     const bgc=document.createElement('canvas'); bgc.width=w; bgc.height=h; const bx=bgc.getContext('2d'); bx.imageSmoothingQuality='high'; bx.drawImage(sm,0,0,w,h);
     return bx.getImageData(0,0,w,h).data;
   }
@@ -1222,7 +1274,7 @@ const Scanner = (() => {
     for(let i=0;i<d.length;i+=4){
       if(m==='bw'){
         const gv=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114, gb=Math.max(1,b[i]*0.299+b[i+1]*0.587+b[i+2]*0.114);
-        let v=lv(gv/gb*255, 95, 228); v=255*Math.pow(v/255,1.35); d[i]=d[i+1]=d[i+2]=v;
+        let v=lv(gv/gb*255, 100, 222); v=255*Math.pow(v/255,1.4); d[i]=d[i+1]=d[i+2]=v;
       } else {
         for(let ch=0;ch<3;ch++){ let v=lv(d[i+ch]/Math.max(1,b[i+ch])*255, 40, 232); d[i+ch]=255*Math.pow(v/255,1.15); }
       }
@@ -1341,7 +1393,7 @@ function openOrderRequest(){ if(blockPreview()) return;
       <input type="file" id="or-file" accept="application/pdf,image/*" multiple style="display:none" onchange="orAddFiles(this.files);this.value=''">
     </div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="or-send" onclick="sendOrderRequest()">Send to office ➤</button></div>
-    ${mineReq.length?`<div class="or-hist"><div class="section-h" style="margin:14px 0 6px">Your recent requests</div>${mineReq.map(r=>`<div class="or-h-row"><span>${esc(r.title)}<small>${fmtWhen(r.created_at)}${r.site_name?' · '+esc(r.site_name):''}</small></span>${r.status==='ordered'?'<span class="tag green">✓ Ordered</span>':'<span class="tag indigo">Sent</span>'}</div>`).join('')}</div>`:''}`);
+    ${mineReq.length?`<div class="or-hist"><div class="section-h" style="margin:14px 0 6px">Your recent requests</div>${mineReq.map(r=>`<div class="or-h-row"><span>${esc(r.title)}<small>${fmtWhen(r.created_at)}${r.site_name?' · '+esc(r.site_name):''}</small></span>${reqTag(r)}</div>`).join('')}</div>`:''}`);
   renderOrderPages();
 }
 function renderOrderPages(){
@@ -1382,20 +1434,25 @@ async function sendOrderRequest(){
   }catch(e){ btn.disabled=false; renderOrderPages(); toast('Not sent: '+(e.message||e)+(/order_requests|relation/i.test(e.message||'')?' — run update-8 in Supabase':''),7000); }
 }
 // office: the Order requests folder
+function reqStatus(r){ return r.status==='ordered' ? 'approved' : (r.status||'new'); }
+function reqTag(r){ const st=reqStatus(r);
+  return st==='approved' ? '<span class="tag green">✅ Approved</span>' : st==='sent' ? '<span class="tag amber">⏳ Awaiting approval</span>' : '<span class="tag indigo">Sent</span>'; }
 function renderRequestsPanel(el){
   const list=deptRequests();
-  el.innerHTML = `<div class="fp-head">📋 Order requests <span>— scanned orders sent in by the men</span></div>
-    <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Order no.</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>Sent</th><th>Status</th><th></th></tr></thead><tbody>
-    ${list.map(r=>{ const t=prof(r.serviceman_id); return `<tr class="${r.status==='ordered'?'rq-done':''}">
+  el.innerHTML = `<div class="fp-head rq-head"><span>📋 Order requests <span>— scanned orders sent in by the men</span></span>
+      ${list.length?`<button class="btn-primary" onclick="downloadAllRequests()" title="Save every order here into a folder on this computer, then clear the list">⬇ Download all &amp; clear</button>`:''}</div>
+    ${list.length?`<div class="s-table-wrap"><table class="s-table"><thead><tr><th>Order no.</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>Sent</th><th>Status</th><th></th></tr></thead><tbody>
+    ${list.map(r=>{ const t=prof(r.serviceman_id), st=reqStatus(r); return `<tr class="${st==='approved'?'rq-done':''}">
       <td class="s-title">${esc(r.title)}${r.note?`<div class="s-sub">${esc(r.note)}</div>`:''}</td>
       <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(t.full_name)}</td>
       <td>${esc(r.site_name||'—')}</td>
       <td>${fmtWhen(r.created_at)}<div class="s-sub">${r.pages} page${r.pages===1?'':'s'}</div></td>
-      <td>${r.status==='ordered'?'<span class="tag green">✓ Ordered</span>':'<span class="tag red">New</span>'}</td>
+      <td>${st==='approved'?'<span class="tag green">✅ Approved</span>':st==='sent'?'<span class="tag amber">⏳ Sent for approval</span>':'<span class="tag red">New</span>'}</td>
       <td class="fp-act"><button class="btn-primary" onclick="viewRequest('${r.id}')">👁 View</button>
-        ${r.status==='ordered'?`<button class="btn-outline" onclick="setRequestStatus('${r.id}','new')">↺ Mark new</button>`:`<button class="btn-outline" onclick="setRequestStatus('${r.id}','ordered')">✓ Ordered</button>`}
+        ${st==='new'?`<button class="btn-outline rq-sent" onclick="setRequestStatus('${r.id}','sent')">📤 Sent for approval</button>`:''}
+        ${st!=='approved'?`<button class="btn-outline rq-approve" onclick="approveRequest('${r.id}')">✅ Order approved</button>`:`<span class="s-sub">In ${esc(t.full_name.split(' ')[0])}'s ${esc(r.site_name||'site')} tab</span>`}
         <button class="btn-outline" onclick="deleteRequest('${r.id}')" title="Delete">🗑</button></td></tr>`; }).join('')}
-    </tbody></table></div>`;
+    </tbody></table></div>`:`<div class="fp-empty">No order requests — all cleared.</div>`}`;
 }
 async function viewRequest(id){
   const r=orderReqs.find(x=>x.id===id); if(!r) return;
@@ -1403,10 +1460,75 @@ async function viewRequest(id){
   try{ const u=await photoUrl(r.pdf_path); if(w) w.location=u; else location.href=u; }catch(e){ if(w) w.close(); toast('Could not open: '+(e.message||e),5000); }
 }
 async function setRequestStatus(id,st){
-  const { error }=await sb.from('order_requests').update({status:st, handled_at: st==='ordered'?new Date().toISOString():null}).eq('id',id);
-  if(error) return toast('Error: '+error.message,5000);
+  const { error }=await sb.from('order_requests').update({status:st, handled_at:new Date().toISOString()}).eq('id',id);
+  if(error) return toast('Error: '+error.message+(/check|constraint/i.test(error.message)?' — run update-9 in Supabase':''),6000);
   const r=orderReqs.find(x=>x.id===id); if(r) r.status=st; renderDashboard(); renderFolderPanel();
-  toast(st==='ordered'?'Marked as ordered ✓':'Marked as new');
+  toast(st==='sent'?'📤 Marked as sent for approval':'Status updated');
+}
+// ✅ Order approved → the order goes into the man's site tab as a new job (he gets a notification)
+async function approveRequest(id){
+  const r=orderReqs.find(x=>x.id===id); if(!r) return;
+  const t=prof(r.serviceman_id), first=t.full_name.split(' ')[0];
+  const options=sites.filter(x=>x.serviceman_id===r.serviceman_id && deptOf(x)===r.department && (r.department==='calls'?!!x.work_date:!x.work_date) && !x.archived);
+  let site=options.find(x=>x.id===r.site_id);
+  if(!options.length) return toast(`${first} has no ${r.department==='calls'?'days':'sites'} to send this to — add one first.`,6000);
+  const label=x=>x.work_date?dayLabel(x.work_date):x.name;
+  const sid=await new Promise(res=>{
+    openModal(`<h2>✅ Order approved</h2>
+      <p style="color:var(--slate);margin:-4px 0 14px">Order <b>${esc(r.title)}</b> will be sent to ${esc(first)} as a new job in this tab. He gets a notification.</p>
+      <div class="field-group"><label>${r.department==='calls'?'Day':'Site'}</label><select id="ap-site">${options.map(x=>`<option value="${x.id}" ${site&&x.id===site.id?'selected':''}>${esc(label(x))}</option>`).join('')}</select></div>
+      <div class="modal-actions"><button class="btn-outline" id="ap-no">Cancel</button><button class="btn-primary" id="ap-yes">Send to ${esc(first)} ➤</button></div>`);
+    $('ap-no').onclick=()=>{ closeModal(); res(null); }; $('ap-yes').onclick=()=>res($('ap-site').value);
+  });
+  if(!sid) return;
+  site=sites.find(x=>x.id===sid); const btn=$('ap-yes'); if(btn){ btn.disabled=true; btn.innerHTML='<span class="spin"></span> Sending…'; }
+  try{
+    const dl=await sb.storage.from(BUCKET).download(r.pdf_path); if(dl.error) throw dl.error;
+    const jobId=uuid(), path=`${filePrefix(r.department, r.serviceman_id)}/${jobId}/original.pdf`;
+    const up=await sb.storage.from(BUCKET).upload(path, dl.data, {contentType:'application/pdf'}); if(up.error) throw up.error;
+    const title=/^order\b/i.test(r.title) ? `${r.title} — approved ✅` : `Order ${r.title} — approved ✅`;
+    const ins=await sb.from('jobs').insert({ id:jobId, site_id:site.id, serviceman_id:r.serviceman_id, title, ref_no:r.title, notes:r.note||null, pdf_path:path, pdf_bytes:r.pdf_bytes||dl.data.size, created_by:me.id });
+    if(ins.error){ await sb.storage.from(BUCKET).remove([path]); throw ins.error; }
+    const upd={status:'approved', handled_at:new Date().toISOString(), site_id:site.id, site_name:label(site), job_id:jobId};
+    let u=await sb.from('order_requests').update(upd).eq('id',id);
+    if(u.error && /job_id/.test(u.error.message)){ delete upd.job_id; u=await sb.from('order_requests').update(upd).eq('id',id); }
+    if(u.error) throw u.error;
+    Object.assign(r, upd); closeModal(); await loadData(); renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0);
+    toast(`✅ Sent to ${first} — ${label(site)}`,4000);
+  }catch(e){ if(btn){ btn.disabled=false; btn.textContent='Try again'; } toast('Not sent: '+(e.message||e)+(/check|constraint/i.test(e.message||'')?' — run update-9 in Supabase':''),7000); }
+}
+// ⬇ Download all & clear: every order request into one folder (a sub-folder per man), then empty the list
+async function downloadAllRequests(){
+  const list=deptRequests(); if(!list.length) return toast('Nothing to download.');
+  const waiting=list.filter(r=>reqStatus(r)!=='approved').length;
+  const ok=await confirmBox({icon:'⬇', title:`Download ${list.length} order request${list.length===1?'':'s'}?`,
+    body:`They'll be saved to a folder on this computer (a folder for each man), then <b>cleared from the list</b>.${waiting?`<br><br>⚠️ ${waiting} ${waiting===1?'is':'are'} not approved yet — ${waiting===1?'it':'they'}'ll be cleared too.`:''}<br><br>Approved orders stay in the men's site tabs.`,
+    ok:'⬇ Download &amp; clear'}); if(!ok) return;
+  try{
+    const stamp=new Date(), dname=stamp.toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'});
+    const zip=new JSZip(), root=zip.folder(`SashDash - Order requests - ${dname}`), used=new Set();
+    let rows='', i=0;
+    for(const r of list.slice().sort((a,b)=>a.created_at<b.created_at?-1:1)){
+      toast(`Preparing download… ${++i} of ${list.length}`,60000);
+      const t=prof(r.serviceman_id), when=new Date(r.created_at), whenS=when.toLocaleDateString('en-IE',{day:'2-digit',month:'short'})+' '+when.toTimeString().slice(0,5).replace(':','-');
+      let base=`${safeName(t.full_name)}/${safeName(r.title)} - ${safeName(r.site_name||'no site')} - ${whenS}`, fn=base, n=1; while(used.has(fn)) fn=`${base} (${++n})`; used.add(fn);
+      const dl=r.pdf_path ? await sb.storage.from(BUCKET).download(r.pdf_path) : {data:null};
+      if(dl.data) root.file(fn+'.pdf', dl.data);
+      rows+=`<tr><td>${esc(r.title)}</td><td>${esc(t.full_name)}</td><td>${esc(r.site_name||'—')}</td><td>${when.toLocaleString('en-IE')}</td><td>${{new:'New',sent:'Sent for approval',approved:'Approved'}[reqStatus(r)]}</td><td>${esc(r.note||'')}</td><td>${dl.data?`<a href="${encodeURI(fn)}.pdf">Open PDF</a>`:'(file missing)'}</td></tr>`;
+    }
+    root.file('index.html',`<!doctype html><meta charset="utf-8"><title>Order requests ${dname}</title><style>body{font-family:Arial;max-width:1000px;margin:20px auto;padding:0 14px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:6px 8px;text-align:left}th{background:#f1f5f9}</style>
+<h2>Order requests — ${esc(DEPT[dept].label)}</h2><p>Downloaded ${stamp.toLocaleString('en-IE')} by ${esc((realMe||me).full_name)}</p>
+<table><tr><th>Order no.</th><th>Service man</th><th>Site</th><th>Sent</th><th>Status</th><th>Note</th><th></th></tr>${rows}</table>`);
+    const blob=await zip.generateAsync({type:'blob', compression:'STORE'});
+    const saved=await saveToComputer(blob, `SashDash - Order requests - ${safeName(dname)}.zip`);
+    // saved → clear the list
+    const paths=list.map(r=>r.pdf_path).filter(Boolean);
+    for(let k=0;k<paths.length;k+=100) await sb.storage.from(BUCKET).remove(paths.slice(k,k+100));
+    const ids=list.map(r=>r.id), del=await sb.from('order_requests').delete().in('id',ids);
+    if(del.error) throw del.error;
+    orderReqs=orderReqs.filter(r=>!ids.includes(r.id)); openFolder=null; renderDashboard();
+    toast(saved.how==='folder'?`✅ Saved to "${saved.where}" folder — list cleared`:'✅ Downloaded (check your Downloads folder) — list cleared',6000);
+  }catch(e){ toast('Download failed — nothing was cleared: '+(e.message||e),7000); }
 }
 async function deleteRequest(id){
   const r=orderReqs.find(x=>x.id===id); if(!r) return;
