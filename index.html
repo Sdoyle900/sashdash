@@ -167,6 +167,8 @@
     .ord-folder .btn-outline,.ord-folder .btn-primary{padding:7px 12px;font-size:13px}.of-note{font-size:12px;color:#64748b}.of-on{font-size:13px;color:#166534}
     input.need{border-color:#dc2626!important;box-shadow:0 0 0 3px rgba(220,38,38,.15)}
     .rq-edit{border:0;background:none;color:#64748b;cursor:pointer;font-size:13px;padding:0 4px}.rq-edit:hover{color:#4f46e5}.rq-nono{color:#b91c1c;font-style:italic;font-weight:600}
+    .rq-btns{display:flex;gap:8px;flex-wrap:wrap}.rq-btns .btn-outline{padding:8px 14px;font-size:13px}
+    .btn-amber{background:#d97706!important;border-color:#d97706!important}
     .sf-wide{grid-column:1/-1}
     .slot:has(.slot-actions) .slot-cc{margin-bottom:34px}
     .cc{display:inline-flex;align-items:center;gap:4px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap}.cc:hover{background:#d1fae5}
@@ -1075,9 +1077,9 @@ let openFolder=null;
 function folderBoxes(list){
   const nh=list.filter(j=>jobOutcome(j)==='not_home'), rb=list.filter(j=>jobOutcome(j)==='rebook');
   const rq=deptRequests(), rqNew=rq.filter(r=>reqStatus(r)==='new'), rqWait=rq.filter(r=>reqStatus(r)==='sent');
-  if(openFolder==='requests' ? !rq.length : (openFolder && !(openFolder==='not_home'?nh:rb).length)) openFolder=null;
+  if(openFolder && openFolder!=='requests' && !(openFolder==='not_home'?nh:rb).length) openFolder=null;   // Order requests stays open even when empty (➕ Add order)
   const reqBox=`<button class="folder-box f-blue ${openFolder==='requests'?'open':''} ${rqNew.length?'':'empty'}" onclick="toggleFolder('requests')">
-      <span class="f-ico">📋</span><span class="f-txt"><b>Order requests</b><small>${rqNew.length?`${rqNew.length} new from the men`:rqWait.length?`${rqWait.length} awaiting approval`:rq.length?'All approved':'Nothing here'}</small></span>
+      <span class="f-ico">📋</span><span class="f-txt"><b>Order requests</b><small>${rqNew.length?`${rqNew.length} new`:rqWait.length?`${rqWait.length} awaiting approval`:rq.length?'All approved':'Nothing here — click to add an order'}</small></span>
       <span class="f-n">${rqNew.length}</span><span class="f-arrow">${openFolder==='requests'?'▴':'▾'}</span></button>`;
   if(dept!=='calls'){ if(!isAdmin) return ''; return `<div class="folders one">${reqBox}</div>${openFolder?`<div class="folder-panel" id="folder-panel"><div class="loading">Loading…</div></div>`:''}`; }
   if(openFolder==='requests') openFolder=null;
@@ -1474,14 +1476,63 @@ async function sendOrderRequest(){
     closeModal(); orderPages=[]; toast('📋 Order request sent to the office ✓',4000); scheduleReload();
   }catch(e){ btn.disabled=false; renderOrderPages(); toast('Not sent: '+(e.message||e)+(/order_requests|relation/i.test(e.message||'')?' — run update-8 in Supabase':''),7000); }
 }
+// ➕ Add order (office): an order that came straight to you, e.g. from a site manager → same steps as the men's
+function addOrderSiteOpts(manId, keep){
+  const opts=sites.filter(x=>x.serviceman_id===manId && deptOf(x)==='sites' && !x.work_date && !x.archived);
+  return opts.length ? opts.map(x=>`<option value="${x.id}" ${x.id===keep?'selected':''}>${esc(x.name)}</option>`).join('') : `<option value="">— no sites for this man yet —</option>`;
+}
+function openAddOrder(){ if(blockPreview()) return;
+  const men=techs('sites'); if(!men.length) return toast('Add a service man first.');
+  pendingFiles=[];
+  openModal(`<h2>➕ Add order</h2>
+    <p style="color:var(--slate);margin:-4px 0 12px;font-size:14px">An order that came straight to you (e.g. from a site manager). It joins the Order requests list: mark it sent for approval, then approve it to send it to the man.</p>
+    <label class="drop" id="m-drop" for="m-file" data-empty="Drag the order here">
+      <span class="drop-icon">📄</span><span class="drop-main">Drag the order here</span>
+      <span class="drop-sub">or click to choose · PDF or photos (several photos become one PDF)</span></label>
+    <input type="file" id="m-file" accept="application/pdf,image/*" multiple style="display:none" onchange="filesPicked(this.files);this.value=''">
+    <div class="file-list" id="m-files"></div>
+    <div class="slot-form">
+      <div class="field-group"><label>Order number <span style="color:#dc2626">*</span></label><input id="ao-no" placeholder="e.g. 2012" autocomplete="off" oninput="this.classList.remove('need')"></div>
+      <div class="field-group"><label>From <span class="optional">(optional)</span></label><input id="ao-from" placeholder="e.g. Mark – site manager" autocomplete="off"></div>
+      <div class="field-group"><label>Service man</label><select id="ao-man" onchange="$('ao-site').innerHTML=addOrderSiteOpts(this.value)">${men.map(t=>`<option value="${t.id}" ${t.id===currentTechId?'selected':''}>${esc(t.full_name)}</option>`).join('')}</select></div>
+      <div class="field-group"><label>Site</label><select id="ao-site">${addOrderSiteOpts((men.find(t=>t.id===currentTechId)||men[0]).id, currentSiteId)}</select></div>
+      <div class="field-group sf-wide"><label>Note <span class="optional">(optional)</span></label><input id="ao-note" placeholder="Anything to remember about this order" autocomplete="off"></div>
+    </div>
+    <label class="chk" style="display:flex;gap:8px;align-items:center;margin:2px 0 6px;font-size:14px"><input type="checkbox" id="ao-sent"> Already sent for approval</label>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="saveAddOrder()">➕ Add order</button></div>`);
+  attachDrop();
+}
+async function saveAddOrder(){
+  const no=$('ao-no').value.trim(), manId=$('ao-man').value, sid=$('ao-site').value||null;
+  if(!pendingFiles.length) return toast('Add the order (PDF or photo) first.');
+  if(!no){ $('ao-no').classList.add('need'); $('ao-no').focus(); return toast('Type the order number.'); }
+  const from=$('ao-from').value.trim(), extra=$('ao-note').value.trim();
+  const note=[from?`From ${from}`:'', extra].filter(Boolean).join(' — ')||null;
+  const st=sites.find(x=>x.id===sid), btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Adding…';
+  try{
+    const bytes=await buildUploadPdf(pendingFiles);
+    let pages=1; try{ pages=(await PDFLib.PDFDocument.load(bytes,{ignoreEncryption:true})).getPageCount(); }catch(e){}
+    const id=uuid(), path=`${filePrefix('sites',manId)}/requests/${id}.pdf`;
+    const up=await sb.storage.from(BUCKET).upload(path,new Blob([bytes],{type:'application/pdf'}),{contentType:'application/pdf'}); if(up.error) throw up.error;
+    const row={id, serviceman_id:manId, department:'sites', site_id:sid, site_name:st?st.name:null, title:no, note, pdf_path:path, pdf_bytes:bytes.length, pages, status:$('ao-sent').checked?'sent':'new'};
+    if(row.status==='sent') row.handled_at=new Date().toISOString();
+    const { error }=await sb.from('order_requests').insert(row);
+    if(error){ await sb.storage.from(BUCKET).remove([path]); throw error; }
+    orderReqs.unshift({...row, created_at:new Date().toISOString()});
+    pendingFiles=[]; closeModal(); openFolder='requests'; renderDashboard(); setTimeout(renderFolderPanel,0);
+    toast(`📋 Order ${no} added`);
+  }catch(e){ btn.disabled=false; btn.textContent='➕ Try again'; toast('Not added: '+(e.message||e),6000); }
+}
+
 // office: the Order requests folder
 function reqStatus(r){ return r.status==='ordered' ? 'approved' : (r.status||'new'); }
 function reqTag(r){ const st=reqStatus(r);
   return st==='approved' ? '<span class="tag green">✅ Approved</span>' : st==='sent' ? '<span class="tag amber">⏳ Awaiting approval</span>' : '<span class="tag indigo">Sent</span>'; }
 function renderRequestsPanel(el){
   const list=deptRequests();
-  el.innerHTML = `<div class="fp-head rq-head"><span>📋 Order requests <span>— scanned orders sent in by the men</span></span>
-      ${list.length?`<button class="btn-primary" onclick="downloadAllRequests()" title="Save every order here to this computer, then clear the list">⬇ Download all &amp; clear</button>`:''}</div>
+  el.innerHTML = `<div class="fp-head rq-head"><span>📋 Order requests <span>— from the men, or added by you</span></span>
+      <span class="rq-btns">${dept==='sites'&&isAdmin?`<button class="btn-primary" onclick="openAddOrder()" title="Add an order that came straight to you, e.g. from a site manager">➕ Add order</button>`:''}
+      ${list.length?`<button class="btn-outline" onclick="downloadAllRequests()" title="Save the orders to this computer, then clear them from the list">⬇ Download all &amp; clear</button>`:''}</span></div>
     ${dept==='sites'&&isAdmin?`<div class="ord-folder" id="ord-folder"></div>`:''}
     ${list.length?`<div class="s-table-wrap"><table class="s-table"><thead><tr><th>Order no.</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>Sent</th><th>Status</th><th></th></tr></thead><tbody>
     ${list.map(r=>{ const t=prof(r.serviceman_id), st=reqStatus(r); return `<tr class="${st==='approved'?'rq-done':''}">
@@ -1494,7 +1545,7 @@ function renderRequestsPanel(el){
         ${st==='new'?`<button class="btn-outline rq-sent" onclick="setRequestStatus('${r.id}','sent')">📤 Sent for approval</button>`:''}
         ${st!=='approved'?`<button class="btn-outline rq-approve" onclick="approveRequest('${r.id}')">✅ Order approved</button>`:`<span class="s-sub">In ${esc(t.full_name.split(' ')[0])}'s ${esc(r.site_name||'site')} tab</span>`}
         <button class="btn-outline" onclick="deleteRequest('${r.id}')" title="Delete">🗑</button></td></tr>`; }).join('')}
-    </tbody></table></div>`:`<div class="fp-empty">No order requests — all cleared.</div>`}`;
+    </tbody></table></div>`:`<div class="fp-empty">No order requests. Orders the men scan appear here — or click <b>➕ Add order</b> to add one that came to you.</div>`}`;
   ordersFolderBar();
 }
 async function viewRequest(id){
@@ -1531,12 +1582,12 @@ async function approveRequest(id){
   const title=/^order\b/i.test(r.title) ? `${r.title} — approved ✅` : `Order ${r.title} — approved ✅`;
   pendingFiles=[];
   openModal(`<h2>✅ Order approved → ${esc(first)}</h2>
-    <p style="color:var(--slate);margin:-4px 0 12px;font-size:14px">Upload the order with your pen changes. It's sent to ${esc(first)} as a new job and he gets a notification.
+    <p style="color:var(--slate);margin:-4px 0 12px;font-size:14px">Add the order with your pen changes — or leave the box empty to send the order as it is. It's sent to ${esc(first)} as a new job and he gets a notification.
       <a href="#" onclick="viewRequest('${r.id}');return false">👁 Open his scan</a></p>
     <label class="drop" id="m-drop" for="m-file" data-empty="Drag the approved order here">
       <span class="drop-icon">📄</span>
       <span class="drop-main">Drag the approved order here</span>
-      <span class="drop-sub">or click to choose · PDF or photos (several photos become one PDF)</span>
+      <span class="drop-sub">or click to choose · leave empty to send the order unchanged</span>
     </label>
     <input type="file" id="m-file" accept="application/pdf,image/*" multiple style="display:none" onchange="filesPicked(this.files);this.value=''">
     <div class="file-list" id="m-files"></div>
@@ -1548,13 +1599,20 @@ async function approveRequest(id){
 }
 async function sendApproved(id){
   const r=orderReqs.find(x=>x.id===id); if(!r) return;
-  if(!pendingFiles.length) return toast('Upload the approved order first (drag it into the box).');
   const site=sites.find(x=>x.id===$('ap-site').value), first=prof(r.serviceman_id).full_name.split(' ')[0];
+  if(!site) return toast('Pick the site to send it to.');
+  const asIs=!pendingFiles.length, btn=$('m-save');
+  if(asIs && btn.dataset.asis!=='1'){   // no changed copy → ask once: send the order unchanged?
+    btn.dataset.asis='1'; btn.textContent=`📄 Send unchanged to ${first}?`; btn.classList.add('btn-amber');
+    return toast('No changed copy added — click again to send the order as it is.',4000);
+  }
   const title=$('m-title').value.trim()||`Order ${r.title} — approved ✅`, note=$('m-notes').value.trim();
-  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Sending…';
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Sending…';
   try{
     const jobId=uuid(), path=`${filePrefix(r.department, r.serviceman_id)}/${jobId}/original.pdf`;
-    const bytes=await buildUploadPdf(pendingFiles);
+    let bytes;
+    if(asIs){ const dl=await sb.storage.from(BUCKET).download(r.pdf_path); if(dl.error) throw dl.error; bytes=new Uint8Array(await dl.data.arrayBuffer()); }
+    else bytes=await buildUploadPdf(pendingFiles);
     const up=await sb.storage.from(BUCKET).upload(path, new Blob([bytes],{type:'application/pdf'}), {contentType:'application/pdf'}); if(up.error) throw up.error;
     const ins=await sb.from('jobs').insert({ id:jobId, site_id:site.id, serviceman_id:r.serviceman_id, title, ref_no:r.title, notes:null, pdf_path:path, pdf_bytes:bytes.length, created_by:me.id });
     if(ins.error){ await sb.storage.from(BUCKET).remove([path]); throw ins.error; }
@@ -1571,16 +1629,23 @@ async function sendApproved(id){
 // ⬇ Download all & clear: every order request into one folder (a sub-folder per man), then empty the list
 async function downloadAllRequests(){
   const list=deptRequests(); if(!list.length) return toast('Nothing to download.');
-  const waiting=list.filter(r=>reqStatus(r)!=='approved').length;
-  const ok=await confirmBox({icon:'⬇', title:`Download ${list.length} order request${list.length===1?'':'s'}?`,
-    body:`They'll be saved on this computer (a folder for each man), then <b>cleared from the list</b>.${waiting?`<br><br>⚠️ ${waiting} ${waiting===1?'is':'are'} not approved yet — ${waiting===1?'it':'they'}'ll be cleared too.`:''}<br><br>Approved orders stay in the men's site tabs.`,
-    ok:'⬇ Download &amp; clear'}); if(!ok) return;
-  // a folder is chosen → save into it (no zip, no duplicates), then clear
+  const waiting=list.filter(r=>reqStatus(r)!=='approved').length, approvedN=list.length-waiting;
   const od=dept==='sites' && await getOrdersDir();
+  const ok = od
+    ? await confirmBox({icon:'📁', title:`Save ${approvedN} approved order${approvedN===1?'':'s'} to "${od.name}"?`,
+        body:`Your approved copies are saved in a folder for each site, then <b>cleared from this list</b>.${waiting?`<br><br>${waiting} not approved yet ${waiting===1?'stays':'stay'} in the list.`:''}`,
+        ok:'📁 Save &amp; clear'})
+    : await confirmBox({icon:'⬇', title:`Download ${list.length} order request${list.length===1?'':'s'}?`,
+        body:`They'll be saved on this computer (a folder for each man), then <b>cleared from the list</b>.${waiting?`<br><br>⚠️ ${waiting} ${waiting===1?'is':'are'} not approved yet — ${waiting===1?'it':'they'}'ll be cleared too.`:''}<br><br>Approved orders stay in the men's site tabs.<br><br>💡 Choose a folder (above the list) to save only approved orders, by site, automatically.`,
+        ok:'⬇ Download &amp; clear'});
+  if(!ok) return;
+  // a folder is chosen → save approved copies into it (no zip, no duplicates), then clear those
   if(od && await ordersFolderPerm(od,true)){
     const r=await syncOrdersToFolder({silent:false, list});
     if(r.failed) return toast(`⚠️ ${r.failed} file${r.failed===1?'':'s'} couldn't be saved — nothing was cleared. Try again.`,7000);
-    return clearRequests(list, `✅ All saved in "${od.name}" — list cleared`);
+    const done=list.filter(x=>reqStatus(x)==='approved'), left=list.length-done.length;
+    if(!done.length) return toast('Nothing approved yet — only approved orders are saved and cleared.',5000);
+    return clearRequests(done, `✅ ${done.length} approved order${done.length===1?'':'s'} saved in "${od.name}" — cleared${left?` · ${left} still waiting for approval`:''}`);
   }
   try{
     const stamp=new Date(), dname=stamp.toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'});
@@ -1967,20 +2032,28 @@ async function syncOrdersToFolder({silent=true, list}={}){
   try{
     let index={}; try{ const f=await (await h.getFileHandle(ORDERS_INDEX)).getFile(); index=JSON.parse(await f.text())||{}; }catch(e){}
     const reqs=list || orderReqs.filter(r=>r.department==='sites');
+    let changed=false;
     const oldDirs=new Set();
     for(const r of reqs){
       const got=index[r.id]||{}, {dir,name}=orderFileBase(r);
-      const target={scan:`${dir}/${name}.pdf`, approved:`${dir}/${name} - APPROVED.pdf`};
+      // only your APPROVED copy is kept — one file per order, saved once it's approved
+      const target={approved:`${dir}/${name}.pdf`};
       const j=r.job_id && jobs.find(x=>x.id===r.job_id);
+      let overwrite=false;
+      if(got.scan){   // tidy away the man's scan saved by an earlier version
+        const [od,...rest]=got.scan.split('/');
+        if(got.scan===target.approved) overwrite=true;    // the scan sits where the approved copy goes → replace it
+        else { try{ const oh=await h.getDirectoryHandle(od); await oh.removeEntry(rest.join('/')); oldDirs.add(od); }catch(e){} }
+        delete got.scan; index[r.id]=got; changed=true;
+      }
       const want=[];
-      if(got.scan!==target.scan && r.pdf_path) want.push(['scan', r.pdf_path]);
       if(got.approved!==target.approved && j && j.pdf_path) want.push(['approved', j.pdf_path]);
       if(!want.length) continue;
       const sub=await h.getDirectoryHandle(dir,{create:true});
       for(const [kind,path] of want){
         const fname=target[kind].split('/').pop();
         try{
-          if(!await fileExists(sub,fname)){
+          if(overwrite || !await fileExists(sub,fname)){
             const dl=await sb.storage.from(BUCKET).download(path); if(dl.error) throw dl.error;
             await writeFile(sub, fname, dl.data); saved++;
           }
@@ -1991,7 +2064,7 @@ async function syncOrdersToFolder({silent=true, list}={}){
         }catch(e){ failed++; }
       }
       got.order=r.title; got.man=prof(r.serviceman_id).full_name; got.site=r.site_name||''; got.sent=r.created_at;
-      index[r.id]=got;
+      index[r.id]=got; changed=true;
     }
     await writeFile(h, ORDERS_INDEX, new Blob([JSON.stringify(index,null,1)],{type:'application/json'}));
     for(const od of oldDirs){ try{ const oh=await h.getDirectoryHandle(od); let empty=true; for await (const _ of oh.keys()){ empty=false; break; } if(empty) await h.removeEntry(od); }catch(e){} }   // remove emptied old folders
@@ -2364,6 +2437,7 @@ function filesPicked(fl){
   if(fl.length && !ok.length) toast('Only PDFs or photos can be uploaded.');
   pendingFiles=[...pendingFiles, ...ok];
   renderPendingFiles();
+  { const b=$('m-save'); if(b && b.dataset.asis==='1'){ b.dataset.asis=''; b.classList.remove('btn-amber'); b.textContent=b.textContent.replace(/^📄 Send unchanged to (.+)\?$/,'⬆ Send to $1'); } }
   if($('m-title') && !$('m-title').value && pendingFiles[0]) $('m-title').value=pendingFiles[0].name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').slice(0,80);
 }
 function removePending(i){ pendingFiles.splice(i,1); renderPendingFiles(); }
