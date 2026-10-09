@@ -730,7 +730,7 @@ function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-09-1305';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-09-1310';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -795,6 +795,7 @@ async function signIn(){
 async function signOut(){
   if(dirty && !confirm('You have unsaved mark-up. Sign out anyway?')) return;
   dirty=false; if(realtime) sb.removeChannel(realtime); realtime=null;
+  try{ const s0=pushSupported && await currentSub(); if(s0) await sb.from('push_subscriptions').delete().eq('endpoint',s0.endpoint); }catch(e){}   // signed out → this phone stops getting their pings
   await sb.auth.signOut();
   me=null; realMe=null; previewing=false; $('bell-btn').classList.add('hidden'); $('push-banner').classList.add('hidden'); document.body.classList.remove('previewing'); $('preview-banner').classList.add('hidden'); job=null; $('job-view').classList.add('hidden');
   $('app').classList.add('hidden'); $('auth-screen').classList.remove('hidden');
@@ -868,7 +869,7 @@ const pushSupported = 'serviceWorker' in navigator && 'PushManager' in window &&
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
 const isInstalled = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
 function b64ToBytes(b64){ const pad='='.repeat((4-b64.length%4)%4), raw=atob((b64+pad).replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from([...raw].map(c=>c.charCodeAt(0))); }
-async function currentSub(){ try{ const reg=await navigator.serviceWorker.ready; return await reg.pushManager.getSubscription(); }catch(e){ return null; } }
+async function currentSub(){ try{ const reg=await Promise.race([navigator.serviceWorker.ready, new Promise(r=>setTimeout(()=>r(null),2500))]); if(!reg) return null; return await reg.pushManager.getSubscription(); }catch(e){ return null; } }
 async function initNotifications(){
   const bell=$('bell-btn');
   if(previewing){ bell.classList.add('hidden'); $('push-banner').classList.add('hidden'); return; }
@@ -891,9 +892,13 @@ async function initNotifications(){
   } else bn.classList.add('hidden');
 }
 function localStorageSafe(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+// this phone's notifications always go to whoever is logged in on it
 async function saveSub(sub){
   const j=sub.toJSON();
-  await sb.from('push_subscriptions').upsert({user_id:realMe.id, endpoint:j.endpoint, p256dh:j.keys.p256dh, auth:j.keys.auth, user_agent:navigator.userAgent.slice(0,200)}, {onConflict:'endpoint'});
+  const r=await sb.rpc('claim_push_sub',{p_endpoint:j.endpoint, p_p256dh:j.keys.p256dh, p_auth:j.keys.auth, p_ua:navigator.userAgent.slice(0,200)});
+  if(r && r.error){   // database not updated yet (update-12) → old way
+    await sb.from('push_subscriptions').upsert({user_id:realMe.id, endpoint:j.endpoint, p256dh:j.keys.p256dh, auth:j.keys.auth, user_agent:navigator.userAgent.slice(0,200)}, {onConflict:'endpoint'});
+  }
 }
 async function toggleNotifications(){
   if(previewing) return blockPreview();
