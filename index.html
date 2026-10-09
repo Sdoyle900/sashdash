@@ -163,6 +163,8 @@
     .s-day mark{background:#fde68a}
     @keyframes jobflash{0%,100%{box-shadow:0 0 0 0 rgba(234,88,12,0)}30%,70%{box-shadow:0 0 0 5px rgba(234,88,12,.55)}}.flash{animation:jobflash 1.3s ease 2}
     .update-pill{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;background:#4f46e5;color:#fff;border:0;border-radius:999px;padding:12px 20px;font-weight:800;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer}
+    .ord-folder{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:-2px 0 12px;padding:10px 12px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px}
+    .ord-folder .btn-outline,.ord-folder .btn-primary{padding:7px 12px;font-size:13px}.of-note{font-size:12px;color:#64748b}.of-on{font-size:13px;color:#166534}
     .sf-wide{grid-column:1/-1}
     .slot:has(.slot-actions) .slot-cc{margin-bottom:34px}
     .cc{display:inline-flex;align-items:center;gap:4px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap}.cc:hover{background:#d1fae5}
@@ -1015,6 +1017,7 @@ function setDept(d){
 
 // ── Dashboard (office) ────────────────────────────────────────────
 function renderDashboard(){
+  autoSyncOrders();
   const allJobs=jobs, jobs_=dJobs(), sites_=dSites();
   return renderDashboardFor(jobs_, sites_, allJobs);
 }
@@ -1475,7 +1478,8 @@ function reqTag(r){ const st=reqStatus(r);
 function renderRequestsPanel(el){
   const list=deptRequests();
   el.innerHTML = `<div class="fp-head rq-head"><span>📋 Order requests <span>— scanned orders sent in by the men</span></span>
-      ${list.length?`<button class="btn-primary" onclick="downloadAllRequests()" title="Save every order here into a folder on this computer, then clear the list">⬇ Download all &amp; clear</button>`:''}</div>
+      ${list.length?`<button class="btn-primary" onclick="downloadAllRequests()" title="Save every order here to this computer, then clear the list">⬇ Download all &amp; clear</button>`:''}</div>
+    ${dept==='sites'&&isAdmin?`<div class="ord-folder" id="ord-folder"></div>`:''}
     ${list.length?`<div class="s-table-wrap"><table class="s-table"><thead><tr><th>Order no.</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>Sent</th><th>Status</th><th></th></tr></thead><tbody>
     ${list.map(r=>{ const t=prof(r.serviceman_id), st=reqStatus(r); return `<tr class="${st==='approved'?'rq-done':''}">
       <td class="s-title">${esc(r.title)}${r.note?`<div class="s-sub">${esc(r.note)}</div>`:''}</td>
@@ -1488,6 +1492,7 @@ function renderRequestsPanel(el){
         ${st!=='approved'?`<button class="btn-outline rq-approve" onclick="approveRequest('${r.id}')">✅ Order approved</button>`:`<span class="s-sub">In ${esc(t.full_name.split(' ')[0])}'s ${esc(r.site_name||'site')} tab</span>`}
         <button class="btn-outline" onclick="deleteRequest('${r.id}')" title="Delete">🗑</button></td></tr>`; }).join('')}
     </tbody></table></div>`:`<div class="fp-empty">No order requests — all cleared.</div>`}`;
+  ordersFolderBar();
 }
 async function viewRequest(id){
   const r=orderReqs.find(x=>x.id===id); if(!r) return;
@@ -1552,8 +1557,15 @@ async function downloadAllRequests(){
   const list=deptRequests(); if(!list.length) return toast('Nothing to download.');
   const waiting=list.filter(r=>reqStatus(r)!=='approved').length;
   const ok=await confirmBox({icon:'⬇', title:`Download ${list.length} order request${list.length===1?'':'s'}?`,
-    body:`They'll be saved to a folder on this computer (a folder for each man), then <b>cleared from the list</b>.${waiting?`<br><br>⚠️ ${waiting} ${waiting===1?'is':'are'} not approved yet — ${waiting===1?'it':'they'}'ll be cleared too.`:''}<br><br>Approved orders stay in the men's site tabs.`,
+    body:`They'll be saved on this computer (a folder for each man), then <b>cleared from the list</b>.${waiting?`<br><br>⚠️ ${waiting} ${waiting===1?'is':'are'} not approved yet — ${waiting===1?'it':'they'}'ll be cleared too.`:''}<br><br>Approved orders stay in the men's site tabs.`,
     ok:'⬇ Download &amp; clear'}); if(!ok) return;
+  // a folder is chosen → save into it (no zip, no duplicates), then clear
+  const od=dept==='sites' && await getOrdersDir();
+  if(od && await ordersFolderPerm(od,true)){
+    const r=await syncOrdersToFolder({silent:false, list});
+    if(r.failed) return toast(`⚠️ ${r.failed} file${r.failed===1?'':'s'} couldn't be saved — nothing was cleared. Try again.`,7000);
+    return clearRequests(list, `✅ All saved in "${od.name}" — list cleared`);
+  }
   try{
     const stamp=new Date(), dname=stamp.toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'});
     const zip=new JSZip(), root=zip.folder(`SashDash - Order requests - ${dname}`), used=new Set();
@@ -1571,14 +1583,18 @@ async function downloadAllRequests(){
 <table><tr><th>Order no.</th><th>Service man</th><th>Site</th><th>Sent</th><th>Status</th><th>Note</th><th></th></tr>${rows}</table>`);
     const blob=await zip.generateAsync({type:'blob', compression:'STORE'});
     const saved=await saveToComputer(blob, `SashDash - Order requests - ${safeName(dname)}.zip`);
-    // saved → clear the list
+    await clearRequests(list, saved.how==='folder'?`✅ Saved to "${saved.where}" folder — list cleared`:'✅ Downloaded (check your Downloads folder) — list cleared');
+  }catch(e){ toast('Download failed — nothing was cleared: '+(e.message||e),7000); }
+}
+async function clearRequests(list, msg){
+  try{
     const paths=list.map(r=>r.pdf_path).filter(Boolean);
     for(let k=0;k<paths.length;k+=100) await sb.storage.from(BUCKET).remove(paths.slice(k,k+100));
     const ids=list.map(r=>r.id), del=await sb.from('order_requests').delete().in('id',ids);
     if(del.error) throw del.error;
     orderReqs=orderReqs.filter(r=>!ids.includes(r.id)); openFolder=null; renderDashboard();
-    toast(saved.how==='folder'?`✅ Saved to "${saved.where}" folder — list cleared`:'✅ Downloaded (check your Downloads folder) — list cleared',6000);
-  }catch(e){ toast('Download failed — nothing was cleared: '+(e.message||e),7000); }
+    toast(msg,6000);
+  }catch(e){ toast('Saved, but the list could not be cleared: '+(e.message||e),7000); }
 }
 async function deleteRequest(id){
   const r=orderReqs.find(x=>x.id===id); if(!r) return;
@@ -1894,6 +1910,88 @@ async function saveToComputer(blob, filename){
   return {how:'download', where:'Downloads'};
 }
 async function blobToDataUrl(b){ return await new Promise(r=>{ const f=new FileReader(); f.onload=()=>r(f.result); f.readAsDataURL(b); }); }
+
+// ── Orders folder: every order request saved into ONE folder on this computer, never twice ──
+let ordersDirMem=null, ordersSyncBusy=false, ordersSyncAt=0, ordersNeedsPerm=false, ordersLast=null;
+const ORDERS_INDEX='_SashDash saved-orders list.json';   // how the app remembers what is already in the folder
+async function getOrdersDir(){ return ordersDirMem || (ordersDirMem = await kvGet('ordersDir')); }
+async function chooseOrdersFolder(){
+  if(!canPickFolder) return toast('This browser can\'t save to a folder — use Chrome or Edge on a computer.',6000);
+  try{
+    const h=await window.showDirectoryPicker({id:'sashdash-orders', mode:'readwrite'});
+    ordersDirMem=h; await kvSet('ordersDir',h); ordersNeedsPerm=false;
+    toast(`📁 Orders will be saved in "${h.name}"`,4000);
+    renderFolderPanel(); await syncOrdersToFolder({silent:false});
+  }catch(e){}
+}
+async function ordersFolderPerm(h, ask){
+  if(!h || !h.queryPermission) return false;
+  let p=await h.queryPermission({mode:'readwrite'});
+  if(p!=='granted' && ask){ try{ p=await h.requestPermission({mode:'readwrite'}); }catch(e){} }
+  return p==='granted';
+}
+function orderFileBase(r){
+  const t=prof(r.serviceman_id), when=new Date(r.created_at);
+  const d=`${when.getFullYear()}-${String(when.getMonth()+1).padStart(2,'0')}-${String(when.getDate()).padStart(2,'0')}`;
+  return { dir:safeName(t.full_name||'Unknown'), name:`${safeName(r.title)} - ${safeName(r.site_name||'no site')} - ${d}` };
+}
+async function fileExists(dir, name){ try{ await dir.getFileHandle(name); return true; }catch(e){ return false; } }
+async function writeFile(dir, name, blob){ const fh=await dir.getFileHandle(name,{create:true}); const w=await fh.createWritable(); await w.write(blob); await w.close(); }
+// silent = automatic run (no prompts); otherwise a click, so we may ask for permission
+async function syncOrdersToFolder({silent=true, list}={}){
+  if(ordersSyncBusy || !isAdmin || previewing) return {saved:0};
+  const h=await getOrdersDir(); if(!h) return {saved:0, none:true};
+  if(!await ordersFolderPerm(h, !silent)){ if(!ordersNeedsPerm){ ordersNeedsPerm=true; renderFolderPanel(); } return {saved:0, perm:false}; }
+  ordersNeedsPerm=false; ordersSyncBusy=true;
+  let saved=0, failed=0;
+  try{
+    let index={}; try{ const f=await (await h.getFileHandle(ORDERS_INDEX)).getFile(); index=JSON.parse(await f.text())||{}; }catch(e){}
+    const reqs=list || orderReqs.filter(r=>r.department==='sites');
+    for(const r of reqs){
+      const got=index[r.id]||{}, {dir,name}=orderFileBase(r);
+      const want=[];
+      if(!got.scan && r.pdf_path) want.push(['scan', `${name}.pdf`, r.pdf_path]);
+      const j=r.job_id && jobs.find(x=>x.id===r.job_id);
+      if(!got.approved && j && j.pdf_path) want.push(['approved', `${name} - APPROVED.pdf`, j.pdf_path]);
+      if(!want.length) continue;
+      const sub=await h.getDirectoryHandle(dir,{create:true});
+      for(const [kind,fname,path] of want){
+        try{
+          if(!await fileExists(sub,fname)){
+            const dl=await sb.storage.from(BUCKET).download(path); if(dl.error) throw dl.error;
+            await writeFile(sub, fname, dl.data); saved++;
+          }
+          got[kind]=`${dir}/${fname}`;
+        }catch(e){ failed++; }
+      }
+      got.order=r.title; got.man=prof(r.serviceman_id).full_name; got.site=r.site_name||''; got.sent=r.created_at;
+      index[r.id]=got;
+    }
+    await writeFile(h, ORDERS_INDEX, new Blob([JSON.stringify(index,null,1)],{type:'application/json'}));
+    ordersSyncAt=Date.now(); ordersLast={saved, failed, at:new Date()};
+    if(saved && !silent) toast(`📁 ${saved} file${saved===1?'':'s'} saved to "${h.name}"`,4000);
+    else if(saved) toast(`📁 ${saved} new order file${saved===1?'':'s'} saved to "${h.name}"`,3500);
+    else if(!silent) toast(failed?`⚠️ ${failed} file${failed===1?'':'s'} couldn't be saved — try again`:`📁 "${h.name}" is up to date — nothing new`,4000);
+  }catch(e){ if(!silent) toast('Could not save to the folder: '+(e.message||e),6000); }
+  finally{ ordersSyncBusy=false; const el=$('ord-sync-info'); if(el) el.textContent=ordersSyncInfo(); }
+  return {saved, failed};
+}
+function ordersSyncInfo(){ return ordersLast ? `Last checked ${ordersLast.at.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})}${ordersLast.saved?` · ${ordersLast.saved} saved`:''}` : ''; }
+// runs by itself while the Sites dashboard is open (at most every 20 seconds)
+function autoSyncOrders(){
+  if(!isAdmin || dept!=='sites' || previewing || Date.now()-ordersSyncAt<20000) return;
+  ordersSyncAt=Date.now(); setTimeout(()=>syncOrdersToFolder({silent:true}),300);
+}
+async function ordersFolderBar(){
+  const el=$('ord-folder'); if(!el) return;
+  if(!canPickFolder){ el.innerHTML=`<span class="of-note">💡 To save orders straight into a folder, open SashDash in <b>Chrome</b> or <b>Edge</b> on a computer.</span>`; return; }
+  const h=await getOrdersDir();
+  el.innerHTML = !h
+    ? `<button class="btn-outline" onclick="chooseOrdersFolder()">📁 Choose folder to save orders</button><span class="of-note">Pick it once — every order is then saved there automatically, never twice.</span>`
+    : ordersNeedsPerm
+      ? `<button class="btn-primary" onclick="syncOrdersToFolder({silent:false}).then(renderFolderPanel)">📁 Reconnect “${esc(h.name)}”</button><span class="of-note">The browser needs your OK once per visit — click to keep saving.</span>`
+      : `<span class="of-on">📁 Saving to <b>${esc(h.name)}</b></span><button class="btn-outline" onclick="syncOrdersToFolder({silent:false})">⟳ Save now</button><button class="btn-outline" onclick="chooseOrdersFolder()">Change folder</button><span class="of-note" id="ord-sync-info">${ordersSyncInfo()}</span>`;
+}
 
 // Build a zip of one week (all men, or one man) — PDFs, marked-up PDFs, photos and a readable report per job
 async function buildWeekZip(week, techId, onStep){
