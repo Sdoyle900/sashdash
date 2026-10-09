@@ -165,6 +165,8 @@
     .update-pill{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;background:#4f46e5;color:#fff;border:0;border-radius:999px;padding:12px 20px;font-weight:800;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer}
     .ord-folder{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:-2px 0 12px;padding:10px 12px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px}
     .ord-folder .btn-outline,.ord-folder .btn-primary{padding:7px 12px;font-size:13px}.of-note{font-size:12px;color:#64748b}.of-on{font-size:13px;color:#166534}
+    input.need{border-color:#dc2626!important;box-shadow:0 0 0 3px rgba(220,38,38,.15)}
+    .rq-edit{border:0;background:none;color:#64748b;cursor:pointer;font-size:13px;padding:0 4px}.rq-edit:hover{color:#4f46e5}.rq-nono{color:#b91c1c;font-style:italic;font-weight:600}
     .sf-wide{grid-column:1/-1}
     .slot:has(.slot-actions) .slot-cc{margin-bottom:34px}
     .cc{display:inline-flex;align-items:center;gap:4px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap}.cc:hover{background:#d1fae5}
@@ -1420,7 +1422,7 @@ function openOrderRequest(){ if(blockPreview()) return;
   const mineReq=orderReqs.filter(r=>r.serviceman_id===me.id).slice(0,5);
   openModal(`<h2>📋 Order request</h2>
     <div class="field-group"><label>${dept==='calls'?'Day':'Site'}</label><select id="or-site">${opts.map(([id,n])=>`<option value="${id}" ${id===currentSiteId?'selected':''}>${esc(n)}</option>`).join('')}<option value="">Other / not listed</option></select></div>
-    <div class="field-group"><label>Order number</label><input id="or-title" placeholder="e.g. 2012" inputmode="text"></div>
+    <div class="field-group"><label>Order number <span style="color:#dc2626">*</span></label><input id="or-title" placeholder="e.g. 2012" inputmode="text" oninput="this.classList.remove('need')"></div>
     <div class="field-group"><label>Note <span class="optional">(optional)</span></label><textarea id="or-note" rows="2" placeholder="Anything the office should know"></textarea></div>
     <div class="field-group" style="margin-bottom:6px"><label>The order</label></div>
     <div class="or-pages" id="or-pages"></div>
@@ -1455,7 +1457,8 @@ async function orAddFiles(fl){
 }
 async function sendOrderRequest(){
   if(!orderPages.length) return toast('Scan the order (or add a file) first.');
-  const title=$('or-title').value.trim()||'Order request', note=$('or-note').value.trim()||null, sid=$('or-site').value||null;
+  const title=$('or-title').value.trim(), note=$('or-note').value.trim()||null, sid=$('or-site').value||null;
+  if(!title){ $('or-title').focus(); $('or-title').classList.add('need'); return toast('Type the order number first.'); }
   const st=sites.find(x=>x.id===sid), btn=$('or-send'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Sending…';
   try{
     const out=await PDFLib.PDFDocument.create();
@@ -1482,7 +1485,7 @@ function renderRequestsPanel(el){
     ${dept==='sites'&&isAdmin?`<div class="ord-folder" id="ord-folder"></div>`:''}
     ${list.length?`<div class="s-table-wrap"><table class="s-table"><thead><tr><th>Order no.</th><th>Service man</th><th>${dept==='calls'?'Day':'Site'}</th><th>Sent</th><th>Status</th><th></th></tr></thead><tbody>
     ${list.map(r=>{ const t=prof(r.serviceman_id), st=reqStatus(r); return `<tr class="${st==='approved'?'rq-done':''}">
-      <td class="s-title">${esc(r.title)}${r.note?`<div class="s-sub">${esc(r.note)}</div>`:''}</td>
+      <td class="s-title">${/^order request$/i.test(r.title||'')?'<span class="rq-nono">No order no.</span>':esc(r.title)} <button class="rq-edit" onclick="editRequestNo('${r.id}')" title="Change the order number">✎</button>${r.note?`<div class="s-sub">${esc(r.note)}</div>`:''}</td>
       <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(t.full_name)}</td>
       <td>${esc(r.site_name||'—')}</td>
       <td>${fmtWhen(r.created_at)}<div class="s-sub">${r.pages} page${r.pages===1?'':'s'}</div></td>
@@ -1498,6 +1501,19 @@ async function viewRequest(id){
   const r=orderReqs.find(x=>x.id===id); if(!r) return;
   const w=window.open('','_blank');
   try{ const u=await photoUrl(r.pdf_path); if(w) w.location=u; else location.href=u; }catch(e){ if(w) w.close(); toast('Could not open: '+(e.message||e),5000); }
+}
+function editRequestNo(id){
+  const r=orderReqs.find(x=>x.id===id); if(!r) return;
+  openModal(`<h2>✎ Order number</h2>
+    <div class="field-group"><label>Order number</label><input id="rq-no" value="${/^order request$/i.test(r.title||'')?'':esc(r.title)}" placeholder="e.g. 2012"></div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="rq-save" onclick="saveRequestNo('${id}')">Save</button></div>`);
+  setTimeout(()=>{ const i=$('rq-no'); if(i){ i.focus(); i.onkeydown=e=>{ if(e.key==='Enter') saveRequestNo(id); }; } },50);
+}
+async function saveRequestNo(id){
+  const v=$('rq-no').value.trim(); if(!v) return toast('Type the order number.');
+  const { error }=await sb.from('order_requests').update({title:v}).eq('id',id); if(error) return toast('Error: '+error.message,5000);
+  const r=orderReqs.find(x=>x.id===id); if(r) r.title=v; closeModal(); renderDashboard(); renderFolderPanel();
+  toast('Order number saved'); syncOrdersToFolder({silent:true});   // renames the saved file in the folder too
 }
 async function setRequestStatus(id,st){
   const { error }=await sb.from('order_requests').update({status:st, handled_at:new Date().toISOString()}).eq('id',id);
@@ -1930,10 +1946,14 @@ async function ordersFolderPerm(h, ask){
   if(p!=='granted' && ask){ try{ p=await h.requestPermission({mode:'readwrite'}); }catch(e){} }
   return p==='granted';
 }
+// <folder>/<Site>/Order 2012 - John - 2026-10-09.pdf   (+ "- APPROVED.pdf" for your marked-up copy)
 function orderFileBase(r){
   const t=prof(r.serviceman_id), when=new Date(r.created_at);
   const d=`${when.getFullYear()}-${String(when.getMonth()+1).padStart(2,'0')}-${String(when.getDate()).padStart(2,'0')}`;
-  return { dir:safeName(t.full_name||'Unknown'), name:`${safeName(r.title)} - ${safeName(r.site_name||'no site')} - ${d}` };
+  const raw=String(r.title||'').trim(), hasNo=raw && !/^order request$/i.test(raw);
+  const no=hasNo ? (/^order\b/i.test(raw)?raw:`Order ${raw}`) : `No order number ${String(when.getHours()).padStart(2,'0')}${String(when.getMinutes()).padStart(2,'0')}`;
+  const site=String(r.site_name||'No site').trim(), siteNice=site.replace(/\b\w/g,c=>c.toUpperCase());
+  return { dir:safeName(siteNice), name:`${safeName(no)} - ${safeName(firstName(t.full_name||'Unknown'))} - ${d}` };
 }
 async function fileExists(dir, name){ try{ await dir.getFileHandle(name); return true; }catch(e){ return false; } }
 async function writeFile(dir, name, blob){ const fh=await dir.getFileHandle(name,{create:true}); const w=await fh.createWritable(); await w.write(blob); await w.close(); }
@@ -1947,27 +1967,34 @@ async function syncOrdersToFolder({silent=true, list}={}){
   try{
     let index={}; try{ const f=await (await h.getFileHandle(ORDERS_INDEX)).getFile(); index=JSON.parse(await f.text())||{}; }catch(e){}
     const reqs=list || orderReqs.filter(r=>r.department==='sites');
+    const oldDirs=new Set();
     for(const r of reqs){
       const got=index[r.id]||{}, {dir,name}=orderFileBase(r);
-      const want=[];
-      if(!got.scan && r.pdf_path) want.push(['scan', `${name}.pdf`, r.pdf_path]);
+      const target={scan:`${dir}/${name}.pdf`, approved:`${dir}/${name} - APPROVED.pdf`};
       const j=r.job_id && jobs.find(x=>x.id===r.job_id);
-      if(!got.approved && j && j.pdf_path) want.push(['approved', `${name} - APPROVED.pdf`, j.pdf_path]);
+      const want=[];
+      if(got.scan!==target.scan && r.pdf_path) want.push(['scan', r.pdf_path]);
+      if(got.approved!==target.approved && j && j.pdf_path) want.push(['approved', j.pdf_path]);
       if(!want.length) continue;
       const sub=await h.getDirectoryHandle(dir,{create:true});
-      for(const [kind,fname,path] of want){
+      for(const [kind,path] of want){
+        const fname=target[kind].split('/').pop();
         try{
           if(!await fileExists(sub,fname)){
             const dl=await sb.storage.from(BUCKET).download(path); if(dl.error) throw dl.error;
             await writeFile(sub, fname, dl.data); saved++;
           }
-          got[kind]=`${dir}/${fname}`;
+          if(got[kind] && got[kind]!==target[kind]){   // saved before under the old layout → tidy it away
+            const [od,...rest]=got[kind].split('/'); try{ const oh=await h.getDirectoryHandle(od); await oh.removeEntry(rest.join('/')); oldDirs.add(od); }catch(e){}
+          }
+          got[kind]=target[kind];
         }catch(e){ failed++; }
       }
       got.order=r.title; got.man=prof(r.serviceman_id).full_name; got.site=r.site_name||''; got.sent=r.created_at;
       index[r.id]=got;
     }
     await writeFile(h, ORDERS_INDEX, new Blob([JSON.stringify(index,null,1)],{type:'application/json'}));
+    for(const od of oldDirs){ try{ const oh=await h.getDirectoryHandle(od); let empty=true; for await (const _ of oh.keys()){ empty=false; break; } if(empty) await h.removeEntry(od); }catch(e){} }   // remove emptied old folders
     ordersSyncAt=Date.now(); ordersLast={saved, failed, at:new Date()};
     if(saved && !silent) toast(`📁 ${saved} file${saved===1?'':'s'} saved to "${h.name}"`,4000);
     else if(saved) toast(`📁 ${saved} new order file${saved===1?'':'s'} saved to "${h.name}"`,3500);
