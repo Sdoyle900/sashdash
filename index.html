@@ -730,7 +730,7 @@ function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-08-1200';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-09-1300';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -873,8 +873,13 @@ async function initNotifications(){
   const bell=$('bell-btn');
   if(previewing){ bell.classList.add('hidden'); $('push-banner').classList.add('hidden'); return; }
   bell.classList.remove('hidden');
-  const sub = pushSupported ? await currentSub() : null;
+  let sub = pushSupported ? await currentSub() : null;
+  // allowed before but the phone lost its sign-up (e.g. after an app update) → quietly sign up again
+  if(!sub && pushSupported && Notification.permission==='granted' && localStorageSafe('pushWanted')==='yes'){
+    try{ const reg=await navigator.serviceWorker.ready; sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64ToBytes(VAPID_PUBLIC)}); }catch(e){ sub=null; }
+  }
   const on = !!sub && Notification.permission==='granted';
+  if(on) localStorageSafe('pushWanted','yes');
   bell.classList.toggle('on', on); bell.textContent = on ? '🔔' : '🔕';
   bell.title = on ? 'Notifications are ON for this device — click to turn off' : 'Turn on phone notifications';
   if(on){ saveSub(sub); }   // keep the server's copy up to date
@@ -903,6 +908,7 @@ async function toggleNotifications(){
   if(sub && Notification.permission==='granted'){
     const ok=await confirmBox({icon:'🔕', title:'Turn off notifications?', body:'This device will stop getting pings from SashDash. You can turn them back on any time with 🔔.', ok:'Turn off', okClass:'btn-danger'});
     if(!ok) return;
+    localStorageSafe('pushWanted','no');
     try{ await sb.from('push_subscriptions').delete().eq('endpoint',sub.endpoint); await sub.unsubscribe(); }catch(e){}
     toast('🔕 Notifications off for this device'); return initNotifications();
   }
@@ -914,7 +920,7 @@ async function toggleNotifications(){
     const reg=await navigator.serviceWorker.ready;
     const s2=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64ToBytes(VAPID_PUBLIC)});
     await saveSub(s2);
-    localStorageSafe('pushNudge','no');
+    localStorageSafe('pushNudge','no'); localStorageSafe('pushWanted','yes');
     toast('🔔 Notifications on — you\'ll get a ping for new jobs and messages',5000);
   }catch(e){ toast('Could not turn on notifications: '+(e.message||e),7000); }
   initNotifications();
