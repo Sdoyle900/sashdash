@@ -730,7 +730,7 @@ function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-09-1300';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-09-1305';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1630,6 +1630,7 @@ async function sendApproved(id){
     if(u.error) throw u.error;
     Object.assign(r, upd); pendingFiles=[]; closeModal(); await loadData(); renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0);
     toast(`✅ Approved order sent to ${first} — ${sname}`,4000);
+    if(r.department==='sites' && await getOrdersDir()) setTimeout(()=>syncOrdersToFolder({silent:true}),1200);   // save the approved copy now
   }catch(e){ btn.disabled=false; btn.textContent='⬆ Try again'; toast('Not sent: '+(e.message||e)+(/check|constraint/i.test(e.message||'')?' — run update-9 in Supabase':''),7000); }
 }
 // ⬇ Download all & clear: every order request into one folder (a sub-folder per man), then empty the list
@@ -1999,6 +2000,7 @@ async function saveToComputer(blob, filename){
 async function blobToDataUrl(b){ return await new Promise(r=>{ const f=new FileReader(); f.onload=()=>r(f.result); f.readAsDataURL(b); }); }
 
 // ── Orders folder: every order request saved into ONE folder on this computer, never twice ──
+let ordersSyncAgain=false;
 let ordersDirMem=null, ordersSyncBusy=false, ordersSyncAt=0, ordersNeedsPerm=false, ordersLast=null;
 const ORDERS_INDEX='_SashDash saved-orders list.json';   // how the app remembers what is already in the folder
 async function getOrdersDir(){ return ordersDirMem || (ordersDirMem = await kvGet('ordersDir')); }
@@ -2030,7 +2032,8 @@ async function fileExists(dir, name){ try{ await dir.getFileHandle(name); return
 async function writeFile(dir, name, blob){ const fh=await dir.getFileHandle(name,{create:true}); const w=await fh.createWritable(); await w.write(blob); await w.close(); }
 // silent = automatic run (no prompts); otherwise a click, so we may ask for permission
 async function syncOrdersToFolder({silent=true, list}={}){
-  if(ordersSyncBusy || !isAdmin || previewing) return {saved:0};
+  if(!isAdmin || previewing) return {saved:0};
+  if(ordersSyncBusy){ ordersSyncAgain=true; return {saved:0, busy:true}; }
   const h=await getOrdersDir(); if(!h) return {saved:0, none:true};
   if(!await ordersFolderPerm(h, !silent)){ if(!ordersNeedsPerm){ ordersNeedsPerm=true; renderFolderPanel(); } return {saved:0, perm:false}; }
   ordersNeedsPerm=false; ordersSyncBusy=true;
@@ -2079,14 +2082,18 @@ async function syncOrdersToFolder({silent=true, list}={}){
     else if(saved) toast(`📁 ${saved} new order file${saved===1?'':'s'} saved to "${h.name}"`,3500);
     else if(!silent) toast(failed?`⚠️ ${failed} file${failed===1?'':'s'} couldn't be saved — try again`:`📁 "${h.name}" is up to date — nothing new`,4000);
   }catch(e){ if(!silent) toast('Could not save to the folder: '+(e.message||e),6000); }
-  finally{ ordersSyncBusy=false; const el=$('ord-sync-info'); if(el) el.textContent=ordersSyncInfo(); }
+  finally{ ordersSyncBusy=false; const el=$('ord-sync-info'); if(el) el.textContent=ordersSyncInfo();
+    if(ordersSyncAgain){ ordersSyncAgain=false; setTimeout(()=>syncOrdersToFolder({silent:true}),500); } }
   return {saved, failed};
 }
 function ordersSyncInfo(){ return ordersLast ? `Last checked ${ordersLast.at.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})}${ordersLast.saved?` · ${ordersLast.saved} saved`:''}` : ''; }
 // runs by itself while the Sites dashboard is open (at most every 20 seconds)
+let ordersSyncTimer=null;
 function autoSyncOrders(){
-  if(!isAdmin || dept!=='sites' || previewing || Date.now()-ordersSyncAt<20000) return;
-  ordersSyncAt=Date.now(); setTimeout(()=>syncOrdersToFolder({silent:true}),300);
+  if(!isAdmin || dept!=='sites' || previewing) return;
+  const wait=Math.max(300, 20000-(Date.now()-ordersSyncAt));   // too soon after the last check → run it a little later, never skip
+  if(ordersSyncTimer) return;
+  ordersSyncTimer=setTimeout(()=>{ ordersSyncTimer=null; ordersSyncAt=Date.now(); syncOrdersToFolder({silent:true}); }, wait);
 }
 async function ordersFolderBar(){
   const el=$('ord-folder'); if(!el) return;
