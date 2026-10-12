@@ -366,6 +366,10 @@
     .order-req-btn{display:flex;align-items:center;gap:10px;width:100%;margin:16px 0 0;padding:14px 16px;border:2px solid #a5b4fc;background:#eef2ff;border-radius:14px;font-family:inherit;font-weight:800;font-size:17px;color:#3730a3;cursor:pointer;text-align:left}
     .order-req-btn span{font-size:26px} .order-req-btn small{display:block;font-weight:500;font-size:12px;color:#4f46e5;margin-left:auto;text-align:right}
     .order-req-btn:active{transform:scale(.99)}
+    .note-sheet{position:fixed;left:0;right:0;bottom:0;z-index:4000;background:#fff;border-top:3px solid #4f46e5;box-shadow:0 -10px 30px rgba(15,23,42,.25);padding:12px 14px calc(12px + env(safe-area-inset-bottom));border-radius:16px 16px 0 0}
+    .ns-head{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}.ns-head b{font-size:16px}.ns-head span{font-size:12px;color:#64748b}
+    .note-sheet textarea{width:100%;box-sizing:border-box;font-size:17px;font-family:inherit;border:2px solid #c7d2fe;border-radius:10px;padding:10px;resize:none;outline:none}.note-sheet textarea:focus{border-color:#4f46e5}
+    .ns-btns{display:flex;gap:8px;margin-top:10px;align-items:center}.ns-btns button{padding:10px 16px;font-size:15px}
     .my-orders{margin:10px 0 0;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden}
     .mo-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-weight:800;font-size:14px;color:#334155}.mo-head small{font-weight:600;color:#64748b;font-size:12px}
     .mo-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid #f1f5f9}.mo-row:first-of-type{border-top:0}.mo-row.go{cursor:pointer}.mo-row.go:active{background:#f8fafc}
@@ -736,7 +740,7 @@ function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-12-0835';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-12-1000';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1886,6 +1890,7 @@ function renderPortal(){
   html+=`<div class="site-head">
     <div style="flex:1;min-width:180px"><div class="site-name">${site.work_date?dayLong(site.work_date):esc(site.name)}</div>${meta?`<div class="site-meta">${meta}</div>`:''}</div>
     <div class="seg"><button class="${jobFilter==='open'?'on':''}" onclick="setFilter('open')">Open (${sJobs.filter(j=>!j.completed).length})</button><button class="${jobFilter==='done'?'on':''}" onclick="setFilter('done')">Done (${sJobs.filter(j=>j.completed).length})</button><button class="${jobFilter==='all'?'on':''}" onclick="setFilter('all')">All</button></div>
+    ${isOffice&&site.work_date&&sJobs.length?`<button class="btn-outline" onclick="printDay('${site.id}')" title="Print every job sheet for this day, in job-number order">🖨 Print day</button>`:''}
     ${isOffice?`<button class="btn-outline" onclick="openSiteModal('${site.id}')">✎ ${site.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1)}</button>${site.work_date?'':'<button class="btn-primary" onclick="openUploadModal()">⬆ Upload job</button>'}`:''}
   </div>`;
   // Private Calls day: numbered job boxes — Job 1, Job 2, Job 3… plus a drop box for the next one
@@ -1914,6 +1919,31 @@ function contactChips(j, small){
   if(j.customer_phone2 && (!small || !j.customer_phone)) c.push(`<a class="cc" href="${telHref(j.customer_phone2)}" onclick="event.stopPropagation()">📞 ${esc(j.customer_phone2)}</a>`);
   if(j.customer_email && !small) c.push(`<a class="cc" href="mailto:${esc(j.customer_email)}" onclick="event.stopPropagation()">✉️ ${esc(j.customer_email)}</a>`);
   return c.join('');
+}
+// 🖨 Print day: every job sheet for the day joined into one PDF, Job 1, Job 2, Job 3… then the print window
+async function printDay(siteId){
+  const day=sites.find(x=>x.id===siteId); if(!day) return;
+  const dj=jobs.filter(j=>j.site_id===siteId).sort((a,b)=>a.created_at<b.created_at?-1:1);
+  const list=dj.map((j,i)=>({j, n:jobNo(j)||i+1})).sort((a,b)=>a.n-b.n);
+  if(!list.length) return toast('No jobs on this day.');
+  try{
+    const out=await PDFLib.PDFDocument.create(); let missing=[];
+    for(const [i,{j,n}] of list.entries()){
+      toast(`Preparing print… job ${i+1} of ${list.length}`,60000);
+      const path=j.marked_path||j.pdf_path;   // the man's marked-up copy if there is one
+      const dl=await sb.storage.from(BUCKET).download(path);
+      if(dl.error){ missing.push(n); continue; }
+      try{ const src=await PDFLib.PDFDocument.load(await dl.data.arrayBuffer(),{ignoreEncryption:true}); (await out.copyPages(src,src.getPageIndices())).forEach(p=>out.addPage(p)); }
+      catch(e){ missing.push(n); }
+    }
+    if(!out.getPageCount()) return toast('Could not load the job sheets.',5000);
+    const url=URL.createObjectURL(new Blob([await out.save()],{type:'application/pdf'}));
+    toast(missing.length?`⚠️ Job ${missing.join(', ')} couldn't be loaded — printing the rest`:`🖨 ${list.length} job${list.length===1?'':'s'} ready to print`,5000);
+    let fr=document.getElementById('print-frame'); if(fr) fr.remove();
+    fr=document.createElement('iframe'); fr.id='print-frame'; fr.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0';
+    fr.onload=()=>setTimeout(()=>{ try{ fr.contentWindow.focus(); fr.contentWindow.print(); }catch(e){ window.open(url,'_blank'); } },400);
+    fr.src=url; document.body.appendChild(fr);
+  }catch(e){ toast('Print failed: '+(e.message||e),6000); }
 }
 function jobNo(j){ const m=/^job\s*(\d+)/i.exec(j.title||''); return m?+m[1]:null; }
 function nextJobNo(siteId){ const sj=jobs.filter(j=>j.site_id===siteId); return Math.max(sj.length, ...sj.map(j=>jobNo(j)||0))+1; }
@@ -2765,10 +2795,23 @@ async function deleteJob(id){ if(blockPreview()) return;
 async function downloadFile(which){
   $('jv-menu').classList.add('hidden');
   const path= which==='marked'?job.marked_path:job.pdf_path; if(!path) return;
+  const name=(job.title.replace(/[^\w\- ]+/g,'').trim()||'job')+(which==='marked'?' (marked)':'')+'.pdf';
+  const ua=navigator.userAgent, isAndroid=/Android/i.test(ua), isApple=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  if(isAndroid){   // Android: a real download link → goes to the phone's Downloads (works inside the home-screen app)
+    const { data, error }=await sb.storage.from(BUCKET).createSignedUrl(path, 300, {download:name});
+    if(error) return toast('Error: '+error.message,5000);
+    toast('⬇️ Downloading — check your notifications / Downloads',4000);
+    location.href=data.signedUrl; return;
+  }
   const { data, error }=await sb.storage.from(BUCKET).download(path);
   if(error) return toast('Error: '+error.message,5000);
-  const a=document.createElement('a'); a.href=URL.createObjectURL(data);
-  a.download=(job.title.replace(/[^\w\- ]+/g,'').trim()||'job')+(which==='marked'?' (marked)':'')+'.pdf';
+  if(isApple){   // iPhone: Share sheet → Save to Files, WhatsApp, Mail…
+    const file=new File([data], name, {type:'application/pdf'});
+    try{ if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:name}); return; } }
+    catch(e){ if(e && e.name==='AbortError') return; }
+    const u=await sb.storage.from(BUCKET).createSignedUrl(path, 300); if(!u.error){ location.href=u.data.signedUrl; return; }
+  }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(data); a.download=name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
 }
 async function refreshOpenJobMarkup(){
@@ -2870,7 +2913,36 @@ function openTextEditor(v, s, pt){
   el.addEventListener('blur',()=>setTimeout(()=>{ if(textEd&&textEd.el===el) commitTextEditor(); },120));
   setTimeout(()=>{ grow(); el.focus(); },30);
 }
+// Phone typing panel for notes — a real text field the man taps, so the keyboard always opens (Android + iPhone)
+let noteSheet=null;
+function openNoteSheet(v, s, pt){
+  closeNoteSheet();
+  const fs=s?s.fs:defaultFontSize(v), c=s?s.c:colour;
+  if(s){ s._hidden=true; drawInk(v); }
+  const el=document.createElement('div'); el.className='note-sheet';
+  el.innerHTML=`<div class="ns-head"><b>${s?'✎ Change note':'📝 New note'}</b><span>${s?'Edit the text, or delete the note':'It goes where you tapped'}</span></div>
+    <textarea id="ns-text" rows="3" placeholder="Type your note…" enterkeyhint="done"></textarea>
+    <div class="ns-btns">${s?'<button type="button" class="btn-danger" id="ns-del">🗑 Delete</button>':''}<span style="flex:1"></span>
+      <button type="button" class="btn-outline" id="ns-cancel">Cancel</button><button type="button" class="btn-primary" id="ns-ok">✓ ${s?'Save':'Add note'}</button></div>`;
+  document.body.appendChild(el);
+  const ta=el.querySelector('#ns-text'); ta.value=s?s.text:'';
+  noteSheet={el,v,s,pt,fs,c};
+  el.querySelector('#ns-ok').onclick=()=>closeNoteSheet(false);
+  el.querySelector('#ns-cancel').onclick=()=>closeNoteSheet(true);
+  if(s) el.querySelector('#ns-del').onclick=()=>{ ta.value=''; closeNoteSheet(false); };
+  ta.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); closeNoteSheet(false); } });
+  try{ ta.focus({preventScroll:true}); }catch(e){ ta.focus(); }   // still inside the tap → keyboard opens; if not, one tap on the field does it
+}
+function closeNoteSheet(cancel){
+  if(!noteSheet) return; const {el,v,s,pt,fs,c}=noteSheet; noteSheet=null;
+  const val=(el.querySelector('#ns-text').value||'').replace(/\s+$/,''); el.remove();
+  if(s){ delete s._hidden;
+    if(!cancel){ if(!val){ strokes=strokes.filter(x=>x!==s); setDirty(true); } else if(val!==s.text){ s.text=val; setDirty(true); } } }
+  else if(!cancel && val){ strokes.push({p:v.idx, t:'text', c, fs, pts:[pt], text:val}); setDirty(true); }
+  drawInk(v); updateSaveBtn();
+}
 function commitTextEditor(cancel){
+  if(noteSheet) closeNoteSheet(false);
   if(!textEd) return; const {el,v,s,pt,fs,c}=textEd; textEd=null;
   const val=el.value.replace(/\s+$/,''); el.remove();
   if(s){ delete s._hidden;
@@ -2889,7 +2961,7 @@ function attachInk(v){
     if(tool==='text'){
       commitTextEditor();
       const r=v.ink.getBoundingClientRect(), s=hitText(v,e.clientX-r.left,e.clientY-r.top);
-      cur={text:true, s, start:p, orig:s?[...s.pts[0]]:null, moved:false}; return;
+      cur={text:true, s, start:p, orig:s?[...s.pts[0]]:null, moved:false, touch:e.pointerType!=='mouse'}; return;
     }
     if(tool==='erase'){ eraseAt(v,e); cur={erase:true}; return; }
     cur={p:v.idx, t:tool, c:colour, w: tool==='hl'?10:(tool==='pen'?1.8:2.4), pts:[p, p]};
@@ -2921,7 +2993,8 @@ function attachInk(v){
     if(cur.text){
       const c=cur; cur=null;
       if(c.moved){ setDirty(true); drawInk(v); }
-      else setTimeout(()=>openTextEditor(v, c.s, c.start), 0);   // tap: edit existing note or start a new one
+      else if(c.touch) openNoteSheet(v, c.s, c.start);          // phones: typing panel at the bottom (keyboard always opens)
+      else setTimeout(()=>openTextEditor(v, c.s, c.start), 0);   // computer: type right on the sheet
       setToolQuiet('none');   // one note per tap of the Text button — stops stray boxes when scrolling on a phone
       return;
     }
