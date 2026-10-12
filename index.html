@@ -366,6 +366,12 @@
     .order-req-btn{display:flex;align-items:center;gap:10px;width:100%;margin:16px 0 0;padding:14px 16px;border:2px solid #a5b4fc;background:#eef2ff;border-radius:14px;font-family:inherit;font-weight:800;font-size:17px;color:#3730a3;cursor:pointer;text-align:left}
     .order-req-btn span{font-size:26px} .order-req-btn small{display:block;font-weight:500;font-size:12px;color:#4f46e5;margin-left:auto;text-align:right}
     .order-req-btn:active{transform:scale(.99)}
+    .my-orders{margin:10px 0 0;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden}
+    .mo-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-weight:800;font-size:14px;color:#334155}.mo-head small{font-weight:600;color:#64748b;font-size:12px}
+    .mo-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid #f1f5f9}.mo-row:first-of-type{border-top:0}.mo-row.go{cursor:pointer}.mo-row.go:active{background:#f8fafc}
+    .mo-main{flex:1;min-width:0}.mo-main b{display:block;font-size:15px}.mo-main small{color:#64748b;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+    .mo-tag{font-size:12px;font-weight:800;border-radius:999px;padding:4px 10px;white-space:nowrap}.mo-tag.new{background:#e0e7ff;color:#3730a3}.mo-tag.wait{background:#fef3c7;color:#92400e}.mo-tag.ok{background:#dcfce7;color:#166534}
+    .mo-arrow{color:#94a3b8;font-size:20px}.mo-more{width:100%;border:0;border-top:1px solid #f1f5f9;background:#fff;padding:9px;font-weight:700;color:#4f46e5;font-family:inherit;cursor:pointer}
     .or-pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-bottom:10px}
     .or-page{position:relative;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:#f8fafc;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center}
     .or-page img{width:100%;height:100%;object-fit:cover}
@@ -730,7 +736,7 @@ function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-09-1310';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-12-0835';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1523,7 +1529,7 @@ async function saveAddOrder(){
   try{
     const bytes=await buildUploadPdf(pendingFiles);
     let pages=1; try{ pages=(await PDFLib.PDFDocument.load(bytes,{ignoreEncryption:true})).getPageCount(); }catch(e){}
-    const id=uuid(), path=`${filePrefix('sites',manId)}/requests/${id}.pdf`;
+    const id=uuid(), path=`${filePrefix('sites',manId)}/requests/office-${id}.pdf`;
     const up=await sb.storage.from(BUCKET).upload(path,new Blob([bytes],{type:'application/pdf'}),{contentType:'application/pdf'}); if(up.error) throw up.error;
     const row={id, serviceman_id:manId, department:'sites', site_id:sid, site_name:st?st.name:null, title:no, note, pdf_path:path, pdf_bytes:bytes.length, pages, status:$('ao-sent').checked?'sent':'new'};
     if(row.status==='sent') row.handled_at=new Date().toISOString();
@@ -1535,6 +1541,24 @@ async function saveAddOrder(){
   }catch(e){ btn.disabled=false; btn.textContent='➕ Try again'; toast('Not added: '+(e.message||e),6000); }
 }
 
+// Men: status of the orders HE sent in that aren't approved yet — with the office / sent for approval
+let myOrdersAll=false;
+function myOrdersBar(){
+  const keep=3*86400000, now=Date.now();
+  const mine=orderReqs.filter(r=>r.serviceman_id===me.id && r.department==='sites' && !String(r.pdf_path||'').includes('/requests/office-')
+    && reqStatus(r)!=='approved')   // once approved it leaves this bar — it's in his site tab like any job
+    .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  if(!mine.length) return '';
+  const pending=mine.filter(r=>reqStatus(r)!=='approved').length;
+  const show=myOrdersAll?mine:mine.slice(0,3);
+  const row=r=>{ const st=reqStatus(r), no=/^order\b/i.test(r.title||'')?r.title:`Order ${r.title||''}`;
+    const tag= st==='approved' ? '<span class="mo-tag ok">✅ Approved</span>' : st==='sent' ? '<span class="mo-tag wait">📤 Sent for approval</span>' : '<span class="mo-tag new">⏳ With the office</span>';
+    const go = st==='approved' && r.job_id && jobs.some(j=>j.id===r.job_id) ? `onclick="openJob('${r.job_id}')" role="button"` : '';
+    return `<div class="mo-row ${go?'go':''}" ${go}><div class="mo-main"><b>${esc(no)}</b><small>${esc(r.site_name||'')}${r.site_name?' · ':''}sent ${fmtWhen(r.created_at)}</small></div>${tag}${go?'<span class="mo-arrow">›</span>':''}</div>`; };
+  return `<div class="my-orders"><div class="mo-head"><span>📦 My orders</span><small>${pending} pending</small></div>
+    ${show.map(row).join('')}
+    ${mine.length>3?`<button class="mo-more" onclick="myOrdersAll=!myOrdersAll;renderPortal()">${myOrdersAll?'Show less':`Show all ${mine.length}`}</button>`:''}</div>`;
+}
 // office: the Order requests folder
 function reqStatus(r){ return r.status==='ordered' ? 'approved' : (r.status||'new'); }
 function reqTag(r){ const st=reqStatus(r);
@@ -1841,7 +1865,7 @@ function renderPortal(){
     </div>`;
     if(calOpen()) html+=monthCalendar(mySites, tJobs, site);
   }
-  if(!isOffice && dept==='sites') html+=`<button class="order-req-btn" onclick="openOrderRequest()"><span>📋</span>Order request<small>Scan an order and send it to the office</small></button>`;
+  if(!isOffice && dept==='sites') html+=`<button class="order-req-btn" onclick="openOrderRequest()"><span>📋</span>Order request<small>Scan an order and send it to the office</small></button>`+myOrdersBar();
   html+=`<div class="site-label">${dept==='calls'?'Days':D.many}</div><div class="site-tabs">${visible.map(s=>{const sj=tJobs.filter(j=>j.site_id===s.id);const o=sj.filter(j=>!j.completed).length;const u=sj.some(unreadForMe);
       return `<button class="site-tab ${s.id===currentSiteId?'active':''}" onclick="setSite('${s.id}')" title="${o} open job${o===1?'':'s'}">${u?'<span class="dot"></span>':''}${s.work_date?`<span class="day-tab"><b>${parseYmd(s.work_date).toLocaleDateString('en-IE',{weekday:'short'})}</b><small>${parseYmd(s.work_date).toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</small></span>${s.work_date===todayYmd()?'<span class="today">TODAY</span>':''}`:`<span class="pin">${D.pin}</span>${esc(s.name)}`} <span class="cnt">${o}</span></button>`;}).join('')}
     ${isOffice&&dept!=='calls'?`<button class="site-tab add" onclick="openSiteModal()">＋ New ${D.one}</button>`:''}</div>`;
