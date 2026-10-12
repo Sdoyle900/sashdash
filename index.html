@@ -159,6 +159,7 @@
     .dept-btn.on .dc{background:rgba(255,255,255,.22);color:#fff}
     .dept-btn .dot{position:absolute;top:-4px;right:-4px;width:12px;height:12px}
     .tag.amber{background:#fef3c7;color:#92400e}
+    .tag.blue{background:#dbeafe;color:#1e40af}
     .s-day{background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;font-weight:700;font-size:13px;border-radius:8px;padding:5px 10px;cursor:pointer;white-space:nowrap;font-family:inherit}.s-day:hover{background:#ffedd5;border-color:#ea580c}
     .s-day mark{background:#fde68a}
     @keyframes jobflash{0%,100%{box-shadow:0 0 0 0 rgba(234,88,12,0)}30%,70%{box-shadow:0 0 0 5px rgba(234,88,12,.55)}}.flash{animation:jobflash 1.3s ease 2}
@@ -340,7 +341,7 @@
     .done-btn .box{width:18px;height:18px;border-radius:5px;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
     .done-btn.on{background:var(--green);border-color:var(--green);color:#fff}
     .oc-group{display:flex;gap:6px;flex:none}
-    .done-btn.oc-rebook.on{background:#d97706;border-color:#d97706}
+    .done-btn.oc-rebook.on{background:#2563eb;border-color:#2563eb}
     .done-btn.oc-nothome.on{background:var(--red);border-color:var(--red)}
     .folders{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:-6px 0 14px}
     .folder-box{display:flex;align-items:center;gap:12px;text-align:left;border:2px solid;border-radius:14px;padding:14px 16px;cursor:pointer;font-family:inherit;background:#fff;transition:transform .12s,box-shadow .12s}
@@ -361,6 +362,7 @@
     @media (max-width:720px){ .folder-panel .s-table th:nth-child(4),.folder-panel .s-table td:nth-child(4){display:table-cell} }
     @media (max-width:720px){ .folders{grid-template-columns:1fr} .folder-panel .s-table th:nth-child(2),.folder-panel .s-table td:nth-child(2){display:none} .fp-act{white-space:normal} .fp-act button{margin:2px 0;width:100%} }
     .folders.three{grid-template-columns:1fr 1fr 1fr} .folders.one{grid-template-columns:minmax(0,480px)}
+    .f-rb{border-color:#93c5fd} .f-rb .f-n{background:#2563eb} .f-rb.open{background:#eff6ff}
     .f-blue{border-color:#a5b4fc} .f-blue .f-n{background:var(--indigo)} .f-blue.open{background:#eef2ff}
     .rq-done td{opacity:.6}
     .order-req-btn{display:flex;align-items:center;gap:10px;width:100%;margin:16px 0 0;padding:14px 16px;border:2px solid #a5b4fc;background:#eef2ff;border-radius:14px;font-family:inherit;font-weight:800;font-size:17px;color:#3730a3;cursor:pointer;text-align:left}
@@ -405,7 +407,9 @@
     .sc-modes button.on{background:#fff;color:var(--navy)}
     body.scanning{overflow:hidden}
     @media (max-width:720px){ .folders.three{grid-template-columns:1fr} .order-req-btn small{display:none} }
-    .slot.oc-rebook{background:#fffbeb;border-color:#fcd34d}
+    .slot.oc-rebook{background:#eff6ff;border-color:#93c5fd}
+    .job-card.oc-rebook{background:#eff6ff;border-color:#93c5fd}.job-card.oc-not_home{background:#fef2f2;border-color:#fca5a5}.job-card.done{background:#f0fdf4;border-color:#bbf7d0;opacity:1}
+    .seg-st{flex-wrap:wrap}.seg-st .f-not_home.on{background:#fee2e2;color:#991b1b}.seg-st .f-rebook.on{background:#dbeafe;color:#1e40af}.seg-st .f-done.on{background:#dcfce7;color:#166534}
     .slot.oc-not_home{background:#fef2f2;border-color:#fca5a5}
     .tag.amber{background:#fef3c7;color:#92400e}
     .menu-wrap{position:relative}
@@ -702,7 +706,7 @@ const DEPT = {
   calls:{label:'Private Calls', icon:'🏠', one:'customer', many:'Customers', pin:'🏠'}
 };
 let profiles = [], sites = [], jobs = [], orderReqs = [];
-let currentTechId = null, currentSiteId = null, jobFilter = 'open', calWeek = null;
+let currentTechId = null, currentSiteId = null, jobFilter = 'all', calWeek = null;
 let job = null;                       // the open job
 let origBytes = null, pdfDoc = null, pageViews = [];
 let strokes = [], dirty = false, marking = false, tool = 'line', colour = '#e11d48';
@@ -740,7 +744,7 @@ function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-12-1000';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-12-1145';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -815,7 +819,7 @@ async function signOut(){
 function applyIdentity(p){
   me=p; isAdmin = p.role==='admin'; isCallsOffice = p.role==='service_office'; isOffice = isAdmin||isCallsOffice;
   dept = (isCallsOffice || realMe.role==='service_office') ? 'calls' : (p.role==='serviceman' && p.on_sites===false ? 'calls' : 'sites');
-  currentTechId=null; currentSiteId=null; calWeek=null; jobFilter='open';
+  currentTechId=null; currentSiteId=null; calWeek=null; jobFilter='all';
   if(typeof searchQ!=='undefined'){ searchQ.sites=''; searchQ.calls=''; const si=$('dash-search'); if(si) si.value=''; }
   $('user-name').textContent = realMe.full_name || '';
   $('role-badge').classList.toggle('hidden', !(realMe.role!=='serviceman')); $('role-badge').textContent = realMe.role==='service_office'?'SERVICE DEPT':'OFFICE';
@@ -1033,7 +1037,7 @@ function renderDeptBar(){
 function setDept(d){
   if(job){ if(dirty && !confirm('You have unsaved mark-up on this sheet. Leave without saving?')) return; dirty=false; closeJob(); }
   const changed=d!==dept;
-  dept=d; currentSiteId=null; jobFilter='open'; if(changed) calWeek=null;
+  dept=d; currentSiteId=null; jobFilter='all'; if(changed) calWeek=null;
   renderDeptBar();
   if(isOffice) showDashboard();                 // Sites / Private Calls button = that department's main page
   else openPortal(me.id);
@@ -1044,7 +1048,9 @@ function setDept(d){
 function renderDashboard(){
   autoSyncOrders();
   const allJobs=jobs, jobs_=dJobs(), sites_=dSites();
-  return renderDashboardFor(jobs_, sites_, allJobs);
+  const r=renderDashboardFor(jobs_, sites_, allJobs);
+  if(openFolder && $('folder-panel')) setTimeout(renderFolderPanel,0);   // an open box is filled in again after every refresh
+  return r;
 }
 function renderDashboardFor(jobs, sites, allJobs){
   const D=DEPT[dept];
@@ -1107,12 +1113,12 @@ function folderBoxes(list){
   const box=(key,icon,label,arr,cls)=>`<button class="folder-box ${cls} ${openFolder===key?'open':''} ${arr.length?'':'empty'}" onclick="toggleFolder('${key}')">
       <span class="f-ico">${icon}</span><span class="f-txt"><b>${label}</b><small>${arr.length?`${arr.length} job${arr.length===1?'':'s'} to re-book`:'Nothing here'}</small></span>
       <span class="f-n">${arr.length}</span><span class="f-arrow">${openFolder===key?'▴':'▾'}</span></button>`;
-  return `<div class="folders">${box('not_home','🚪','Customers not home',nh,'f-red')}${box('rebook','🔁','Re-book unfinished',rb,'f-amber')}</div>
+  return `<div class="folders">${box('not_home','🚪','Customers not home',nh,'f-red')}${box('rebook','🔁','Re-book unfinished',rb,'f-rb')}</div>
     ${openFolder?`<div class="folder-panel" id="folder-panel"><div class="loading">Loading…</div></div>`:''}`;
 }
 function toggleFolder(k){ openFolder = openFolder===k ? null : k; renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0); }
 async function renderFolderPanel(){
-  const el=$('folder-panel'); if(!el||!openFolder) return;
+  let el=$('folder-panel'); if(!el||!openFolder) return;
   if(openFolder==='requests') return renderRequestsPanel(el);
   const key=openFolder, list=dJobs().filter(j=>jobOutcome(j)===key)
     .sort((a,b)=>new Date(b.last_activity_at)-new Date(a.last_activity_at));
@@ -1123,6 +1129,7 @@ async function renderFolderPanel(){
     for(const c of (data||[])){ if(/^(🔁|🚪)/.test(c.body||'')) notes[c.job_id]={note:(c.body.split(' — ').slice(key==='rebook'?2:1).join(' — ')), at:c.created_at}; }
   }
   if(openFolder!==key || !$('folder-panel')) return;
+  el=$('folder-panel');   // the page may have refreshed while the notes loaded
   el.innerHTML = `<div class="fp-head">${key==='not_home'?'🚪 Customers not home':'🔁 Re-book unfinished'} <span>— reschedule to put a job back in a day; it then leaves this folder</span></div>
     <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Job</th><th>Service man</th><th>Was booked</th><th>Note from site</th><th></th></tr></thead><tbody>
     ${list.map(j=>{ const st=sites.find(x=>x.id===j.site_id)||{}, t=prof(j.serviceman_id), n=notes[j.id]||{};
@@ -1885,11 +1892,14 @@ function renderPortal(){
   }
 
   const sJobs=tJobs.filter(j=>j.site_id===site.id);
-  const shown=sJobs.filter(j=>jobFilter==='all'||(jobFilter==='open'?!j.completed:j.completed));
+  const stOf=j=> jobOutcome(j) || (j.completed?'done':'open');     // open · done · not_home · rebook
+  const shown=sJobs.filter(j=>jobFilter==='all'||stOf(j)===jobFilter);
+  const cnt=k=>sJobs.filter(j=>stOf(j)===k).length;
   const meta=[site.address, site.contact?('Contact: '+site.contact):''].filter(Boolean).map(esc).join(' · ');
   html+=`<div class="site-head">
     <div style="flex:1;min-width:180px"><div class="site-name">${site.work_date?dayLong(site.work_date):esc(site.name)}</div>${meta?`<div class="site-meta">${meta}</div>`:''}</div>
-    <div class="seg"><button class="${jobFilter==='open'?'on':''}" onclick="setFilter('open')">Open (${sJobs.filter(j=>!j.completed).length})</button><button class="${jobFilter==='done'?'on':''}" onclick="setFilter('done')">Done (${sJobs.filter(j=>j.completed).length})</button><button class="${jobFilter==='all'?'on':''}" onclick="setFilter('all')">All</button></div>
+    <div class="seg seg-st">${[['all','All',sJobs.length],['open','Open',cnt('open')],['done','Done',cnt('done')],['not_home','Not home',cnt('not_home')],['rebook','Re-book',cnt('rebook')]]
+      .filter(([k,,n])=>k==='all'||k==='open'||k==='done'||n).map(([k,l,n])=>`<button class="${jobFilter===k?'on':''} f-${k}" onclick="setFilter('${k}')">${l} (${n})</button>`).join('')}</div>
     ${isOffice&&site.work_date&&sJobs.length?`<button class="btn-outline" onclick="printDay('${site.id}')" title="Print every job sheet for this day, in job-number order">🖨 Print day</button>`:''}
     ${isOffice?`<button class="btn-outline" onclick="openSiteModal('${site.id}')">✎ ${site.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1)}</button>${site.work_date?'':'<button class="btn-primary" onclick="openUploadModal()">⬆ Upload job</button>'}`:''}
   </div>`;
@@ -1897,13 +1907,13 @@ function renderPortal(){
   if(site.work_date){
     const ordered=[...sJobs].sort((a,b)=>a.created_at<b.created_at?-1:1);
     const num=new Map(ordered.map((j,i)=>[j.id, jobNo(j)||i+1]));
-    const list=ordered.filter(j=>shown.includes(j));
+    const list=ordered.filter(j=>shown.includes(j)).sort((a,b)=>num.get(a.id)-num.get(b.id));   // always Job 1, 2, 3…
     const next=nextJobNo(site.id);
     html+=`<div class="slot-grid">${list.map(j=>slotCard(j,num.get(j.id))).join('')}
-      ${isOffice&&jobFilter!=='done'?`<div class="slot-new" id="slot-new" role="button" tabindex="0" onclick="openSlotModal()">
+      ${isOffice&&(jobFilter==='all'||jobFilter==='open')?`<div class="slot-new" id="slot-new" role="button" tabindex="0" onclick="openSlotModal()">
         <span class="slot-no">JOB ${next}</span><span class="slot-plus">＋</span>
         <span class="slot-hint">Click to add job ${next}<br>or drag the PDF here</span></div>`:''}
-      ${!list.length&&!(isOffice&&jobFilter!=='done')?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>No jobs for this day${jobFilter==='done'?' are done yet':' yet'}.</div>`:''}
+      ${!list.length&&!(isOffice&&(jobFilter==='all'||jobFilter==='open'))?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>${jobFilter==='all'?'No jobs for this day yet.':'No jobs with this status on this day.'}</div>`:''}
     </div>`;
     $('view-portal').innerHTML=html; attachSlotDrop(); return;
   }
@@ -2006,7 +2016,7 @@ async function slotUpload(n){ if(blockPreview()) return;
 }
 function jobCard(j){
   const u=unreadForMe(j), n=msgCount(j);
-  return `<div class="job-card ${u?'unread':''} ${j.completed?'done':''}" data-job="${j.id}" onclick="openJob('${j.id}')">
+  return `<div class="job-card ${u?'unread':''} ${j.completed?'done':''} oc-${jobOutcome(j)||'none'}" data-job="${j.id}" onclick="openJob('${j.id}')">
     <div class="tick ${j.completed?'on':''}">${j.completed?'✓':''}</div>
     <div style="flex:1;min-width:0">
       <div class="job-title">${esc(j.title)}</div>
@@ -2574,7 +2584,7 @@ async function uploadJob(){
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Uploading…';
   try{
     await doUpload({files:pendingFiles, title, ref:$('m-ref').value.trim(), note:$('m-notes').value.trim()});
-    closeModal(); jobFilter='open'; await loadData(); renderPortal(); toast(`Sent to ${firstName(prof(currentTechId).full_name)} ✓`);
+    closeModal(); await loadData(); renderPortal(); toast(`Sent to ${firstName(prof(currentTechId).full_name)} ✓`);
   }catch(e){ btn.disabled=false; btn.textContent='⬆ Try again'; toast('Upload failed: '+(e.message||e),6000); }
 }
 
@@ -2727,7 +2737,7 @@ function setJvTab(t){
 function toggleMenu(e){ e.stopPropagation(); $('jv-menu').classList.toggle('hidden'); }
 
 // ── Job outcome: All done / Re-book unfinished / Customer not home ──
-const OUTCOME={ done:{label:'All done',tag:'green',icon:'✅'}, rebook:{label:'Re-book',tag:'amber',icon:'🔁'}, not_home:{label:'Not home',tag:'red',icon:'🚪'} };
+const OUTCOME={ done:{label:'All done',tag:'green',icon:'✅'}, rebook:{label:'Re-book',tag:'blue',icon:'🔁'}, not_home:{label:'Not home',tag:'red',icon:'🚪'} };
 function jobOutcome(j){ return j.outcome || (j.completed?'done':null); }
 function outcomeTag(j){ const o=jobOutcome(j); return o?`<span class="tag ${OUTCOME[o].tag}">${OUTCOME[o].icon} ${OUTCOME[o].label}</span>`:''; }
 function outcomeText(j){ const o=jobOutcome(j); return o==='done'?'All done':o==='rebook'?'Re-book — unfinished':o==='not_home'?'Customer not home':'Open'; }
