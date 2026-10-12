@@ -170,6 +170,8 @@
     .rq-edit{border:0;background:none;color:#64748b;cursor:pointer;font-size:13px;padding:0 4px}.rq-edit:hover{color:#4f46e5}.rq-nono{color:#b91c1c;font-style:italic;font-weight:600}
     .rq-btns{display:flex;gap:8px;flex-wrap:wrap}.rq-btns .btn-outline{padding:8px 14px;font-size:13px}
     .btn-amber{background:#d97706!important;border-color:#d97706!important}
+    .slot[draggable=true]{cursor:grab}.slot.dragging{opacity:.35}
+    .slot.drop-before{box-shadow:-6px 0 0 0 #4f46e5}.slot.drop-after{box-shadow:6px 0 0 0 #4f46e5}
     .sf-wide{grid-column:1/-1}
     .slot:has(.slot-actions) .slot-cc{margin-bottom:34px}
     .cc{display:inline-flex;align-items:center;gap:4px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap}.cc:hover{background:#d1fae5}
@@ -744,7 +746,7 @@ function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-12-1145';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-12-1250';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1915,7 +1917,7 @@ function renderPortal(){
         <span class="slot-hint">Click to add job ${next}<br>or drag the PDF here</span></div>`:''}
       ${!list.length&&!(isOffice&&(jobFilter==='all'||jobFilter==='open'))?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>${jobFilter==='all'?'No jobs for this day yet.':'No jobs with this status on this day.'}</div>`:''}
     </div>`;
-    $('view-portal').innerHTML=html; attachSlotDrop(); return;
+    $('view-portal').innerHTML=html; attachSlotDrop(); if(isOffice && !previewing && jobFilter==='all') attachSlotReorder(site.id); return;
   }
   html+= shown.length
     ? `<div class="job-list">${shown.map(jobCard).join('')}</div>`
@@ -1968,12 +1970,48 @@ function slotCard(j,n){
     ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button><button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
 }
+// ── Drag a job box to change the order: Job 8 dropped after Job 3 becomes Job 4, the rest move up one ──
+let dragJobId=null;
+function attachSlotReorder(siteId){
+  const grid=document.querySelector('.slot-grid'); if(!grid) return;
+  const cards=[...grid.querySelectorAll('.slot[data-job]')]; if(cards.length<2) return;
+  const clear=()=>cards.forEach(c=>c.classList.remove('drop-before','drop-after','dragging'));
+  cards.forEach(c=>{
+    c.setAttribute('draggable','true'); c.title='Drag to change the order';
+    c.addEventListener('dragstart',e=>{ dragJobId=c.dataset.job; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/sashdash-job',dragJobId); setTimeout(()=>c.classList.add('dragging'),0); });
+    c.addEventListener('dragend',()=>{ dragJobId=null; clear(); });
+    c.addEventListener('dragover',e=>{ if(!dragJobId || c.dataset.job===dragJobId) return; e.preventDefault(); e.dataTransfer.dropEffect='move';
+      const r=c.getBoundingClientRect(), after=e.clientX>r.left+r.width/2; cards.forEach(x=>{ if(x!==c) x.classList.remove('drop-before','drop-after'); });
+      c.classList.toggle('drop-after',after); c.classList.toggle('drop-before',!after); });
+    c.addEventListener('dragleave',()=>c.classList.remove('drop-before','drop-after'));
+    c.addEventListener('drop',e=>{ if(!dragJobId) return; e.preventDefault(); e.stopPropagation();
+      const after=c.classList.contains('drop-after'), moved=dragJobId, target=c.dataset.job; clear(); dragJobId=null;
+      if(moved!==target) reorderDayJobs(siteId, moved, target, after); });
+  });
+}
+async function reorderDayJobs(siteId, movedId, targetId, after){
+  const dj=jobs.filter(j=>j.site_id===siteId).sort((a,b)=>a.created_at<b.created_at?-1:1);
+  const num=new Map(dj.map((j,i)=>[j.id, jobNo(j)||i+1]));
+  const order=dj.slice().sort((a,b)=>num.get(a.id)-num.get(b.id)).map(j=>j.id).filter(id=>id!==movedId);
+  let at=order.indexOf(targetId); if(after) at++;
+  order.splice(at,0,movedId);
+  const rest=t=>String(t||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'').trim();
+  const changes=[];
+  order.forEach((id,i)=>{ const j=jobs.find(x=>x.id===id); const nt=`Job ${i+1}${rest(j.title)?' – '+rest(j.title):''}`; if(nt!==j.title) changes.push({j, old:j.title, nt}); });
+  if(!changes.length) return;
+  changes.forEach(c=>c.j.title=c.nt); renderPortal();   // show the new order straight away
+  const m=jobs.find(x=>x.id===movedId);
+  try{
+    for(const c of changes){ const { error }=await sb.from('jobs').update({title:c.nt}).eq('id',c.j.id); if(error) throw error; }
+    toast(`↕ Moved — now ${m.title.split(' – ')[0]}; ${changes.length} job${changes.length===1?'':'s'} renumbered`,3500);
+  }catch(e){ changes.forEach(c=>c.j.title=c.old); renderPortal(); toast('Could not change the order: '+(e.message||e),6000); }
+}
 function attachSlotDrop(){
   const z=$('slot-new'); if(!z) return; let depth=0;
   z.addEventListener('dragenter',e=>{ if(!hasFiles(e)) return; e.preventDefault(); depth++; z.classList.add('over'); });
   z.addEventListener('dragover', e=>{ if(!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
   z.addEventListener('dragleave',e=>{ if(!hasFiles(e)) return; depth=Math.max(0,depth-1); if(!depth) z.classList.remove('over'); });
-  z.addEventListener('drop',     e=>{ if(!hasFiles(e)) return; e.preventDefault(); depth=0; z.classList.remove('over'); openSlotModal(e.dataTransfer.files); });
+  z.addEventListener('drop',     e=>{ if(dragJobId || !hasFiles(e)) return; e.preventDefault(); depth=0; z.classList.remove('over'); openSlotModal(e.dataTransfer.files); });
 }
 // Click (or drop a PDF on) the next Job box → fill in job no. + customer, add the PDF, send
 function openSlotModal(fl){ if(blockPreview()) return;
