@@ -811,7 +811,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="${esc(who)} left notes on this job — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-13-1635';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-13-1705';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1936,7 +1936,7 @@ function renderPortal(){
     const wi=weeks.indexOf(calWeek);
     html+=`<div class="week-bar">
       ${weeks.length?`<button class="wk-nav" ${wi<=0?'disabled':''} onclick="setWeek(${wi-1})" aria-label="Previous week">‹</button>
-      <div class="wk-label"><b>Week of ${parseYmd(calWeek).toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'})}</b><span>Mon – Sat${calWeek===ymd(mondayOf(new Date()))?' · this week':''}${calWeek<ymd(mondayOf(new Date()))?' · archived &amp; cleared Mon '+addDays(parseYmd(calWeek),21).toLocaleDateString('en-IE',{day:'numeric',month:'short'}):''}</span></div>
+      <div class="wk-label"><b>Week of ${parseYmd(calWeek).toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'})}</b><span>Mon – Sat${calWeek===ymd(mondayOf(new Date()))?' · this week':''}${calWeek<ymd(mondayOf(new Date()))?' · archived &amp; cleared Mon '+addDays(parseYmd(calWeek),28).toLocaleDateString('en-IE',{day:'numeric',month:'short'}):''}</span></div>
       <button class="wk-nav" ${wi>=weeks.length-1?'disabled':''} onclick="setWeek(${wi+1})" aria-label="Next week">›</button>`:`<div class="wk-label"><b>No weeks yet</b><span>Create a 6-day week to get a tab for each day</span></div>`}
       <span class="spacer"></span>
       <button class="btn-outline cal-toggle ${calOpen()?'on':''}" onclick="toggleCal()" title="Show / hide the month calendar">🗓 ${calOpen()?'Hide calendar':'Calendar'}</button>
@@ -2487,10 +2487,10 @@ function jobCard(j){
 }
 
 // ── Archive to this computer, then clean old Private Calls weeks ──
-// Every Monday the week from two weeks back is due for removal. On the office or
+// Every Monday the week from four weeks back is due for removal (this week + the 3 previous weeks are kept). On the office or
 // service department login on a computer, SashDash first saves a zip of that week to this
 // computer, and only removes it from the server once the save is confirmed.
-function cleanupCutoff(){ return ymd(addDays(mondayOf(new Date()),-14)); }   // keep this week + the 2 previous weeks
+function cleanupCutoff(){ return ymd(addDays(mondayOf(new Date()),-21)); }   // keep this week + the 3 previous weeks
 function weekOf(dateStr){ return ymd(mondayOf(parseYmd(dateStr))); }
 function weekName(w){ return parseYmd(w).toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'}); }
 function safeName(t){ return String(t||'').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim().slice(0,80)||'untitled'; }
@@ -2629,6 +2629,57 @@ async function ordersFolderBar(){
       : `<span class="of-on">📁 Saving to <b>${esc(h.name)}</b></span><button class="btn-outline" onclick="syncOrdersToFolder({silent:false})">⟳ Save now</button><button class="btn-outline" onclick="chooseOrdersFolder()">Change folder</button><span class="of-note" id="ord-sync-info">${ordersSyncInfo()}</span>`;
 }
 
+// ── report.pdf for the week download: job details, the full conversation with photos, then the sheet ──
+async function jobReportPdf({title, rows, msgs, sheet}){
+  const P=PDFLib, doc=await P.PDFDocument.create();
+  const F=await doc.embedFont(P.StandardFonts.Helvetica), FB=await doc.embedFont(P.StandardFonts.HelveticaBold);
+  const okCh=new Map();
+  const clean=s=>{ let o=''; for(const ch of String(s??'').replace(/\r/g,'')){ if(ch==='\n'){ o+=ch; continue; }
+      if(!okCh.has(ch)){ let ok=true; try{ F.encodeText(ch); }catch(e){ ok=false; } okCh.set(ch,ok); }
+      if(okCh.get(ch)) o+=ch; } return o.replace(/[ \t]+/g,' ').trim(); };
+  const W=595.28, H=841.89, M=42, CW=W-2*M, grey=P.rgb(.39,.45,.55), ink=P.rgb(.07,.09,.15), line=P.rgb(.85,.87,.9);
+  let page=null, y=0;
+  const newPage=()=>{ page=doc.addPage([W,H]); y=H-M;
+    page.drawText(clean('Sean Doyle Windows · SashDash job report'),{x:M,y:H-26,size:8.5,font:F,color:grey}); };
+  const need=h=>{ if(!page || y-h<M) newPage(); };
+  const wrap=(text,font,size,maxW)=>{ const out=[];
+    for(const para of clean(text).split('\n')){ let cur='';
+      for(let w of para.split(' ')){
+        while(font.widthOfTextAtSize(w,size)>maxW){ let k=w.length; while(k>1 && font.widthOfTextAtSize(w.slice(0,k),size)>maxW) k--; if(cur){ out.push(cur); cur=''; } out.push(w.slice(0,k)); w=w.slice(k); }
+        const t=cur?cur+' '+w:w; if(font.widthOfTextAtSize(t,size)>maxW){ out.push(cur); cur=w; } else cur=t; }
+      out.push(cur); }
+    return out; };
+  const text=(t,{font=F,size=11,color=ink,x=M,maxW=CW,gap=3}={})=>{ for(const l of wrap(t,font,size,maxW)){ need(size+gap); y-=size; page.drawText(l,{x,y,size,font,color}); y-=gap; } };
+  newPage();
+  text(title,{font:FB,size:17,gap:8});
+  // details table
+  for(const [k,v] of rows){
+    const vl=wrap(v||'—',F,10.5,CW-150), h=Math.max(1,vl.length)*14+8; need(h);
+    page.drawRectangle({x:M,y:y-h,width:150,height:h,color:P.rgb(.95,.96,.98),borderColor:line,borderWidth:.7});
+    page.drawRectangle({x:M+150,y:y-h,width:CW-150,height:h,borderColor:line,borderWidth:.7});
+    page.drawText(clean(k),{x:M+7,y:y-15,size:10.5,font:FB,color:ink});
+    vl.forEach((l,i)=>page.drawText(l,{x:M+157,y:y-15-i*14,size:10.5,font:F,color:ink}));
+    y-=h; }
+  y-=18; text('Conversation',{font:FB,size:13,gap:8});
+  if(!msgs.length) text('No messages.',{color:grey});
+  for(const m of msgs){
+    if(m.kind==='event'){ const ls=wrap(`${m.when} · ${m.who} · ${m.body}`,F,10,CW-16), h=ls.length*13+10; need(h+6);
+      page.drawRectangle({x:M,y:y-h,width:CW,height:h,color:P.rgb(.95,.96,.98)}); page.drawRectangle({x:M,y:y-h,width:3,height:h,color:grey});
+      ls.forEach((l,i)=>page.drawText(l,{x:M+10,y:y-14-i*13,size:10,font:F,color:ink})); y-=h+6; continue; }
+    need(40); y-=4;
+    const head=clean(m.who), hw=FB.widthOfTextAtSize(head,11); y-=11;
+    page.drawText(head,{x:M,y,size:11,font:FB,color:ink}); page.drawText(clean(m.when),{x:M+hw+8,y,size:9,font:F,color:grey}); y-=5;
+    if(m.body) text(m.body,{size:11,gap:3.5});
+    if(m.img){ try{ const bytes=new Uint8Array(await m.img.arrayBuffer()); let im; try{ im=await doc.embedJpg(bytes); }catch(e){ im=await doc.embedPng(bytes); }
+        const s=Math.min(CW/im.width, 330/im.height, 1); const w=im.width*s, h=im.height*s; need(h+8); y-=h+4;
+        page.drawImage(im,{x:M,y,width:w,height:h}); page.drawRectangle({x:M,y,width:w,height:h,borderColor:line,borderWidth:.7}); y-=4; }catch(e){ text('(photo could not be added)',{color:grey,size:9}); } }
+    y-=4; need(6); page.drawLine({start:{x:M,y},end:{x:M+CW,y},thickness:.5,color:line}); y-=6;
+  }
+  // the sheet itself (marked-up copy if there is one)
+  if(sheet){ try{ const src=await P.PDFDocument.load(await sheet.arrayBuffer(),{ignoreEncryption:true}); (await doc.copyPages(src,src.getPageIndices())).forEach(p=>doc.addPage(p)); }catch(e){} }
+  return await doc.save();
+}
+
 // Build a zip of one week (all men, or one man) — PDFs, marked-up PDFs, photos and a readable report per job
 async function buildWeekZip(week, techId, onStep){
   const days=sites.filter(x=>deptOf(x)==='calls'&&x.work_date&&weekOf(x.work_date)===week&&(!techId||x.serviceman_id===techId));
@@ -2645,14 +2696,16 @@ async function buildWeekZip(week, techId, onStep){
       onStep&&onStep(++n, wj.length, j.title);
       const jd=dayDir.folder(safeName(j.title));
       const get=async p=>{ if(!p) return null; const r=await sb.storage.from(BUCKET).download(p); if(r.error) throw new Error('Could not fetch '+p+': '+r.error.message); return r.data; };
-      jd.file('sheet-original.pdf', await get(j.pdf_path));
-      if(j.marked_path) jd.file('sheet-marked-up.pdf', await get(j.marked_path));
-      const cm=(allC||[]).filter(c=>c.job_id===j.id); let chat='', pi=0;
+      const orig=await get(j.pdf_path), marked=j.marked_path?await get(j.marked_path):null;
+      jd.file('sheet-original.pdf', orig);
+      if(marked) jd.file('sheet-marked-up.pdf', marked);
+      const cm=(allC||[]).filter(c=>c.job_id===j.id); let chat='', pi=0; const pmsgs=[];
       for(const c of cm){
         const a=prof(c.author_id), when=new Date(c.created_at).toLocaleString('en-IE');
-        if(c.kind==='event'){ chat+=`<p class="evt">${esc(when)} · ${esc(a.full_name)} · ${esc(c.body)}</p>`; continue; }
-        let img='';
-        if(c.photo_path){ const b=await get(c.photo_path); const fn=`photo-${++pi}.jpg`; jd.folder('photos').file(fn,b); img=`<br><a href="photos/${fn}"><img src="${await blobToDataUrl(b)}"></a>`; }
+        if(c.kind==='event'){ chat+=`<p class="evt">${esc(when)} · ${esc(a.full_name)} · ${esc(c.body)}</p>`; pmsgs.push({kind:'event', who:a.full_name, when, body:c.body}); continue; }
+        let img='', pb=null;
+        if(c.photo_path){ const b=await get(c.photo_path); pb=b; const fn=`photo-${++pi}.jpg`; jd.folder('photos').file(fn,b); img=`<br><a href="photos/${fn}"><img src="${await blobToDataUrl(b)}"></a>`; }
+        pmsgs.push({kind:'msg', who:a.full_name+(roleLabel(a.role)?' ('+roleLabel(a.role)+')':''), when, body:c.body||'', img:pb});
         chat+=`<div class="msg"><b>${esc(a.full_name)}</b>${roleLabel(a.role)?' ('+roleLabel(a.role)+')':''} <span>${esc(when)}</span><br>${esc(c.body||'').replace(/\n/g,'<br>')}${img}</div>`;
       }
       jd.file('report.html', `<!doctype html><meta charset="utf-8"><title>${esc(j.title)}</title>
@@ -2666,7 +2719,15 @@ ${j.customer_phone||j.customer_phone2?`<tr><td>Customer phone</td><td>${esc([j.c
 <tr><td>Status</td><td>${outcomeText(j)}${j.completed?' — '+new Date(j.completed_at).toLocaleString('en-IE'):''}</td></tr></table>
 <p>📄 <a href="sheet-original.pdf">Original sheet</a>${j.marked_path?' · ✏️ <a href="sheet-marked-up.pdf">Marked-up sheet</a>':''}</p>
 <h3>Conversation</h3>${chat||'<p><i>No messages.</i></p>'}`);
-      index+=`<li>${esc(t.full_name)} · ${esc(dayLabel(d.work_date))} · <a href="${encodeURI(safeName(t.full_name)+'/'+safeName(dayLabel(d.work_date))+'/'+safeName(j.title)+'/report.html')}">${esc(j.title)}</a> — ${outcomeText(j)}</li>`;
+      try{   // the same report as a PDF, with the sheet on the last pages
+        const rows=[['Service man',t.full_name+(t.phone?' · '+t.phone:'')],['Day',dayLong(d.work_date)],['Docket / ref',j.ref_no||'—']];
+        if(j.customer_phone||j.customer_phone2) rows.push(['Customer phone',[j.customer_phone,j.customer_phone2].filter(Boolean).join(' · ')]);
+        if(j.customer_email) rows.push(['Customer email',j.customer_email]);
+        if(j.eircode) rows.push(['Eircode',j.eircode]);
+        rows.push(['Sent',new Date(j.created_at).toLocaleString('en-IE')],['Status',outcomeText(j)+(j.completed?' — '+new Date(j.completed_at).toLocaleString('en-IE'):'')]);
+        jd.file('report.pdf', await jobReportPdf({title:j.title, rows, msgs:pmsgs, sheet:marked||orig}));
+      }catch(e){ console.warn('report.pdf failed for',j.title,e); }
+      index+=`<li>${esc(t.full_name)} · ${esc(dayLabel(d.work_date))} · <a href="${encodeURI(safeName(t.full_name)+'/'+safeName(dayLabel(d.work_date))+'/'+safeName(j.title)+'/report.html')}">${esc(j.title)}</a> (<a href="${encodeURI(safeName(t.full_name)+'/'+safeName(dayLabel(d.work_date))+'/'+safeName(j.title)+'/report.pdf')}">PDF</a>) — ${outcomeText(j)}</li>`;
     }
   }
   root.file('index.html', `<!doctype html><meta charset="utf-8"><title>Week of ${weekName(week)}</title><body style="font-family:Arial;max-width:820px;margin:20px auto">${index}</ul></body>`);
@@ -2696,8 +2757,8 @@ async function downloadWeek(week){
 }
 
 // Always have 10 weeks of day tabs ready for every Private Calls man:
-// the 2 previous weeks, this week and 7 weeks ahead.
-const WEEKS_BACK=2, WEEKS_AHEAD=7;
+// the 3 previous weeks, this week and 7 weeks ahead.
+const WEEKS_BACK=3, WEEKS_AHEAD=7;
 let weeksBusy=false; const weeksTried=new Set();
 async function ensureWeeks(_retry, onlyTech){
   if(previewing || !realMe || !['admin','service_office'].includes(realMe.role) || weeksBusy) return;
@@ -2831,7 +2892,7 @@ function openWeekModal(){ if(blockPreview()) return;
   const thisMon=mondayOf(new Date()), nextMon=addDays(thisMon,7), t=prof(currentTechId);
   const others=techs('calls').filter(x=>x.id!==currentTechId);
   openModal(`<h2>📅 New 6-day week</h2>
-    <p style="color:var(--slate);font-size:13px;margin:-8px 0 14px">Creates a tab for each day, <b>Monday to Saturday</b>, ready for you to upload that day's work sheet.<br><small>📅 The 2 previous weeks, this week and 7 weeks ahead are always set up automatically — use this only for weeks further out.<br>🧹 Three weeks later (on the Monday) each week is saved to the office / service department computer and then cleared from the server.</small></p>
+    <p style="color:var(--slate);font-size:13px;margin:-8px 0 14px">Creates a tab for each day, <b>Monday to Saturday</b>, ready for you to upload that day's work sheet.<br><small>📅 The 3 previous weeks, this week and 7 weeks ahead are always set up automatically — use this only for weeks further out.<br>🧹 Four weeks later (on the Monday) each week is saved to the office / service department computer and then cleared from the server.</small></p>
     <div class="field-group"><label>Which week?</label>
       <div class="wk-choice">
         <label><input type="radio" name="wk" value="${ymd(thisMon)}"> This week<br><small>Mon ${thisMon.toLocaleDateString('en-IE',{day:'numeric',month:'short'})} – Sat ${addDays(thisMon,5).toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</small></label>
