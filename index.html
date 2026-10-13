@@ -111,16 +111,16 @@
       .p-sub{font-size:10pt;color:#444}
       .p-info{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:10pt}
       .p-info td{border:1px solid #ccc;padding:4px 6px} .p-info td:nth-child(odd){background:#f1f5f9;font-weight:700;width:16%}
-      .p-h{font-size:13pt;margin:12px 0 6px;border-bottom:1px solid #999}
+      .p-h{font-size:16pt;margin:12px 0 8px;border-bottom:1px solid #999}
       .p-page{page-break-inside:avoid;margin-bottom:8px;text-align:center}
       .p-page img{max-width:100%;max-height:245mm;border:1px solid #ccc}
       .p-pno{font-size:8pt;color:#666}
       .p-first img{max-height:200mm}
       .p-break{page-break-before:always}
-      .p-msg{border:1px solid #ddd;border-radius:6px;padding:6px 8px;margin-bottom:6px;page-break-inside:avoid}
-      .p-who{font-size:9pt;color:#444;margin-bottom:2px}
+      .p-msg{border:1px solid #bbb;border-radius:6px;padding:9px 12px;margin-bottom:10px;page-break-inside:avoid;font-size:14pt;line-height:1.4}
+      .p-who{font-size:11pt;color:#333;margin-bottom:4px}
       .p-photo{display:block;max-width:60%;max-height:110mm;margin-top:4px;border:1px solid #ccc}
-      .p-evt{font-size:9pt;color:#555;font-style:italic;margin:4px 0 6px}
+      .p-evt{font-size:13pt;color:#222;margin:6px 0 10px;padding:6px 10px;background:#f1f5f9;border-left:4px solid #64748b;line-height:1.4;page-break-inside:avoid}
       .p-foot{margin-top:14px;font-size:8pt;color:#777;border-top:1px solid #ccc;padding-top:4px}
     }
     .bell-btn{position:relative;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;width:38px;height:34px;font-size:16px;cursor:pointer}
@@ -280,9 +280,14 @@
     .slot-top{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:6px;align-items:center}
     .slot-no{font-size:12px;font-weight:900;letter-spacing:1px;background:var(--navy);color:#fff;padding:3px 9px;border-radius:7px}
     .slot.done .slot-no{background:var(--green)}
-    .slot-pdf{font-size:44px;line-height:1;margin-top:14px}
+    .slot-pdf{font-size:44px;line-height:1;margin-top:14px;position:relative;display:inline-block}
+    .pdf-dot{position:absolute;right:-12px;top:-6px;font-size:13px;background:#f59e0b;border:2px solid #fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+    .note-badges{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:6px}
+    .note-badges.left{justify-content:flex-start}
+    .note-badges .nb{background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap}
     .slot-title{font-weight:800;font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .slot-actions{position:absolute;bottom:10px;right:10px;display:flex;gap:4px}
+    .slot:has(.slot-actions){padding-bottom:46px}
     .slot-actions .ja-btn{padding:4px 8px}
     .slot-new{border:2.5px dashed #fdba74;background:#fff7ed;color:#9a3412}
     .slot-new:hover{border-color:#b45309;background:#ffedd5}
@@ -744,9 +749,15 @@ function roleLabel(r){return r==='admin'?'Office':r==='service_office'?'Service 
 function firstName(n){return (n||'').split(' ')[0];}
 function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
+// what the man himself left on a job: text notes + photos (office notes and status changes don't count)
+function manNotes(j){ const m=(j.comments||[]).filter(c=>c.kind==='message' && c.author_id===j.serviceman_id);
+  return {notes:m.filter(c=>!c.photo_path).length, photos:m.filter(c=>c.photo_path).length}; }
+function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j.marked_path) return '';
+  const who=isOffice?firstName(prof(j.serviceman_id).full_name||'')||'Man':'You';
+  return `<div class="note-badges" title="${esc(who)} left notes on this job — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-12-1250';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-13-1110';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -966,7 +977,7 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+',comments(kind)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+',comments(kind,author_id,photo_path)').order('created_at',{ascending:false})
   ]);
   if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }   // database not updated yet (update-10)
   const err = pr.error||si.error||jo.error;
@@ -1964,9 +1975,9 @@ function slotCard(j,n){
   const extra=(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'');
   return `<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'}" data-job="${j.id}" onclick="openJob('${j.id}')">
     <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${outcomeTag(j)}</div>
-    <div class="slot-pdf">📄</div>
+    <div class="slot-pdf">📄${(manNotes(j).notes||manNotes(j).photos)?'<span class="pdf-dot" title="Has notes">💬</span>':''}</div>
     <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${j.customer_phone||j.customer_phone2?`<div class="slot-cc">${contactChips(j,true)}</div>`:''}
-    <div class="job-meta" style="justify-content:center">${c?`<span>💬 ${c}</span>`:''}${j.marked_path?'<span>✏️ Marked</span>':''}</div>
+    ${notesBadge(j)}
     ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button><button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
 }
@@ -2058,7 +2069,8 @@ function jobCard(j){
     <div class="tick ${j.completed?'on':''}">${j.completed?'✓':''}</div>
     <div style="flex:1;min-width:0">
       <div class="job-title">${esc(j.title)}</div>
-      <div class="job-meta">${j.ref_no?`<span>#${esc(j.ref_no)}</span>`:''}<span>Sent ${fmtDate(j.created_at)}</span>${n?`<span>💬 ${n}</span>`:''}${j.marked_path?'<span>✏️ Marked up</span>':''}${j.completed?`<span>✓ Done ${fmtDate(j.completed_at)}</span>`:''}</div>
+      <div class="job-meta">${j.ref_no?`<span>#${esc(j.ref_no)}</span>`:''}<span>Sent ${fmtDate(j.created_at)}</span>${j.completed?`<span>✓ Done ${fmtDate(j.completed_at)}</span>`:''}</div>
+      ${notesBadge(j).replace('note-badges','note-badges left')}
       ${jobOutcome(j)&&jobOutcome(j)!=='done'?`<div style="margin-top:4px">${outcomeTag(j)}</div>`:''}
     </div>
     ${u?'<span class="tag red">New</span>':''}
@@ -2240,7 +2252,7 @@ async function buildWeekZip(week, techId, onStep){
         chat+=`<div class="msg"><b>${esc(a.full_name)}</b>${roleLabel(a.role)?' ('+roleLabel(a.role)+')':''} <span>${esc(when)}</span><br>${esc(c.body||'').replace(/\n/g,'<br>')}${img}</div>`;
       }
       jd.file('report.html', `<!doctype html><meta charset="utf-8"><title>${esc(j.title)}</title>
-<style>body{font-family:Arial,sans-serif;max-width:820px;margin:20px auto;padding:0 14px;color:#111}table{border-collapse:collapse;width:100%}td{border:1px solid #ccc;padding:5px 8px}td:first-child{background:#f1f5f9;font-weight:bold;width:30%}.msg{border:1px solid #ddd;border-radius:8px;padding:8px 10px;margin:8px 0}.msg span{color:#666;font-size:12px}.msg img{max-width:100%;max-height:420px;margin-top:6px;border:1px solid #ccc}.evt{color:#666;font-style:italic;font-size:13px}</style>
+<style>body{font-family:Arial,sans-serif;max-width:820px;margin:20px auto;padding:0 14px;color:#111}table{border-collapse:collapse;width:100%}td{border:1px solid #ccc;padding:5px 8px}td:first-child{background:#f1f5f9;font-weight:bold;width:30%}.msg{border:1px solid #ddd;border-radius:8px;padding:10px 12px;margin:8px 0;font-size:18px;line-height:1.45}.msg span{color:#555;font-size:14px}.msg img{max-width:100%;max-height:420px;margin-top:6px;border:1px solid #ccc}.evt{color:#222;font-size:17px;line-height:1.45;background:#f1f5f9;border-left:4px solid #64748b;padding:6px 10px;margin:8px 0}</style>
 <h2>${esc(j.title)}</h2><table>
 <tr><td>Service man</td><td>${esc(t.full_name)}${t.phone?' · '+esc(t.phone):''}</td></tr>
 <tr><td>Day</td><td>${esc(dayLong(d.work_date))}</td></tr>
