@@ -281,7 +281,7 @@
     .slot-no{font-size:12px;font-weight:900;letter-spacing:1px;background:var(--navy);color:#fff;padding:3px 9px;border-radius:7px}
     .slot.done .slot-no{background:var(--green)}
     .slot-pdf{font-size:44px;line-height:1;margin-top:14px;position:relative;display:inline-block}
-    .pdf-dot{position:absolute;right:-12px;top:-6px;font-size:13px;background:#f59e0b;border:2px solid #fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+    .pdf-dot{position:absolute;right:-14px;bottom:-4px;font-size:13px;background:#f59e0b;border:2px solid #fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25)}
     .note-badges{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:6px}
     .note-badges.left{justify-content:flex-start}
     .note-badges .nb{background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap}
@@ -750,14 +750,17 @@ function firstName(n){return (n||'').split(' ')[0];}
 function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 // what the man himself left on a job: text notes + photos (office notes and status changes don't count)
-function manNotes(j){ const m=(j.comments||[]).filter(c=>c.kind==='message' && c.author_id===j.serviceman_id);
-  return {notes:m.filter(c=>!c.photo_path).length, photos:m.filter(c=>c.photo_path).length}; }
+const OUTCOME_LABELS=['Marked job as completed ✔ (All done)','🔁 Re-book — job unfinished','🚪 Customer not home','Re-opened job'];
+function eventHasNote(b){ b=String(b||''); const l=OUTCOME_LABELS.find(x=>b.startsWith(x)); return !!l && b.slice(l.length).replace(/^\s*—\s*/,'').trim().length>0; }   // e.g. "Re-book — job unfinished — Customer says…"
+function manNotes(j){ const m=(j.comments||[]).filter(c=>c.author_id===j.serviceman_id);
+  const msgs=m.filter(c=>c.kind==='message'), evNotes=m.filter(c=>c.kind==='event' && eventHasNote(c.body)).length;
+  return {notes:msgs.filter(c=>!c.photo_path).length+evNotes, photos:msgs.filter(c=>c.photo_path).length}; }
 function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j.marked_path) return '';
   const who=isOffice?firstName(prof(j.serviceman_id).full_name||'')||'Man':'You';
   return `<div class="note-badges" title="${esc(who)} left notes on this job — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-13-1110';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-13-1205';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -977,7 +980,7 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+',comments(kind,author_id,photo_path)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+',comments(kind,author_id,photo_path,body)').order('created_at',{ascending:false})
   ]);
   if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }   // database not updated yet (update-10)
   const err = pr.error||si.error||jo.error;
