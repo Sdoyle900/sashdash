@@ -577,7 +577,8 @@
     .spin.dark{border-color:rgba(15,23,42,.15);border-top-color:var(--indigo)}
     .dm-cog{margin-left:auto;border:1.5px solid var(--border);background:#fff;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:14px}
     .dm-undo{padding:6px 12px}
-    .day-map{height:340px;background:#e5e7eb}
+    .day-map{height:340px;background:#e5e7eb;position:relative;z-index:0;isolation:isolate}
+    .day-map-wrap{position:relative;z-index:0;isolation:isolate}   /* keeps the map's layers under pop-ups and the job screen */
     .day-map-sum{padding:8px 12px 12px}
     .dm-list{display:flex;flex-direction:column;gap:3px}
     .dm-row{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 6px;border-radius:7px;flex-wrap:wrap}
@@ -810,7 +811,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="${esc(who)} left notes on this job — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-13-1605';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-13-1635';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
