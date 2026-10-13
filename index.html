@@ -551,6 +551,56 @@
     .pw-eye .i-hide{display:none}
     .pw-eye.on .i-show{display:none} .pw-eye.on .i-hide{display:block}
     input::-ms-reveal,input::-ms-clear{display:none}
+  /* 🗺 day route */
+    .cc.eir{background:#eef2ff;border-color:#c7d2fe;color:#3730a3}.cc.eir:hover{background:#e0e7ff}
+    .jv-cc .cc.eir{background:rgba(99,102,241,.18);border-color:rgba(129,140,248,.5);color:#c7d2fe}
+    .av-chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;background:#fef9c3;color:#854d0e;border:1px solid #fde047;white-space:nowrap}
+    .av-chip.av-pm{background:#ffedd5;color:#9a3412;border-color:#fdba74}.av-chip.av-before{background:#e0f2fe;color:#075985;border-color:#7dd3fc}.av-chip.av-after{background:#fce7f3;color:#9d174d;border-color:#f9a8d4}
+    .av-row{display:flex;gap:8px;flex-wrap:wrap}.av-row select{flex:1 1 150px;min-width:0}.av-row input{flex:1 1 110px;min-width:110px}
+    .av-btns{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+    .av-b{border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;color:var(--navy)}
+    .av-b.on{background:#eef2ff;border-color:var(--indigo);color:var(--indigo)}
+    .av-btns input{width:130px;padding:7px 10px}
+    .rs-note{font-size:12px;color:var(--slate);margin-top:-4px}
+    .day-map-wrap{background:#fff;border:1px solid var(--border);border-radius:12px;margin-top:12px;overflow:hidden}
+    .day-map-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border)}
+    .dm-tabs{display:inline-flex;background:#e2e8f0;border-radius:10px;padding:3px;gap:3px}
+    .dm-tab{border:none;background:none;border-radius:8px;padding:6px 14px;cursor:pointer;text-align:left;display:flex;flex-direction:column;color:var(--slate)}
+    .dm-tab b{font-size:13px}.dm-tab small{font-size:11px;font-weight:600}
+    .dm-tab.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+    .dm-tab.t-job.on b{color:var(--indigo)}.dm-tab.t-best.on b{color:var(--green)}
+    .dm-tab.t-best:not(.on){border:1.5px dashed #86efac}
+    .dm-late{font-style:normal;color:var(--red);font-weight:800}
+    .dm-hint{font-size:12.5px;color:var(--slate)}.dm-ok{font-size:12.5px;font-weight:700;color:var(--green)}
+    .dm-msg{font-size:13px;color:var(--slate);font-weight:600}.dm-msg.pad{padding:20px}
+    .dm-load{font-size:13px;color:var(--slate);display:inline-flex;gap:8px;align-items:center}
+    .spin.dark{border-color:rgba(15,23,42,.15);border-top-color:var(--indigo)}
+    .dm-cog{margin-left:auto;border:1.5px solid var(--border);background:#fff;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:14px}
+    .dm-undo{padding:6px 12px}
+    .day-map{height:340px;background:#e5e7eb}
+    .day-map-sum{padding:8px 12px 12px}
+    .dm-list{display:flex;flex-direction:column;gap:3px}
+    .dm-row{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 6px;border-radius:7px;flex-wrap:wrap}
+    .dm-row:nth-child(odd){background:#f8fafc}
+    .dm-row.late{background:#fef2f2}
+    .dm-n{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:none}
+    .dm-row.late .dm-n{background:var(--red)}.dm-row.back .dm-n{background:none}
+    .dm-j{font-weight:700;flex:1;min-width:120px}
+    .dm-eta{font-weight:800;color:var(--indigo)}
+    .dm-av{font-size:11px;font-weight:700;background:#fef9c3;color:#854d0e;border-radius:999px;padding:1px 7px}
+    .dm-wait{font-size:11px;color:var(--amber);font-weight:700}
+    .dm-lt{font-size:11px;color:var(--red);font-weight:800}
+    .dm-foot{font-size:12px;color:var(--slate);margin-top:8px}
+    .dm-warn{color:#b45309;font-weight:700;margin-top:4px}
+    @media (max-width:720px){ .day-map{height:260px} .dm-tab{padding:6px 10px} .dm-cog{margin-left:0} }
+    .tt-pin-wrap{background:none;border:none}
+    .tt-pin{width:28px;height:28px;border-radius:50%;background:var(--indigo);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);font-family:inherit}
+    .tt-pin.home{background:var(--navy);font-size:14px}
+    .tt-pin.approx{outline:3px dashed #f59e0b;outline-offset:2px}
+    .placing,.placing .leaflet-container{cursor:crosshair!important}
+    .dm-place{border:1.5px solid #fdba74;background:#fff7ed;color:#9a3412;border-radius:7px;padding:2px 8px;font-weight:700;font-size:12px;cursor:pointer;margin-left:4px}
+    .dm-placing{color:var(--indigo)}
+    .day-map .leaflet-container{font-family:inherit}
   </style>
 </head>
 <body>
@@ -760,7 +810,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="${esc(who)} left notes on this job — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-13-1205';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-13-1605';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -980,9 +1030,10 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+',comments(kind,author_id,photo_path,body)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+',comments(kind,author_id,photo_path,body)').order('created_at',{ascending:false})
   ]);
-  if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }   // database not updated yet (update-10)
+  if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }
+  if(jo.error && hasRoute && /eircode|avail/i.test(jo.error.message)){ hasRoute=false; return loadData(); }   // database not updated yet (update-15)   // database not updated yet (update-10)
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
   profiles=pr.data; sites=si.data; jobs=jo.data;
@@ -1916,6 +1967,7 @@ function renderPortal(){
     <div style="flex:1;min-width:180px"><div class="site-name">${site.work_date?dayLong(site.work_date):esc(site.name)}</div>${meta?`<div class="site-meta">${meta}</div>`:''}</div>
     <div class="seg seg-st">${[['all','All',sJobs.length],['open','Open',cnt('open')],['done','Done',cnt('done')],['not_home','Not home',cnt('not_home')],['rebook','Re-book',cnt('rebook')]]
       .filter(([k,,n])=>k==='all'||k==='open'||k==='done'||n).map(([k,l,n])=>`<button class="${jobFilter===k?'on':''} f-${k}" onclick="setFilter('${k}')">${l} (${n})</button>`).join('')}</div>
+    ${isOffice&&site.work_date&&hasRoute?`<button class="btn-outline ${dayMapOn()?'cal-toggle on':''}" onclick="toggleDayMap()" title="Show / hide the day map">🗺 ${dayMapOn()?'Hide map':'Map'}</button>${sJobs.some(j=>isOpenJob(j)&&j.eircode)?`<button class="btn-outline" onclick="openDayRoute('${site.id}')" title="Open the day's open jobs in Google Maps">🧭 Navigate</button>`:''}`:''}
     ${isOffice&&site.work_date&&sJobs.length?`<button class="btn-outline" onclick="printDay('${site.id}')" title="Print every job sheet for this day, in job-number order">🖨 Print day</button>`:''}
     ${isOffice?`<button class="btn-outline" onclick="openSiteModal('${site.id}')">✎ ${site.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1)}</button>${site.work_date?'':'<button class="btn-primary" onclick="openUploadModal()">⬆ Upload job</button>'}`:''}
   </div>`;
@@ -1925,19 +1977,365 @@ function renderPortal(){
     const num=new Map(ordered.map((j,i)=>[j.id, jobNo(j)||i+1]));
     const list=ordered.filter(j=>shown.includes(j)).sort((a,b)=>num.get(a.id)-num.get(b.id));   // always Job 1, 2, 3…
     const next=nextJobNo(site.id);
+    if(hasRoute && isOffice) html+=dayMapHtml(site);   // the route is for the office only
     html+=`<div class="slot-grid">${list.map(j=>slotCard(j,num.get(j.id))).join('')}
       ${isOffice&&(jobFilter==='all'||jobFilter==='open')?`<div class="slot-new" id="slot-new" role="button" tabindex="0" onclick="openSlotModal()">
         <span class="slot-no">JOB ${next}</span><span class="slot-plus">＋</span>
         <span class="slot-hint">Click to add job ${next}<br>or drag the PDF here</span></div>`:''}
       ${!list.length&&!(isOffice&&(jobFilter==='all'||jobFilter==='open'))?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>${jobFilter==='all'?'No jobs for this day yet.':'No jobs with this status on this day.'}</div>`:''}
     </div>`;
-    $('view-portal').innerHTML=html; attachSlotDrop(); if(isOffice && !previewing && jobFilter==='all') attachSlotReorder(site.id); return;
+    $('view-portal').innerHTML=html; attachSlotDrop(); if(isOffice && !previewing && jobFilter==='all') attachSlotReorder(site.id);
+    if(hasRoute && isOffice && dayMapOn()) drawDayMap(site.id); return;
   }
   html+= shown.length
     ? `<div class="job-list">${shown.map(jobCard).join('')}</div>`
     : `<div class="empty"><div class="big">${jobFilter==='done'?'📋':'✅'}</div>${jobFilter==='done'?`No completed jobs for this ${D.one} yet.`:jobFilter==='open'?`All jobs for this ${D.one} are done.`:`No jobs for this ${D.one} yet.`}${isOffice&&jobFilter!=='done'?'<br><br><button class="btn-primary" onclick="openUploadModal()">⬆ Upload job</button>':''}</div>`;
   $('view-portal').innerHTML=html;
 }
+// ══════════════════════════════════════════════════════════════════
+//  🗺 EIRCODE DAY ROUTE — Eircode + when the customer is in, day map,
+//  best route that respects Morning / Afternoon / After-a-time customers,
+//  one-tap Navigate in Google Maps. Map + Eircodes + drive times: TomTom (free, no card).
+// ══════════════════════════════════════════════════════════════════
+const ROUTE_COLS=',eircode,avail'; let hasRoute=true;
+let routeCfg=null, routeCfgLoaded=false, placing=null;
+const geoCache=new Map();                 // 'D02 X285' → {lat,lng} | null (not found)
+const legCache=new Map(), lineCache=new Map();   // drive times between two spots · road lines
+const routeUndo={};                       // siteId → [job ids in the order before Best route was applied]
+
+function normEir(s){ const t=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); return t.length===7 ? t.slice(0,3)+' '+t.slice(3) : String(s||'').toUpperCase().trim(); }
+function eirValid(s){ return /^[ACDEFHKNPRTVWXY](\d\d|6W) [0-9ACDEFHKNPRTVWXY]{4}$/.test(normEir(s)); }
+function hm2min(s){ const m=/^(\d{1,2}):(\d{2})/.exec(s||''); return m? (+m[1])*60+(+m[2]) : null; }
+function min2hm(m){ m=Math.round(m); const h=Math.floor(m/60)%24, mm=m%60; return `${h}:${String(mm).padStart(2,'0')}`; }
+function ampm(m){ m=Math.round(m); let h=Math.floor(m/60)%24; const mm=m%60, s=h>=12?'pm':'am'; h=h%12||12; return mm?`${h}:${String(mm).padStart(2,'0')}${s}`:`${h}${s}`; }
+
+// ── When the customer is in: '' any time · 'am' 8–12 · 'pm' 12–5 · 'after:15:00' · 'before:11:00' ──
+function availParse(a){ const m=/^(after|before):(\d{1,2}:\d{2})/.exec(a||''); return m?{dir:m[1], t:hm2min(m[2]), hm:m[2]}:null; }
+function availLabel(a){ if(!a) return 'Any time'; if(a==='am') return '8am – 12'; if(a==='pm') return '12 – 5pm';
+  const c=availParse(a); return c?(c.dir==='after'?'After ':'Before ')+ampm(c.t):'Any time'; }
+function availWin(a){ if(a==='am') return [8*60,12*60]; if(a==='pm') return [12*60,17*60];
+  const c=availParse(a); if(c) return c.dir==='after'?[c.t,Infinity]:[0,c.t]; return [0,Infinity]; }
+function availChip(j){ if(!j.avail) return ''; const c=availParse(j.avail), k=c?c.dir:j.avail, ic=k==='am'?'🌅':k==='pm'?'🌇':'⏰';
+  return `<span class="av-chip av-${esc(k)}" title="Customer available">${ic} ${esc(availLabel(j.avail))}</span>`; }
+function availField(j){ j=j||{}; const a=j.avail||'', c=availParse(a), sel=c?'custom':(a==='am'||a==='pm'?a:'');
+  return `<div class="field-group"><label>Eircode <span class="optional">(for the route)</span></label><input id="m-eir" placeholder="e.g. D02 X285" autocomplete="off" maxlength="9" style="text-transform:uppercase" value="${esc(j.eircode||'')}" onblur="if(this.value)this.value=normEir(this.value)"></div>
+    <div class="field-group"><label>Customer available</label><select id="m-av" onchange="$('m-av-c').classList.toggle('hidden',this.value!=='custom')">
+      <option value="" ${sel===''?'selected':''}>Any time</option><option value="am" ${sel==='am'?'selected':''}>Between 8am – 12</option>
+      <option value="pm" ${sel==='pm'?'selected':''}>Between 12 – 5pm</option><option value="custom" ${sel==='custom'?'selected':''}>Custom…</option></select></div>
+    <div class="field-group sf-wide av-custom ${sel==='custom'?'':'hidden'}" id="m-av-c"><label>Custom time</label><div class="av-row">
+      <select id="m-av-d"><option value="before" ${c&&c.dir==='before'?'selected':''}>Before</option><option value="after" ${!c||c.dir==='after'?'selected':''}>After</option></select>
+      <input id="m-av-t" type="time" value="${esc(c?c.hm.padStart(5,'0'):'15:00')}"></div></div>`; }
+function readAvail(){ const e=$('m-eir'), s=$('m-av'); if(!e||!s) return null;
+  const eir=e.value.trim()?normEir(e.value):'';
+  if(eir && !eirValid(eir)){ toast('That Eircode doesn\'t look right — it should be like D02 X285.'); return false; }
+  let av=s.value;
+  if(av==='custom'){ const t=$('m-av-t').value; if(!t){ toast('Pick the custom time.'); return false; } av=$('m-av-d').value+':'+t; }
+  return {eircode:eir||null, avail:av||null}; }
+function eirChip(j){ if(!j.eircode) return '';
+  return `<a class="cc eir" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(j.eircode+', Ireland')}&travelmode=driving" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Directions in Google Maps">📍 ${esc(j.eircode)}</a>`; }
+
+// ── Settings (office): depot Eircode, TomTom key, start time, minutes per job ──
+async function loadRouteData(force){
+  if(routeCfgLoaded && !force) return routeCfg;
+  const r=await sb.from('route_settings').select('*').eq('id',1).maybeSingle();
+  routeCfg = r.error ? null : (r.data||{}); routeCfgLoaded=true;
+  if(!r.error){
+    const g=await sb.from('eircode_geo').select('*'); (g.data||[]).forEach(x=>geoCache.set(x.eircode,{lat:+x.lat,lng:+x.lng,approx:!!x.approx,manual:!!x.manual}));
+    const l=await sb.from('route_legs').select('*'); if(!l.error) (l.data||[]).forEach(x=>legCache.set(x.from_key+'>'+x.to_key,{t:+x.secs,d:+x.metres}));
+  }
+  return routeCfg;
+}
+const mapKey=()=>routeCfg&&routeCfg.map_key;
+const RC=()=>({start:hm2min((routeCfg&&routeCfg.day_start)||'08:30')??510, svc:+((routeCfg&&routeCfg.job_minutes)||60), round:!!(routeCfg&&routeCfg.round_trip)});
+function openRouteSettings(){ if(blockPreview()) return;
+  const c=routeCfg||{};
+  openModal(`<h2>⚙ Route settings</h2>
+    <div class="field-group"><label>Depot Eircode <span class="optional">(where the vans start)</span></label><input id="rs-depot" value="${esc(c.depot_eircode||'')}" placeholder="e.g. F42 XY12" style="text-transform:uppercase"></div>
+    <div class="slot-form">
+      <div class="field-group"><label>Day starts at</label><input id="rs-start" type="time" value="${esc((c.day_start||'08:30').slice(0,5))}"></div>
+      <div class="field-group"><label>Minutes per job <span class="optional">(average)</span></label><input id="rs-svc" type="number" min="10" max="480" step="5" value="${esc(c.job_minutes||60)}"></div></div>
+    <label class="chk"><input type="checkbox" id="rs-round" ${c.round_trip?'checked':''}> Route ends back at the depot</label>
+    <div class="field-group" style="margin-top:12px"><label>TomTom key</label><input id="rs-key" value="${esc(c.map_key||'')}" placeholder="paste the key from developer.tomtom.com" autocomplete="off"></div>
+    <div class="rs-note">Free from developer.tomtom.com — no card needed. Without a key the map can't be drawn.</div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="rs-save" onclick="saveRouteSettings()">Save</button></div>`);
+}
+async function saveRouteSettings(){
+  const depot=normEir($('rs-depot').value); if(depot && !eirValid(depot)) return toast('The depot Eircode doesn\'t look right.');
+  const row={id:1, depot_eircode:depot||null, day_start:$('rs-start').value||'08:30', job_minutes:Math.max(10,+$('rs-svc').value||60),
+    round_trip:$('rs-round').checked, map_key:$('rs-key').value.trim()||null};
+  const btn=$('rs-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
+  const { error }=await sb.from('route_settings').upsert(row);
+  if(error){ btn.disabled=false; btn.textContent='Save'; return toast(/route_settings|map_key/.test(error.message)?'Run update-15 in Supabase first.':'Could not save: '+error.message,6000); }
+  const keyChanged=!routeCfg || routeCfg.map_key!==row.map_key;
+  routeCfg={...(routeCfg||{}),...row}; if(keyChanged){ [...geoCache].forEach(([k,v])=>{ if(v===null) geoCache.delete(k); }); if(tmap&&tmapTiles){ tmapTiles.setUrl(tileUrl()); } }
+  closeModal(); toast('Route settings saved ✓'); renderPortal();
+}
+
+// ── TomTom: Eircode lookups, drive times, the route line. Leaflet draws the map. ──
+const TT='https://api.tomtom.com';
+function tileUrl(){ return `${TT}/map/1/tile/basic/main/{z}/{x}/{y}.png?key=${encodeURIComponent(mapKey()||'')}&tileSize=256&view=Unified&language=en-GB`; }
+let leafletP=null;
+function loadLeaflet(){
+  if(window.L && L.map) return Promise.resolve(L);
+  if(leafletP) return leafletP;
+  leafletP=new Promise((res,rej)=>{
+    const css=document.createElement('link'); css.rel='stylesheet'; css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(css);
+    const s=document.createElement('script'); s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; s.onload=()=>res(window.L); s.onerror=()=>{ leafletP=null; rej(new Error('the map did not load')); };
+    document.head.appendChild(s); });
+  return leafletP;
+}
+const ptKey=p=>p.lat.toFixed(5)+','+p.lng.toFixed(5);
+async function ttFetch(url, opt){
+  const r=await fetch(url, opt);
+  if(r.status===403||r.status===429) throw new Error('quota');
+  if(!r.ok) throw new Error('TomTom '+r.status);
+  return r.json();
+}
+// Eircode → spot. Exact house, or 'approx' when TomTom only knows the area. Office-placed pins always win.
+async function geocodeEir(eir){
+  eir=normEir(eir); if(geoCache.has(eir)) return geoCache.get(eir);
+  if(!mapKey()) return null;
+  let p=null;
+  try{
+    const d=await ttFetch(`${TT}/search/2/geocode/${encodeURIComponent(eir)}.json?key=${encodeURIComponent(mapKey())}&countrySet=IE&limit=1`);
+    const r=d&&d.results&&d.results[0];
+    if(r&&r.position){
+      const pc=String((r.address&&(r.address.extendedPostalCode||r.address.postalCode))||'').toUpperCase().replace(/\s/g,'');
+      const exact=r.type==='Point Address' || pc.includes(eir.replace(/\s/g,''));
+      p={lat:+r.position.lat, lng:+r.position.lon, approx:!exact, manual:false};
+    }
+  }catch(e){ if(e.message==='quota') toast('⚠️ TomTom free allowance used up for now — try again later',6000); return null; }
+  geoCache.set(eir,p);
+  if(p) sb.from('eircode_geo').upsert({eircode:eir, lat:p.lat, lng:p.lng, approx:p.approx, manual:false}).then(()=>{},()=>{});
+  return p;
+}
+// Office drags a pin / taps the map → that's where this Eircode is from now on
+async function placeEir(eir, lat, lng){
+  eir=normEir(eir); const p={lat, lng, approx:false, manual:true}; geoCache.set(eir,p);
+  const { error }=await sb.from('eircode_geo').upsert({eircode:eir, lat, lng, approx:false, manual:true});
+  toast(error?'Could not save the pin: '+error.message:`📍 ${eir} saved — it'll be used every time`,3500);
+  placing=null; if(currentSiteId) drawDayMap(currentSiteId);
+}
+function haversine(a,b){ const R=6371000, r=x=>x*Math.PI/180, dLa=r(b.lat-a.lat), dLo=r(b.lng-a.lng);
+  const h=Math.sin(dLa/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dLo/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
+// Drive time (s) + distance (m) between every pair. Pairs already worked out are kept in the database, so TomTom is only asked about new ones.
+async function roadMatrix(pts){
+  const n=pts.length, K=pts.map(ptKey), T=[...Array(n)].map(()=>Array(n).fill(0)), D=[...Array(n)].map(()=>Array(n).fill(0));
+  const est=(i,j)=>{ const d=haversine(pts[i],pts[j])*1.35; return {t:d/(55/3.6), d}; };
+  const need=[]; for(let i=0;i<n;i++) for(let j=0;j<n;j++) if(i!==j && !legCache.has(K[i]+'>'+K[j])) need.push([i,j]);
+  let ok=true;
+  if(need.length && mapKey()){
+    const oi=[...new Set(need.map(x=>x[0]))], di=[...new Set(need.map(x=>x[1]))];
+    try{
+      const body={origins:oi.map(i=>({point:{latitude:pts[i].lat, longitude:pts[i].lng}})), destinations:di.map(j=>({point:{latitude:pts[j].lat, longitude:pts[j].lng}})),
+        options:{departAt:'any', traffic:'historical', routeType:'fastest', travelMode:'car'}};
+      const d=await ttFetch(`${TT}/routing/matrix/2?key=${encodeURIComponent(mapKey())}`,{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+      const rows=[];
+      (d.data||[]).forEach(c=>{ const s=c.routeSummary; if(!s) return; const i=oi[c.originIndex], j=di[c.destinationIndex]; if(i===j) return;
+        const v={t:+s.travelTimeInSeconds, d:+s.lengthInMeters}; legCache.set(K[i]+'>'+K[j],v); rows.push({from_key:K[i], to_key:K[j], secs:Math.round(v.t), metres:Math.round(v.d)}); });
+      if(rows.length) sb.from('route_legs').upsert(rows).then(()=>{},()=>{});
+    }catch(e){ ok=false; if(e.message==='quota') toast('⚠️ TomTom free allowance used up for now — times are estimated',6000); }
+  }
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++){ if(i===j) continue; const v=legCache.get(K[i]+'>'+K[j]); if(!v) ok=false; const x=v||est(i,j); T[i][j]=x.t; D[i][j]=x.d; }
+  return {T,D,ok};
+}
+// The road line for the map (one request per order, remembered)
+async function routeLine(pts){
+  const k=pts.map(ptKey).join('|'); if(lineCache.has(k)) return lineCache.get(k);
+  try{
+    const d=await ttFetch(`${TT}/routing/1/calculateRoute/${pts.map(p=>p.lat+','+p.lng).join(':')}/json?key=${encodeURIComponent(mapKey())}&travelMode=car&routeType=fastest&traffic=false`);
+    const line=[]; ((d.routes&&d.routes[0]&&d.routes[0].legs)||[]).forEach(l=>(l.points||[]).forEach(q=>line.push([q.latitude,q.longitude])));
+    if(line.length){ lineCache.set(k,line); return line; }
+  }catch(e){}
+  return null;
+}
+
+// ── Run a route through the day: arrival times, waiting for customers, late flags ──
+// order = indexes into stops (matrix index = stop index + 1; 0 = depot)
+function simulate(order, stops, M, cfg){
+  let t=cfg.start, pos=0, km=0, drive=0, late=0, wait=0; const legs=[];
+  for(const k of order){
+    const dt=M.T[pos][k+1]/60; drive+=dt; km+=M.D[pos][k+1]/1000;
+    let arr=t+dt; const [e,l]=availWin(stops[k].j.avail);
+    let w=0; if(arr<e){ w=e-arr; arr=e; wait+=w; }
+    const lt=Math.max(0,arr-l); late+=lt;
+    legs.push({k, arr, wait:w, late:lt}); t=arr+cfg.svc; pos=k+1;
+  }
+  if(cfg.round && order.length){ const dt=M.T[pos][0]/60; drive+=dt; km+=M.D[pos][0]/1000; t+=dt; }
+  const lateCount=legs.filter(x=>x.late>0.5).length;
+  return {order, legs, km, drive, wait, late, lateCount, finish:t, cost:(t-cfg.start)+late*50+lateCount*500+km*0.01};
+}
+function bestOrder(stops, M, cfg){
+  const n=stops.length; if(n<2) return simulate([...Array(n).keys()],stops,M,cfg);
+  let best=null;
+  if(n<=8){   // try every order
+    const a=[...Array(n).keys()], c=Array(n).fill(0); best=simulate(a.slice(),stops,M,cfg);
+    let i=0; while(i<n){ if(c[i]<i){ const s=i%2?c[i]:0; [a[s],a[i]]=[a[i],a[s]]; const r=simulate(a.slice(),stops,M,cfg); if(r.cost<best.cost) best=r; c[i]++; i=0; } else { c[i]=0; i++; } }
+    return best;
+  }
+  // bigger days: earliest-window-first nearest neighbour, then keep improving with swaps & moves
+  const left=new Set(stops.keys()), seq=[]; let pos=0;
+  while(left.size){ let pick=null, sc=Infinity;
+    for(const k of left){ const e=availWin(stops[k].j.avail)[0], l=availWin(stops[k].j.avail)[1]; const s=M.T[pos][k+1]/60 + e*0.5 + (l<Infinity?-200:0); if(s<sc){ sc=s; pick=k; } }
+    seq.push(pick); left.delete(pick); pos=pick+1; }
+  best=simulate(seq,stops,M,cfg);
+  let improved=true, guard=0;
+  while(improved && guard++<200){ improved=false;
+    for(let i=0;i<n-1;i++) for(let j=i+1;j<n;j++){
+      const r2=best.order.slice(0,i).concat(best.order.slice(i,j+1).reverse(), best.order.slice(j+1)); const s2=simulate(r2,stops,M,cfg); if(s2.cost<best.cost-0.01){ best=s2; improved=true; }
+      const mv=best.order.slice(); const [x]=mv.splice(i,1); mv.splice(j,0,x); const s3=simulate(mv,stops,M,cfg); if(s3.cost<best.cost-0.01){ best=s3; improved=true; } }
+  }
+  return best;
+}
+
+// ── The day's stops: open jobs with an Eircode. Done / not home / re-book drop off the map ──
+function dayJobsOrdered(siteId){
+  const dj=jobs.filter(j=>j.site_id===siteId).sort((a,b)=>a.created_at<b.created_at?-1:1);
+  const num=new Map(dj.map((j,i)=>[j.id, jobNo(j)||i+1]));
+  return dj.sort((a,b)=>num.get(a.id)-num.get(b.id)).map(j=>({j, n:num.get(j.id)}));
+}
+const isOpenJob=j=>!j.completed && !jobOutcome(j);
+async function computeDay(siteId){
+  await loadRouteData();
+  const all=dayJobsOrdered(siteId), open=all.filter(x=>isOpenJob(x.j));
+  const noEir=open.filter(x=>!x.j.eircode || !eirValid(x.j.eircode));
+  const cfg=RC();
+  if(!routeCfg || !routeCfg.map_key) return {err:'nokey', all, open, noEir};
+  if(!routeCfg.depot_eircode) return {err:'nodepot', all, open, noEir};
+  const depot=await geocodeEir(routeCfg.depot_eircode); if(!depot) return {err:'depotbad', all, open, noEir};
+  const stops=[], notFound=[];
+  for(const x of open.filter(x=>!noEir.includes(x))){ const p=await geocodeEir(x.j.eircode); if(p) stops.push({...x, p}); else notFound.push(x); }
+  const M=await roadMatrix([depot, ...stops.map(s=>s.p)]);
+  const job=simulate([...stops.keys()], stops, M, cfg), best=bestOrder(stops, M, cfg);
+  const same=job.order.join()===best.order.join() || best.cost>=job.cost-0.5;
+  return {all, open, noEir, notFound, stops, depot, M, cfg, job, best:same?job:best, same};
+}
+
+// ── Renumber the day's job boxes in a given order (Job 1, 2, 3…) ──
+async function setDayOrder(siteId, ids){
+  const rest=t=>String(t||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'').trim();
+  const changes=[];
+  ids.forEach((id,i)=>{ const j=jobs.find(x=>x.id===id); if(!j) return; const nt=`Job ${i+1}${rest(j.title)?' – '+rest(j.title):''}`; if(nt!==j.title) changes.push({j, old:j.title, nt}); });
+  if(!changes.length) return 0;
+  changes.forEach(c=>c.j.title=c.nt); renderPortal();
+  try{ for(const c of changes){ const { error }=await sb.from('jobs').update({title:c.nt}).eq('id',c.j.id); if(error) throw error; } return changes.length; }
+  catch(e){ changes.forEach(c=>c.j.title=c.old); renderPortal(); toast('Could not change the order: '+(e.message||e),6000); return -1; }
+}
+
+// ── Day map on/off + which route is shown ──
+function dayMapOn(){ try{ return localStorage.getItem('dayMap')!=='0'; }catch(e){ return true; } }
+function toggleDayMap(){ try{ localStorage.setItem('dayMap', dayMapOn()?'0':'1'); }catch(e){} renderPortal(); }
+let dayMapView={};   // siteId → 'job' | 'best' (service men, view only)
+let lastDay=null, tmap=null, tmapHost=null, tmapTiles=null, tmapLayer=null, mapDrawTok=0;
+
+// Office clicks Best route → the job boxes are renumbered 1, 2, 3… in best-route order straight away
+async function chooseBest(siteId){
+  if(!isOffice || previewing){ dayMapView[siteId]='best'; return drawDayMap(siteId); }
+  const R=lastDay&&lastDay.siteId===siteId?lastDay.R:await computeDay(siteId);
+  if(!R.stops || !R.stops.length) return;
+  if(R.same){ toast('✓ The jobs are already in the best order'); return; }
+  const before=R.all.map(x=>x.j.id);
+  const bestIds=R.best.order.map(k=>R.stops[k].j.id), inRoute=new Set(bestIds);
+  const finished=R.all.filter(x=>!isOpenJob(x.j)).map(x=>x.j.id);                  // done / not home / re-book keep the first numbers
+  const unplaced=R.all.filter(x=>isOpenJob(x.j)&&!inRoute.has(x.j.id)).map(x=>x.j.id);   // no Eircode → after the route
+  routeUndo[siteId]=before;
+  const n=await setDayOrder(siteId, [...finished, ...bestIds, ...unplaced]);
+  if(n>0) toast(`🧭 Jobs renumbered in best-route order — ${n} job${n===1?'':'s'} changed`,4000); else delete routeUndo[siteId];
+  renderPortal();
+}
+async function undoBest(siteId){
+  const ids=routeUndo[siteId]; if(!ids) return;
+  const n=await setDayOrder(siteId, ids.filter(id=>jobs.some(j=>j.id===id)));
+  if(n>=0){ delete routeUndo[siteId]; toast('↩ Back to the previous job order'); renderPortal(); }
+}
+function showJobOrder(siteId){ dayMapView[siteId]='job'; drawDayMap(siteId); }
+
+function dayMapHtml(site){
+  if(!site.work_date || !dayMapOn()) return '';
+  return `<div class="day-map-wrap"><div class="day-map-bar" id="day-map-bar"><span class="dm-load"><span class="spin dark"></span> Working out the route…</span></div>
+    <div id="day-map" class="day-map"></div><div class="day-map-sum" id="day-map-sum"></div></div>`;
+}
+function startPlace(eir){ placing=normEir(eir); if(currentSiteId) drawDayMap(currentSiteId); }
+function fmtDur(m){ m=Math.round(m); return m>=60?`${Math.floor(m/60)}h ${m%60}m`:`${m}m`; }
+async function drawDayMap(siteId){
+  const bar=$('day-map-bar'), box=$('day-map'), sum=$('day-map-sum'); if(!bar) return;
+  let R; try{ R=await computeDay(siteId); }catch(e){ R={err:'fail', msg:e.message}; }
+  if(!$('day-map-bar') || currentSiteId!==siteId) return;
+  lastDay={siteId,R};
+  const cog=isOffice&&!previewing?`<button class="dm-cog" onclick="openRouteSettings()" title="Route settings">⚙</button>`:'';
+  if(R.err){
+    const msg={nokey:'Add the free TomTom key in route settings (⚙) to draw the map.', nodepot:'Add the depot Eircode in route settings.', depotbad:'TomTom couldn\'t find the depot Eircode — check it in route settings.', fail:'The map couldn\'t load: '+esc(R.msg||'')}[R.err];
+    bar.innerHTML=`<span class="dm-msg">🗺 ${msg}</span>${cog}`; box.classList.add('hidden'); sum.innerHTML=''; return;
+  }
+  box.classList.remove('hidden');
+  if(!R.stops.length){
+    bar.innerHTML=`<span class="dm-msg">🗺 ${R.open.length?'No open jobs with an Eircode yet — add Eircodes to the jobs to see the route.':'All jobs on this day are finished ✓'}</span>${cog}`;
+  }
+  const officeCan=isOffice&&!previewing;
+  const inBest=R.same, view=officeCan?'job':(dayMapView[siteId]||'job');
+  const show=view==='best'?R.best:R.job;
+  const undo=officeCan&&routeUndo[siteId];
+  const tab=(k,label,r,on)=>`<button class="dm-tab ${on?'on':''} t-${k}" onclick="${k==='best'?`chooseBest('${siteId}')`:`showJobOrder('${siteId}')`}">
+      <b>${label}</b><small>${r.km.toFixed(0)} km · ${fmtDur(r.drive)} driving${r.lateCount?` · <i class="dm-late">⚠ ${r.lateCount} late</i>`:''}</small></button>`;
+  if(R.stops.length){
+    bar.innerHTML=`<div class="dm-tabs">${tab('job','Job order',R.job,view==='job'&&!(inBest&&officeCan&&undo))}${tab('best',inBest?'Best route ✓':'Best route',R.best,view==='best'||(inBest&&officeCan&&!!undo))}</div>
+      ${inBest&&!undo?`<span class="dm-ok">✓ Already the best order</span>`:''}
+      ${!inBest&&officeCan?`<span class="dm-hint">Tap <b>Best route</b> to renumber the jobs ${R.best.order.length>1?'1, 2, 3…':''} in that order${R.best.drive<R.job.drive?` — saves ${fmtDur(R.job.drive-R.best.drive)}`:''}</span>`:''}
+      ${!officeCan&&view==='best'&&!inBest?`<span class="dm-hint">Showing the best route — the office sets the job order</span>`:''}
+      ${undo?`<button class="btn-outline dm-undo" onclick="undoBest('${siteId}')">↩ Back to previous order</button>`:''}${cog}`;
+  }
+  // stop list with arrival times
+  const nm=x=>{ const t=(x.j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,''); return t||'Job'; };
+  const rows=show.legs.map((L,i)=>{ const s=R.stops[L.k];
+    return `<div class="dm-row ${L.late>0.5?'late':''}"><span class="dm-n">${i+1}</span><span class="dm-j">Job ${s.n} · ${esc(nm(s))}</span>
+      <span class="dm-eta">${ampm(L.arr)}</span>${s.j.avail?`<span class="dm-av">${esc(availLabel(s.j.avail))}</span>`:''}
+      ${L.wait>=10?`<span class="dm-wait">waits ${fmtDur(L.wait)}</span>`:''}${L.late>0.5?`<span class="dm-lt">⚠ ${s.j.avail==='am'?'after 12':s.j.avail==='pm'?'after 5pm':availParse(s.j.avail)?'after '+ampm(availParse(s.j.avail).t):'late'}</span>`:''}</div>`; }).join('');
+  const placeBtn=x=>officeCan?` <button class="dm-place" onclick="startPlace('${esc(x.j.eircode)}')">📍 Place on map</button>`:'';
+  const off=[...R.noEir.map(x=>`Job ${x.n} has no Eircode`), ...(R.notFound||[]).map(x=>`Job ${x.n}: Eircode ${esc(x.j.eircode)} not found${placeBtn(x)}`),
+    ...R.stops.filter(s=>s.p.approx).map(s=>`Job ${s.n}: ${esc(s.j.eircode)} only found roughly — ${officeCan?'drag its pin onto the house':'office to check'}`)];
+  if(placing) off.unshift(`<b class="dm-placing">👆 Tap the map where ${esc(placing)} is</b> <button class="dm-place" onclick="placing=null;drawDayMap('${siteId}')">Cancel</button>`);
+  const gone=R.all.length-R.open.length;
+  sum.innerHTML=R.stops.length?`<div class="dm-list">${rows}${R.cfg.round?`<div class="dm-row back"><span class="dm-n">🏠</span><span class="dm-j">Back at depot</span><span class="dm-eta">${ampm(show.finish)}</span></div>`:''}</div>
+    <div class="dm-foot">${show===R.best&&!inBest?'Best route':'Job order'} · starts ${ampm(R.cfg.start)} from the depot · about ${R.cfg.svc} min per job${R.M.ok?'':' · times estimated'}
+    ${gone?` · ${gone} finished job${gone===1?'':'s'} off the map`:''}${officeCan?' · drag a pin to correct it':''}${off.length?`<div class="dm-warn">⚠ ${off.join(' · ')}</div>`:''}</div>`:(off.length?`<div class="dm-foot"><div class="dm-warn">⚠ ${off.join(' · ')}</div></div>`:'');
+  // the map itself — one map per visit, moved into each redraw
+  try{
+    const L=await loadLeaflet(); if(!$('day-map')) return;
+    if(!tmap){ tmapHost=document.createElement('div'); tmapHost.style.cssText='width:100%;height:100%'; box.innerHTML=''; box.appendChild(tmapHost);
+      tmap=L.map(tmapHost,{zoomControl:true, attributionControl:true}); tmapTiles=L.tileLayer(tileUrl(),{maxZoom:19, attribution:'© TomTom'}).addTo(tmap); tmapLayer=L.layerGroup().addTo(tmap);
+      tmap.on('click',e=>{ if(placing) placeEir(placing, e.latlng.lat, e.latlng.lng); }); }
+    else { box.innerHTML=''; box.appendChild(tmapHost); tmap.invalidateSize(); }
+    tmapLayer.clearLayers(); tmapHost.classList.toggle('placing',!!placing);
+    const tok=++mapDrawTok;
+    const pts=[R.depot, ...show.order.map(k=>R.stops[k].p), ...(R.cfg.round?[R.depot]:[])];
+    const colour=(view==='best'||(inBest&&undo))?'#16a34a':'#4f46e5';
+    const pin=(html,cls)=>L.divIcon({html, className:'tt-pin-wrap', iconSize:[30,30], iconAnchor:[15,15]});
+    L.marker([R.depot.lat,R.depot.lng],{icon:pin('<div class="tt-pin home">🏠</div>'), title:'Depot', zIndexOffset:-100}).addTo(tmapLayer);
+    show.order.forEach((k,i)=>{ const s=R.stops[k], Lg=show.legs[i], c=Lg.late>0.5?'#dc2626':colour;
+      const m=L.marker([s.p.lat,s.p.lng],{icon:pin(`<div class="tt-pin ${s.p.approx?'approx':''}" style="background:${c}">${s.n}</div>`), title:`Job ${s.n} · ${nm(s)} · ${ampm(Lg.arr)}${s.p.approx?' · rough position — drag onto the house':''}`, draggable:officeCan}).addTo(tmapLayer);
+      if(officeCan) m.on('dragend',()=>{ const q=m.getLatLng(); placeEir(s.j.eircode, q.lat, q.lng); }); });
+    const b=L.latLngBounds(pts.map(p=>[p.lat,p.lng])); if(pts.length>1) tmap.fitBounds(b,{padding:[34,34]}); else tmap.setView([R.depot.lat,R.depot.lng],12);
+    if(show.order.length){
+      const line=await routeLine(pts); if(tok!==mapDrawTok) return;   // a newer redraw has taken over
+      L.polyline(line||pts.map(p=>[p.lat,p.lng]),{color:colour, weight:5, opacity:.8, dashArray:line?null:'8 8'}).addTo(tmapLayer);
+    }
+  }catch(e){ box.innerHTML=`<div class="dm-msg pad">The map couldn't load (${esc(e.message||e)}).</div>`; }
+}
+
+// 🧭 Navigate: the rest of today's open jobs in job order, from where the phone is now
+async function openDayRoute(siteId){
+  await loadRouteData();
+  const open=dayJobsOrdered(siteId).filter(x=>isOpenJob(x.j) && x.j.eircode && eirValid(x.j.eircode));
+  if(!open.length) return toast('No open jobs with an Eircode on this day.');
+  const loc=x=>{ const g=geoCache.get(normEir(x.j.eircode)); return g?`${g.lat},${g.lng}`:x.j.eircode+', Ireland'; };
+  let stops=open.map(loc);
+  if(routeCfg&&routeCfg.round_trip&&routeCfg.depot_eircode) stops.push(routeCfg.depot_eircode+', Ireland');
+  if(stops.length>10){ toast('Google Maps takes 10 stops at a time — opening the first 10',4000); stops=stops.slice(0,10); }
+  const dest=stops.pop();
+  const url=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}${stops.length?'&waypoints='+encodeURIComponent(stops.join('|')):''}&travelmode=driving`;
+  window.open(url,'_blank');
+}
+
 function telHref(p){ return 'tel:'+String(p||'').replace(/[^\d+]/g,''); }
 function contactChips(j, small){
   const c=[];
@@ -1979,7 +2377,7 @@ function slotCard(j,n){
   return `<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'}" data-job="${j.id}" onclick="openJob('${j.id}')">
     <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${outcomeTag(j)}</div>
     <div class="slot-pdf">📄${(manNotes(j).notes||manNotes(j).photos)?'<span class="pdf-dot" title="Has notes">💬</span>':''}</div>
-    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${j.customer_phone||j.customer_phone2?`<div class="slot-cc">${contactChips(j,true)}</div>`:''}
+    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${j.customer_phone||j.customer_phone2||j.eircode||j.avail?`<div class="slot-cc">${contactChips(j,true)}${eirChip(j)}${isOffice?availChip(j):''}</div>`:''}
     ${notesBadge(j)}
     ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button><button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
@@ -2038,6 +2436,7 @@ function openSlotModal(fl){ if(blockPreview()) return;
       <div class="field-group"><label>Phone number</label><input id="m-ph" type="tel" placeholder="e.g. 087 123 4567" autocomplete="off"></div>
       <div class="field-group"><label>Second phone <span class="optional">(if any)</span></label><input id="m-ph2" type="tel" placeholder="optional" autocomplete="off"></div>
       <div class="field-group sf-wide"><label>Email address <span class="optional">(if any)</span></label><input id="m-email" type="email" placeholder="e.g. mary@gmail.com" autocomplete="off"></div>
+      ${hasRoute?availField():''}
     </div>
     <label class="drop" id="m-drop" for="m-file">
       <span class="drop-icon">📄</span>
@@ -2058,10 +2457,11 @@ async function slotUpload(n){ if(blockPreview()) return;
   if(!ref && !cust) return toast('Add the job number or the customer name.');
   if(contact.customer_email && !/^\S+@\S+\.\S+$/.test(contact.customer_email)) return toast('That email address doesn\'t look right.');
   if(!pendingFiles.length) return toast('Add the job sheet (PDF or photo) first.');
+  const route=readAvail(); if(route===false) return;
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Uploading…';
   try{
     n=nextJobNo(currentSiteId);   // stays in order even if another job was added meanwhile
-    await doUpload({files:pendingFiles, title:`Job ${n}${cust?' – '+cust:''}`, ref, note, contact});
+    await doUpload({files:pendingFiles, title:`Job ${n}${cust?' – '+cust:''}`, ref, note, contact, route});
     pendingFiles=[]; closeModal(); toast(`Job ${n} sent to ${firstName(prof(currentTechId).full_name)} ✓`);
   }catch(e){ btn.disabled=false; btn.textContent='⬆ Try again'; return toast('Upload failed: '+(e.message||e),6000); }
   await loadData(); renderPortal();
@@ -2611,7 +3011,7 @@ async function buildUploadPdf(files){
   return await out.save();
 }
 // Upload a sheet as a new job for the current man + site/day
-async function doUpload({files, title, ref, note, contact}){
+async function doUpload({files, title, ref, note, contact, route}){
   const id=uuid(), path=`${filePrefix(dept,currentTechId)}/${id}/original.pdf`;
   const bytes=await buildUploadPdf(files);
   const up=await sb.storage.from(BUCKET).upload(path, new Blob([bytes],{type:'application/pdf'}), {contentType:'application/pdf'});
@@ -2620,7 +3020,9 @@ async function doUpload({files, title, ref, note, contact}){
     notes:null, pdf_path:path, pdf_bytes:bytes.length, created_by:me.id };
   const hasC=contact && Object.values(contact).some(Boolean);
   if(hasC && hasContact) Object.assign(row, contact);
+  if(route && hasRoute && (route.eircode||route.avail)) Object.assign(row, route);
   let ins=await sb.from('jobs').insert(row);
+  if(ins.error && /eircode|avail/i.test(ins.error.message)){ hasRoute=false; delete row.eircode; delete row.avail; ins=await sb.from('jobs').insert(row); setTimeout(()=>toast('⚠️ Eircode not saved — run update-15 in Supabase',8000),1200); }
   if(ins.error && /customer_/i.test(ins.error.message)){ hasContact=false; ['customer_phone','customer_phone2','customer_email'].forEach(k=>delete row[k]); ins=await sb.from('jobs').insert(row); }
   if(!ins.error && hasC && !hasContact){   // database not updated yet → job still sent, contact details go in the chat
     await sb.from('comments').insert({job_id:id, author_id:me.id, body:'Customer contact: '+[contact.customer_phone,contact.customer_phone2,contact.customer_email].filter(Boolean).join(' · ')});
@@ -2654,6 +3056,7 @@ function editJob(id){ if(blockPreview()) return;
       <div class="field-group"><label>Phone number</label><input id="m-ph" type="tel" value="${esc(j.customer_phone||'')}"></div>
       <div class="field-group"><label>Second phone</label><input id="m-ph2" type="tel" value="${esc(j.customer_phone2||'')}"></div>
       <div class="field-group sf-wide"><label>Email address</label><input id="m-email" type="email" value="${esc(j.customer_email||'')}"></div></div>`:''}
+    ${hasRoute&&deptOf(j)==='calls'?`<div class="slot-form">${availField(j)}</div>`:''}
     <div class="field-group"><label>${DEPT[deptOf(j)].one}</label><select id="m-site">${sites.filter(s=>s.serviceman_id===j.serviceman_id&&deptOf(s)===deptOf(j)).map(s=>`<option value="${s.id}" ${s.id===j.site_id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
     <div class="field-group" style="margin-bottom:6px"><label>Replace the sheet <span class="optional">(optional — only if you uploaded the wrong one)</span></label></div>
     <label class="drop has-files" id="m-drop" for="m-file" data-empty="Drag the correct sheet here">
@@ -2673,6 +3076,7 @@ async function saveJobEdit(){
   const j=jobs.find(x=>x.id===editingId) || (job&&job.id===editingId?job:null); if(!j) return closeModal();
   const row={title:$('m-title').value.trim()||j.title, ref_no:$('m-ref').value.trim()||null, site_id:$('m-site').value};
   if(hasContact && $('m-ph')) Object.assign(row,{customer_phone:$('m-ph').value.trim()||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:$('m-email').value.trim()||null});
+  if(hasRoute && $('m-eir')){ const r=readAvail(); if(r===false) return; Object.assign(row,r); }
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
   try{
     if(pendingFiles.length){
@@ -2766,7 +3170,7 @@ function updateJobHeader(){
   const s=sites.find(x=>x.id===job.site_id)||{}, t=prof(job.serviceman_id);
   $('jv-title').textContent=job.title;
   $('jv-sub').textContent=[DEPT[deptOf(job)].label, s.name, isOffice?t.full_name:null, job.ref_no?('#'+job.ref_no):null].filter(Boolean).join(' · ');
-  $('jv-cc').innerHTML=contactChips(job); $('jv-cc').classList.toggle('hidden', !$('jv-cc').innerHTML);
+  $('jv-cc').innerHTML=contactChips(job)+eirChip(job)+(isOffice?availChip(job):''); $('jv-cc').classList.toggle('hidden', !$('jv-cc').innerHTML);
   const cur=jobOutcome(job);
   document.querySelectorAll('#oc-group .done-btn').forEach(b=>{ const on=b.dataset.o===cur; b.classList.toggle('on',on); b.querySelector('.box').textContent=on?'✓':''; });
   $('dl-marked').classList.toggle('hidden',!job.marked_path);
