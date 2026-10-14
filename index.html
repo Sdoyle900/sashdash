@@ -602,7 +602,24 @@
     .dm-place{border:1.5px solid #fdba74;background:#fff7ed;color:#9a3412;border-radius:7px;padding:2px 8px;font-weight:700;font-size:12px;cursor:pointer;margin-left:4px}
     .dm-placing{color:var(--indigo)}
     .day-map .leaflet-container{font-family:inherit}
-  </style>
+      /* 🤝 share / cover */
+    .tag.share{background:#ede9fe;color:#5b21b6}
+    .share-strip{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px}
+    .sh-chip{display:inline-flex;align-items:center;gap:6px;background:#f5f3ff;border:1.5px solid #c4b5fd;color:#4c1d95;border-radius:999px;padding:5px 6px 5px 12px;font-size:12.5px}
+    .sh-chip.in{background:#ecfeff;border-color:#67e8f9;color:#155e75}
+    .sh-stop{border:none;background:#fff;color:#991b1b;border-radius:999px;padding:3px 9px;font-weight:700;font-size:11.5px;cursor:pointer}
+    .cover-head{display:flex;gap:12px;align-items:center;margin:22px 0 0;background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:12px;padding:12px 14px;color:#4c1d95}
+    .cover-head .cv-ic{font-size:26px}.cover-head small{display:block;color:#6d28d9;font-size:12px;margin-top:2px}
+    .cover-grid{margin-top:10px}.cover-grid .slot{border-color:#ddd6fe}
+    .site-tab.shared{border-style:dashed;border-color:#a78bfa}.site-tab.shared .cov-of{display:block;font-size:10.5px;font-weight:700;color:#7c3aed}
+    .site-tab.shared.active .cov-of{color:#ede9fe}
+    .sh-what{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:14px}
+    .sh-when label.chk{margin-bottom:6px}
+    .sh-dates{display:flex;align-items:center;gap:8px;margin:4px 0 0 26px;flex-wrap:wrap}.sh-dates input{width:auto}
+    .slot-cov{margin-top:4px}
+    .cov-dot{position:absolute;top:-8px;left:-6px;font-size:14px}
+    .site-head .sh-btn{border-color:#c4b5fd;color:#5b21b6}
+</style>
 </head>
 <body>
 
@@ -811,7 +828,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="${esc(who)} left notes on this job — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-13-1705';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-14-1615';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1039,8 +1056,9 @@ async function loadData(){
   if(err){ toast('Could not load: '+err.message, 5000); return; }
   profiles=pr.data; sites=si.data; jobs=jo.data;
   { const r=await sb.from('order_requests').select('*').order('created_at',{ascending:false}).limit(300); orderReqs = r.error ? [] : (r.data||[]); }
+  { const r=await sb.from('job_shares').select('*'); hasShares=!r.error; shares = r.error ? [] : (r.data||[]); }
   if(previewing){   // show only what that person's own login is allowed to see
-    if(me.role==='serviceman'){ sites=sites.filter(x=>x.serviceman_id===me.id); jobs=jobs.filter(x=>x.serviceman_id===me.id); }
+    if(me.role==='serviceman'){ const cov=coverJobsFor(me.id); sites=sites.filter(x=>x.serviceman_id===me.id||cov.some(j=>j.site_id===x.id)); jobs=jobs.filter(x=>x.serviceman_id===me.id||cov.includes(x)); shares=shares.filter(s=>s.cover_id===me.id||s.owner_id===me.id); }
     else if(me.role==='service_office'){ sites=sites.filter(x=>deptOf(x)==='calls'); jobs=jobs.filter(x=>deptOf(x)==='calls'); }
     const fresh=profiles.find(x=>x.id===me.id); if(fresh) me=fresh;
   }
@@ -1059,6 +1077,7 @@ function rerenderCurrent(){
 function subscribeRealtime(){
   if(realtime) sb.removeChannel(realtime);
   realtime = sb.channel('sashdash-live')
+    .on('postgres_changes',{event:'*',schema:'public',table:'job_shares'}, ()=>scheduleReload())
     .on('postgres_changes',{event:'*',schema:'public',table:'jobs'}, payload=>{
       scheduleReload();
       if(job && payload.new && payload.new.id===job.id && payload.eventType==='UPDATE' && !dirty){
@@ -1090,7 +1109,7 @@ function deptsForMe(){
   if(isAdmin) return ['sites','calls'];
   if(isCallsOffice || realMe.role==='service_office') return ['calls'];
   const d=[]; if(me.on_sites!==false||sites.some(s=>deptOf(s)==='sites')) d.push('sites');
-  if(me.on_calls!==false&&(sites.some(s=>deptOf(s)==='calls')||me.on_calls===true)) d.push('calls');
+  if((me.on_calls!==false&&(sites.some(s=>deptOf(s)==='calls')||me.on_calls===true))||coverJobsFor(me.id,'calls').length) d.push('calls');
   return d.length?d:['sites'];
 }
 function renderDeptBar(){
@@ -1099,7 +1118,7 @@ function renderDeptBar(){
   if(ds.length<2 && !isOffice){ bar.classList.add('hidden'); return; }
   bar.classList.remove('hidden');
   bar.innerHTML=`<div class="dept-inner">${ds.map(d=>{
-    const dj=dJobs(d).filter(j=>isOffice||j.serviceman_id===me.id), open=dj.filter(j=>!j.completed).length, news=dj.some(unreadForMe);
+    const dj=dJobs(d).filter(j=>isOffice||j.serviceman_id===me.id||coverOf(j).includes(me.id)), open=dj.filter(j=>!j.completed).length, news=dj.some(unreadForMe);
     return `<button class="dept-btn ${d===dept?'on':''} d-${d}" onclick="setDept('${d}')" title="${isOffice?'Go to the '+DEPT[d].label+' main page':DEPT[d].label}">${news?'<span class="dot"></span>':''}<span class="di">${DEPT[d].icon}</span>${DEPT[d].label}<span class="dc">${open}</span></button>`;}).join('')}</div>`;
 }
 function setDept(d){
@@ -1914,22 +1933,27 @@ function renderPortal(){
     calWeek = weeks.includes(thisWk) ? thisWk : (weeks.find(w=>w>thisWk) || weeks[weeks.length-1]);
   }
   const weekDays = dept==='calls' && calWeek ? dated.filter(s=>ymd(mondayOf(parseYmd(s.work_date)))===calWeek) : [];
-  const visible = dept==='calls' ? [...weekDays, ...undated] : mySites;
+  const cJobs=coverJobsFor(currentTechId, dept);      // other men's jobs he's covering
+  const sharedSites=dept==='calls'?[]:[...new Set(cJobs.map(j=>j.site_id))].map(id=>sites.find(s=>s.id===id)).filter(Boolean);
+  const visible = dept==='calls' ? [...weekDays, ...undated] : [...mySites, ...sharedSites];
   if(!visible.find(s=>s.id===currentSiteId)){
     const today=weekDays.find(s=>s.work_date===todayYmd());
     currentSiteId=(today||visible[0]||{}).id||null;
   }
   const site=visible.find(s=>s.id===currentSiteId);
   const tJobs=dJobs().filter(j=>j.serviceman_id===currentTechId);
+  const jobsFor=s=>s.serviceman_id===currentTechId ? tJobs.filter(j=>j.site_id===s.id)
+    : cJobs.filter(j=>j.site_id===s.id);
+  const tabJobs=s=>s.work_date ? [...jobsFor(s), ...cJobs.filter(j=>{ const x=siteOf(j); return x&&x.work_date===s.work_date; })] : jobsFor(s);
 
   let html='';
   if(isOffice){
     html+=`<div class="crumbs">${techs().map(x=>{const n=dJobs().filter(j=>j.serviceman_id===x.id&&j.admin_unread).length;
       return `<button class="team-chip ${x.id===currentTechId?'active':''}" onclick="openPortal('${x.id}')"><span class="avatar sm" style="--c:${esc(x.colour)}">${esc(initials(x.full_name))}</span>${esc(firstName(x.full_name))}${n?'<span class="dot"></span>':''}</button>`;}).join('')}</div>`;
-    html+=`<div class="row"><div><div class="page-title">${esc(t.full_name)} · ${D.label}</div><div class="page-sub">${tJobs.filter(j=>!j.completed).length} open · ${tJobs.filter(j=>j.completed).length} completed${t.phone?' · '+esc(t.phone):''}</div></div></div>`;
+    html+=`<div class="row"><div><div class="page-title">${esc(t.full_name)} · ${D.label}</div><div class="page-sub">${tJobs.filter(j=>!j.completed).length} open · ${tJobs.filter(j=>j.completed).length} completed${t.phone?' · '+esc(t.phone):''}</div></div></div>`+shareStrip(currentTechId);
   } else {
     const open=tJobs.filter(j=>!j.completed).length;
-    html+=`<div class="page-title">Hi ${esc(firstName(me.full_name))} 👋</div><div class="page-sub">${D.label}: ${open} open job${open===1?'':'s'}${dept==='calls'?'':` across ${mySites.length} ${mySites.length===1?D.one:D.many.toLowerCase()}`}</div>`;
+    html+=`<div class="page-title">Hi ${esc(firstName(me.full_name))} 👋</div><div class="page-sub">${D.label}: ${open} open job${open===1?'':'s'}${dept==='calls'?'':` across ${mySites.length} ${mySites.length===1?D.one:D.many.toLowerCase()}`}${cJobs.length?` · 🤝 covering ${cJobs.filter(j=>!j.completed).length} for ${[...new Set(cJobs.map(j=>firstName(prof(j.serviceman_id).full_name)))].join(' & ')}`:''}</div>`;
   }
 
   if(dept==='calls'){
@@ -1945,8 +1969,8 @@ function renderPortal(){
     if(calOpen()) html+=monthCalendar(mySites, tJobs, site);
   }
   if(!isOffice && dept==='sites') html+=`<button class="order-req-btn" onclick="openOrderRequest()"><span>📋</span>Order request<small>Scan an order and send it to the office</small></button>`+myOrdersBar();
-  html+=`<div class="site-label">${dept==='calls'?'Days':D.many}</div><div class="site-tabs">${visible.map(s=>{const sj=tJobs.filter(j=>j.site_id===s.id);const o=sj.filter(j=>!j.completed).length;const u=sj.some(unreadForMe);
-      return `<button class="site-tab ${s.id===currentSiteId?'active':''}" onclick="setSite('${s.id}')" title="${o} open job${o===1?'':'s'}">${u?'<span class="dot"></span>':''}${s.work_date?`<span class="day-tab"><b>${parseYmd(s.work_date).toLocaleDateString('en-IE',{weekday:'short'})}</b><small>${parseYmd(s.work_date).toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</small></span>${s.work_date===todayYmd()?'<span class="today">TODAY</span>':''}`:`<span class="pin">${D.pin}</span>${esc(s.name)}`} <span class="cnt">${o}</span></button>`;}).join('')}
+  html+=`<div class="site-label">${dept==='calls'?'Days':D.many}</div><div class="site-tabs">${visible.map(s=>{const sj=tabJobs(s);const o=sj.filter(j=>!j.completed).length;const u=sj.some(unreadForMe);const shd=s.serviceman_id!==currentTechId, cov=!shd&&s.work_date&&cJobs.some(j=>{const x=siteOf(j);return x&&x.work_date===s.work_date;});
+      return `<button class="site-tab ${s.id===currentSiteId?'active':''} ${shd?'shared':''}" onclick="setSite('${s.id}')" title="${o} open job${o===1?'':'s'}${shd?' — shared from '+esc(firstName(prof(s.serviceman_id).full_name)):''}${cov?' — includes jobs you are covering':''}">${u?'<span class="dot"></span>':''}${cov?'<span class="cov-dot" title="Covering">🤝</span>':''}${s.work_date?`<span class="day-tab"><b>${parseYmd(s.work_date).toLocaleDateString('en-IE',{weekday:'short'})}</b><small>${parseYmd(s.work_date).toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</small></span>${s.work_date===todayYmd()?'<span class="today">TODAY</span>':''}`:`<span class="pin">${shd?'🤝':D.pin}</span>${esc(s.name)}${shd?`<small class="cov-of">${esc(firstName(prof(s.serviceman_id).full_name))}'s</small>`:''}`} <span class="cnt">${o}</span></button>`;}).join('')}
     ${isOffice&&dept!=='calls'?`<button class="site-tab add" onclick="openSiteModal()">＋ New ${D.one}</button>`:''}</div>`;
 
   if(!site){
@@ -1959,7 +1983,7 @@ function renderPortal(){
     $('view-portal').innerHTML=html; return;
   }
 
-  const sJobs=tJobs.filter(j=>j.site_id===site.id);
+  const sJobs=jobsFor(site), sharedSite=site.serviceman_id!==currentTechId;
   const stOf=j=> jobOutcome(j) || (j.completed?'done':'open');     // open · done · not_home · rebook
   const shown=sJobs.filter(j=>jobFilter==='all'||stOf(j)===jobFilter);
   const cnt=k=>sJobs.filter(j=>stOf(j)===k).length;
@@ -1970,7 +1994,9 @@ function renderPortal(){
       .filter(([k,,n])=>k==='all'||k==='open'||k==='done'||n).map(([k,l,n])=>`<button class="${jobFilter===k?'on':''} f-${k}" onclick="setFilter('${k}')">${l} (${n})</button>`).join('')}</div>
     ${isOffice&&site.work_date&&hasRoute?`<button class="btn-outline ${dayMapOn()?'cal-toggle on':''}" onclick="toggleDayMap()" title="Show / hide the day map">🗺 ${dayMapOn()?'Hide map':'Map'}</button>${sJobs.some(j=>isOpenJob(j)&&j.eircode)?`<button class="btn-outline" onclick="openDayRoute('${site.id}')" title="Open the day's open jobs in Google Maps">🧭 Navigate</button>`:''}`:''}
     ${isOffice&&site.work_date&&sJobs.length?`<button class="btn-outline" onclick="printDay('${site.id}')" title="Print every job sheet for this day, in job-number order">🖨 Print day</button>`:''}
-    ${isOffice?`<button class="btn-outline" onclick="openSiteModal('${site.id}')">✎ ${site.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1)}</button>${site.work_date?'':'<button class="btn-primary" onclick="openUploadModal()">⬆ Upload job</button>'}`:''}
+    ${isOffice&&hasShares&&!sharedSite&&sJobs.length?`<button class="btn-outline sh-btn" onclick="openShareModal(${site.work_date?`{kind:'days',date:'${site.work_date}'}`:`{kind:'site',siteId:'${site.id}'}`})" title="Let another service man cover ${site.work_date?'this day':'this folder'}">🤝 Share</button>`:''}
+    ${isOffice&&!sharedSite?`<button class="btn-outline" onclick="openSiteModal('${site.id}')">✎ ${site.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1)}</button>${site.work_date?'':'<button class="btn-primary" onclick="openUploadModal()">⬆ Upload job</button>'}`:''}
+    ${sharedSite?`<span class="tag share">🤝 ${esc(firstName(prof(site.serviceman_id).full_name))}'s folder — shared</span>`:''}
   </div>`;
   // Private Calls day: numbered job boxes — Job 1, Job 2, Job 3… plus a drop box for the next one
   if(site.work_date){
@@ -1983,8 +2009,9 @@ function renderPortal(){
       ${isOffice&&(jobFilter==='all'||jobFilter==='open')?`<div class="slot-new" id="slot-new" role="button" tabindex="0" onclick="openSlotModal()">
         <span class="slot-no">JOB ${next}</span><span class="slot-plus">＋</span>
         <span class="slot-hint">Click to add job ${next}<br>or drag the PDF here</span></div>`:''}
-      ${!list.length&&!(isOffice&&(jobFilter==='all'||jobFilter==='open'))?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>${jobFilter==='all'?'No jobs for this day yet.':'No jobs with this status on this day.'}</div>`:''}
+      ${!list.length&&!(isOffice&&(jobFilter==='all'||jobFilter==='open'))&&!(jobFilter==='all'&&coverJobsFor(currentTechId,'calls').some(j=>{const x=siteOf(j);return x&&x.work_date===site.work_date;}))?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>${jobFilter==='all'?'No jobs for this day yet.':'No jobs with this status on this day.'}</div>`:''}
     </div>`;
+    if(jobFilter==='all') html+=coverDayHtml(currentTechId, site.work_date);
     $('view-portal').innerHTML=html; attachSlotDrop(); if(isOffice && !previewing && jobFilter==='all') attachSlotReorder(site.id);
     if(hasRoute && isOffice && dayMapOn()) drawDayMap(site.id); return;
   }
@@ -2337,6 +2364,133 @@ async function openDayRoute(siteId){
   window.open(url,'_blank');
 }
 
+// ══════════════════════════════════════════════════════════════════
+//  🤝 SHARE / COVER — the office lets one man cover another's job, folder,
+//  day, week or any run of days. The jobs stay the original man's: whatever
+//  the covering man does is saved on those jobs. It ends by itself.
+// ══════════════════════════════════════════════════════════════════
+let shares=[], hasShares=true;
+const shareActive=s=>s.ends>=todayYmd();
+function siteOf(j){ return sites.find(s=>s.id===j.site_id); }
+function shareHits(sh,j){
+  if(j.serviceman_id!==sh.owner_id) return false;
+  if(sh.kind==='job')  return j.id===sh.job_id;
+  if(sh.kind==='site') return j.site_id===sh.site_id;
+  if(sh.kind==='days'){ const s=siteOf(j); return !!s && deptOf(s)==='calls' && !!s.work_date && s.work_date>=sh.starts && s.work_date<=sh.ends; }
+  return false;
+}
+function sharesOn(j){ return shares.filter(s=>shareActive(s)&&shareHits(s,j)); }
+function coverOf(j){ return [...new Set(sharesOn(j).map(s=>s.cover_id))]; }
+function coverJobsFor(techId,d){
+  const my=shares.filter(s=>shareActive(s)&&s.cover_id===techId); if(!my.length) return [];
+  return jobs.filter(j=>j.serviceman_id!==techId && (!d||deptOf(j)===d) && my.some(s=>shareHits(s,j)));
+}
+function untilTxt(s){ return s.ends===todayYmd()?'today only':'until '+dayLabel(s.ends); }
+function coverTag(j){
+  const viewing=isOffice?($('view-portal')&&!$('view-portal').classList.contains('hidden')?currentTechId:null):(me&&me.id);
+  if(viewing && j.serviceman_id!==viewing) return `<span class="tag share">🤝 ${esc(firstName(prof(j.serviceman_id).full_name))}'s job</span>`;
+  const c=coverOf(j); return c.length?`<span class="tag share" title="Shared with another service man">🤝 ${c.map(id=>esc(firstName(prof(id).full_name))).join(', ')} covering</span>`:'';
+}
+function shareWhat(s){
+  const ow=firstName(prof(s.owner_id).full_name);
+  if(s.kind==='job'){ const j=jobs.find(x=>x.id===s.job_id); return j?`${ow}'s ${j.title}`:`one of ${ow}'s jobs`; }
+  if(s.kind==='site'){ const x=sites.find(y=>y.id===s.site_id); return `${ow}'s ${x?x.name:'folder'}`; }
+  return `${ow}'s ${s.starts===s.ends?dayLabel(s.starts):dayLabel(s.starts)+' – '+dayLabel(s.ends)}`;
+}
+// strip on a man's page (office): what he has shared out, and what he's covering
+function shareStrip(techId){
+  if(!isOffice) return '';
+  const out=shares.filter(s=>shareActive(s)&&s.owner_id===techId), inn=shares.filter(s=>shareActive(s)&&s.cover_id===techId);
+  if(!out.length&&!inn.length) return '';
+  const stop=s=>previewing?'':`<button class="sh-stop" onclick="stopShare('${s.id}')" title="Stop sharing">✕ Stop</button>`;
+  return `<div class="share-strip">${out.map(s=>`<span class="sh-chip">🤝 <b>${esc(shareWhat(s))}</b> → ${esc(firstName(prof(s.cover_id).full_name))} · ${untilTxt(s)} ${stop(s)}</span>`).join('')}
+    ${inn.map(s=>`<span class="sh-chip in">🤝 Covering <b>${esc(shareWhat(s))}</b> · ${untilTxt(s)} ${stop(s)}</span>`).join('')}</div>`;
+}
+// the covering section on a man's Private Calls day
+function coverDayHtml(techId,date){
+  const cj=coverJobsFor(techId,'calls').filter(j=>{ const s=siteOf(j); return s&&s.work_date===date; }); if(!cj.length) return '';
+  const owners=[...new Set(cj.map(j=>j.serviceman_id))];
+  return owners.map(o=>{
+    const all=jobs.filter(j=>j.site_id===cj.find(x=>x.serviceman_id===o).site_id).sort((a,b)=>a.created_at<b.created_at?-1:1);
+    const num=new Map(all.map((j,i)=>[j.id, jobNo(j)||i+1]));
+    const list=cj.filter(j=>j.serviceman_id===o).sort((a,b)=>num.get(a.id)-num.get(b.id));
+    const sh=shares.filter(s=>shareActive(s)&&s.cover_id===techId&&s.owner_id===o&&list.some(j=>shareHits(s,j)));
+    const note=sh.map(s=>s.note).filter(Boolean).join(' · ');
+    return `<div class="cover-head"><span class="cv-ic">🤝</span><div><b>Covering for ${esc(prof(o).full_name)}</b> · ${esc(dayLabel(date))} · ${list.length} job${list.length===1?'':'s'}
+      <small>Anything you do here is saved on ${esc(firstName(prof(o).full_name))}'s jobs${note?` · Office: “${esc(note)}”`:''}</small></div></div>
+      <div class="slot-grid cover-grid">${list.map(j=>slotCard(j,num.get(j.id))).join('')}</div>`;
+  }).join('');
+}
+// ── Share box (office) ──
+let shareCtx=null;
+function openShareModal(o){ if(blockPreview()) return;
+  const j=o.jobId?jobs.find(x=>x.id===o.jobId):null, s=o.siteId?sites.find(x=>x.id===o.siteId):(j?siteOf(j):null);
+  const owner=j?j.serviceman_id:(s?s.serviceman_id:currentTechId), ow=prof(owner), d=j?deptOf(j):(s?deptOf(s):dept);
+  const kind=o.kind; shareCtx={kind, owner, jobId:j&&j.id, siteId:s&&s.id, date:o.date||(s&&s.work_date)};
+  const men=profiles.filter(p=>p.role==='serviceman'&&p.id!==owner).sort((a,b)=>inDept(b,d)-inDept(a,d));
+  const today=todayYmd(), sat=ymd(addDays(mondayOf(new Date()),5));
+  let what='', when='';
+  if(kind==='days'){
+    const mon=ymd(mondayOf(parseYmd(shareCtx.date))), wsat=ymd(addDays(parseYmd(mon),5));
+    const n=jobs.filter(x=>x.serviceman_id===owner&&siteOf(x)&&siteOf(x).work_date===shareCtx.date).length;
+    what=`${esc(firstName(ow.full_name))}'s Private Calls on <b>${esc(dayLong(shareCtx.date))}</b> (${n} job${n===1?'':'s'})`;
+    when=`<label>Which days</label>
+      <label class="chk"><input type="radio" name="sh-span" value="day" checked onchange="shareSpan()"> Just ${esc(dayLabel(shareCtx.date))}</label>
+      <label class="chk"><input type="radio" name="sh-span" value="week" onchange="shareSpan()"> The whole week — ${esc(dayLabel(mon))} to ${esc(dayLabel(wsat))}</label>
+      <label class="chk"><input type="radio" name="sh-span" value="pick" onchange="shareSpan()"> Choose the days</label>
+      <div class="sh-dates hidden" id="sh-pick"><span>From</span><input type="date" id="sh-from" value="${shareCtx.date}"><span>to</span><input type="date" id="sh-to" value="${shareCtx.date}"></div>
+      <input type="hidden" id="sh-mon" value="${mon}"><input type="hidden" id="sh-sat" value="${wsat}">`;
+  } else {
+    what=kind==='job'?`${esc(firstName(ow.full_name))}'s <b>${esc(j.title)}</b>${s&&s.work_date?' · '+esc(dayLabel(s.work_date)):(s?' · '+esc(s.name):'')}`
+      :`${esc(firstName(ow.full_name))}'s whole <b>${esc(s.name)}</b> folder (${jobs.filter(x=>x.site_id===s.id).length} jobs)`;
+    when=`<label>For how long</label>
+      <label class="chk"><input type="radio" name="sh-until" value="${today}" checked onchange="shareSpan()"> Today only</label>
+      <label class="chk"><input type="radio" name="sh-until" value="${ymd(addDays(new Date(),1))}" onchange="shareSpan()"> Until tomorrow</label>
+      ${sat>today?`<label class="chk"><input type="radio" name="sh-until" value="${sat}" onchange="shareSpan()"> Until the end of this week (${esc(dayLabel(sat))})</label>`:''}
+      <label class="chk"><input type="radio" name="sh-until" value="pick" onchange="shareSpan()"> Until a date…</label>
+      <div class="sh-dates hidden" id="sh-pick"><span>Until</span><input type="date" id="sh-to" value="${ymd(addDays(new Date(),7))}" min="${today}"></div>`;
+  }
+  openModal(`<h2>🤝 Share with another service man</h2>
+    <div class="sh-what">${what}</div>
+    <div class="field-group"><label>Share with</label><select id="sh-man">${men.map(p=>`<option value="${p.id}">${esc(p.full_name)}${inDept(p,d)?'':' (not usually on '+DEPT[d].label+')'}</option>`).join('')}</select></div>
+    <div class="field-group sh-when">${when}</div>
+    <div class="field-group"><label>Note to him <span class="optional">(optional)</span></label><input id="sh-note" placeholder="e.g. Alan is out sick — thanks for covering"></div>
+    <div class="rs-note">He'll see these jobs on his phone under “🤝 Covering for ${esc(firstName(ow.full_name))}”. Everything he does — mark-ups, messages, photos, All done — is saved on ${esc(firstName(ow.full_name))}'s jobs. ${esc(firstName(ow.full_name))} still sees them as normal. It stops by itself at the end of the last day.</div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="sh-save" onclick="saveShare()">🤝 Share</button></div>`);
+  if(!men.length){ $('sh-save').disabled=true; toast('There is no other service man to share with.'); }
+}
+function shareSpan(){
+  const v=(document.querySelector('input[name="sh-span"]:checked')||document.querySelector('input[name="sh-until"]:checked')||{}).value;
+  $('sh-pick').classList.toggle('hidden', v!=='pick');
+}
+async function saveShare(){ if(blockPreview()||!shareCtx) return;
+  const c=shareCtx, cover=$('sh-man').value, today=todayYmd();
+  let starts=today, ends=today;
+  if(c.kind==='days'){
+    const v=document.querySelector('input[name="sh-span"]:checked').value;
+    if(v==='day'){ starts=ends=c.date; } else if(v==='week'){ starts=$('sh-mon').value; ends=$('sh-sat').value; }
+    else { starts=$('sh-from').value; ends=$('sh-to').value; if(!starts||!ends) return toast('Pick the first and last day.'); if(ends<starts) [starts,ends]=[ends,starts]; }
+    if(ends<today) return toast('Those days are already over.');
+  } else {
+    const v=document.querySelector('input[name="sh-until"]:checked').value;
+    ends = v==='pick' ? $('sh-to').value : v; if(!ends||ends<today) return toast('Pick a date from today on.');
+  }
+  const row={owner_id:c.owner, cover_id:cover, kind:c.kind, job_id:c.kind==='job'?c.jobId:null, site_id:c.kind==='site'?c.siteId:null,
+    starts, ends, note:$('sh-note').value.trim()||null, created_by:me.id};
+  const btn=$('sh-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Sharing…';
+  const { data, error }=await sb.from('job_shares').insert(row).select().single();
+  if(error){ btn.disabled=false; btn.textContent='🤝 Share'; return toast(/job_shares/.test(error.message)?'Run update-16 in Supabase first.':'Could not share: '+error.message,6000); }
+  shares.push(data||row); closeModal();
+  toast(`🤝 Shared with ${firstName(prof(cover).full_name)} — ${untilTxt(data||row)}`,4000); rerenderCurrent();
+}
+async function stopShare(id){ if(blockPreview()) return;
+  const s=shares.find(x=>x.id===id); if(!s) return;
+  if(!confirm(`Stop sharing ${shareWhat(s)} with ${firstName(prof(s.cover_id).full_name)}? It disappears from his phone straight away.`)) return;
+  const { error }=await sb.from('job_shares').delete().eq('id',id);
+  if(error) return toast('Could not stop: '+error.message,6000);
+  shares=shares.filter(x=>x.id!==id); toast('Sharing stopped'); rerenderCurrent();
+}
+
 function telHref(p){ return 'tel:'+String(p||'').replace(/[^\d+]/g,''); }
 function contactChips(j, small){
   const c=[];
@@ -2378,9 +2532,9 @@ function slotCard(j,n){
   return `<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'}" data-job="${j.id}" onclick="openJob('${j.id}')">
     <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${outcomeTag(j)}</div>
     <div class="slot-pdf">📄${(manNotes(j).notes||manNotes(j).photos)?'<span class="pdf-dot" title="Has notes">💬</span>':''}</div>
-    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${j.customer_phone||j.customer_phone2||j.eircode||j.avail?`<div class="slot-cc">${contactChips(j,true)}${eirChip(j)}${isOffice?availChip(j):''}</div>`:''}
+    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${coverTag(j)?`<div class="slot-cov">${coverTag(j)}</div>`:''}${j.customer_phone||j.customer_phone2||j.eircode||j.avail?`<div class="slot-cc">${contactChips(j,true)}${eirChip(j)}${isOffice?availChip(j):''}</div>`:''}
     ${notesBadge(j)}
-    ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button><button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
+    ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button>${hasShares?`<button class="ja-btn" onclick="event.stopPropagation();openShareModal({kind:'job',jobId:'${j.id}'})" title="Share with another service man">🤝</button>`:''}<button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
 }
 // ── Drag a job box to change the order: Job 8 dropped after Job 3 becomes Job 4, the rest move up one ──
@@ -2475,11 +2629,12 @@ function jobCard(j){
       <div class="job-title">${esc(j.title)}</div>
       <div class="job-meta">${j.ref_no?`<span>#${esc(j.ref_no)}</span>`:''}<span>Sent ${fmtDate(j.created_at)}</span>${j.completed?`<span>✓ Done ${fmtDate(j.completed_at)}</span>`:''}</div>
       ${notesBadge(j).replace('note-badges','note-badges left')}
-      ${jobOutcome(j)&&jobOutcome(j)!=='done'?`<div style="margin-top:4px">${outcomeTag(j)}</div>`:''}
+      ${jobOutcome(j)&&jobOutcome(j)!=='done'?`<div style="margin-top:4px">${outcomeTag(j)}</div>`:''}${coverTag(j)?`<div style="margin-top:4px">${coverTag(j)}</div>`:''}
     </div>
     ${u?'<span class="tag red">New</span>':''}
     ${isOffice?`<div class="job-actions">
       <button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨<span class="lbl"> Print</span></button>
+      ${hasShares?`<button class="ja-btn" onclick="event.stopPropagation();openShareModal({kind:'job',jobId:'${j.id}'})" title="Share with another service man">🤝<span class="lbl"> Share</span></button>`:''}
       <button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Edit job / replace sheet">✎<span class="lbl"> Edit</span></button>
       <button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete job">🗑<span class="lbl"> Delete</span></button></div>`:''}
     <span style="color:#cbd5e1;font-size:20px">›</span>
