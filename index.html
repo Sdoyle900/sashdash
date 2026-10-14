@@ -817,18 +817,18 @@ function roleLabel(r){return r==='admin'?'Office':r==='service_office'?'Service 
 function firstName(n){return (n||'').split(' ')[0];}
 function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
-// what the man himself left on a job: text notes + photos (office notes and status changes don't count)
+// notes on a job from anyone — the man and the office: text messages, notes added to All done / Re-book / Not home, and photos
+// (plain status changes like "Re-opened job" don't count)
 const OUTCOME_LABELS=['Marked job as completed ✔ (All done)','🔁 Re-book — job unfinished','🚪 Customer not home','Re-opened job'];
 function eventHasNote(b){ b=String(b||''); const l=OUTCOME_LABELS.find(x=>b.startsWith(x)); return !!l && b.slice(l.length).replace(/^\s*—\s*/,'').trim().length>0; }   // e.g. "Re-book — job unfinished — Customer says…"
-function manNotes(j){ const m=(j.comments||[]).filter(c=>c.author_id===j.serviceman_id);
+function manNotes(j){ const m=(j.comments||[]);
   const msgs=m.filter(c=>c.kind==='message'), evNotes=m.filter(c=>c.kind==='event' && eventHasNote(c.body)).length;
   return {notes:msgs.filter(c=>!c.photo_path).length+evNotes, photos:msgs.filter(c=>c.photo_path).length}; }
 function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j.marked_path) return '';
-  const who=isOffice?firstName(prof(j.serviceman_id).full_name||'')||'Man':'You';
-  return `<div class="note-badges" title="${esc(who)} left notes on this job — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
+  return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-14-1630';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-14-1640';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
