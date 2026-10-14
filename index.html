@@ -828,7 +828,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="${esc(who)} left notes on this job — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-14-1615';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-14-1630';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1062,7 +1062,8 @@ async function loadData(){
     else if(me.role==='service_office'){ sites=sites.filter(x=>deptOf(x)==='calls'); jobs=jobs.filter(x=>deptOf(x)==='calls'); }
     const fresh=profiles.find(x=>x.id===me.id); if(fresh) me=fresh;
   }
-  if(job){ const fresh=jobs.find(j=>j.id===job.id); if(fresh){ job={...job,...fresh}; updateJobHeader(); } }
+  if(job){ const fresh=jobs.find(j=>j.id===job.id); if(fresh){ job={...job,...fresh}; updateJobHeader();
+    if((fresh.comments||[]).filter(c=>c.kind==='message').length>shownMsgs) syncOpenChat(); } }
 }
 function scheduleReload(){
   clearTimeout(reloadTimer);
@@ -1074,10 +1075,12 @@ function rerenderCurrent(){
   if(!$('view-portal').classList.contains('hidden')) renderPortal();
   renderDeptBar();
 }
+let shareChan=null, rtRetry=null, rtHealthy=false;
 function subscribeRealtime(){
   if(realtime) sb.removeChannel(realtime);
+  if(shareChan){ sb.removeChannel(shareChan); shareChan=null; }
+  clearTimeout(rtRetry); rtHealthy=false;
   realtime = sb.channel('sashdash-live')
-    .on('postgres_changes',{event:'*',schema:'public',table:'job_shares'}, ()=>scheduleReload())
     .on('postgres_changes',{event:'*',schema:'public',table:'jobs'}, payload=>{
       scheduleReload();
       if(job && payload.new && payload.new.id===job.id && payload.eventType==='UPDATE' && !dirty){
@@ -1092,9 +1095,29 @@ function subscribeRealtime(){
     })
     .on('postgres_changes',{event:'*',schema:'public',table:'sites'}, ()=>scheduleReload())
     .on('postgres_changes',{event:'*',schema:'public',table:'order_requests'}, ()=>scheduleReload())
-    .subscribe();
+    .subscribe(st=>{
+      if(st==='SUBSCRIBED'){ if(!rtHealthy && job) syncOpenChat(); rtHealthy=true; }
+      else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'||st==='CLOSED'){   // lost the live link → keep trying, the chat check below covers the gap
+        rtHealthy=false; clearTimeout(rtRetry); rtRetry=setTimeout(()=>{ if(me) subscribeRealtime(); },8000); }
+    });
+  // shares get their own line, so a database without update-16 can never stop the live chat
+  if(typeof hasShares==='undefined'||hasShares) shareChan=sb.channel('sashdash-shares')
+    .on('postgres_changes',{event:'*',schema:'public',table:'job_shares'}, ()=>scheduleReload()).subscribe();
 }
-document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && me) scheduleReload(); });
+// Safety net: while a job is open, any message the live link missed is picked up (every 15 s, and when you come back to the app)
+async function syncOpenChat(){
+  if(!job || !$('chat-list')) return;
+  const id=job.id;
+  const { data, error }=await sb.from('comments').select('*').eq('job_id',id).order('created_at');
+  if(error || !job || job.id!==id) return;
+  const fresh=(data||[]).filter(c=>!shownComments.has(c.id));
+  if(!fresh.length) return;
+  fresh.forEach(c=>appendComment(c,true));
+  if(!previewing) sb.rpc('mark_job_seen',{p_job:id});
+  scheduleReload();
+}
+setInterval(()=>{ if(document.visibilityState==='visible' && job) syncOpenChat(); },15000);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && me){ scheduleReload(); if(job) syncOpenChat(); if(!rtHealthy) subscribeRealtime(); } });
 
 // ── Navigation ─────────────────────────────────────────────────────
 function setNav(v){ document.querySelectorAll('#admin-nav .tab').forEach(b=>b.classList.toggle('active', b.dataset.v===v)); }
