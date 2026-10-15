@@ -619,6 +619,22 @@
     .slot-cov{margin-top:4px}
     .cov-dot{position:absolute;top:-8px;left:-6px;font-size:14px}
     .site-head .sh-btn{border-color:#c4b5fd;color:#5b21b6}
+    /* phones: job boxes keep everything inside — labels and buttons wrap instead of spilling into the next box */
+    .slot-no{white-space:nowrap}.slot-top .tag{white-space:nowrap}
+    .slot{padding-top:44px}   /* room for the JOB 1 / status row, so the sheet icon never sits under it */
+    @media (max-width:720px){
+      .slot-grid{gap:10px}
+      .slot,.slot-new{padding:10px 8px;min-height:0}.slot{padding-top:10px}.slot{justify-content:flex-start}.slot-new{min-height:150px}
+      .slot-top{position:static;flex-wrap:wrap;gap:4px;width:100%;justify-content:flex-start}
+      .slot-top .slot-no{font-size:11px;padding:3px 7px}
+      .slot-top .tag{font-size:10.5px;padding:2px 6px}
+      .slot-pdf{margin-top:4px;font-size:36px}
+      .slot-title{white-space:normal;font-size:13.5px;line-height:1.25}
+      .slot:has(.slot-actions){padding-bottom:10px}
+      .slot-actions{position:static;margin-top:auto;padding-top:8px;width:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:5px}
+      .slot-actions .ja-btn{padding:5px 0;width:calc(33.333% - 4px);min-width:0;text-align:center}
+      .slot-cc{width:100%}.slot-cc .cc{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+    }
 </style>
 </head>
 <body>
@@ -828,7 +844,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-14-1640';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-15-0900';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
