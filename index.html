@@ -772,6 +772,7 @@
         <button onclick="editJob()" class="admin-only">✎ Edit job details</button>
         <button onclick="printJob()">🖨 Print job, mark-ups &amp; chat</button>
         <button onclick="openReschedule()" id="mi-resched" class="admin-only">📅 Reschedule to another day</button>
+        <button onclick="$('jv-menu').classList.add('hidden');openImport(job.id)" id="mi-import" class="admin-only">📥 Import an old call from computer</button>
         <button onclick="deleteJob()" class="red admin-only">🗑 Delete job &amp; file</button>
       </div>
     </div>
@@ -906,7 +907,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-15-1600';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-15-1615';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -3512,6 +3513,8 @@ async function deleteWeek(){ if(blockPreview()) return;
   if(!ok) return;
   const paths=[...dj.flatMap(j=>[j.pdf_path,j.marked_path]), ...await chatPhotoPaths(dj.map(j=>j.id))].filter(Boolean);
   if(paths.length){ const r=await sb.storage.from(BUCKET).remove(paths); if(r.error) return toast('Could not remove files: '+r.error.message,5000); }
+  await saveHistRows(dj.filter(j=>deptOf(j)==='calls'&&jobOutcome(j)).map(j=>histRow(j)));
+  { const ip=importPathsFor(dj.map(j=>j.id)); if(ip.length) await sb.storage.from(BUCKET).remove(ip); }
   for(const d of days){ const { error }=await sb.from('sites').delete().eq('id',d.id); if(error) return toast('Error: '+error.message,5000); }
   calWeek=null; currentSiteId=null; await loadData(); renderPortal(); toast('Week deleted');
 }
@@ -3817,6 +3820,7 @@ function updateJobHeader(){
   document.querySelectorAll('#oc-group .done-btn').forEach(b=>{ const on=b.dataset.o===cur; b.classList.toggle('on',on); b.querySelector('.box').textContent=on?'✓':''; });
   $('dl-marked').classList.toggle('hidden',!job.marked_path);
   $('mi-resched').classList.toggle('hidden', !(isOffice && s.work_date));
+  { const mi=$('mi-import'); if(mi) mi.classList.toggle('hidden', !(isOffice && hasHist && deptOf(job)==='calls')); }
 }
 function closeJob(fromPop){
   if(!job) return;
@@ -3893,7 +3897,8 @@ async function deleteJob(id){ if(blockPreview()) return;
   $('jv-menu').classList.add('hidden');
   const j = id ? (jobs.find(x=>x.id===id) || (job&&job.id===id?job:null)) : job; if(!j) return;
   if(!confirm(`Delete "${j.title}"? The PDF and the conversation are removed from the server for good.`)) return;
-  const paths=[j.pdf_path,j.marked_path, ...await chatPhotoPaths([j.id])].filter(Boolean);
+  if(deptOf(j)==='calls' && jobOutcome(j)) await saveHistRows([histRow(j)]);
+  const paths=[j.pdf_path,j.marked_path, ...await chatPhotoPaths([j.id]), ...importPathsFor([j.id])].filter(Boolean);
   if(paths.length){ const r=await sb.storage.from(BUCKET).remove(paths); if(r.error) return toast('Could not remove the file: '+r.error.message,5000); }
   const { error }=await sb.from('jobs').delete().eq('id',j.id);
   if(error) return toast('Error: '+error.message,5000);
