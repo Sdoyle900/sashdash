@@ -569,6 +569,13 @@
       .hc-sheet .zoom-ctl{display:none}
     }
     .imp-opt{display:flex;gap:8px;align-items:center;font-size:13.5px;margin:12px 0 0;cursor:pointer}.imp-opt input{width:17px;height:17px}
+    .hm-del{display:block;margin:4px 0 0 auto;background:none;border:none;color:#b91c1c;font-weight:700;font-size:11.5px;font-family:inherit;cursor:pointer}
+    .hm-del:hover{text-decoration:underline}
+    .hc-del{margin-left:auto;flex:none;background:#fff;border:1.5px solid #fca5a5;color:#b91c1c;border-radius:8px;padding:4px 10px;font-weight:700;font-size:12.5px;font-family:inherit;cursor:pointer}
+    .imp-look{display:flex;flex-direction:column;gap:6px}
+    .imp-zip{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px}
+    .imp-zip .iz-c{grid-column:1/-1;font-size:12px;color:var(--slate);font-weight:700}
+    .imp-zip b{font-size:13.5px;word-break:break-word}.imp-zip .btn-outline{padding:5px 10px;font-size:12px}
     @media (max-width:900px){
       .chat-pane{width:auto;border-left:none}
       .jv-tabs{display:flex}
@@ -907,7 +914,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-15-1615';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-15-1800';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -2770,6 +2777,11 @@ function phoneKey(s){ let d=String(s||'').split(/[-\/,]/)[0].replace(/\D/g,''); 
 function eirKey(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
 function jobKeys(j){ return {phones:[...new Set([phoneKey(j.ref_no),phoneKey(j.customer_phone),phoneKey(j.customer_phone2)].filter(Boolean))], eir:eirKey(j.eircode)}; }
 function custName(j){ return String(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'').trim()||j.title||''; }
+function custLabel(j){ const n=custName(j); return /^job\s*\d+$/i.test(n)?(j.ref_no||n):n; }
+// the weekly download a call was saved in
+function zipNameFor(d){ return `SashDash - Private Calls - w-c ${weekName(weekOf(d))}.zip`; }
+function copyText(t,btn){ const done=()=>{ if(btn){ const o=btn.textContent; btn.textContent='✓ Copied'; setTimeout(()=>btn.textContent=o,1500); } };
+  try{ navigator.clipboard.writeText(t).then(done,()=>toast(t,6000)); }catch(e){ toast(t,6000); } }
 function jobDay(j){ const s=sites.find(x=>x.id===j.site_id); return (s&&s.work_date)||String(j.created_at||'').slice(0,10); }
 function keysMatch(k,phones,eir){ return phones.some(p=>p&&k.phones.includes(p)) || (!!k.eir && !!eir && k.eir===eir); }
 function shortDate(s){ return parseYmd(s).toLocaleDateString('en-IE',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
@@ -2839,13 +2851,13 @@ function histBadge(j){ const n=pastCalls(j).length; if(!n) return '';
 // ── the call history pop-up (office and service men) ──
 function openHistModal(id){
   const j=jobs.find(x=>x.id===id); if(!j) return; const calls=pastCalls(j);
-  openModal(`<h2>🕘 ${esc(custName(j))} — call history</h2>
+  openModal(`<h2>🕘 ${esc(custLabel(j))} — call history</h2>
     <div class="hm-sub">${esc([j.customer_phone||phoneKey(j.ref_no),j.eircode].filter(Boolean).join(' · '))}</div>
     <div class="hm-tbl"><table><tr><th></th><th>Date</th><th>Service man</th><th>Result</th><th></th></tr>
     ${calls.map((c,i)=>`<tr><td><b>${ordN(i+1)} call</b></td><td>${esc(niceDate(c.date))}</td><td>${esc(firstName(c.man||''))}</td>
       <td><span class="oc-t ${OC_DOT[c.outcome]||''}">${ocText(c.outcome)}</span>${c.note?`<div class="hm-note">“${esc(c.note)}”</div>`:''}</td>
       <td class="hm-act">${c.imp||c.src==='live'?`<button class="btn-outline" onclick="closeModal();openJob('${j.id}',${i})">📄 Open</button>`:isOffice&&!previewing?`<button class="btn-outline" onclick="closeModal();openImport('${j.id}','${c.key}')">📥 Import</button>`:'<span class="hm-ni">Not imported</span>'}
-      ${isOffice&&!previewing?`<button class="hm-x" title="Not the same customer" onclick="histSkip('${j.id}','${c.key}')">Not the same customer</button>`:''}</td></tr>`).join('')}
+      ${isOffice&&!previewing?`<button class="hm-x" title="Not the same customer" onclick="histSkip('${j.id}','${c.key}')">Not the same customer</button>${isAdmin&&c.src!=='live'?`<button class="hm-del" title="Remove this call from the history for good" onclick="histRemove('${j.id}','${c.key}')">🗑 Remove</button>`:isAdmin?'<span class="hm-ni">still on the system</span>':''}`:''}</td></tr>`).join('')}
     <tr class="cur"><td><b>Current call</b></td><td>${esc(niceDate(jobDay(j)))}</td><td>${esc(firstName(prof(j.serviceman_id).full_name))}</td><td><span class="oc-t ${OC_DOT[jobOutcome(j)]||''}">${jobOutcome(j)?ocText(jobOutcome(j)):'Open'}</span></td><td class="hm-act"><button class="btn-primary" onclick="closeModal();openJob('${j.id}')">Open job</button></td></tr></table></div>
     <div class="modal-actions">${isOffice&&!previewing&&calls.some(c=>!c.imp&&c.src!=='live')?`<button class="btn-outline" onclick="closeModal();openImport('${j.id}')">📥 Import old jobs from computer</button>`:''}<button class="btn-primary" onclick="closeModal()">Close</button></div>`);
 }
@@ -2879,11 +2891,11 @@ function hcPick(i){
 }
 async function hcOpenCall(c, i){
   const v=$('hc-view'); $('job-view').classList.add('hc-old'); v.classList.remove('hidden');
-  const head=`<div class="hc-ro">🔒 <span><b>${ordN(i+1)} call · ${esc(shortDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>. Read-only — go to <b>Current call</b> to work on the job.</span></div>`;
+  const head=`<div class="hc-ro">🔒 <span><b>${ordN(i+1)} call · ${esc(shortDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>. Read-only — go to <b>Current call</b> to work on the job.</span>${isAdmin&&!previewing&&c.src!=='live'?`<button class="hc-del" onclick="histRemove('${job.id}','${c.key}')">🗑 Remove from history</button>`:''}</div>`;
   if(!c.imp && c.src!=='live'){
     v.innerHTML=head+`<div class="hc-ni"><div class="hc-card"><h3>${ocText(c.outcome).split(' ')[0]} ${ordN(i+1)} call · ${esc(shortDate(c.date))}</h3><div class="hc-cs">The full job hasn't been imported.</div>
       <table><tr><td>Service man</td><td><b>${esc(c.man||'—')}</b></td></tr><tr><td>Result</td><td><b>${ocText(c.outcome)}</b></td></tr>${c.note?`<tr><td>Note</td><td>“${esc(c.note)}”</td></tr>`:''}<tr><td>Job number</td><td>${esc(c.job_no||'—')}</td></tr></table>
-      ${isOffice&&!previewing?`<button class="btn-primary" onclick="openImport('${job.id}','${c.key}')">📥 Import this call from computer</button><div class="hc-cs" style="margin-top:8px">Search your SashDash downloads for <b>${esc(c.job_no||phoneKey(job.ref_no)||'')}</b></div>`:`<div class="hc-cs">The office can import it from the computer.</div>`}</div></div>`;
+      ${isOffice&&!previewing?`<button class="btn-primary" onclick="openImport('${job.id}','${c.key}')">📥 Import this call from computer</button><div class="hc-cs" style="margin-top:10px">Look in <b>🗜 ${esc(zipNameFor(hcCalls[hcCalls.length-1].date))}</b> <button class="btn-outline" style="padding:3px 9px;font-size:12px;margin-left:4px" onclick="copyText('${esc(zipNameFor(hcCalls[hcCalls.length-1].date).replace(/\.zip$/,''))}',this)">Copy name</button></div>`:`<div class="hc-cs">The office can import it from the computer.</div>`}</div></div>`;
     return;
   }
   // the old call's files and conversation
@@ -2932,12 +2944,34 @@ async function hcFiles(keepDoc){
 
 // ── 📥 Import old calls from the weekly download (a job folder, or the week's .zip) ──
 let impJobId=null, impKey=null, impFound=[];
+// 🗑 the office can remove a previous call from the history for good (and any imported copy of it)
+async function histRemove(jobId, key){
+  if(!isAdmin || previewing) return toast('Only the office can remove calls from the history.');
+  const j=jobs.find(x=>x.id===jobId); if(!j) return; const all=pastCalls(j), i=all.findIndex(c=>c.key===key), c=all[i]; if(!c) return;
+  const ok=await confirmBox({icon:'🗑', title:`Remove the ${ordN(i+1)} call?`, body:`<b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b><br>This permanently removes it from <b>${esc(custLabel(j))}</b>'s call history — it won't show on this or any future job, and any imported copy is deleted. This can't be undone.<br><span style="font-size:12px">(The zip on your computer isn't touched.)</span>`, ok:'🗑 Remove for good', okClass:'btn-danger'});
+  if(!ok) return;
+  try{
+    const imps=callImports.filter(x=>x.call_key===key), paths=imps.flatMap(x=>[x.sheet_path,x.marked_path,...(x.photos||[])]).filter(Boolean);
+    if(paths.length){ const r=await sb.storage.from(BUCKET).remove(paths); if(r.error) throw r.error; }
+    if(imps.length){ const { error }=await sb.from('call_imports').delete().in('id',imps.map(x=>x.id)); if(error) throw error; }
+    if(c.src==='hist'){ const { error }=await sb.from('call_history').delete().eq('id',key); if(error) throw error; }
+    callHist=callHist.filter(h=>h.id!==key); callImports=callImports.filter(x=>x.call_key!==key);
+    closeModal(); rerenderCurrent();
+    if(job&&job.id===jobId){ if(hcSel!=='cur') hcSel='cur'; hcRender(); if(hcSel==='cur'){ hcShowCur(); if(pdfDoc) renderPdf(); } }
+    toast(`🗑 ${ordN(i+1)} call removed from the history`);
+    if(!(job&&job.id===jobId) && pastCalls(j).length) openHistModal(jobId);
+  }catch(e){ toast('Could not remove it: '+(e.message||e),7000); }
+}
 function openImport(jobId, key){
   const j=jobs.find(x=>x.id===jobId); if(!j) return; impJobId=jobId; impKey=key||null; impFound=[];
-  const no=(key&&(pastCalls(j).find(c=>c.key===key)||{}).job_no)||phoneKey(j.ref_no)||j.customer_phone||j.ref_no||'';
-  openModal(`<h2>📥 Import old calls — ${esc(custName(j))}</h2>
-    <p class="imp-p">On this computer, search your SashDash downloads for <b>${esc(no)}</b>. Then pick the customer's job folder — or the week's <b>.zip</b> and SashDash finds the job inside.</p>
-    <div class="imp-btns"><label class="btn-primary" for="imp-dir">📁 Pick the job folder</label><label class="btn-outline" for="imp-zip">🗜 Pick a week .zip</label></div>
+  const all=pastCalls(j), want=key?all.filter(c=>c.key===key):all.filter(c=>!c.imp&&c.src!=='live');
+  const last=all.length?all[all.length-1]:null, look=last?[{zip:zipNameFor(last.date), calls:[last]}]:[];
+  openModal(`<h2>📥 Import old calls — ${esc(custLabel(j))}</h2>
+    ${look.length?`<p class="imp-p">Find this file in your downloads (or your SashDash archive folder) and pick it. It has the ${all.length>1?'last call and the earlier calls saved with it':'last call'} — SashDash finds them inside:</p>
+    <div class="imp-look">${look.map(x=>`<div class="imp-zip"><span class="iz-c">Last call · ${esc(niceDate(x.calls[0].date))}</span><b>🗜 ${esc(x.zip)}</b><button class="btn-outline" onclick="copyText('${esc(x.zip.replace(/\.zip$/,''))}',this)">Copy name</button></div>`).join('')}</div>
+    <p class="hc-cs" style="margin:6px 0 12px">Tip: in File Explorer, click the search box, paste the name and press Enter. Windows may have added (1) to the end if it was saved twice.</p>`
+    :`<p class="imp-p">Pick the week's <b>.zip</b> from your downloads — SashDash finds this customer's job inside (job no. <b>${esc(phoneKey(j.ref_no)||j.ref_no||'')}</b>).</p>`}
+    <div class="imp-btns"><label class="btn-primary" for="imp-zip">🗜 Pick the week .zip</label><label class="btn-outline" for="imp-dir">📁 Pick a job folder instead</label></div>
     <input type="file" id="imp-dir" webkitdirectory multiple style="display:none" onchange="impPickedDir(this.files);this.value=''">
     <input type="file" id="imp-zip" accept=".zip,application/zip" style="display:none" onchange="impPickedZip(this.files[0]);this.value=''">
     <div id="imp-found"></div>
@@ -2958,7 +2992,9 @@ async function impScan(entries){
     found.push({dir, info, entries:inDir, read});
   }
   const j=jobs.find(x=>x.id===impJobId), k=jobKeys(j);
+  found.forEach(f=>{ f.parent=found.find(o=>o!==f && f.dir.startsWith(o.dir)); });
   found.forEach(f=>{ f.match=keysMatch(k,[phoneKey(f.info.job_no),phoneKey(f.info.phone),phoneKey(f.info.phone2)],eirKey(f.info.eircode)); f.done=callImports.some(i=>i.job_id===j.id&&i.work_date===f.info.work_date); });
+  found.forEach(f=>{ if(!f.match && f.parent && f.parent.match) f.match=true; });
   impFound=found.filter(f=>f.match).sort((a,b)=>a.info.work_date<b.info.work_date?-1:1);
   if(!impFound.length){ box.innerHTML=`<div class="imp-none">⚠️ No job for this customer in what you picked${found.length?` (${found.length} other job${found.length===1?'':'s'} found)`:''}. Check the job number and pick again.</div>`; $('imp-go').classList.add('hidden'); return; }
   box.innerHTML=`<div class="imp-list">${impFound.map((f,i)=>{ const x=f.info, ph=f.entries.filter(e=>/\/photos\/[^/]+$/.test(e.path)).length;
@@ -3051,7 +3087,7 @@ async function addOldCallsToZip(j, jd, get){
     od.file('sheet-original.pdf', await get(im.sheet_path)); if(im.marked_path) od.file('sheet-marked-up.pdf', await get(im.marked_path));
     const pf=[]; for(const p of (im.photos||[])){ const fn=p.split('/').pop(); od.folder('photos').file(fn, await get(p)); pf.push(fn); }
     const convo=(im.convo||[]).map(m=>({...m, photo_file:m.photo?m.photo.split('/').pop():null, photo:undefined}));
-    od.file('job.json', JSON.stringify({sashdash:1, name:im.cust_name||c.name, job_no:im.job_no||c.job_no||'', phone:'', phone2:'', eircode:'', work_date:c.date, serviceman:im.serviceman_name||c.man, outcome:c.outcome, note:c.note||'', convo, photos:pf},null,1));
+    od.file('job.json', JSON.stringify({sashdash:1, name:im.cust_name||c.name, job_no:im.job_no||c.job_no||'', phone:j.customer_phone||phoneKey(j.ref_no)||'', phone2:j.customer_phone2||'', eircode:j.eircode||'', work_date:c.date, serviceman:im.serviceman_name||c.man, outcome:c.outcome, note:c.note||'', convo, photos:pf},null,1));
     od.file('conversation.html', `<!doctype html><meta charset="utf-8"><title>${esc(ordN(i+1))} call</title><body style="font-family:Arial;max-width:820px;margin:20px auto"><h2>${esc(im.cust_name||c.name)} — ${ordN(i+1)} call · ${esc(shortDate(c.date))}</h2><p>${esc(im.serviceman_name||c.man)} · ${ocText(c.outcome)}</p>`
       +(im.convo||[]).map(m=>m.kind==='event'?`<p style="color:#555">${esc(m.when||fmtWhen(m.at||''))} · ${esc(m.who)} · ${esc(m.body)}</p>`:`<div style="border:1px solid #ddd;border-radius:8px;padding:8px 12px;margin:8px 0"><b>${esc(m.who)}</b> <span style="color:#555">${esc(m.when||(m.at?fmtWhen(m.at):''))}</span><br>${esc(m.body).replace(/\n/g,'<br>')}${m.photo?`<br><img src="photos/${esc(m.photo.split('/').pop())}" style="max-width:100%;max-height:420px">`:''}</div>`).join(''));
   }
