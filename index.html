@@ -509,6 +509,66 @@
     .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
     @keyframes sp{to{transform:rotate(360deg)}}
 
+    /* 🕘 repeat customers */
+    .hist-badge{display:inline-flex;align-items:center;gap:4px;margin:8px auto 0;background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd;border-radius:999px;padding:3px 11px;font-weight:800;font-size:12px;font-family:inherit;cursor:pointer}
+    .hist-badge:hover{background:#ddd6fe}
+    .hc-tabs{display:flex;gap:4px;padding:6px 12px 0;background:#1e293b;overflow-x:auto;flex:none;scrollbar-width:none}
+    .hc-tabs::-webkit-scrollbar{display:none}
+    .hc-tab{flex:none;display:flex;align-items:center;gap:7px;border:none;background:none;color:#cbd5e1;font-weight:700;font-size:13.5px;font-family:inherit;padding:9px 15px;border-radius:9px 9px 0 0;cursor:pointer;white-space:nowrap}
+    .hc-tab small{font-weight:600;color:#94a3b8;font-size:12px}
+    .hc-tab:hover{background:#273449}
+    .hc-tab.on{background:var(--bg);color:var(--navy)} .hc-tab.on small{color:var(--slate)}
+    .hc-dot{width:9px;height:9px;border-radius:50%;flex:none;background:#a5b4fc}.hc-dot.g{background:#22c55e}.hc-dot.b{background:#3b82f6}.hc-dot.r{background:#ef4444}
+    .job-view.hc-old #jv-body,.job-view.hc-old #jv-tabs{display:none}
+    .job-view.hc-old #oc-group{opacity:.35;pointer-events:none}
+    .hc-view{flex:1;display:flex;flex-direction:column;min-height:0}
+    .hc-ro{background:#fef3c7;border-bottom:1.5px solid #fcd34d;padding:9px 16px;font-size:13.5px;color:#78350f;display:flex;gap:8px;align-items:flex-start;flex:none}
+    .hc-ro b{color:#451a03}
+    .hc-body{flex:1;display:flex;min-height:0}
+    .hc-sheet{flex:1;display:flex;flex-direction:column;min-width:0}
+    .hc-sheet .tb-btn.on{background:#eef2ff;border-color:#a5b4fc;color:#3730a3}
+    .hc-chat{width:380px;flex:none;background:#fff;border-left:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
+    .hc-chat .msg .bub{background:#f1f5f9}
+    .hc-lock{border-top:1px solid var(--border);padding:12px;text-align:center;color:var(--slate);font-size:12.5px;background:#f8fafc;flex:none}
+    .hc-cs{color:var(--slate);font-size:12.5px;font-weight:600}
+    .hc-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:6px;width:100%}
+    .hc-photos .photo-wrap{min-height:140px}
+    .hc-ni{flex:1;overflow:auto;padding:36px 16px}
+    .hc-card{background:#fff;border-radius:14px;padding:24px;max-width:620px;margin:0 auto;box-shadow:0 6px 24px rgba(15,23,42,.08);text-align:center}
+    .hc-card h3{font-size:18px;margin-bottom:4px}.hc-card table{margin:14px auto;font-size:14px;text-align:left}.hc-card td{padding:4px 12px}.hc-card td:first-child{color:var(--slate)}
+    .hm-sub{color:var(--slate);font-size:13px;margin:-4px 0 10px}
+    .hm-tbl{overflow-x:auto}.hm-tbl table{width:100%;border-collapse:collapse;font-size:13.5px}
+    .hm-tbl th{text-align:left;font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;border-bottom:1.5px solid var(--border)}
+    .hm-tbl td{padding:9px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}.hm-tbl tr.cur td{background:#eef2ff}
+    .hm-note{color:#475569;font-size:12.5px;margin-top:2px}.hm-act{text-align:right;white-space:nowrap}.hm-act .btn-outline,.hm-act .btn-primary{padding:6px 11px;font-size:12.5px}
+    .hm-ni{color:var(--slate);font-size:12px}
+    .hm-x{display:block;margin:5px 0 0 auto;background:none;border:none;color:#94a3b8;font-weight:600;font-size:11.5px;font-family:inherit;cursor:pointer;text-decoration:underline}
+    .hw-r .hm-x{display:inline;margin:0 0 0 8px}
+    .oc-t{font-weight:700}.oc-t.g{color:#166534}.oc-t.b{color:#1d4ed8}.oc-t.r{color:#b91c1c}
+    .hist-warn{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:12px;padding:11px 13px;margin:4px 0 12px;font-size:13.5px}
+    .hw-t{font-size:14.5px;margin-bottom:6px}.hw-r{padding:3px 0;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}.hw-n{color:#92400e;font-size:12.5px;margin-top:6px}
+    .imp-p{color:#334155;font-size:14px;line-height:1.5;margin-bottom:12px}
+    .imp-btns{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.imp-btns label{cursor:pointer}
+    .imp-list{display:flex;flex-direction:column;gap:8px}
+    .imp-row{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer}
+    .imp-row input{margin-top:4px;width:18px;height:18px}.imp-row.dis{opacity:.55}
+    .imp-what{font-size:12.5px;color:#334155}
+    .imp-none{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:10px;padding:10px 12px;font-size:13.5px}
+    @media (max-width:900px){
+      .hc-body{flex-direction:column;overflow:auto}
+      .hc-sheet{flex:none;min-height:60vh}
+      .hc-chat{width:auto;border-left:none;border-top:1px solid var(--border);flex:none}
+      .hc-tab{padding:8px 11px;font-size:13px}
+    }
+    .modal:has(.hm-tbl){max-width:760px}
+    .hm-tbl td:nth-child(2){white-space:nowrap}
+    @media (max-width:600px){
+      .hc-tabs{padding:6px 6px 0;gap:2px}
+      .hc-tab{flex:1 1 0;justify-content:center;padding:9px 6px}
+      .hc-tab small{display:none}
+      .hc-sheet .zoom-ctl{display:none}
+    }
+    .imp-opt{display:flex;gap:8px;align-items:center;font-size:13.5px;margin:12px 0 0;cursor:pointer}.imp-opt input{width:17px;height:17px}
     @media (max-width:900px){
       .chat-pane{width:auto;border-left:none}
       .jv-tabs{display:flex}
@@ -716,6 +776,7 @@
       </div>
     </div>
   </div>
+  <div class="hc-tabs hidden" id="hc-tabs"></div>
   <div class="jv-tabs" id="jv-tabs">
     <button data-t="sheet" class="on" onclick="setJvTab('sheet')">📄 Sheet</button>
     <button data-t="chat" onclick="setJvTab('chat')">💬 Chat <span id="chat-count"></span></button>
@@ -761,6 +822,7 @@
       </div>
     </aside>
   </div>
+  <div class="hc-view hidden" id="hc-view"></div>
 </div>
 
 <div id="lightbox" class="lightbox hidden" onclick="if(event.target===this||event.target.classList.contains('lb-scroll'))closeLightbox()">
@@ -844,7 +906,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-15-1330';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-15-1600';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1064,15 +1126,17 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+',comments(kind,author_id,photo_path,body)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+',comments(kind,author_id,photo_path,body)').order('created_at',{ascending:false})
   ]);
   if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }
+  if(jo.error && hasHist && /hist_skip/i.test(jo.error.message)){ hasHist=false; return loadData(); }
   if(jo.error && hasRoute && /eircode|avail/i.test(jo.error.message)){ hasRoute=false; return loadData(); }   // database not updated yet (update-15)   // database not updated yet (update-10)
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
   profiles=pr.data; sites=si.data; jobs=jo.data;
   { const r=await sb.from('order_requests').select('*').order('created_at',{ascending:false}).limit(300); orderReqs = r.error ? [] : (r.data||[]); }
   { const r=await sb.from('job_shares').select('*'); hasShares=!r.error; shares = r.error ? [] : (r.data||[]); }
+  await loadHist();
   if(previewing){   // show only what that person's own login is allowed to see
     if(me.role==='serviceman'){ const cov=coverJobsFor(me.id); sites=sites.filter(x=>x.serviceman_id===me.id||cov.some(j=>j.site_id===x.id)); jobs=jobs.filter(x=>x.serviceman_id===me.id||cov.includes(x)); shares=shares.filter(s=>s.cover_id===me.id||s.owner_id===me.id); }
     else if(me.role==='service_office'){ sites=sites.filter(x=>deptOf(x)==='calls'); jobs=jobs.filter(x=>deptOf(x)==='calls'); }
@@ -2572,7 +2636,7 @@ function slotCard(j,n){
     <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${outcomeTag(j)}</div>
     <div class="slot-pdf">📄${(manNotes(j).notes||manNotes(j).photos)?'<span class="pdf-dot" title="Has notes">💬</span>':''}</div>
     <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${coverTag(j)?`<div class="slot-cov">${coverTag(j)}</div>`:''}${j.customer_phone||j.customer_phone2||j.eircode||j.avail?`<div class="slot-cc">${contactChips(j,true)}${eirChip(j)}${isOffice?availChip(j):''}</div>`:''}
-    ${notesBadge(j)}
+    ${histBadge(j)}${notesBadge(j)}
     ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button>${hasShares?`<button class="ja-btn" onclick="event.stopPropagation();openShareModal({kind:'job',jobId:'${j.id}'})" title="Share with another service man">🤝</button>`:''}<button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
 }
@@ -2632,6 +2696,7 @@ function openSlotModal(fl){ if(blockPreview()) return;
       <div class="field-group sf-wide"><label>Email address <span class="optional">(if any)</span></label><input id="m-email" type="email" placeholder="e.g. mary@gmail.com" autocomplete="off"></div>
       ${hasRoute?availField():''}
     </div>
+    <div id="m-hist" class="hist-warn hidden"></div>
     <label class="drop" id="m-drop" for="m-file">
       <span class="drop-icon">📄</span>
       <span class="drop-main">Drag the job sheet here</span>
@@ -2640,12 +2705,13 @@ function openSlotModal(fl){ if(blockPreview()) return;
     <input type="file" id="m-file" accept="application/pdf,image/*" multiple style="display:none" onchange="filesPicked(this.files);this.value=''">
     <div class="file-list" id="m-files"></div>
     <div class="field-group"><label>Note to ${esc(firstName(t.full_name))} <span class="optional">(optional — starts the conversation)</span></label><textarea id="m-notes" rows="2"></textarea></div>
-    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="slotUpload(${n})">⬆ Send job ${n} to ${esc(firstName(t.full_name))}</button></div>`);
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-outline hidden" id="m-save2" onclick="slotUpload(${n},true)">📥 Send &amp; import old jobs</button><button class="btn-primary" id="m-save" onclick="slotUpload(${n})">⬆ Send job ${n} to ${esc(firstName(t.full_name))}</button></div>`);
+  formSkip=new Set(); ['m-ref','m-ph','m-ph2','m-eir'].forEach(id=>{ const e=$(id); if(e) e.addEventListener('input',histFormCheck); });
   attachDrop();
   if(fl && fl.length) filesPicked(fl);
   setTimeout(()=>{ const r=$('m-ref'); if(r) r.focus(); },50);
 }
-async function slotUpload(n){ if(blockPreview()) return;
+async function slotUpload(n, imp){ if(blockPreview()) return;
   const ref=$('m-ref').value.trim(), cust=$('m-cust').value.trim(), note=$('m-notes').value.trim();
   const contact={customer_phone:$('m-ph').value.trim()||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:$('m-email').value.trim()||null};
   if(!ref && !cust) return toast('Add the job number or the customer name.');
@@ -2655,10 +2721,11 @@ async function slotUpload(n){ if(blockPreview()) return;
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Uploading…';
   try{
     n=nextJobNo(currentSiteId);   // stays in order even if another job was added meanwhile
-    await doUpload({files:pendingFiles, title:`Job ${n}${cust?' – '+cust:''}`, ref, note, contact, route});
+    var newId=await doUpload({files:pendingFiles, title:`Job ${n}${cust?' – '+cust:''}`, ref, note, contact, route});
     pendingFiles=[]; closeModal(); toast(`Job ${n} sent to ${firstName(prof(currentTechId).full_name)} ✓`);
   }catch(e){ btn.disabled=false; btn.textContent='⬆ Try again'; return toast('Upload failed: '+(e.message||e),6000); }
   await loadData(); renderPortal();
+  if(imp && newId) openImport(newId);
 }
 function jobCard(j){
   const u=unreadForMe(j), n=msgCount(j);
@@ -2691,8 +2758,305 @@ function weekName(w){ return parseYmd(w).toLocaleDateString('en-IE',{day:'numeri
 function weekJobDir(j, used){
   const name=String(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'').trim()||j.title||'Job';
   const no=String(j.ref_no||'').trim();
-  let base=safeName(no?`${name} - ${no}`:name), fn=base, k=1; while(used.has(fn.toLowerCase())) fn=`${base} (${++k})`; used.add(fn.toLowerCase()); return fn;
+  let base=safeName((no?`${name} - ${no}`:name)+histDirSuffix(j)), fn=base, k=1; while(used.has(fn.toLowerCase())) fn=`${base} (${++k})`; used.add(fn.toLowerCase()); return fn;
 }
+// ══ 🕘 Repeat customers — call history, old calls as read-only tabs, import from the weekly download ══
+let callHist=[], callImports=[], hasHist=true, hcSel='cur', hcCalls=[], hcDoc=null, hcMode='sheet', hcZoom=1, hcTok=0;
+const HIST_COLS='id,phone_key,phone2_key,eir_key,cust_name,job_no,work_date,serviceman_id,serviceman_name,outcome,note,source_job_id';
+function ordN(n){ const s=['th','st','nd','rd'], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); }
+// a phone number from a job number or phone box: "087 123 4567", "0871234567-64263" → "0871234567"
+function phoneKey(s){ let d=String(s||'').split(/[-\/,]/)[0].replace(/\D/g,''); if(d.startsWith('353')) d='0'+d.slice(3); return /^0\d{8,9}$/.test(d)?d:''; }
+function eirKey(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+function jobKeys(j){ return {phones:[...new Set([phoneKey(j.ref_no),phoneKey(j.customer_phone),phoneKey(j.customer_phone2)].filter(Boolean))], eir:eirKey(j.eircode)}; }
+function custName(j){ return String(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'').trim()||j.title||''; }
+function jobDay(j){ const s=sites.find(x=>x.id===j.site_id); return (s&&s.work_date)||String(j.created_at||'').slice(0,10); }
+function keysMatch(k,phones,eir){ return phones.some(p=>p&&k.phones.includes(p)) || (!!k.eir && !!eir && k.eir===eir); }
+function shortDate(s){ return parseYmd(s).toLocaleDateString('en-IE',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+function niceDate(s){ return parseYmd(s).toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'}); }
+// every earlier call for this customer, oldest first
+function pastCalls(j){
+  if(!j || deptOf(j)!=='calls') return [];
+  const k=jobKeys(j); if(!k.phones.length && !k.eir) return [];
+  const d=jobDay(j), skip=new Set(j.hist_skip||[]), out=[];
+  for(const r of callHist){ if(skip.has(r.id) || r.work_date>d || (r.source_job_id===j.id && r.work_date===d)) continue;
+    if(keysMatch(k,[r.phone_key,r.phone2_key],r.eir_key)) out.push({key:r.id, src:'hist', date:r.work_date, man:r.serviceman_name, outcome:r.outcome, note:r.note||'', job_no:r.job_no, name:r.cust_name}); }
+  for(const x of jobs){ if(x.id===j.id || deptOf(x)!=='calls' || skip.has(x.id)) continue; const xd=jobDay(x); if(xd>=d) continue;
+    const xk=jobKeys(x); if(!keysMatch(k,xk.phones,xk.eir)) continue;
+    out.push({key:x.id, src:'live', date:xd, man:prof(x.serviceman_id).full_name, outcome:jobOutcome(x), note:histNote(x), job_no:x.ref_no, name:custName(x), job:x}); }
+  for(const c of out) c.imp=callImports.find(i=>i.job_id===j.id && i.call_key===c.key)||null;
+  return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+}
+// the short note kept for a call: the note on All done / Re-book / Not home, else the service man's last message
+function histNote(j){
+  const cm=(j.comments||[]).slice(), ev=cm.filter(c=>c.kind==='event'&&/ — /.test(c.body||'')&&/All done|Re-book|not home/i.test(c.body||'')).pop();
+  if(ev) return ev.body.split(' — ').slice(1).join(' — ').slice(0,160);
+  const man=cm.filter(c=>c.kind!=='event'&&c.body&&c.author_id===j.serviceman_id).pop();
+  return man?String(man.body).slice(0,160):'';
+}
+function histRow(j, outcome){
+  const k=jobKeys(j), t=prof(j.serviceman_id);
+  return {phone_key:k.phones[0]||null, phone2_key:k.phones[1]||null, eir_key:k.eir||null, cust_name:custName(j), job_no:j.ref_no||null,
+    work_date:jobDay(j), serviceman_id:j.serviceman_id, serviceman_name:t.full_name||'', outcome:outcome||jobOutcome(j)||null, note:histNote(j), source_job_id:j.id};
+}
+async function saveHistRows(rows){
+  if(!hasHist || !rows.length) return;
+  rows=rows.filter(r=>!callHist.some(h=>h.source_job_id===r.source_job_id&&h.work_date===r.work_date));
+  for(let i=0;i<rows.length;i+=100){ const { data, error }=await sb.from('call_history').insert(rows.slice(i,i+100)).select(HIST_COLS); if(error){ console.warn('call history not saved',error); return; }
+    callHist.push(...(data||[])); }
+}
+// only the history of customers on the jobs being shown is fetched (keeps phones quick as the history grows)
+let histDone=new Set(), histAt=0;
+async function loadHist(){
+  if(!hasHist) return;
+  if(Date.now()-histAt>10*60e3){ histDone=new Set(); callHist=[]; histAt=Date.now(); }   // full refresh every 10 minutes
+  const ph=new Set(), ei=new Set();
+  for(const j of jobs){ if(deptOf(j)!=='calls') continue; const k=jobKeys(j); k.phones.forEach(p=>ph.add(p)); if(k.eir) ei.add(k.eir); }
+  await histFetch([...ph],[...ei]);
+  if(!hasHist) return;
+  const i=await sb.from('call_imports').select('*').order('work_date'); callImports=i.error?[]:(i.data||[]);
+}
+async function histFetch(phones, eirs){
+  phones=phones.filter(p=>p&&!histDone.has('p'+p)); eirs=eirs.filter(e=>e&&!histDone.has('e'+e));
+  if(!phones.length && !eirs.length) return false;
+  const rows=new Map(callHist.map(r=>[r.id,r]));
+  const q=async f=>{ const r=await f; if(r.error) throw r.error; (r.data||[]).forEach(x=>rows.set(x.id,x)); };
+  try{
+    for(let i=0;i<phones.length;i+=80){ const c=phones.slice(i,i+80);
+      await q(sb.from('call_history').select(HIST_COLS).in('phone_key',c)); await q(sb.from('call_history').select(HIST_COLS).in('phone2_key',c)); }
+    for(let i=0;i<eirs.length;i+=80) await q(sb.from('call_history').select(HIST_COLS).in('eir_key',eirs.slice(i,i+80)));
+  }catch(e){ if(/call_history|relation|schema cache|does not exist/i.test(e.message||'')){ hasHist=false; callHist=[]; callImports=[]; } else console.warn('call history',e); return false; }
+  callHist=[...rows.values()]; phones.forEach(p=>histDone.add('p'+p)); eirs.forEach(e=>histDone.add('e'+e));
+  return true;
+}
+const OC_DOT={done:'g',rebook:'b',not_home:'r'};
+function ocText(o){ return o==='done'?'✅ All done':o==='rebook'?'🔁 Re-booked':o==='not_home'?'🚪 Not home':'Not marked'; }
+
+// ── job box badge ──
+function histBadge(j){ const n=pastCalls(j).length; if(!n) return '';
+  return `<button class="hist-badge" onclick="event.stopPropagation();openHistModal('${j.id}')" title="This customer has called before">🕘 ${ordN(n+1)} call · ${n} before</button>`; }
+
+// ── the call history pop-up (office and service men) ──
+function openHistModal(id){
+  const j=jobs.find(x=>x.id===id); if(!j) return; const calls=pastCalls(j);
+  openModal(`<h2>🕘 ${esc(custName(j))} — call history</h2>
+    <div class="hm-sub">${esc([j.customer_phone||phoneKey(j.ref_no),j.eircode].filter(Boolean).join(' · '))}</div>
+    <div class="hm-tbl"><table><tr><th></th><th>Date</th><th>Service man</th><th>Result</th><th></th></tr>
+    ${calls.map((c,i)=>`<tr><td><b>${ordN(i+1)} call</b></td><td>${esc(niceDate(c.date))}</td><td>${esc(firstName(c.man||''))}</td>
+      <td><span class="oc-t ${OC_DOT[c.outcome]||''}">${ocText(c.outcome)}</span>${c.note?`<div class="hm-note">“${esc(c.note)}”</div>`:''}</td>
+      <td class="hm-act">${c.imp||c.src==='live'?`<button class="btn-outline" onclick="closeModal();openJob('${j.id}',${i})">📄 Open</button>`:isOffice&&!previewing?`<button class="btn-outline" onclick="closeModal();openImport('${j.id}','${c.key}')">📥 Import</button>`:'<span class="hm-ni">Not imported</span>'}
+      ${isOffice&&!previewing?`<button class="hm-x" title="Not the same customer" onclick="histSkip('${j.id}','${c.key}')">Not the same customer</button>`:''}</td></tr>`).join('')}
+    <tr class="cur"><td><b>Current call</b></td><td>${esc(niceDate(jobDay(j)))}</td><td>${esc(firstName(prof(j.serviceman_id).full_name))}</td><td><span class="oc-t ${OC_DOT[jobOutcome(j)]||''}">${jobOutcome(j)?ocText(jobOutcome(j)):'Open'}</span></td><td class="hm-act"><button class="btn-primary" onclick="closeModal();openJob('${j.id}')">Open job</button></td></tr></table></div>
+    <div class="modal-actions">${isOffice&&!previewing&&calls.some(c=>!c.imp&&c.src!=='live')?`<button class="btn-outline" onclick="closeModal();openImport('${j.id}')">📥 Import old jobs from computer</button>`:''}<button class="btn-primary" onclick="closeModal()">Close</button></div>`);
+}
+async function histSkip(jobId,key){
+  const j=jobs.find(x=>x.id===jobId); if(!j) return;
+  const ok=await confirmBox({icon:'🙅', title:'Not the same customer?', body:'That call will no longer show on this job.', ok:'Not the same customer'}); if(!ok) return;
+  const skip=[...new Set([...(j.hist_skip||[]),key])];
+  const { error }=await sb.from('jobs').update({hist_skip:skip}).eq('id',jobId);
+  if(error) return toast('Could not save: '+error.message,6000);
+  j.hist_skip=skip; if(job&&job.id===jobId) job.hist_skip=skip; closeModal(); rerenderCurrent(); if(job&&job.id===jobId) hcRender(); toast('Removed from this job');
+}
+
+// ── the call tabs at the top of an open job ──
+function hcRender(){
+  const bar=$('hc-tabs'); if(!bar) return;
+  hcCalls=job?pastCalls(job):[];
+  if(!hcCalls.length){ bar.classList.add('hidden'); hcSel='cur'; hcShowCur(); return; }
+  bar.classList.remove('hidden');
+  bar.innerHTML=hcCalls.map((c,i)=>`<button class="hc-tab ${hcSel===i?'on':''}" onclick="hcPick(${i})"><span class="hc-dot ${OC_DOT[c.outcome]||'o'}"></span>${ordN(i+1)} call <small>${esc(niceDate(c.date))}</small></button>`).join('')
+    +`<button class="hc-tab ${hcSel==='cur'?'on':''}" onclick="hcPick('cur')"><span class="hc-dot o"></span>Current call <small>${esc(niceDate(jobDay(job)))}</small></button>`;
+}
+function hcShowCur(){
+  $('job-view').classList.remove('hc-old'); $('hc-view').classList.add('hidden'); $('hc-view').innerHTML=''; hcDoc=null;
+}
+function hcPick(i){
+  if(i!=='cur' && dirty){ toast('Save or undo your mark-up first.'); return; }
+  commitTextEditor(); if(i!=='cur') setMarking(false);
+  hcSel=i; hcRender();
+  if(i==='cur'){ hcShowCur(); if(pdfDoc) renderPdf(); return; }
+  hcOpenCall(hcCalls[i], i);
+}
+async function hcOpenCall(c, i){
+  const v=$('hc-view'); $('job-view').classList.add('hc-old'); v.classList.remove('hidden');
+  const head=`<div class="hc-ro">🔒 <span><b>${ordN(i+1)} call · ${esc(shortDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>. Read-only — go to <b>Current call</b> to work on the job.</span></div>`;
+  if(!c.imp && c.src!=='live'){
+    v.innerHTML=head+`<div class="hc-ni"><div class="hc-card"><h3>${ocText(c.outcome).split(' ')[0]} ${ordN(i+1)} call · ${esc(shortDate(c.date))}</h3><div class="hc-cs">The full job hasn't been imported.</div>
+      <table><tr><td>Service man</td><td><b>${esc(c.man||'—')}</b></td></tr><tr><td>Result</td><td><b>${ocText(c.outcome)}</b></td></tr>${c.note?`<tr><td>Note</td><td>“${esc(c.note)}”</td></tr>`:''}<tr><td>Job number</td><td>${esc(c.job_no||'—')}</td></tr></table>
+      ${isOffice&&!previewing?`<button class="btn-primary" onclick="openImport('${job.id}','${c.key}')">📥 Import this call from computer</button><div class="hc-cs" style="margin-top:8px">Search your SashDash downloads for <b>${esc(c.job_no||phoneKey(job.ref_no)||'')}</b></div>`:`<div class="hc-cs">The office can import it from the computer.</div>`}</div></div>`;
+    return;
+  }
+  // the old call's files and conversation
+  let files, convo;
+  if(c.imp){ files={sheet:c.imp.sheet_path, marked:c.imp.marked_path, photos:c.imp.photos||[]}; convo=c.imp.convo||[]; }
+  else { const x=c.job, { data }=await sb.from('comments').select('*').eq('job_id',x.id).order('created_at');
+    files={sheet:x.pdf_path, marked:x.marked_path, photos:(data||[]).filter(m=>m.photo_path).map(m=>m.photo_path)};
+    convo=(data||[]).map(m=>{ const a=prof(m.author_id); return {kind:m.kind==='event'?'event':'msg', who:a.full_name, role:roleLabel(a.role), at:m.created_at, body:m.body||'', photo:m.photo_path||null}; }); }
+  if(hcSel!==i) return;
+  hcMode=files.marked?'marked':'sheet'; hcZoom=1;
+  v.innerHTML=head+`<div class="hc-body"><section class="hc-sheet"><div class="toolbar">
+      <button class="tb-btn ${hcMode==='sheet'?'on':''}" data-m="sheet" onclick="hcMode='sheet';hcFiles()">📄 Sheet</button>
+      ${files.marked?`<button class="tb-btn ${hcMode==='marked'?'on':''}" data-m="marked" onclick="hcMode='marked';hcFiles()">✏️ Marked-up</button>`:''}
+      ${files.photos.length?`<button class="tb-btn" data-m="photos" onclick="hcMode='photos';hcFiles()">🖼 Photos (${files.photos.length})</button>`:''}
+      <span class="spacer"></span><button class="tb-btn zoom-ctl" onclick="hcZ(-1)">−</button><button class="tb-btn zoom-ctl" id="hc-zl" onclick="hcZ(0)">100%</button><button class="tb-btn zoom-ctl" onclick="hcZ(1)">+</button></div>
+      <div class="pdf-scroll" id="hc-scroll"><div class="pdf-pages" id="hc-pages"><div class="loading">Loading sheet…</div></div></div></section>
+    <aside class="hc-chat"><div class="chat-head">💬 Conversation <span class="hc-cs">· ${ordN(i+1)} call</span></div><div class="chat-list" id="hc-list">${hcConvo(convo)}</div><div class="hc-lock">🔒 Old call — messages can't be added here.</div></aside></div>`;
+  v._files=files; hcFiles();
+  v.querySelectorAll('img[data-path]').forEach(im=>loadChatPhoto(im,false));
+}
+function hcConvo(cv){
+  if(!cv.length) return '<div class="loading">No messages on this call.</div>';
+  return cv.map(m=>{ const when=m.at?fmtWhen(m.at):(m.when||'');
+    if(m.kind==='event') return `<div class="evt">${esc(firstName(m.who||''))} · ${esc(m.body)}${when?' · '+esc(when):''}</div>`;
+    const photo=m.photo?`<div class="photo-wrap"><img class="chat-photo" data-path="${esc(m.photo)}" alt="Photo" onclick="openLightbox(this)"><span class="ph-load">📷</span></div>`:'';
+    return `<div class="msg"><div class="who">${esc(m.who||'')}${m.role?' · '+esc(m.role):''}</div><div class="bub ${m.photo?'has-photo':''}">${photo}${m.body?`<div class="cap">${esc(m.body)}</div>`:''}</div><div class="when">${esc(when)}</div></div>`; }).join('');
+}
+function hcZ(d){ hcZoom=d===0?1:Math.min(4,Math.max(0.5,+(hcZoom*(d>0?1.25:0.8)).toFixed(3))); hcFiles(true); }
+async function hcFiles(keepDoc){
+  const v=$('hc-view'), f=v._files, wrap=$('hc-pages'); if(!f||!wrap) return; const tok=++hcTok;
+  v.querySelectorAll('.toolbar [data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===hcMode));
+  if(hcMode==='photos'){ wrap.innerHTML=`<div class="hc-photos">${f.photos.map(p=>`<div class="photo-wrap"><img class="chat-photo" data-path="${esc(p)}" onclick="openLightbox(this)"><span class="ph-load">📷</span></div>`).join('')}</div>`;
+    wrap.querySelectorAll('img').forEach(im=>loadChatPhoto(im,false)); $('hc-zl').textContent='—'; return; }
+  try{
+    if(!keepDoc || !hcDoc || hcDoc._m!==hcMode){ wrap.innerHTML='<div class="loading">Loading sheet…</div>';
+      const r=await sb.storage.from(BUCKET).download(hcMode==='marked'?f.marked:f.sheet); if(r.error) throw r.error;
+      const doc=await pdfjsLib.getDocument({data:new Uint8Array(await r.data.arrayBuffer())}).promise; if(tok!==hcTok) return; doc._m=hcMode; hcDoc=doc; }
+    const sc=$('hc-scroll'), avail=Math.max(280, sc.clientWidth-(window.innerWidth<720?16:32)), dpr=Math.min(window.devicePixelRatio||1,2), frag=document.createDocumentFragment(), todo=[];
+    for(let p=1;p<=hcDoc.numPages;p++){ const page=await hcDoc.getPage(p); if(tok!==hcTok) return; const base=page.getViewport({scale:1}), vp=page.getViewport({scale:Math.min(avail/base.width,2.2)*hcZoom});
+      const box=document.createElement('div'); box.className='pdf-page'; box.style.width=vp.width+'px'; box.style.height=vp.height+'px';
+      const cv=document.createElement('canvas'); cv.width=Math.floor(vp.width*dpr); cv.height=Math.floor(vp.height*dpr); cv.style.width=vp.width+'px'; cv.style.height=vp.height+'px'; box.append(cv); frag.append(box); todo.push([page,cv,vp.scale*dpr]); }
+    wrap.innerHTML=''; wrap.append(frag); $('hc-zl').textContent=Math.round(hcZoom*100)+'%';
+    for(const [page,cv,s] of todo){ if(tok!==hcTok) return; await page.render({canvasContext:cv.getContext('2d'), viewport:page.getViewport({scale:s})}).promise.catch(()=>{}); }
+  }catch(e){ wrap.innerHTML=`<div class="loading">Couldn't open the sheet: ${esc(e.message||e)}</div>`; }
+}
+
+// ── 📥 Import old calls from the weekly download (a job folder, or the week's .zip) ──
+let impJobId=null, impKey=null, impFound=[];
+function openImport(jobId, key){
+  const j=jobs.find(x=>x.id===jobId); if(!j) return; impJobId=jobId; impKey=key||null; impFound=[];
+  const no=(key&&(pastCalls(j).find(c=>c.key===key)||{}).job_no)||phoneKey(j.ref_no)||j.customer_phone||j.ref_no||'';
+  openModal(`<h2>📥 Import old calls — ${esc(custName(j))}</h2>
+    <p class="imp-p">On this computer, search your SashDash downloads for <b>${esc(no)}</b>. Then pick the customer's job folder — or the week's <b>.zip</b> and SashDash finds the job inside.</p>
+    <div class="imp-btns"><label class="btn-primary" for="imp-dir">📁 Pick the job folder</label><label class="btn-outline" for="imp-zip">🗜 Pick a week .zip</label></div>
+    <input type="file" id="imp-dir" webkitdirectory multiple style="display:none" onchange="impPickedDir(this.files);this.value=''">
+    <input type="file" id="imp-zip" accept=".zip,application/zip" style="display:none" onchange="impPickedZip(this.files[0]);this.value=''">
+    <div id="imp-found"></div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary hidden" id="imp-go" onclick="runImport()">📥 Import</button></div>`);
+}
+// read every job folder (one with sheet-original.pdf) out of a list of {path, file|zipEntry}
+async function impScan(entries){
+  const box=$('imp-found'); box.innerHTML='<div class="loading">Reading…</div>';
+  const dirs=[...new Set(entries.filter(e=>/(^|\/)sheet-original\.pdf$/i.test(e.path)).map(e=>e.path.replace(/sheet-original\.pdf$/i,'')))];
+  const read=async(e,type)=>e.file? (type==='text'?await e.file.text():new Uint8Array(await e.file.arrayBuffer())) : await e.zip.async(type==='text'?'string':'uint8array');
+  const found=[];
+  for(const dir of dirs){
+    const inDir=entries.filter(e=>e.path.startsWith(dir) && !e.path.slice(dir.length).replace(/^photos\//,'').includes('/'));
+    const get=n=>inDir.find(e=>e.path===dir+n);
+    let info=null;
+    try{ const jj=get('job.json'); if(jj) info=JSON.parse(await read(jj,'text')); else { const rh=get('report.html'); if(rh) info=parseReportHtml(await read(rh,'text')); } }catch(e){ console.warn(e); }
+    if(!info||!info.work_date) continue;
+    found.push({dir, info, entries:inDir, read});
+  }
+  const j=jobs.find(x=>x.id===impJobId), k=jobKeys(j);
+  found.forEach(f=>{ f.match=keysMatch(k,[phoneKey(f.info.job_no),phoneKey(f.info.phone),phoneKey(f.info.phone2)],eirKey(f.info.eircode)); f.done=callImports.some(i=>i.job_id===j.id&&i.work_date===f.info.work_date); });
+  impFound=found.filter(f=>f.match).sort((a,b)=>a.info.work_date<b.info.work_date?-1:1);
+  if(!impFound.length){ box.innerHTML=`<div class="imp-none">⚠️ No job for this customer in what you picked${found.length?` (${found.length} other job${found.length===1?'':'s'} found)`:''}. Check the job number and pick again.</div>`; $('imp-go').classList.add('hidden'); return; }
+  box.innerHTML=`<div class="imp-list">${impFound.map((f,i)=>{ const x=f.info, ph=f.entries.filter(e=>/\/photos\/[^/]+$/.test(e.path)).length;
+    return `<label class="imp-row ${f.done?'dis':''}"><input type="checkbox" data-i="${i}" ${f.done?'disabled':'checked'}>
+      <span><b>${esc(x.name||'Job')} · ${esc(shortDate(x.work_date))}</b><br><span class="hc-cs">${esc(x.serviceman||'')} · ${ocText(x.outcome)} · job no. ${esc(x.job_no||'—')}</span><br>
+      <span class="imp-what">📄 Sheet${get2(f,'sheet-marked-up.pdf')?' · ✏️ Mark-up':''}${ph?` · 🖼 ${ph} photo${ph===1?'':'s'}`:''} · 💬 ${(x.convo||[]).filter(m=>m.kind!=='event').length} messages</span>${f.done?'<br><span class="hc-cs">Already imported</span>':''}</span></label>`; }).join('')}</div>`;
+  $('imp-go').classList.remove('hidden'); $('imp-go').textContent=`📥 Import ${impFound.filter(f=>!f.done).length===1?'this call':'these calls'}`;
+}
+function get2(f,n){ return f.entries.find(e=>e.path===f.dir+n); }
+function impPickedDir(fl){ const files=[...(fl||[])]; impScan(files.map(f=>({path:(f.webkitRelativePath||f.name).replace(/\\/g,'/'), file:f}))); }
+async function impPickedZip(f){ if(!f) return; $('imp-found').innerHTML='<div class="loading">Opening the .zip…</div>';
+  try{ const z=await JSZip.loadAsync(f); const ents=[]; z.forEach((p,e)=>{ if(!e.dir) ents.push({path:p, zip:e}); }); impScan(ents); }
+  catch(e){ $('imp-found').innerHTML=`<div class="imp-none">⚠️ Couldn't open that file: ${esc(e.message||e)}</div>`; } }
+// older downloads have no job.json — read the details back out of report.html
+function parseReportHtml(html){
+  const d=new DOMParser().parseFromString(html,'text/html'), row={};
+  d.querySelectorAll('table tr').forEach(tr=>{ const td=tr.querySelectorAll('td'); if(td.length>=2) row[td[0].textContent.trim()]=td[1].textContent.trim(); });
+  const title=(d.querySelector('h2')||{}).textContent||'', sent=row['Sent']||'', ym=/(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(sent);
+  const months=['january','february','march','april','may','june','july','august','september','october','november','december'];
+  const dm=/(\d{1,2})\s+([a-z]+)/i.exec(row['Day']||''); let work_date=null;
+  if(dm){ const mi=months.indexOf(dm[2].toLowerCase()); let y=ym?+ym[3]:new Date().getFullYear(); if(ym&&mi+1<+ym[2]-6) y++; if(mi>=0) work_date=`${y}-${String(mi+1).padStart(2,'0')}-${String(dm[1]).padStart(2,'0')}`; }
+  const st=(row['Status']||'').toLowerCase(), outcome=/all done|complet/.test(st)?'done':/re-?book/.test(st)?'rebook':/not home/.test(st)?'not_home':null;
+  const phones=(row['Customer phone']||'').split('·').map(s=>s.trim());
+  const convo=[...d.querySelectorAll('.msg,.evt')].map(el=>{ if(el.classList.contains('evt')){ const p=el.textContent.split(' · '); return {kind:'event', when:p[0], who:p[1]||'', body:p.slice(2).join(' · ')}; }
+    const who=(el.querySelector('b')||{}).textContent||'', when=(el.querySelector('span')||{}).textContent||'', a=el.querySelector('a[href^="photos/"]');
+    const c=el.cloneNode(true); c.querySelectorAll('b,span,a,img').forEach(x=>x.remove()); const body=c.innerHTML.replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'').replace(/^\s*\(.*?\)\s*/,'').trim();
+    return {kind:'msg', who, when, body:new DOMParser().parseFromString(body,'text/html').documentElement.textContent.trim(), photo_file:a?a.getAttribute('href').replace(/^photos\//,''):null}; });
+  return {name:title.replace(/^job\s*\d+\s*[-–·:]?\s*/i,''), job_no:row['Docket / ref']&&row['Docket / ref']!=='—'?row['Docket / ref']:'', phone:phones[0]||'', phone2:phones[1]||'', eircode:row['Eircode']||'',
+    work_date, serviceman:(row['Service man']||'').split('·')[0].trim(), outcome, note:'', convo};
+}
+async function runImport(){
+  const j=jobs.find(x=>x.id===impJobId); if(!j) return;
+  const pick=[...document.querySelectorAll('#imp-found input[type=checkbox]:checked')].map(b=>impFound[+b.dataset.i]);
+  if(!pick.length) return toast('Tick at least one call.');
+  const btn=$('imp-go'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Importing…';
+  try{
+    for(const f of pick){
+      const x=f.info, id=uuid(), base=`${filePrefix('calls',j.serviceman_id)}/${j.id}/history/${id}`, up=async(name,bytes,type)=>{ const p=`${base}/${name}`;
+        const r=await sb.storage.from(BUCKET).upload(p,new Blob([bytes],{type}),{contentType:type,upsert:true}); if(r.error) throw r.error; total+=bytes.length; return p; };
+      let total=0;
+      const sheet=await up('sheet-original.pdf', await f.read(get2(f,'sheet-original.pdf'),'bin'), 'application/pdf');
+      const me2=get2(f,'sheet-marked-up.pdf'), marked=me2?await up('sheet-marked-up.pdf', await f.read(me2,'bin'),'application/pdf'):null;
+      const photos=[], pmap={};
+      for(const e of f.entries.filter(e=>/\/photos\/[^/]+$/.test(e.path))){ const fn=e.path.split('/').pop(); pmap[fn]=await up('photos/'+fn, await f.read(e,'bin'), /\.png$/i.test(fn)?'image/png':'image/jpeg'); photos.push(pmap[fn]); }
+      const convo=(x.convo||[]).map(m=>({kind:m.kind, who:m.who, role:m.role||'', at:m.at||null, when:m.when||'', body:m.body||'', photo:m.photo_file?pmap[m.photo_file]||null:null}));
+      // which earlier call is this? the one on the same day — or a new one (older than SashDash's history)
+      let key=(pastCalls(j).find(c=>c.date===x.work_date&&!c.imp)||{}).key;
+      if(!key && hasHist){ const hid=uuid(), r={id:hid, phone_key:phoneKey(x.job_no)||phoneKey(x.phone)||null, phone2_key:phoneKey(x.phone2)||null, eir_key:eirKey(x.eircode)||null, cust_name:x.name||custName(j), job_no:x.job_no||null,
+          work_date:x.work_date, serviceman_id:(profiles.find(p=>p.full_name===x.serviceman)||{}).id||null, serviceman_name:x.serviceman||'', outcome:x.outcome, note:x.note||'', source_job_id:null};
+        const { error }=await sb.from('call_history').insert(r); if(error) throw error; callHist.push(r); key=hid; }
+      const row={id, job_id:j.id, call_key:key, work_date:x.work_date, serviceman_name:x.serviceman||'', outcome:x.outcome, note:x.note||'', job_no:x.job_no||null, cust_name:x.name||'',
+        sheet_path:sheet, marked_path:marked, photos, convo, bytes:total, created_by:me.id};
+      const { error }=await sb.from('call_imports').insert(row); if(error) throw error; callImports.push(row);
+    }
+    closeModal(); toast(`✅ ${pick.length} old call${pick.length===1?'':'s'} imported — see the tabs at the top of the job`,5000);
+    rerenderCurrent(); if(job&&job.id===j.id){ hcRender(); const i=hcCalls.findIndex(c=>c.imp&&c.imp.id===callImports[callImports.length-1].id); if(i>=0) hcPick(i); } else openJob(j.id, pastCalls(j).findIndex(c=>c.imp));
+  }catch(e){ btn.disabled=false; btn.textContent='📥 Try again'; toast('Import failed: '+(e.message||e),7000); }
+}
+
+// ── new job form: spot a repeat customer as the details are typed ──
+let formSkip=new Set(), histFormTimer=null;
+function histFormCheck(){
+  const box=$('m-hist'); if(!box) return;
+  const t={id:'new', department:'calls', site_id:currentSiteId, ref_no:$('m-ref').value, customer_phone:($('m-ph')||{}).value, customer_phone2:($('m-ph2')||{}).value, eircode:($('m-eir')||{}).value, created_at:new Date().toISOString(), hist_skip:[...formSkip]};
+  // look up numbers typed in the form that SashDash hasn't checked yet
+  const k=jobKeys(t); clearTimeout(histFormTimer);
+  if(hasHist && (k.phones.some(p=>!histDone.has('p'+p)) || (k.eir && !histDone.has('e'+k.eir)))){
+    histFormTimer=setTimeout(async()=>{ if(await histFetch(k.phones, k.eir?[k.eir]:[])) histFormCheck(); },350); }
+  const calls=pastCalls(t);
+  if(!calls.length){ box.classList.add('hidden'); box.innerHTML=''; return; }
+  const name=calls[calls.length-1].name||'This customer';
+  box.classList.remove('hidden');
+  box.innerHTML=`<div class="hw-t">🕘 ${esc(name)} has called before — this will be the <b>${ordN(calls.length+1)} call</b></div>
+    ${calls.map((c,i)=>`<div class="hw-r"><span>${ordN(i+1)} call · <b>${esc(shortDate(c.date))}</b> · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}${c.note?` · <i>“${esc(c.note)}”</i>`:''}</span><button type="button" class="hm-x" onclick="formSkip.add('${c.key}');histFormCheck()">Not the same customer</button></div>`).join('')}
+    <div class="hw-n">After you send the job, the old calls show as tabs on it. <b>📥 Send &amp; import</b> lets you add the old jobs from your computer straight away.</div>`;
+  const b=$('m-save2'); if(b) b.classList.remove('hidden');
+}
+
+// ── weekly download: "Name - number - 2nd call", the old calls inside it, and job.json for exact re-import ──
+function histDirSuffix(j){ const n=pastCalls(j).length; return n?` - ${ordN(n+1)} call`:''; }
+function jobJson(j, convo, photoFiles){
+  const k=jobKeys(j), t=prof(j.serviceman_id);
+  return JSON.stringify({sashdash:1, name:custName(j), job_no:j.ref_no||'', phone:j.customer_phone||'', phone2:j.customer_phone2||'', eircode:j.eircode||'', work_date:jobDay(j),
+    serviceman:t.full_name||'', outcome:jobOutcome(j), note:histNote(j), convo, photos:photoFiles},null,1);
+}
+async function addOldCallsToZip(j, jd, get){
+  const calls=pastCalls(j);
+  for(let i=0;i<calls.length;i++){ const c=calls[i]; if(!c.imp) continue; const im=c.imp;
+    const od=jd.folder(safeName(`${ordN(i+1)} call - ${im.job_no||c.job_no||''} - ${niceDate(c.date)}`));
+    od.file('sheet-original.pdf', await get(im.sheet_path)); if(im.marked_path) od.file('sheet-marked-up.pdf', await get(im.marked_path));
+    const pf=[]; for(const p of (im.photos||[])){ const fn=p.split('/').pop(); od.folder('photos').file(fn, await get(p)); pf.push(fn); }
+    const convo=(im.convo||[]).map(m=>({...m, photo_file:m.photo?m.photo.split('/').pop():null, photo:undefined}));
+    od.file('job.json', JSON.stringify({sashdash:1, name:im.cust_name||c.name, job_no:im.job_no||c.job_no||'', phone:'', phone2:'', eircode:'', work_date:c.date, serviceman:im.serviceman_name||c.man, outcome:c.outcome, note:c.note||'', convo, photos:pf},null,1));
+    od.file('conversation.html', `<!doctype html><meta charset="utf-8"><title>${esc(ordN(i+1))} call</title><body style="font-family:Arial;max-width:820px;margin:20px auto"><h2>${esc(im.cust_name||c.name)} — ${ordN(i+1)} call · ${esc(shortDate(c.date))}</h2><p>${esc(im.serviceman_name||c.man)} · ${ocText(c.outcome)}</p>`
+      +(im.convo||[]).map(m=>m.kind==='event'?`<p style="color:#555">${esc(m.when||fmtWhen(m.at||''))} · ${esc(m.who)} · ${esc(m.body)}</p>`:`<div style="border:1px solid #ddd;border-radius:8px;padding:8px 12px;margin:8px 0"><b>${esc(m.who)}</b> <span style="color:#555">${esc(m.when||(m.at?fmtWhen(m.at):''))}</span><br>${esc(m.body).replace(/\n/g,'<br>')}${m.photo?`<br><img src="photos/${esc(m.photo.split('/').pop())}" style="max-width:100%;max-height:420px">`:''}</div>`).join(''));
+  }
+}
+function importPathsFor(jobIds){ return callImports.filter(i=>jobIds.includes(i.job_id)).flatMap(i=>[i.sheet_path,i.marked_path,...(i.photos||[])]).filter(Boolean); }
+
 function safeName(t){ return String(t||'').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim().slice(0,80)||'untitled'; }
 
 // tiny key-value store in the browser (remembers the chosen archive folder)
@@ -2901,12 +3265,13 @@ async function buildWeekZip(week, techId, onStep){
       const orig=await get(j.pdf_path), marked=j.marked_path?await get(j.marked_path):null;
       jd.file('sheet-original.pdf', orig);
       if(marked) jd.file('sheet-marked-up.pdf', marked);
-      const cm=(allC||[]).filter(c=>c.job_id===j.id); let chat='', pi=0; const pmsgs=[];
+      const cm=(allC||[]).filter(c=>c.job_id===j.id); let chat='', pi=0; const pmsgs=[], jm=[];
       for(const c of cm){
         const a=prof(c.author_id), when=new Date(c.created_at).toLocaleString('en-IE');
-        if(c.kind==='event'){ chat+=`<p class="evt">${esc(when)} · ${esc(a.full_name)} · ${esc(c.body)}</p>`; pmsgs.push({kind:'event', who:a.full_name, when, body:c.body}); continue; }
+        if(c.kind==='event'){ chat+=`<p class="evt">${esc(when)} · ${esc(a.full_name)} · ${esc(c.body)}</p>`; pmsgs.push({kind:'event', who:a.full_name, when, body:c.body}); jm.push({kind:'event', who:a.full_name, role:roleLabel(a.role), at:c.created_at, body:c.body}); continue; }
         let img='', pb=null;
         if(c.photo_path){ const b=await get(c.photo_path); pb=b; const fn=`photo-${++pi}.jpg`; jd.folder('photos').file(fn,b); img=`<br><a href="photos/${fn}"><img src="${await blobToDataUrl(b)}"></a>`; }
+        jm.push({kind:'msg', who:a.full_name, role:roleLabel(a.role), at:c.created_at, body:c.body||'', photo_file:pb?`photo-${pi}.jpg`:null});
         pmsgs.push({kind:'msg', who:a.full_name+(roleLabel(a.role)?' ('+roleLabel(a.role)+')':''), when, body:c.body||'', img:pb});
         chat+=`<div class="msg"><b>${esc(a.full_name)}</b>${roleLabel(a.role)?' ('+roleLabel(a.role)+')':''} <span>${esc(when)}</span><br>${esc(c.body||'').replace(/\n/g,'<br>')}${img}</div>`;
       }
@@ -2929,6 +3294,8 @@ ${j.customer_phone||j.customer_phone2?`<tr><td>Customer phone</td><td>${esc([j.c
         rows.push(['Sent',new Date(j.created_at).toLocaleString('en-IE')],['Status',outcomeText(j)+(j.completed?' — '+new Date(j.completed_at).toLocaleString('en-IE'):'')]);
         jd.file('report.pdf', await jobReportPdf({title:j.title, rows, msgs:pmsgs, sheet:marked||orig}));
       }catch(e){ console.warn('report.pdf failed for',j.title,e); }
+      jd.file('job.json', jobJson(j, jm, jm.filter(m=>m.photo_file).map(m=>m.photo_file)));
+      await addOldCallsToZip(j, jd, get);
       index+=`<li>${esc(t.full_name)} · ${esc(dayLabel(d.work_date))} · <a href="${encodeURI(safeName(t.full_name)+'/'+safeName(dayLabel(d.work_date))+'/'+j._dir+'/report.html')}">${esc(j.title)}</a> (<a href="${encodeURI(safeName(t.full_name)+'/'+safeName(dayLabel(d.work_date))+'/'+j._dir+'/report.pdf')}">PDF</a>) — ${outcomeText(j)}</li>`;
     }
   }
@@ -3037,7 +3404,8 @@ function cleanupDueDays(cutoff){
 async function deleteWeekData(days){
   // only All done jobs are removed; a day is removed once nothing else is left on it
   const dayIds=days.map(x=>x.id), oj=jobs.filter(j=>dayIds.includes(j.site_id)&&cleanJob(j)), jobIds=oj.map(j=>j.id);
-  const paths=[...oj.flatMap(j=>[j.pdf_path,j.marked_path]), ...await chatPhotoPaths(jobIds)].filter(Boolean);
+  await saveHistRows(oj.map(j=>histRow(j,'done')));
+  const paths=[...oj.flatMap(j=>[j.pdf_path,j.marked_path]), ...await chatPhotoPaths(jobIds), ...importPathsFor(jobIds)].filter(Boolean);
   for(let i=0;i<paths.length;i+=100){ const r=await sb.storage.from(BUCKET).remove(paths.slice(i,i+100)); if(r.error) throw r.error; }
   for(let i=0;i<jobIds.length;i+=100){ const { error }=await sb.from('jobs').delete().in('id',jobIds.slice(i,i+100)); if(error) throw error; }
   const emptyIds=dayIds.filter(id=>!jobs.some(j=>j.site_id===id&&!jobIds.includes(j.id)));
@@ -3293,7 +3661,9 @@ async function doUpload({files, title, ref, note, contact, route}){
   const hasC=contact && Object.values(contact).some(Boolean);
   if(hasC && hasContact) Object.assign(row, contact);
   if(route && hasRoute && (route.eircode||route.avail)) Object.assign(row, route);
+  if(hasHist && dept==='calls' && formSkip.size) row.hist_skip=[...formSkip];
   let ins=await sb.from('jobs').insert(row);
+  if(ins.error && /hist_skip/i.test(ins.error.message)){ delete row.hist_skip; ins=await sb.from('jobs').insert(row); }
   if(ins.error && /eircode|avail/i.test(ins.error.message)){ hasRoute=false; delete row.eircode; delete row.avail; ins=await sb.from('jobs').insert(row); setTimeout(()=>toast('⚠️ Eircode not saved — run update-15 in Supabase',8000),1200); }
   if(ins.error && /customer_/i.test(ins.error.message)){ hasContact=false; ['customer_phone','customer_phone2','customer_email'].forEach(k=>delete row[k]); ins=await sb.from('jobs').insert(row); }
   if(!ins.error && hasC && !hasContact){   // database not updated yet → job still sent, contact details go in the chat
@@ -3412,13 +3782,13 @@ async function saveTeam(){
 }
 
 // ── Job view ───────────────────────────────────────────────────────
-async function openJob(id){
+async function openJob(id, hcTab){
   const j=jobs.find(x=>x.id===id); if(!j) return;
-  job={...j}; strokes=[]; dirty=false; origBytes=null; pdfDoc=null; pageViews=[]; zoomLevel=1;
+  job={...j}; hcSel='cur'; hcShowCur(); strokes=[]; dirty=false; origBytes=null; pdfDoc=null; pageViews=[]; zoomLevel=1;
   setMarking(false); setJvTab('sheet');
   $('job-view').classList.remove('hidden'); document.body.style.overflow='hidden';
   if(!(history.state && history.state.job)) history.pushState({job:id},''); else history.replaceState({job:id},'');
-  updateJobHeader();
+  updateJobHeader(); hcRender(); if(hcTab!=null && hcTab>=0 && hcCalls[hcTab]) hcPick(hcTab);
   $('pdf-pages').innerHTML='<div class="loading">Loading sheet…</div>';
   $('chat-list').innerHTML='<div class="loading">Loading…</div>';
   loadComments();
@@ -3452,7 +3822,7 @@ function closeJob(fromPop){
   if(!job) return;
   commitTextEditor();
   if(dirty && !confirm('You have unsaved mark-up on this sheet. Leave without saving?')){ if(fromPop) history.pushState({job:job.id},''); return; }
-  dirty=false; job=null; pdfDoc=null; origBytes=null; renderToken++;
+  dirty=false; job=null; pdfDoc=null; origBytes=null; renderToken++; hcSel='cur'; hcShowCur(); $('hc-tabs').classList.add('hidden');
   $('job-view').classList.add('hidden'); document.body.style.overflow='';
   if(!fromPop && history.state && history.state.job) history.back();
   scheduleReload();
@@ -3959,6 +4329,7 @@ async function doReschedule(){
     const newTitle=/^job\s*\d+/i.test(j.title||'') ? `Job ${n}${rest?' '+rest:''}` : j.title;
     const upd={site_id:target.id, title:newTitle, tech_unread:true, last_activity_at:new Date().toISOString()};
     const wasFlagged=['rebook','not_home'].includes(jobOutcome(j));
+    if(wasFlagged) await saveHistRows([histRow(j)]);
     if(wasFlagged){ upd.outcome=null; upd.completed=false; upd.completed_at=null; }   // back in the diary → out of the folder
     let movedPhotos=[];
     if(manChange){
