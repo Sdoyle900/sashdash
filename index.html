@@ -576,6 +576,8 @@
     .imp-zip{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px}
     .imp-zip .iz-c{grid-column:1/-1;font-size:12px;color:var(--slate);font-weight:700}
     .imp-zip b{font-size:13.5px;word-break:break-word}.imp-zip .btn-outline{padding:5px 10px;font-size:12px}
+    .imp-zip .iz-s{grid-column:1/-1;font-size:12px;color:var(--slate)}
+    .modal.imp-over{outline:3px dashed #6366f1;outline-offset:-8px;background:#eef2ff}
     @media (max-width:900px){
       .chat-pane{width:auto;border-left:none}
       .jv-tabs{display:flex}
@@ -914,7 +916,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-15-1800';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-15-1835';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -2779,6 +2781,7 @@ function jobKeys(j){ return {phones:[...new Set([phoneKey(j.ref_no),phoneKey(j.c
 function custName(j){ return String(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'').trim()||j.title||''; }
 function custLabel(j){ const n=custName(j); return /^job\s*\d+$/i.test(n)?(j.ref_no||n):n; }
 // the weekly download a call was saved in
+function zipSearch(d){ return weekName(weekOf(d)); }   // e.g. "21 Sept 2026" — Windows search finds the zip with just the date   // Windows treats " - " as 'leave out', so search just this part
 function zipNameFor(d){ return `SashDash - Private Calls - w-c ${weekName(weekOf(d))}.zip`; }
 function copyText(t,btn){ const done=()=>{ if(btn){ const o=btn.textContent; btn.textContent='✓ Copied'; setTimeout(()=>btn.textContent=o,1500); } };
   try{ navigator.clipboard.writeText(t).then(done,()=>toast(t,6000)); }catch(e){ toast(t,6000); } }
@@ -2895,7 +2898,7 @@ async function hcOpenCall(c, i){
   if(!c.imp && c.src!=='live'){
     v.innerHTML=head+`<div class="hc-ni"><div class="hc-card"><h3>${ocText(c.outcome).split(' ')[0]} ${ordN(i+1)} call · ${esc(shortDate(c.date))}</h3><div class="hc-cs">The full job hasn't been imported.</div>
       <table><tr><td>Service man</td><td><b>${esc(c.man||'—')}</b></td></tr><tr><td>Result</td><td><b>${ocText(c.outcome)}</b></td></tr>${c.note?`<tr><td>Note</td><td>“${esc(c.note)}”</td></tr>`:''}<tr><td>Job number</td><td>${esc(c.job_no||'—')}</td></tr></table>
-      ${isOffice&&!previewing?`<button class="btn-primary" onclick="openImport('${job.id}','${c.key}')">📥 Import this call from computer</button><div class="hc-cs" style="margin-top:10px">Look in <b>🗜 ${esc(zipNameFor(hcCalls[hcCalls.length-1].date))}</b> <button class="btn-outline" style="padding:3px 9px;font-size:12px;margin-left:4px" onclick="copyText('${esc(zipNameFor(hcCalls[hcCalls.length-1].date).replace(/\.zip$/,''))}',this)">Copy name</button></div>`:`<div class="hc-cs">The office can import it from the computer.</div>`}</div></div>`;
+      ${isOffice&&!previewing?`<button class="btn-primary" onclick="openImport('${job.id}','${c.key}')">📥 Import this call from computer</button><div class="hc-cs" style="margin-top:10px">Look in <b>🗜 ${esc(zipNameFor(hcCalls[hcCalls.length-1].date))}</b> <button class="btn-outline" style="padding:3px 9px;font-size:12px;margin-left:4px" onclick="copyText('${esc(zipSearch(hcCalls[hcCalls.length-1].date))}',this)">Copy search</button></div>`:`<div class="hc-cs">The office can import it from the computer.</div>`}</div></div>`;
     return;
   }
   // the old call's files and conversation
@@ -2967,15 +2970,21 @@ function openImport(jobId, key){
   const all=pastCalls(j), want=key?all.filter(c=>c.key===key):all.filter(c=>!c.imp&&c.src!=='live');
   const last=all.length?all[all.length-1]:null, look=last?[{zip:zipNameFor(last.date), calls:[last]}]:[];
   openModal(`<h2>📥 Import old calls — ${esc(custLabel(j))}</h2>
-    ${look.length?`<p class="imp-p">Find this file in your downloads (or your SashDash archive folder) and pick it. It has the ${all.length>1?'last call and the earlier calls saved with it':'last call'} — SashDash finds them inside:</p>
-    <div class="imp-look">${look.map(x=>`<div class="imp-zip"><span class="iz-c">Last call · ${esc(niceDate(x.calls[0].date))}</span><b>🗜 ${esc(x.zip)}</b><button class="btn-outline" onclick="copyText('${esc(x.zip.replace(/\.zip$/,''))}',this)">Copy name</button></div>`).join('')}</div>
-    <p class="hc-cs" style="margin:6px 0 12px">Tip: in File Explorer, click the search box, paste the name and press Enter. Windows may have added (1) to the end if it was saved twice.</p>`
+    ${look.length?`<p class="imp-p">${canPickFolder?'Press <b>🔎 Find it for me</b> and SashDash looks for this file on your computer':'Pick this file from your Downloads'} — it has the ${all.length>1?'last call and the earlier calls saved with it':'last call'}:</p>
+    <div class="imp-look">${look.map(x=>`<div class="imp-zip"><span class="iz-c">Last call · ${esc(niceDate(x.calls[0].date))}</span><b>🗜 ${esc(x.zip)}</b><button class="btn-outline" onclick="copyText('${esc(zipSearch(x.calls[0].date))}',this)">Copy search</button><span class="iz-s">Search for: <b>${esc(zipSearch(x.calls[0].date))}</b></span></div>`).join('')}</div>
+    <p class="hc-cs" style="margin:6px 0 12px">Or search File Explorer for <b>${esc(zipSearch(look[0].calls[0].date))}</b> and <b>drag the zip onto this window</b>.</p>`
     :`<p class="imp-p">Pick the week's <b>.zip</b> from your downloads — SashDash finds this customer's job inside (job no. <b>${esc(phoneKey(j.ref_no)||j.ref_no||'')}</b>).</p>`}
-    <div class="imp-btns"><label class="btn-primary" for="imp-zip">🗜 Pick the week .zip</label><label class="btn-outline" for="imp-dir">📁 Pick a job folder instead</label></div>
+    <div class="imp-btns">${canPickFolder&&look.length?`<button class="btn-primary" id="imp-find" onclick="impFindZip('${esc(look[0].zip)}')">🔎 Find it for me</button>`:''}<button class="${canPickFolder&&look.length?'btn-outline':'btn-primary'}" onclick="impPickZipBtn()">🗜 Pick the week .zip</button><label class="btn-outline" for="imp-dir">📁 Pick a job folder</label></div>
+    <div id="imp-where" class="hc-cs" style="margin:-4px 0 8px"></div>
     <input type="file" id="imp-dir" webkitdirectory multiple style="display:none" onchange="impPickedDir(this.files);this.value=''">
     <input type="file" id="imp-zip" accept=".zip,application/zip" style="display:none" onchange="impPickedZip(this.files[0]);this.value=''">
     <div id="imp-found"></div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary hidden" id="imp-go" onclick="runImport()">📥 Import</button></div>`);
+  const m=document.querySelector('#modal-root .modal');
+  if(m){ m.addEventListener('dragover',e=>{ if(hasFiles(e)){ e.preventDefault(); m.classList.add('imp-over'); } });
+    m.addEventListener('dragleave',e=>{ if(e.target===m) m.classList.remove('imp-over'); });
+    m.addEventListener('drop',e=>{ if(!hasFiles(e)) return; e.preventDefault(); m.classList.remove('imp-over');
+      const z=[...e.dataTransfer.files].find(f=>/\.zip$/i.test(f.name)); if(z) impPickedZip(z); else toast('Drop the week\'s .zip file here.'); }); }
 }
 // read every job folder (one with sheet-original.pdf) out of a list of {path, file|zipEntry}
 async function impScan(entries){
@@ -3004,6 +3013,39 @@ async function impScan(entries){
   $('imp-go').classList.remove('hidden'); $('imp-go').textContent=`📥 Import ${impFound.filter(f=>!f.done).length===1?'this call':'these calls'}`;
 }
 function get2(f,n){ return f.entries.find(e=>e.path===f.dir+n); }
+// 🔎 look for the zip in the folder SashDash saves to (Downloads, chosen once) — no searching by hand
+async function impZipFolders(){ const out=[]; for(const k of ['zipDir','archiveDir']){ const h=await kvGet(k); if(h && h.kind==='directory' && !out.some(o=>o.name===h.name)) out.push(h); } return out; }
+async function impFindZip(zipName){
+  const where=$('imp-where'), base=zipName.replace(/\.zip$/i,'').toLowerCase();
+  let dirs=await impZipFolders();
+  if(!dirs.length){
+    where.innerHTML='📁 Choose your <b>Downloads</b> folder (or wherever your SashDash zips are) — SashDash remembers it for next time.';
+    try{ const h=await window.showDirectoryPicker({id:'sashdash-zips', startIn:'downloads', mode:'read'}); await kvSet('zipDir',h); dirs=[h]; }catch(e){ where.textContent=''; return; }
+  }
+  where.innerHTML='<span class="spin" style="border-color:#c7d2fe;border-top-color:#4f46e5"></span> Looking…';
+  const hits=[];
+  const scan=async(dir,depth)=>{ for await (const [name,h] of dir.entries()){
+      if(h.kind==='file' && /\.zip$/i.test(name) && name.toLowerCase().startsWith(base)){ try{ const f=await h.getFile(); hits.push({f, where:dir.name}); }catch(e){} }
+      else if(h.kind==='directory' && depth<1 && !/^(\.|node_modules)/.test(name)) await scan(h,depth+1); } };
+  for(const d of dirs){
+    try{ let perm=d.queryPermission?await d.queryPermission({mode:'read'}):'granted'; if(perm!=='granted' && d.requestPermission) perm=await d.requestPermission({mode:'read'}); if(perm!=='granted') continue;
+      await scan(d,0); }catch(e){ console.warn('zip search',e); }
+  }
+  if(!hits.length){ where.innerHTML=`⚠️ Couldn't find <b>${esc(zipName)}</b> in ${dirs.map(d=>'<b>'+esc(d.name)+'</b>').join(' or ')}. <a href="#" onclick="event.preventDefault();impChangeFolder('${esc(zipName)}')">Choose a different folder</a> or use 🗜 Pick the week .zip.`; return; }
+  hits.sort((a,b)=>b.f.lastModified-a.f.lastModified);
+  where.innerHTML=`✅ Found <b>${esc(hits[0].f.name)}</b> in <b>${esc(hits[0].where)}</b>`;
+  impPickedZip(hits[0].f);
+}
+async function impChangeFolder(zipName){ try{ const h=await window.showDirectoryPicker({id:'sashdash-zips', startIn:'downloads', mode:'read'}); await kvSet('zipDir',h); impFindZip(zipName); }catch(e){} }
+// the file window opens straight in Downloads (or the SashDash folder) where the browser allows it
+async function impPickZipBtn(){
+  if(typeof window.showOpenFilePicker==='function'){
+    try{ const dirs=await impZipFolders(); const [fh]=await window.showOpenFilePicker({id:'sashdash-zip', startIn:dirs[0]||'downloads', types:[{description:'SashDash week (.zip)', accept:{'application/zip':['.zip']}}]});
+      if(fh) impPickedZip(await fh.getFile()); }catch(e){ if(e && e.name!=='AbortError') $('imp-zip').click(); }
+    return;
+  }
+  $('imp-zip').click();
+}
 function impPickedDir(fl){ const files=[...(fl||[])]; impScan(files.map(f=>({path:(f.webkitRelativePath||f.name).replace(/\\/g,'/'), file:f}))); }
 async function impPickedZip(f){ if(!f) return; $('imp-found').innerHTML='<div class="loading">Opening the .zip…</div>';
   try{ const z=await JSZip.loadAsync(f); const ents=[]; z.forEach((p,e)=>{ if(!e.dir) ents.push({path:p, zip:e}); }); impScan(ents); }
