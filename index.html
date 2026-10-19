@@ -1444,7 +1444,7 @@ function folderBoxes(list){
   const box=(key,icon,label,arr,cls,sub)=>`<button class="folder-box ${cls} ${openFolder===key?'open':''} ${arr.length?'':'empty'}" onclick="toggleFolder('${key}')">
       <span class="f-ico">${icon}</span><span class="f-txt"><b>${label}</b><small>${arr.length?`${arr.length} job${arr.length===1?'':'s'} ${sub||'to re-book'}`:'Nothing here'}</small></span>
       <span class="f-n">${arr.length}</span><span class="f-arrow">${openFolder===key?'▴':'▾'}</span></button>`;
-  return `<div class="folders">${box('not_home','🚪','Customers not home',nh,'f-red')}${box('rebook','🔁','Re-book unfinished',rb,'f-rb')}${hasWa?box('wa_cant','📲',"Can't make it (WhatsApp)",wl.cant,'f-wa','— ring to re-book')+box('wa_noreply','📵','No reply (WhatsApp)',wl.nr,'f-wa','— ring them'):''}</div>
+  return `<div class="folders">${box('not_home','🚪','Customers not home',nh,'f-red')}${box('rebook','🔁','Re-book unfinished',rb,'f-rb')}${waUI()?box('wa_cant','📲',"Can't make it (WhatsApp)",wl.cant,'f-wa','— ring to re-book')+box('wa_noreply','📵','No reply (WhatsApp)',wl.nr,'f-wa','— ring them'):''}</div>
     ${openFolder?`<div class="folder-panel" id="folder-panel"><div class="loading">Loading…</div></div>`:''}`;
 }
 function toggleFolder(k){ openFolder = openFolder===k ? null : k; renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0); }
@@ -5118,6 +5118,11 @@ function togglePw(btn){
 //  (now, or 10am a week before), the 3-day reminder and the day-before reminder.
 //  Edge Function wa-send sends them; wa-webhook brings the customer's taps/replies back.
 // ══════════════════════════════════════════════════════════════════
+// 🧪 TEST MODE — until WhatsApp goes live: only the Office login (admin) sees the WhatsApp parts,
+// the red "not sent" box is hidden, and 📲 Send only sends to the test mobiles below.
+// To go live: set WA_TEST=false and upload index.html again.
+const WA_TEST=true, WA_TEST_MOBILES=['353860418900'];   // Sean's mobile (on Meta's test list)
+function waUI(){ return hasWa && (!WA_TEST || (isAdmin && !previewing)); }
 const WA_FN='smart-service';   // the wa-send Edge Function (Supabase named it smart-service)
 const WA_COLS=',wa_on,wa_name,wa_extra,wa_mobile,wa_status,wa_time,wa_for,wa_go,wa_last_in,wa_unread,wa_man_unread'; let hasWa=true;
 let waCfg={morning_jobs:3}, waView='team', waMsgs=[], waQueue=[], waChan=null, waLoadTok=0, waFormCtx=null, waEta=0;
@@ -5190,6 +5195,7 @@ function waBadges(j,n){
     if(j.wa_status==='cant') return `<div class="slot-wa"><span class="wa-pill wa-red">🔴 Can't make it</span></div>`;
     if(j.wa_man_unread) return `<div class="slot-wa"><span class="wa-pill wa-indigo">💬 Customer replied</span></div>`;
     return ''; }
+  if(!waUI()) return '';
   const s=waState(j,n); if(!s) return '';
   let h=`<span class="wa-pill wa-${s.c}" title="WhatsApp">${s.t}</span>`;
   if(s.changed) h+=`<span class="wa-pill wa-orange" title="Told ${esc(j.wa_time)} — now ${esc(s.win)}">⚠ Time changed</span>`;
@@ -5198,7 +5204,7 @@ function waBadges(j,n){
 
 // ── day page: WhatsApp bar + 🌅 Morning / 🌇 Afternoon ──
 function waDayBar(site){
-  if(!hasWa || !isOffice || !site.work_date || site.work_date<todayYmd()) return '';
+  if(!waUI() || !isOffice || !site.work_date || site.work_date<todayYmd()) return '';
   const L=waDayList(site); if(!L.length) return '';
   let nNew=0,nTime=0,ok=0,wait=0,cant=0,nr=0,nomob=0;
   for(const {j,n} of L){ const s=waState(j,n); if(!s) continue;
@@ -5208,13 +5214,13 @@ function waDayBar(site){
   const parts=[`${L.length} job${L.length===1?'':'s'}`];
   if(ok) parts.push(`🟢 ${ok} confirmed`); if(wait) parts.push(`🟡 ${wait} waiting`); if(cant) parts.push(`🔴 ${cant} can't make it`);
   if(nr) parts.push(`📵 ${nr} no reply`); if(nomob) parts.push(`⚠ ${nomob} no mobile`);
-  return `<div class="wa-bar"><div class="wa-sum"><b>📲 WhatsApp</b> · ${parts.join(' · ')}
+  return `<div class="wa-bar"><div class="wa-sum"><b>📲 WhatsApp</b>${WA_TEST?' <span class="wa-pill wa-orange" title="Only test jobs with the test mobile are sent. Only the Office login sees this.">🧪 Test mode — only '+esc(waShowNum(WA_TEST_MOBILES[0]))+' is sent</span>':''} · ${parts.join(' · ')}
       <br>${nNew?`First message ${go?'goes at 10am '+esc(waShort(go)):'goes straight away'} · `:''}<button class="wa-morn" onclick="waSetMorning()" title="How many jobs are told the morning">🌅 Job${M===1?' 1':'s 1–'+M} told 8am–12pm · 🌇 the rest 12pm–5pm</button></div>
     ${nTime?`<button class="btn-wa amber" onclick="waSendDay('${site.id}','time')">📲 Send ${nTime} time update${nTime===1?'':'s'}</button>`:''}
     ${nNew?`<button class="btn-wa" onclick="waSendDay('${site.id}','new')">📲 ${anySent?`Send to ${nNew} new`:`Send to all (${nNew})`}</button>`:''}
     ${!nNew&&!nTime&&anySent?'<span class="wa-pill wa-green">✓ All sent</span>':''}</div>`; }
 function waGridHtml(list,num){
-  if(!hasWa || !isOffice || dept!=='calls') return list.map(j=>slotCard(j,num.get(j.id))).join('');
+  if(!waUI() || !isOffice || dept!=='calls') return list.map(j=>slotCard(j,num.get(j.id))).join('');
   const M=waMorningN(); let h='', am=false, pm=false;
   for(const j of list){ const n=num.get(j.id);
     if(n<=M && !am){ am=true; h+=`<div class="wa-split">🌅 Morning <span>job${M===1?' 1':'s 1–'+M} · told "between 8am and 12pm" unless the job has its own time</span></div>`; }
@@ -5222,7 +5228,7 @@ function waGridHtml(list,num){
     h+=slotCard(j,n); }
   return h; }
 function waWeekBtn(days){
-  if(!hasWa || !isOffice) return '';
+  if(!waUI() || !isOffice) return '';
   const ids=(days||[]).filter(s=>s.work_date>=todayYmd() && waDayList(s).some(({j,n})=>{ const x=waState(j,n); return x&&x.k==='new'; })).map(s=>s.id);
   if(!ids.length) return '';
   return `<button class="btn-outline" style="border-color:#16a34a;color:#166534" onclick="waSendDay([${ids.map(i=>`'${i}'`).join(',')}],'new')" title="Send the WhatsApp reminders for every day this week that hasn't been sent">📲 Send all days this week</button>`; }
@@ -5246,7 +5252,11 @@ async function waSendDay(siteIds, which){ if(blockPreview()) return;
     for(const {j,n} of waDayList(site)){ const s=waState(j,n); if(!s) continue;
       if(which==='new' && s.k==='new'){ items.push({job_id:j.id, kind:'book', time:s.win, mobile:waMobileOf(j), name:waFirst(j)}); dayN.set(sid,(dayN.get(sid)||0)+1); }
       if(which==='time' && s.changed) items.push({job_id:j.id, kind:'time', time:s.win}); } }
-  if(!items.length) return toast('Nothing to send.');
+  let held=0;
+  if(WA_TEST && which==='new'){ const keep=items.filter(i=>WA_TEST_MOBILES.includes(i.mobile)); held=items.length-keep.length; items.length=0; items.push(...keep); }
+  if(WA_TEST && which==='time'){ const keep=items.filter(i=>{ const j=jobs.find(x=>x.id===i.job_id); return j&&WA_TEST_MOBILES.includes(j.wa_mobile); }); held=items.length-keep.length; items.length=0; items.push(...keep); }
+  if(!items.length) return toast(held?`🧪 Test mode — only test jobs with ${waShowNum(WA_TEST_MOBILES[0])} can be sent for now (${held} real customer${held===1?'':'s'} skipped).`:'Nothing to send.', 7000);
+  if(held){ dayN.clear(); for(const it of items){ const sid=jobs.find(x=>x.id===it.job_id).site_id; dayN.set(sid,(dayN.get(sid)||0)+1); } }
   const ex=items[0], ej=jobs.find(x=>x.id===ex.job_id), ed=siteOf(ej).work_date, nm=ex.name||waFirst(ej)||'there';
   let html;
   if(which==='time'){
@@ -5273,7 +5283,7 @@ async function waSendDay(siteIds, which){ if(blockPreview()) return;
 
 // ── dashboard: ⚠ days under a week away not sent ──
 function waWarnHtml(){
-  if(!hasWa || !isOffice || dept!=='calls' || previewing) return '';
+  if(WA_TEST || !hasWa || !isOffice || dept!=='calls' || previewing) return '';
   const t=todayYmd(), lim=ymd(addDays(parseYmd(t),7)), days=[];
   for(const s of sites){ if(deptOf(s)!=='calls' || !s.work_date || s.work_date<t || s.work_date>=lim) continue;
     const n=waDayList(s).filter(({j,n})=>{ const x=waState(j,n); return x&&x.k==='new'; }).length; if(n) days.push({s,n}); }
@@ -5284,7 +5294,7 @@ function waWarnHtml(){
     ${days.length>1?`<button class="btn-wa red" onclick="waSendDay([${days.map(d=>`'${d.s.id}'`).join(',')}],'new')">📲 Send all ${days.length}</button>`:''}</div>`; }
 
 // ── dashboard folders: 📲 Can't make it · 📵 No reply ──
-function waFolderLists(list){ if(!hasWa) return {cant:[], nr:[]};
+function waFolderLists(list){ if(!waUI()) return {cant:[], nr:[]};
   return { cant:list.filter(j=>j.wa_status==='cant' && !waIsClosed(j)), nr:list.filter(j=>j.wa_status==='noreply' && !waIsClosed(j)) }; }
 function waTick(st){ return st==='read'?' · ✓✓ read':st==='delivered'?' · ✓✓':st==='sent'?' · ✓':st==='failed'?' · ⚠ not delivered':''; }
 async function waFolderPanel(el, key){
@@ -5315,7 +5325,7 @@ async function waPhoneOk(id){ if(blockPreview()) return;
   await loadData(); rerenderCurrent(); if(openFolder) setTimeout(renderFolderPanel,0); }
 
 // ── inside a job: 💬 Conversation | 🟢 WhatsApp ──
-function waJobOn(){ if(!hasWa || !job || deptOf(job)!=='calls') return false; if(isOffice) return true; const s=siteOf(job); return !!(s && s.work_date===todayYmd()); }
+function waJobOn(){ if(!hasWa || !job || deptOf(job)!=='calls') return false; if(isOffice) return waUI(); const s=siteOf(job); return !!(s && s.work_date===todayYmd()); }
 function waSetupJobView(){
   const pane=document.querySelector('.chat-pane'), head=pane&&pane.querySelector('.chat-head'); if(!head) return;
   waView='team'; waMsgs=[]; waQueue=[]; pane.classList.remove('wa-mode');
@@ -5416,7 +5426,7 @@ async function waOmwSend(){
   closeModal(); toast(`🚐 ${waFirst(job)||'The customer'} has been told you're on the way`); waOmw(); }
 
 // ── job form: name, extra line, reminders on/off, live preview ──
-function waFormHtml(j){ if(!hasWa) return ''; j=j||{};
+function waFormHtml(j){ if(!waUI()) return ''; j=j||{};
   return `<div class="wa-form" id="wa-form"><div class="wf-top"><b>🟢 WhatsApp to the customer</b><label><input type="checkbox" id="wa-on" ${j.wa_on===false?'':'checked'}> Send reminders for this job</label></div>
     <div class="wf-row"><div class="field-group" style="margin:0"><label>Name in the message</label><input id="wa-name" autocomplete="off" maxlength="40" value="${esc(j.wa_name||'')}"></div>
     <div class="field-group" style="margin:0"><label>Extra line <span class="optional">(optional)</span></label><input id="wa-extra" autocomplete="off" maxlength="120" placeholder="e.g. Please have the side gate open." value="${esc(j.wa_extra||'')}"></div></div>
@@ -5437,7 +5447,7 @@ function waFormPrev(){
   const time=waWinFor({avail:waFormAvail()}, waFormCtx.n), j=waFormCtx.job, sent=j&&j.wa_status;
   box.innerHTML=`<div class="wa-prev"><div class="b">${esc(waBookingText(name, waFormCtx.day?waDay(waFormCtx.day):'…', time, ($('wa-extra').value||'').trim()))}</div><div class="q"><span>✅ Confirm</span><span>❌ I can't make it</span></div></div>
     <div class="wa-note">${mob?`To <b>${esc(waShowNum(mob))}</b> · ${sent?'already sent — changes here apply to the next reminders':'goes when you press 📲 Send on the day page, then a reminder 3 days before and the day before'}`:'⚠ No mobile number — add one (08…) in a phone box, or the customer gets nothing.'}</div>`; }
-function waReadForm(){ if(!hasWa || !$('wa-on')) return null;
+function waReadForm(){ if(!waUI() || !$('wa-on')) return null;
   const c=s=>String(s||'').replace(/[\r\n\t]+/g,' ').replace(/ {2,}/g,' ').trim();
   return {wa_on:$('wa-on').checked, wa_name:c($('wa-name').value)||null, wa_extra:c($('wa-extra').value)||null}; }
 
