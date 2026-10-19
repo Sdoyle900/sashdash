@@ -762,6 +762,70 @@
       .slot-actions .ja-btn{padding:5px 0;width:calc(33.333% - 4px);min-width:0;text-align:center}
       .slot-cc{width:100%}.slot-cc .cc{max-width:100%;overflow:hidden;text-overflow:ellipsis}
     }
+    /* ── 📲 WhatsApp reminders (update 21) ── */
+    .wa-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;white-space:nowrap;line-height:1.5}
+    .wa-grey{background:#e2e8f0;color:#334155}.wa-blue{background:#dbeafe;color:#1e40af}.wa-amber{background:#fef3c7;color:#92400e}
+    .wa-green{background:#dcfce7;color:#166534}.wa-red{background:#fee2e2;color:#991b1b}.wa-indigo{background:#e0e7ff;color:#3730a3}.wa-orange{background:#ffedd5;color:#9a3412}
+    .slot-wa{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:6px}
+    .slot.wa-alert{border-color:#fca5a5}
+    .wa-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:10px 14px;margin-top:10px}
+    .wa-bar .wa-sum{flex:1;min-width:220px;font-size:13px;color:#14532d}
+    .wa-bar .wa-sum b{font-size:14px}
+    .wa-bar button{padding:8px 14px;font-size:13px}
+    .btn-wa{background:#16a34a;color:#fff;border:0;border-radius:10px;font-weight:800;cursor:pointer;font-family:inherit}
+    .btn-wa:hover{background:#15803d}.btn-wa:disabled{opacity:.6;cursor:default}
+    .btn-wa.amber{background:#d97706}.btn-wa.amber:hover{background:#b45309}
+    .wa-morn{border:0;background:none;color:#166534;font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline dotted;font-family:inherit}
+    .wa-split{grid-column:1/-1;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:4px 2px -4px;font-size:14px;font-weight:800;color:var(--navy)}
+    .wa-split span{font-weight:500;color:var(--slate);font-size:12px}
+    .wa-warn{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:10px 14px;margin:0 0 14px;color:#7f1d1d}
+    .wa-warn .ww-txt{flex:1;min-width:240px;font-size:13px}
+    .wa-warn .ww-day{display:inline-flex;align-items:center;gap:6px;margin:2px 8px 2px 0}
+    .wa-warn button{padding:6px 12px;font-size:12px}
+    .btn-wa.red{background:#dc2626}.btn-wa.red:hover{background:#b91c1c}
+    .f-wa{border-color:#fca5a5} .f-wa .f-n{background:#dc2626} .f-wa.open{background:#fef2f2}
+    .wa-tabs{display:flex;gap:6px;width:100%}
+    .wa-tb{flex:1;border:1.5px solid var(--border);background:#fff;border-radius:10px;padding:7px 8px;font-weight:800;font-size:13px;color:var(--slate);cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+    .wa-tb.on{border-color:var(--indigo);color:var(--indigo);background:#eef2ff}
+    .wa-tb.wa.on{border-color:#16a34a;color:#065f46;background:#ecfdf5}
+    .wa-tb .n{background:#dc2626;color:#fff;border-radius:20px;padding:0 7px;font-size:11px}
+    .chat-pane.wa-mode #chat-list,.chat-pane.wa-mode .composer,.chat-pane.wa-mode #chat-info{display:none!important}
+    .wa-pane{flex:1;display:flex;flex-direction:column;min-height:0}
+    .wa-info{padding:8px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--slate);background:#f8fafc;display:flex;gap:8px;flex-wrap:wrap}
+    .wa-info .ok{color:#166534;font-weight:700;margin-left:auto}.wa-info .shut{color:#92400e;font-weight:700;margin-left:auto}
+    .wa-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f8fafc}
+    .wa-msg{max-width:86%;display:flex;flex-direction:column}
+    .wa-msg .who{font-size:11px;color:var(--slate);font-weight:700;margin:0 4px 2px}
+    .wa-msg .bub{padding:8px 12px;border-radius:14px 14px 14px 4px;white-space:pre-wrap;word-wrap:break-word;font-size:14px;background:#fff;border:1px solid var(--border)}
+    .wa-msg.out{align-self:flex-end;align-items:flex-end}
+    .wa-msg.out .bub{background:#dcfce7;border-color:#bbf7d0;border-radius:14px 14px 4px 14px}
+    .wa-msg.out.failed .bub{background:#fef2f2;border-color:#fca5a5}
+    .wa-msg.in.new .bub{border:2px solid #fca5a5}
+    .wa-msg .when{font-size:10px;color:var(--slate2);margin:2px 4px 0}
+    .wa-msg .err{font-size:11px;color:#b91c1c;margin:2px 4px 0;max-width:280px}
+    .wa-acts{padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;background:#fff}
+    .wa-acts button{padding:6px 10px;font-size:12px}
+    .wa-compose{padding:8px 14px 12px;display:flex;gap:8px;align-items:flex-end;background:#fff}
+    .wa-compose textarea{flex:1;font-family:inherit;font-size:15px;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;resize:none;min-height:42px}
+    .wa-compose textarea:focus{outline:none;border-color:#16a34a}
+    .wa-lock{padding:10px 14px 14px;font-size:12px;color:var(--slate);background:#fff;border-top:1px solid var(--border)}
+    .wa-omw{padding:10px 12px 0}
+    .wa-omw button{width:100%;padding:13px;font-size:16px}
+    .wa-omw .sent{display:block;text-align:center;font-size:13px;color:#166534;font-weight:700;padding:6px 0 0}
+    .wa-form{border:1.5px solid #bbf7d0;background:#f0fdf4;border-radius:12px;padding:12px 14px;margin:6px 0 12px}
+    .wa-form .wf-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+    .wa-form .wf-top b{color:#065f46}
+    .wa-form .wf-top label{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#065f46;text-transform:none;letter-spacing:0}
+    .wa-form .wf-row{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+    @media(max-width:560px){.wa-form .wf-row{grid-template-columns:1fr}}
+    .wa-prev{background:#e5ddd5;border-radius:12px;padding:10px;margin-top:8px}
+    .wa-prev .b{background:#fff;border-radius:4px 12px 12px 12px;padding:8px 10px;font-size:13px;line-height:1.45}
+    .wa-prev .q{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px}
+    .wa-prev .q span{background:#fff;border-radius:8px;padding:6px;text-align:center;color:#0e7490;font-weight:700;font-size:12px}
+    .wa-note{font-size:12px;color:#065f46;margin-top:6px}
+    .wa-eta{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0}
+    .wa-eta b{font-size:22px;min-width:90px;text-align:center}
+    .wa-eta button{padding:8px 12px}
 </style>
 </head>
 <body>
@@ -1197,8 +1261,9 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+(hasWa?WA_COLS:'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
   ]);
+  if(jo.error && hasWa && /wa_/i.test(jo.error.message)){ hasWa=false; return loadData(); }   // database not updated yet (update-21)
   if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }
   if(jo.error && hasHist && /hist_skip/i.test(jo.error.message)){ hasHist=false; return loadData(); }
   if(jo.error && hasRoute && /eircode|avail/i.test(jo.error.message)){ hasRoute=false; return loadData(); }   // database not updated yet (update-15)   // database not updated yet (update-10)
@@ -1208,6 +1273,7 @@ async function loadData(){
   { const r=await sb.from('order_requests').select('*').order('created_at',{ascending:false}).limit(300); orderReqs = r.error ? [] : (r.data||[]); }
   { const r=await sb.from('job_shares').select('*'); hasShares=!r.error; shares = r.error ? [] : (r.data||[]); }
   await loadHist();
+  if(hasWa) await waLoadSettings();
   await loadBackups(); if(hasBk && bkAccount() && !previewing){ bkDev=await bkDevice(); bkLocalLast=await kvGet('bkLast'); }
   if(previewing){   // show only what that person's own login is allowed to see
     if(me.role==='serviceman'){ const cov=coverJobsFor(me.id); sites=sites.filter(x=>x.serviceman_id===me.id||cov.some(j=>j.site_id===x.id)); jobs=jobs.filter(x=>x.serviceman_id===me.id||cov.includes(x)); shares=shares.filter(s=>s.cover_id===me.id||s.owner_id===me.id); }
@@ -1255,6 +1321,7 @@ function subscribeRealtime(){
   // shares get their own line, so a database without update-16 can never stop the live chat
   if(typeof hasShares==='undefined'||hasShares) shareChan=sb.channel('sashdash-shares')
     .on('postgres_changes',{event:'*',schema:'public',table:'job_shares'}, ()=>scheduleReload()).subscribe();
+  try{ waSubscribe(); }catch(e){ console.warn('wa live',e); }
 }
 // Safety net: while a job is open, any message the live link missed is picked up (every 15 s, and when you come back to the app)
 async function syncOpenChat(){
@@ -1355,7 +1422,7 @@ function renderDashboardFor(jobs, sites, allJobs){
       <div class="stat"><div class="n" style="color:${unread?'var(--red)':'inherit'}">${unread}</div><div class="l">Jobs with news</div></div>
       <div class="stat"><div class="n" style="font-size:20px;padding-top:4px">${fmtBytes(bytes)}</div><div class="l">Storage used of 1 GB</div><div class="meter"><div style="width:${pct.toFixed(1)}%"></div></div></div>
     </div>
-    ${folderBoxes(jobs)}
+    ${waWarnHtml()}${folderBoxes(jobs)}
     <div class="section-h">Team</div>
     ${team.length?`<div class="team-grid">${cards}</div>`:`<div class="empty" style="margin-bottom:24px"><div class="big">👷</div>No men in ${D.label} yet.${isAdmin?' Click <b>Manage team</b> to add them.':' Ask the office to add them.'}</div>`}
     <div class="section-h">Latest activity</div>
@@ -1367,22 +1434,24 @@ let openFolder=null;
 function folderBoxes(list){
   const nh=list.filter(j=>jobOutcome(j)==='not_home'), rb=list.filter(j=>jobOutcome(j)==='rebook');
   const rq=deptRequests(), rqNew=rq.filter(r=>reqStatus(r)==='new'), rqWait=rq.filter(r=>reqStatus(r)==='sent');
-  if(openFolder && openFolder!=='requests' && !(openFolder==='not_home'?nh:rb).length) openFolder=null;   // Order requests stays open even when empty (➕ Add order)
+  const wl=waFolderLists(list), FL={not_home:nh, rebook:rb, wa_cant:wl.cant, wa_noreply:wl.nr};
+  if(openFolder && openFolder!=='requests' && !(FL[openFolder]||[]).length) openFolder=null;   // Order requests stays open even when empty (➕ Add order)
   const reqBox=`<button class="folder-box f-blue ${openFolder==='requests'?'open':''} ${rqNew.length?'':'empty'}" onclick="toggleFolder('requests')">
       <span class="f-ico">📋</span><span class="f-txt"><b>Order requests</b><small>${rqNew.length?`${rqNew.length} new`:rqWait.length?`${rqWait.length} awaiting approval`:rq.length?'All approved':'Nothing here — click to add an order'}</small></span>
       <span class="f-n">${rqNew.length}</span><span class="f-arrow">${openFolder==='requests'?'▴':'▾'}</span></button>`;
   if(dept!=='calls'){ if(!isAdmin) return ''; return `<div class="folders one">${reqBox}</div>${openFolder?`<div class="folder-panel" id="folder-panel"><div class="loading">Loading…</div></div>`:''}`; }
   if(openFolder==='requests') openFolder=null;
-  const box=(key,icon,label,arr,cls)=>`<button class="folder-box ${cls} ${openFolder===key?'open':''} ${arr.length?'':'empty'}" onclick="toggleFolder('${key}')">
-      <span class="f-ico">${icon}</span><span class="f-txt"><b>${label}</b><small>${arr.length?`${arr.length} job${arr.length===1?'':'s'} to re-book`:'Nothing here'}</small></span>
+  const box=(key,icon,label,arr,cls,sub)=>`<button class="folder-box ${cls} ${openFolder===key?'open':''} ${arr.length?'':'empty'}" onclick="toggleFolder('${key}')">
+      <span class="f-ico">${icon}</span><span class="f-txt"><b>${label}</b><small>${arr.length?`${arr.length} job${arr.length===1?'':'s'} ${sub||'to re-book'}`:'Nothing here'}</small></span>
       <span class="f-n">${arr.length}</span><span class="f-arrow">${openFolder===key?'▴':'▾'}</span></button>`;
-  return `<div class="folders">${box('not_home','🚪','Customers not home',nh,'f-red')}${box('rebook','🔁','Re-book unfinished',rb,'f-rb')}</div>
+  return `<div class="folders">${box('not_home','🚪','Customers not home',nh,'f-red')}${box('rebook','🔁','Re-book unfinished',rb,'f-rb')}${hasWa?box('wa_cant','📲',"Can't make it (WhatsApp)",wl.cant,'f-wa','— ring to re-book')+box('wa_noreply','📵','No reply (WhatsApp)',wl.nr,'f-wa','— ring them'):''}</div>
     ${openFolder?`<div class="folder-panel" id="folder-panel"><div class="loading">Loading…</div></div>`:''}`;
 }
 function toggleFolder(k){ openFolder = openFolder===k ? null : k; renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0); }
 async function renderFolderPanel(){
   let el=$('folder-panel'); if(!el||!openFolder) return;
   if(openFolder==='requests') return renderRequestsPanel(el);
+  if(openFolder==='wa_cant'||openFolder==='wa_noreply') return waFolderPanel(el, openFolder);
   const key=openFolder, list=dJobs().filter(j=>jobOutcome(j)===key)
     .sort((a,b)=>new Date(b.last_activity_at)-new Date(a.last_activity_at));
   // the man's note is on the status entry he added
@@ -2139,6 +2208,7 @@ function renderPortal(){
       <div class="wk-label"><b>Week of ${parseYmd(calWeek).toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'})}</b><span>Mon – Sat${calWeek===ymd(mondayOf(new Date()))?' · this week':''}${calWeek<ymd(mondayOf(new Date()))?' · archived &amp; cleared Mon '+addDays(parseYmd(calWeek),28).toLocaleDateString('en-IE',{day:'numeric',month:'short'}):''}</span></div>
       <button class="wk-nav" ${wi>=weeks.length-1?'disabled':''} onclick="setWeek(${wi+1})" aria-label="Next week">›</button>`:`<div class="wk-label"><b>No weeks yet</b><span>Create a 6-day week to get a tab for each day</span></div>`}
       <span class="spacer"></span>
+      ${waWeekBtn(weekDays)}
       <button class="btn-outline cal-toggle ${calOpen()?'on':''}" onclick="toggleCal()" title="Show / hide the month calendar">🗓 ${calOpen()?'Hide calendar':'Calendar'}</button>
       ${isOffice?`${weeks.length?`<button class="btn-danger" onclick="deleteWeek()">🗑 Delete week</button>`:''}<button class="btn-primary wk-new" onclick="openWeekModal()">📅 New 6-day week</button>`:''}
     </div>`;
@@ -2180,8 +2250,9 @@ function renderPortal(){
     const num=new Map(ordered.map((j,i)=>[j.id, jobNo(j)||i+1]));
     const list=ordered.filter(j=>shown.includes(j)).sort((a,b)=>num.get(a.id)-num.get(b.id));   // always Job 1, 2, 3…
     const next=nextJobNo(site.id);
+    html+=waDayBar(site);
     if(hasRoute && isOffice) html+=dayMapHtml(site);   // the route is for the office only
-    html+=`<div class="slot-grid">${list.map(j=>slotCard(j,num.get(j.id))).join('')}
+    html+=`<div class="slot-grid">${waGridHtml(list,num)}
       ${isOffice&&(jobFilter==='all'||jobFilter==='open')?`<div class="slot-new" id="slot-new" role="button" tabindex="0" onclick="openSlotModal()">
         <span class="slot-no">JOB ${next}</span><span class="slot-plus">＋</span>
         <span class="slot-hint">Click to add job ${next}<br>or drag the PDF here</span></div>`:''}
@@ -2221,11 +2292,11 @@ function availWin(a){ if(a==='am') return [8*60,12*60]; if(a==='pm') return [12*
   const c=availParse(a); if(c) return c.dir==='after'?[c.t,Infinity]:[0,c.t]; return [0,Infinity]; }
 function availChip(j){ if(!j.avail) return ''; const c=availParse(j.avail), k=c?c.dir:j.avail, ic=k==='am'?'🌅':k==='pm'?'🌇':'⏰';
   return `<span class="av-chip av-${esc(k)}" title="Customer available">${ic} ${esc(availLabel(j.avail))}</span>`; }
-function availField(j){ j=j||{}; const a=j.avail||'', c=availParse(a), sel=c?'custom':(a==='am'||a==='pm'?a:'');
+function availField(j){ j=j||{}; const a=j.avail||'', c=availParse(a), sel=c?'custom':(a==='am'||a==='pm'||a==='any'?a:'');
   return `<div class="field-group"><label>Eircode <span class="optional">(for the route)</span></label><input id="m-eir" placeholder="e.g. D02 X285" autocomplete="off" maxlength="9" style="text-transform:uppercase" value="${esc(j.eircode||'')}" onblur="if(this.value)this.value=normEir(this.value)"></div>
     <div class="field-group"><label>Customer available</label><select id="m-av" onchange="$('m-av-c').classList.toggle('hidden',this.value!=='custom')">
       <option value="" ${sel===''?'selected':''}>Any time</option><option value="am" ${sel==='am'?'selected':''}>Between 8am – 12</option>
-      <option value="pm" ${sel==='pm'?'selected':''}>Between 12 – 5pm</option><option value="custom" ${sel==='custom'?'selected':''}>Custom…</option></select></div>
+      <option value="pm" ${sel==='pm'?'selected':''}>Between 12 – 5pm</option>${typeof hasWa!=='undefined'&&hasWa?`<option value="any" ${sel==='any'?'selected':''}>Any time — tell the customer "any time"</option>`:''}<option value="custom" ${sel==='custom'?'selected':''}>Custom…</option></select></div>
     <div class="field-group sf-wide av-custom ${sel==='custom'?'':'hidden'}" id="m-av-c"><label>Custom time</label><div class="av-row">
       <select id="m-av-d"><option value="before" ${c&&c.dir==='before'?'selected':''}>Before</option><option value="after" ${!c||c.dir==='after'?'selected':''}>After</option></select>
       <input id="m-av-t" type="time" value="${esc(c?c.hm.padStart(5,'0'):'15:00')}"></div></div>`; }
@@ -2709,7 +2780,7 @@ function slotCard(j,n){
     <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${outcomeTag(j)}</div>
     <div class="slot-pdf">📄${(manNotes(j).notes||manNotes(j).photos)?'<span class="pdf-dot" title="Has notes">💬</span>':''}</div>
     <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${coverTag(j)?`<div class="slot-cov">${coverTag(j)}</div>`:''}${j.customer_phone||j.customer_phone2||j.eircode||j.avail?`<div class="slot-cc">${contactChips(j,true)}${eirChip(j)}${isOffice?availChip(j):''}</div>`:''}
-    ${histBadge(j)}${notesBadge(j)}
+    ${histBadge(j)}${notesBadge(j)}${waBadges(j,n)}
     ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button>${hasShares?`<button class="ja-btn" onclick="event.stopPropagation();openShareModal({kind:'job',jobId:'${j.id}'})" title="Share with another service man">🤝</button>`:''}<button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
 }
@@ -2769,6 +2840,7 @@ function openSlotModal(fl){ if(blockPreview()) return;
       <div class="field-group sf-wide"><label>Email address <span class="optional">(if any)</span></label><input id="m-email" type="email" placeholder="e.g. mary@gmail.com" autocomplete="off"></div>
       ${hasRoute?availField():''}
     </div>
+    ${waFormHtml(null)}
     <div id="m-hist" class="hist-warn hidden"></div>
     <label class="drop" id="m-drop" for="m-file">
       <span class="drop-icon">📄</span>
@@ -2780,7 +2852,7 @@ function openSlotModal(fl){ if(blockPreview()) return;
     <div class="field-group"><label>Note to ${esc(firstName(t.full_name))} <span class="optional">(optional — starts the conversation)</span></label><textarea id="m-notes" rows="2"></textarea></div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-outline hidden" id="m-save2" onclick="slotUpload(${n},true)">📥 Send &amp; import old jobs</button><button class="btn-primary" id="m-save" onclick="slotUpload(${n})">⬆ Send job ${n} to ${esc(firstName(t.full_name))}</button></div>`);
   formSkip=new Set(); ['m-ref','m-ph','m-ph2','m-eir'].forEach(id=>{ const e=$(id); if(e) e.addEventListener('input',histFormCheck); });
-  attachDrop();
+  attachDrop(); waFormBind({n, day:s&&s.work_date, job:null});
   if(fl && fl.length) filesPicked(fl);
   setTimeout(()=>{ const r=$('m-ref'); if(r) r.focus(); },50);
 }
@@ -2791,10 +2863,12 @@ async function slotUpload(n, imp){ if(blockPreview()) return;
   if(contact.customer_email && !/^\S+@\S+\.\S+$/.test(contact.customer_email)) return toast('That email address doesn\'t look right.');
   if(!pendingFiles.length) return toast('Add the job sheet (PDF or photo) first.');
   const route=readAvail(); if(route===false) return;
+  const waRow=waReadForm();
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Uploading…';
   try{
     n=nextJobNo(currentSiteId);   // stays in order even if another job was added meanwhile
     var newId=await doUpload({files:pendingFiles, title:`Job ${n}${cust?' – '+cust:''}`, ref, note, contact, route});
+    if(waRow && newId) await sb.from('jobs').update(waRow).eq('id',newId);
     pendingFiles=[]; closeModal(); toast(`Job ${n} sent to ${firstName(prof(currentTechId).full_name)} ✓`);
   }catch(e){ btn.disabled=false; btn.textContent='⬆ Try again'; return toast('Upload failed: '+(e.message||e),6000); }
   await loadData(); renderPortal();
@@ -4308,6 +4382,7 @@ function editJob(id){ if(blockPreview()) return;
       <div class="field-group"><label>Second phone</label><input id="m-ph2" type="tel" value="${esc(j.customer_phone2||'')}"></div>
       <div class="field-group sf-wide"><label>Email address</label><input id="m-email" type="email" value="${esc(j.customer_email||'')}"></div></div>`:''}
     ${hasRoute&&deptOf(j)==='calls'?`<div class="slot-form">${availField(j)}</div>`:''}
+    ${deptOf(j)==='calls'&&(siteOf(j)||{}).work_date?waFormHtml(j):''}
     <div class="field-group"><label>${DEPT[deptOf(j)].one}</label><select id="m-site">${sites.filter(s=>s.serviceman_id===j.serviceman_id&&deptOf(s)===deptOf(j)).map(s=>`<option value="${s.id}" ${s.id===j.site_id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
     <div class="field-group" style="margin-bottom:6px"><label>Replace the sheet <span class="optional">(optional — only if you uploaded the wrong one)</span></label></div>
     <label class="drop has-files" id="m-drop" for="m-file" data-empty="Drag the correct sheet here">
@@ -4322,12 +4397,14 @@ function editJob(id){ if(blockPreview()) return;
       <button class="btn-outline" onclick="closeModal()">Cancel</button>
       <button class="btn-primary" id="m-save" onclick="saveJobEdit()">Save</button></div>`);
   attachDrop();
+  if($('wa-form')){ const L=waDayList(siteOf(j)), me_=L.find(x=>x.j.id===j.id); waFormBind({n:me_?me_.n:(jobNo(j)||1), day:siteOf(j).work_date, job:j}); }
 }
 async function saveJobEdit(){
   const j=jobs.find(x=>x.id===editingId) || (job&&job.id===editingId?job:null); if(!j) return closeModal();
   const row={title:$('m-title').value.trim()||j.title, ref_no:$('m-ref').value.trim()||null, site_id:$('m-site').value};
   if(hasContact && $('m-ph')) Object.assign(row,{customer_phone:$('m-ph').value.trim()||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:$('m-email').value.trim()||null});
   if(hasRoute && $('m-eir')){ const r=readAvail(); if(r===false) return; Object.assign(row,r); }
+  const waRow=waReadForm(); if(waRow) Object.assign(row,waRow);
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
   try{
     if(pendingFiles.length){
@@ -4346,6 +4423,7 @@ async function saveJobEdit(){
       const { error }=await sb.from('jobs').update(row).eq('id',j.id);
       if(error) throw error;
     }
+    if(waRow && waRow.wa_on===false && j.wa_on!==false && j.wa_status) await sb.rpc('wa_cancel',{p_job:j.id});
     closeModal();
     if(job && job.id===j.id){ const swapped=!!row.pdf_path; Object.assign(job,row); delete job.markup; updateJobHeader(); if(swapped){ dirty=false; openJob(j.id); } }
     await loadData(); rerenderCurrent(); toast(row.pdf_path?'Sheet replaced — old file removed':'Saved');
@@ -4400,7 +4478,7 @@ async function openJob(id, hcTab){
   updateJobHeader(); hcRender(); if(hcTab!=null && hcTab>=0 && hcCalls[hcTab]) hcPick(hcTab);
   $('pdf-pages').innerHTML='<div class="loading">Loading sheet…</div>';
   $('chat-list').innerHTML='<div class="loading">Loading…</div>';
-  loadComments();
+  loadComments(); try{ waSetupJobView(); }catch(e){ console.warn('wa',e); }
   if(unreadForMe(job) && !previewing){ sb.rpc('mark_job_seen',{p_job:id}).then(()=>scheduleReload()); }
   try{
     const mk = await sb.from('jobs').select('markup,pdf_path,marked_path').eq('id',id).single();
@@ -5033,6 +5111,344 @@ function togglePw(btn){
   btn.setAttribute('aria-label',show?'Hide password':'Show password'); btn.title=show?'Hide password':'Show password';
   inp.focus(); const v=inp.value; inp.value=''; inp.value=v;   // keep cursor at the end
 }
+
+// ══════════════════════════════════════════════════════════════════
+//  📲 WHATSAPP REMINDERS (Update 21) — Private Calls only.
+//  The office presses 📲 Send on a day → the database queues the booking message
+//  (now, or 10am a week before), the 3-day reminder and the day-before reminder.
+//  Edge Function wa-send sends them; wa-webhook brings the customer's taps/replies back.
+// ══════════════════════════════════════════════════════════════════
+const WA_FN='smart-service';   // the wa-send Edge Function (Supabase named it smart-service)
+const WA_COLS=',wa_on,wa_name,wa_extra,wa_mobile,wa_status,wa_time,wa_for,wa_go,wa_last_in,wa_unread,wa_man_unread'; let hasWa=true;
+let waCfg={morning_jobs:3}, waView='team', waMsgs=[], waQueue=[], waChan=null, waLoadTok=0, waFormCtx=null, waEta=0;
+const WA_KIND={booking:'Booking message', reminder3:'3-day reminder', daybefore:'Day-before reminder', time_update:'Time update',
+  sdw_booking_confirm:'Booking', sdw_booking_reminder:'Reminder', sdw_visit_reminder:'Reminder', sdw_day_before:'Day before',
+  sdw_time_update:'Time update', sdw_on_my_way:'On my way', sdw_office_followup:'Follow-up', text:'Office reply', auto_reply:'Automatic reply'};
+
+async function waLoadSettings(){ if(!hasWa) return; try{ const r=await sb.from('wa_settings').select('*').eq('id',1).maybeSingle(); if(!r.error&&r.data) waCfg=r.data; }catch(e){} }
+function waMorningN(){ return Math.max(1, +waCfg.morning_jobs||3); }
+
+// ── phone numbers: WhatsApp wants 353871234567 ──
+function waDigits(p){ let s=String(p||'').trim(), d=s.replace(/[^\d]/g,''); if(!d) return '';
+  if(s.startsWith('+')) return d; if(d.startsWith('00')) return d.slice(2); if(d.startsWith('0')) return '353'+d.slice(1); return d; }
+function waIsMobile(p){ const s=String(p||'').trim(), d=waDigits(s); if(!d) return false;
+  if(d.startsWith('353')) return /^3538[3-9]\d{7}$/.test(d);
+  return (s.startsWith('+')||s.startsWith('00')) && d.length>=10 && d.length<=15; }
+function waMobileOf(j){ for(const p of [j.customer_phone, j.customer_phone2, j.ref_no]) if(p && waIsMobile(p)) return waDigits(p); return null; }
+function waShowNum(d){ d=String(d||''); if(d.startsWith('353')){ const l='0'+d.slice(3); return l.slice(0,3)+' '+l.slice(3,6)+' '+l.slice(6); } return d?'+'+d:''; }
+
+// ── names: "Job 3 – Tom Brennan" → "Tom" · "Mrs Byrne, Lucan" → "Mrs Byrne" · "Pat & Ann Kelly" → "Pat & Ann" ──
+function waCustName(j){ return String((j&&j.title)||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'').trim(); }
+function waFirst(j){ if(j && j.wa_name) return j.wa_name;
+  const n=waCustName(j).split(',')[0].trim(); if(!n) return '';
+  const w=n.split(/\s+/);
+  if(/^(mr|mrs|ms|miss|dr)\.?$/i.test(w[0]) && w[1]) return w[0]+' '+w[w.length-1];
+  if(w[1] && (w[1]==='&'||/^and$/i.test(w[1])) && w[2]) return w.slice(0,3).join(' ');
+  return w[0]; }
+
+// ── the day in job order, and the time each customer is told ──
+function waIsClosed(j){ return !!(j.completed || jobOutcome(j)); }
+function waDayList(site){
+  const sj=jobs.filter(j=>j.site_id===site.id).sort((a,b)=>a.created_at<b.created_at?-1:1);
+  const num=new Map(sj.map((j,i)=>[j.id, jobNo(j)||i+1]));
+  return sj.sort((a,b)=>num.get(a.id)-num.get(b.id)).map(j=>({j, n:num.get(j.id)})); }
+function waWinFor(j,n){ const a=(j&&j.avail)||'';
+  if(a==='am') return 'between 8am and 12pm'; if(a==='pm') return 'between 12pm and 5pm'; if(a==='any') return 'at any time during the day';
+  const c=availParse(a); if(c) return (c.dir==='after'?'after ':'before ')+ampm(c.t);
+  return n<=waMorningN() ? 'between 8am and 12pm' : 'between 12pm and 5pm'; }
+function waBookingText(name, day, time, extra){
+  return `Hi ${name||'there'}, this is Sean Doyle Windows. Your service call is booked for ${day}, ${time}. ${extra||'We look forward to seeing you.'} Please confirm below.`; }
+function waDay(d){ const x=parseYmd(d); return x.toLocaleDateString('en-IE',{weekday:'long'})+' '+x.getDate()+' '+x.toLocaleDateString('en-IE',{month:'long'}); }   // "Thursday 22 October" — same as the messages
+function waShort(ts){ return new Date(ts).toLocaleDateString('en-IE',{weekday:'short',day:'numeric',month:'short'}); }
+function waFirstGo(work){ // when 📲 Send's first message goes: now, or 10am a week before (Saturday if that's a Sunday)
+  const d=addDays(parseYmd(work),-7); if(d.getDay()===0) d.setDate(d.getDate()-1); d.setHours(10,0,0,0);
+  return d>new Date() ? d : null; }
+
+// ── where each job is at ──
+function waState(j,n){
+  if(!hasWa || deptOf(j)!=='calls') return null;
+  const st=j.wa_status, s=siteOf(j), past=!!(s&&s.work_date&&s.work_date<todayYmd());
+  const win=n!=null?waWinFor(j,n):null;
+  let r;
+  if(st==='stopped') r={k:'stopped', t:'🔕 Replied STOP', c:'grey'};
+  else if(st==='no_wa') r={k:'no_wa', t:'⚠ No WhatsApp', c:'grey'};
+  else if(j.wa_on===false) r={k:'off', t:'🔕 Reminders off', c:'grey'};
+  else if(st==='scheduled') r={k:'sched', t:'📲 Goes '+(j.wa_go?waShort(j.wa_go):'soon'), c:'blue'};
+  else if(st==='sent') r={k:'sent', t:'🟡 No reply yet', c:'amber'};
+  else if(st==='confirmed') r={k:'ok', t:'🟢 Confirmed', c:'green'};
+  else if(st==='phone_ok') r={k:'ok', t:'✅ Confirmed by phone', c:'green'};
+  else if(st==='cant') r={k:'cant', t:"🔴 Can't make it", c:'red'};
+  else if(st==='noreply') r={k:'noreply', t:'📵 No reply — call', c:'red'};
+  else if(past || waIsClosed(j) || !s || !s.work_date) return null;
+  else r = waMobileOf(j) ? {k:'new', t:'📲 Not sent yet', c:'grey'} : {k:'nomob', t:'⚠ No mobile', c:'grey'};
+  r.win=win;
+  r.changed=!!(win && j.wa_time && !past && !waIsClosed(j) && ['sched','sent','ok','noreply'].includes(r.k) && j.wa_time!==win);
+  return r; }
+function waBadges(j,n){
+  if(!isOffice){   // service men: only that day's replies
+    if(!hasWa || deptOf(j)!=='calls') return ''; const s=siteOf(j); if(!s || s.work_date!==todayYmd()) return '';
+    if(j.wa_status==='cant') return `<div class="slot-wa"><span class="wa-pill wa-red">🔴 Can't make it</span></div>`;
+    if(j.wa_man_unread) return `<div class="slot-wa"><span class="wa-pill wa-indigo">💬 Customer replied</span></div>`;
+    return ''; }
+  const s=waState(j,n); if(!s) return '';
+  let h=`<span class="wa-pill wa-${s.c}" title="WhatsApp">${s.t}</span>`;
+  if(s.changed) h+=`<span class="wa-pill wa-orange" title="Told ${esc(j.wa_time)} — now ${esc(s.win)}">⚠ Time changed</span>`;
+  if(j.wa_unread) h+=`<span class="wa-pill wa-indigo">💬 Replied</span>`;
+  return `<div class="slot-wa">${h}</div>`; }
+
+// ── day page: WhatsApp bar + 🌅 Morning / 🌇 Afternoon ──
+function waDayBar(site){
+  if(!hasWa || !isOffice || !site.work_date || site.work_date<todayYmd()) return '';
+  const L=waDayList(site); if(!L.length) return '';
+  let nNew=0,nTime=0,ok=0,wait=0,cant=0,nr=0,nomob=0;
+  for(const {j,n} of L){ const s=waState(j,n); if(!s) continue;
+    if(s.k==='new') nNew++; if(s.changed) nTime++; if(s.k==='ok') ok++; if(s.k==='sent'||s.k==='sched') wait++;
+    if(s.k==='cant') cant++; if(s.k==='noreply') nr++; if(s.k==='nomob') nomob++; }
+  const anySent=L.some(({j})=>j.wa_status), go=waFirstGo(site.work_date), M=waMorningN();
+  const parts=[`${L.length} job${L.length===1?'':'s'}`];
+  if(ok) parts.push(`🟢 ${ok} confirmed`); if(wait) parts.push(`🟡 ${wait} waiting`); if(cant) parts.push(`🔴 ${cant} can't make it`);
+  if(nr) parts.push(`📵 ${nr} no reply`); if(nomob) parts.push(`⚠ ${nomob} no mobile`);
+  return `<div class="wa-bar"><div class="wa-sum"><b>📲 WhatsApp</b> · ${parts.join(' · ')}
+      <br>${nNew?`First message ${go?'goes at 10am '+esc(waShort(go)):'goes straight away'} · `:''}<button class="wa-morn" onclick="waSetMorning()" title="How many jobs are told the morning">🌅 Job${M===1?' 1':'s 1–'+M} told 8am–12pm · 🌇 the rest 12pm–5pm</button></div>
+    ${nTime?`<button class="btn-wa amber" onclick="waSendDay('${site.id}','time')">📲 Send ${nTime} time update${nTime===1?'':'s'}</button>`:''}
+    ${nNew?`<button class="btn-wa" onclick="waSendDay('${site.id}','new')">📲 ${anySent?`Send to ${nNew} new`:`Send to all (${nNew})`}</button>`:''}
+    ${!nNew&&!nTime&&anySent?'<span class="wa-pill wa-green">✓ All sent</span>':''}</div>`; }
+function waGridHtml(list,num){
+  if(!hasWa || !isOffice || dept!=='calls') return list.map(j=>slotCard(j,num.get(j.id))).join('');
+  const M=waMorningN(); let h='', am=false, pm=false;
+  for(const j of list){ const n=num.get(j.id);
+    if(n<=M && !am){ am=true; h+=`<div class="wa-split">🌅 Morning <span>job${M===1?' 1':'s 1–'+M} · told "between 8am and 12pm" unless the job has its own time</span></div>`; }
+    if(n>M && !pm){ pm=true; h+=`<div class="wa-split">🌇 Afternoon <span>job ${M+1} on · told "between 12pm and 5pm" unless the job has its own time</span></div>`; }
+    h+=slotCard(j,n); }
+  return h; }
+function waWeekBtn(days){
+  if(!hasWa || !isOffice) return '';
+  const ids=(days||[]).filter(s=>s.work_date>=todayYmd() && waDayList(s).some(({j,n})=>{ const x=waState(j,n); return x&&x.k==='new'; })).map(s=>s.id);
+  if(!ids.length) return '';
+  return `<button class="btn-outline" style="border-color:#16a34a;color:#166534" onclick="waSendDay([${ids.map(i=>`'${i}'`).join(',')}],'new')" title="Send the WhatsApp reminders for every day this week that hasn't been sent">📲 Send all days this week</button>`; }
+async function waSetMorning(){ if(blockPreview()) return;
+  const v=prompt('How many jobs each day are told the morning (between 8am and 12pm)?\nThe rest are told 12pm – 5pm.', String(waMorningN()));
+  if(v===null) return; const n=parseInt(v,10); if(!(n>=1&&n<=10)) return toast('Pick a number from 1 to 10.');
+  const { error }=await sb.from('wa_settings').update({morning_jobs:n}).eq('id',1);
+  if(error) return toast('Could not save: '+error.message,6000);
+  waCfg.morning_jobs=n; rerenderCurrent(); toast(`🌅 Jobs 1–${n} are now told the morning`); }
+
+// ── 📲 Send ──
+function waConfirm(title, html, okLabel){
+  return new Promise(res=>{
+    openModal(`<h2>${esc(title)}</h2>${html}<div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-wa" id="wa-ok" style="padding:10px 18px">${okLabel}</button></div>`);
+    window._confirmResolve=res;
+    $('wa-ok').onclick=()=>{ window._confirmResolve=null; $('modal-root').innerHTML=''; res(true); }; }); }
+async function waSendDay(siteIds, which){ if(blockPreview()) return;
+  siteIds=[].concat(siteIds);
+  const items=[], dayN=new Map();
+  for(const sid of siteIds){ const site=sites.find(s=>s.id===sid); if(!site || !site.work_date) continue;
+    for(const {j,n} of waDayList(site)){ const s=waState(j,n); if(!s) continue;
+      if(which==='new' && s.k==='new'){ items.push({job_id:j.id, kind:'book', time:s.win, mobile:waMobileOf(j), name:waFirst(j)}); dayN.set(sid,(dayN.get(sid)||0)+1); }
+      if(which==='time' && s.changed) items.push({job_id:j.id, kind:'time', time:s.win}); } }
+  if(!items.length) return toast('Nothing to send.');
+  const ex=items[0], ej=jobs.find(x=>x.id===ex.job_id), ed=siteOf(ej).work_date, nm=ex.name||waFirst(ej)||'there';
+  let html;
+  if(which==='time'){
+    html=`<p style="margin-bottom:8px">${items.length} customer${items.length===1?'':'s'} get the new time, e.g.:</p>
+      <div class="wa-prev"><div class="b">${esc(`Hi ${nm}, an update from Sean Doyle Windows: your service call on ${waDay(ed)} is now ${ex.time}. Can't make it? Tap below.`)}</div><div class="q"><span style="grid-column:1/-1">❌ I can't make it</span></div></div>`;
+  } else {
+    const when=[...dayN.keys()].map(sid=>{ const s=sites.find(x=>x.id===sid), g=waFirstGo(s.work_date);
+      return `<li><b>${esc(dayLabel(s.work_date))}</b> · ${esc(firstName(prof(s.serviceman_id).full_name))} · ${dayN.get(sid)} customer${dayN.get(sid)===1?'':'s'} · ${g?'goes at 10am '+esc(waShort(g)):'goes now'}</li>`; }).join('');
+    const noName=items.filter(i=>!i.name).length;
+    html=`<ul style="margin:0 0 10px 18px;font-size:14px">${when}</ul>
+      <div class="wa-prev"><div class="b">${esc(waBookingText(nm, waDay(ed), ex.time, ej.wa_extra))}</div><div class="q"><span>✅ Confirm</span><span>❌ I can't make it</span></div></div>
+      <div class="wa-note">Then a reminder 3 days before and the day before, at 10am (never on a Sunday).${noName?` ⚠ ${noName} job${noName===1?' has':'s have'} no customer name — they'll get "Hi there".`:''}</div>`;
+  }
+  if(!await waConfirm(which==='time'?'📲 Send time updates?':'📲 Send WhatsApp reminders?', html, '📲 Send')) return;
+  const { data, error }=await sb.rpc('wa_schedule',{p_items:items});
+  if(error) return toast('Could not send: '+error.message, 7000);
+  toast(`📲 ${data} queued — sending…`, 3000);
+  let msg='✓ Scheduled — they go at 10am on the day shown on each job';
+  try{ const fr=await sb.functions.invoke(WA_FN,{body:{action:'flush'}});
+    if(fr.error) msg='✓ Queued — they\'ll go within 10 minutes';
+    else { const r=fr.data||{}; if(r.sent) msg=`📲 ${r.sent} sent${r.failed?` · ⚠ ${r.failed} failed — open the job's WhatsApp tab to see why`:''}`; else if(r.failed) msg=`⚠ ${r.failed} failed — open the job's WhatsApp tab to see why`; }
+  }catch(e){ msg='✓ Queued — they\'ll go within 10 minutes'; }
+  await loadData(); rerenderCurrent(); toast(msg, 6000); }
+
+// ── dashboard: ⚠ days under a week away not sent ──
+function waWarnHtml(){
+  if(!hasWa || !isOffice || dept!=='calls' || previewing) return '';
+  const t=todayYmd(), lim=ymd(addDays(parseYmd(t),7)), days=[];
+  for(const s of sites){ if(deptOf(s)!=='calls' || !s.work_date || s.work_date<t || s.work_date>=lim) continue;
+    const n=waDayList(s).filter(({j,n})=>{ const x=waState(j,n); return x&&x.k==='new'; }).length; if(n) days.push({s,n}); }
+  if(!days.length) return '';
+  days.sort((a,b)=>a.s.work_date<b.s.work_date?-1:1);
+  return `<div class="wa-warn"><span style="font-size:20px">⚠</span><div class="ww-txt"><b>${days.length===1?'1 day':days.length+' days'} under a week away ${days.length===1?"hasn't":"haven't"} been sent on WhatsApp:</b><br>
+    ${days.map(({s,n})=>`<span class="ww-day">${esc(firstName(prof(s.serviceman_id).full_name))} · ${esc(dayLabel(s.work_date))} (${n} job${n===1?'':'s'}) <button class="btn-wa red" onclick="waSendDay('${s.id}','new')">📲 Send</button></span>`).join('')}</div>
+    ${days.length>1?`<button class="btn-wa red" onclick="waSendDay([${days.map(d=>`'${d.s.id}'`).join(',')}],'new')">📲 Send all ${days.length}</button>`:''}</div>`; }
+
+// ── dashboard folders: 📲 Can't make it · 📵 No reply ──
+function waFolderLists(list){ if(!hasWa) return {cant:[], nr:[]};
+  return { cant:list.filter(j=>j.wa_status==='cant' && !waIsClosed(j)), nr:list.filter(j=>j.wa_status==='noreply' && !waIsClosed(j)) }; }
+function waTick(st){ return st==='read'?' · ✓✓ read':st==='delivered'?' · ✓✓':st==='sent'?' · ✓':st==='failed'?' · ⚠ not delivered':''; }
+async function waFolderPanel(el, key){
+  const want=key==='wa_cant'?'cant':'noreply';
+  const list=dJobs('calls').filter(j=>j.wa_status===want && !waIsClosed(j))
+    .sort((a,b)=>((siteOf(a)||{}).work_date||'')<((siteOf(b)||{}).work_date||'')?-1:1);
+  const msgs={};
+  if(list.length){ const { data }=await sb.from('wa_messages').select('job_id,direction,kind,body,status,created_at').in('job_id',list.map(j=>j.id)).order('created_at');
+    for(const m of (data||[])) (msgs[m.job_id]=msgs[m.job_id]||[]).push(m); }
+  if(openFolder!==key) return; el=$('folder-panel'); if(!el) return;
+  el.innerHTML=`<div class="fp-head">${key==='wa_cant'?"📲 Can't make it (WhatsApp)":'📵 No reply (WhatsApp)'} <span>— ${key==='wa_cant'?'the customer tapped "I can\'t make it": ring them and 📅 reschedule':'no answer to the booking message or the 3-day reminder: ring them'}. ✅ or 📅 takes the job out of this folder.</span></div>
+    <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Customer</th><th>Service man</th><th>Booked for</th><th>WhatsApp</th><th></th></tr></thead><tbody>
+    ${list.map(j=>{ const st=siteOf(j)||{}, t=prof(j.serviceman_id), ms=msgs[j.id]||[];
+      const outs=ms.filter(m=>m.direction==='out' && /^sdw_/.test(m.kind)).slice(-3).map(m=>`${esc(WA_KIND[m.kind]||m.kind)} ${esc(fmtWhen(m.created_at))}${waTick(m.status)}`).join('<br>');
+      const lastIn=[...ms].reverse().find(m=>m.direction==='in' && m.kind==='text');
+      return `<tr><td class="s-title">${esc(j.title)}<div class="s-sub">${esc(waShowNum(j.wa_mobile))}</div></td>
+        <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(t.full_name)}</td>
+        <td>${st.work_date?esc(dayLabel(st.work_date)):''}${j.wa_time?`<div class="s-sub">${esc(j.wa_time)}</div>`:''}</td>
+        <td class="fp-note">${outs||'—'}${lastIn?`<div class="s-sub">💬 “${esc(lastIn.body)}”</div>`:''}</td>
+        <td class="fp-act"><a class="btn-outline" href="tel:+${esc(j.wa_mobile)}" onclick="event.stopPropagation()">📞 Call</a><button class="btn-outline" onclick="waPhoneOk('${j.id}')">✅ Confirmed by phone</button><button class="btn-primary" onclick="openReschedule('${j.id}')">📅 Reschedule</button><button class="btn-outline" onclick="goToJob('${j.id}')">Open</button></td></tr>`; }).join('')}
+    </tbody></table></div>`; }
+async function waPhoneOk(id){ if(blockPreview()) return;
+  const { error }=await sb.from('jobs').update({wa_status:'phone_ok', wa_unread:false}).eq('id',id);
+  if(error) return toast('Could not save: '+error.message,6000);
+  const j=jobs.find(x=>x.id===id); if(j){ j.wa_status='phone_ok'; j.wa_unread=false; }
+  if(job && job.id===id){ job.wa_status='phone_ok'; waRenderPane(); }
+  toast('✅ Marked confirmed by phone — the day-before reminder still goes');
+  await loadData(); rerenderCurrent(); if(openFolder) setTimeout(renderFolderPanel,0); }
+
+// ── inside a job: 💬 Conversation | 🟢 WhatsApp ──
+function waJobOn(){ if(!hasWa || !job || deptOf(job)!=='calls') return false; if(isOffice) return true; const s=siteOf(job); return !!(s && s.work_date===todayYmd()); }
+function waSetupJobView(){
+  const pane=document.querySelector('.chat-pane'), head=pane&&pane.querySelector('.chat-head'); if(!head) return;
+  waView='team'; waMsgs=[]; waQueue=[]; pane.classList.remove('wa-mode');
+  const old=$('wa-pane'); if(old) old.remove();
+  waOmw();
+  if(!waJobOn()){ head.innerHTML='💬 Conversation'; return; }
+  const wp=document.createElement('div'); wp.id='wa-pane'; wp.className='wa-pane hidden'; pane.appendChild(wp);
+  const unread=isOffice?job.wa_unread:job.wa_man_unread;
+  head.innerHTML=`<div class="wa-tabs"><button class="wa-tb on" data-w="team" onclick="waSetView('team')">💬 Team chat</button><button class="wa-tb wa" data-w="wa" onclick="waSetView('wa')">🟢 WhatsApp${unread?' <span class="n">new</span>':''}</button></div>`;
+  if(unread) waSetView('wa'); }
+function waSetView(v){
+  const pane=document.querySelector('.chat-pane'); if(!pane) return; waView=v;
+  pane.classList.toggle('wa-mode', v==='wa');
+  document.querySelectorAll('.wa-tb').forEach(b=>b.classList.toggle('on', b.dataset.w===v));
+  const wp=$('wa-pane'); if(wp) wp.classList.toggle('hidden', v!=='wa');
+  if(v==='wa' && job){ waLoadJob();
+    if(!previewing && (isOffice?job.wa_unread:job.wa_man_unread)){
+      job.wa_unread=false; job.wa_man_unread=false; const n=document.querySelector('.wa-tb .n'); if(n) n.remove();
+      sb.rpc('wa_seen',{p_job:job.id}).then(()=>scheduleReload()); } } }
+async function waLoadJob(){
+  if(!job) return; const id=job.id, tok=++waLoadTok, wp=$('wa-pane'); if(!wp) return;
+  if(!wp.innerHTML) wp.innerHTML='<div class="loading">Loading…</div>';
+  const [m,q]=await Promise.all([
+    sb.from('wa_messages').select('*').eq('job_id',id).order('created_at'),
+    isOffice ? sb.from('wa_queue').select('kind,send_at').eq('job_id',id).eq('status','pending').order('send_at') : Promise.resolve({data:[]}) ]);
+  if(tok!==waLoadTok || !job || job.id!==id) return;
+  waMsgs=m.data||[]; waQueue=q.data||[]; waRenderPane(); }
+function waRenderPane(){
+  const wp=$('wa-pane'); if(!wp || !job) return;
+  const j={...(jobs.find(x=>x.id===job.id)||{}), ...job};
+  const lastIn=j.wa_last_in?new Date(j.wa_last_in):null, open=!!(lastIn && Date.now()-lastIn<24*3600e3-60e3);
+  const info = j.wa_mobile
+    ? `<span>To <b>${esc(waShowNum(j.wa_mobile))}</b> · from the office WhatsApp</span>${isOffice?(open?`<span class="ok">Free reply until ${esc(fmtWhen(lastIn.getTime()+24*3600e3))}</span>`:`<span class="shut">Reply window closed</span>`):''}`
+    : `<span>${isOffice?'Nothing sent yet — use 📲 Send on the day page.':'No WhatsApp on this job.'}</span>`;
+  const firstNewIn=j.wa_unread?waMsgs.findIndex(m=>m.direction==='in' && new Date(m.created_at)>Date.now()-48*3600e3):-1;
+  const list = waMsgs.map((m,i)=>{ const out=m.direction==='out';
+    const who = out ? (m.author_id ? esc(firstName(prof(m.author_id).full_name)) : m.kind==='auto_reply' ? 'Automatic reply' : 'SashDash (automatic)')
+                    : esc(waFirst(j)||'Customer')+' · WhatsApp';
+    return `<div class="wa-msg ${out?'out':'in'} ${m.status==='failed'?'failed':''} ${i>=firstNewIn&&firstNewIn>=0&&!out?'new':''}"><div class="who">${who}${out&&WA_KIND[m.kind]?' · '+esc(WA_KIND[m.kind]):''}</div><div class="bub">${esc(m.body||'')}</div><div class="when">${esc(fmtWhen(m.created_at))}${out?waTick(m.status):''}</div>${m.status==='failed'&&m.error&&isOffice?`<div class="err">⚠ ${esc(m.error)}</div>`:''}</div>`; }).join('')
+    || `<div class="loading">${isOffice?'No WhatsApp messages yet.':'No WhatsApp replies today.'}</div>`;
+  const next = isOffice && waQueue.length ? `<div class="evt">Next automatic: ${waQueue.map(q=>`${esc(WA_KIND[q.kind]||q.kind)} · ${esc(waShort(q.send_at))} ${esc(new Date(q.send_at).toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'}))}`).join(' · ')}</div>` : '';
+  let tail='';
+  if(isOffice){
+    const okd=['confirmed','phone_ok'].includes(j.wa_status);
+    tail+=`<div class="wa-acts">${j.wa_mobile&&!okd&&j.wa_status!=='stopped'?`<button class="btn-outline" onclick="waPhoneOk('${j.id}')">✅ Mark confirmed</button>`:''}${(siteOf(j)||{}).work_date?`<button class="btn-outline" onclick="openReschedule('${j.id}')">📅 Reschedule</button>`:''}<button class="btn-outline" onclick="waToggle()">${j.wa_on===false?'🔔 Turn reminders on':'🔕 Turn reminders off'}</button></div>`;
+    if(j.wa_mobile && j.wa_status!=='stopped'){
+      tail+= open
+        ? `<div class="wa-compose"><textarea id="wa-input" rows="2" placeholder="Reply to ${esc(waFirst(j)||'the customer')} on WhatsApp…" oninput="autoGrow(this)"></textarea><button class="btn-wa" style="padding:10px 16px" onclick="waSendText()">Send</button></div>`
+        : `<div class="wa-lock">The free 24-hour reply window is closed. <button class="btn-wa" style="padding:6px 12px;margin-left:6px" onclick="waFollowup()">📲 Send follow-up</button><br><span style="font-size:11px">Sends: "Hi ${esc(waFirst(j)||'there')}, this is Sean Doyle Windows about your service call on ${esc((siteOf(j)||{}).work_date?waDay(siteOf(j).work_date):'…')}. Please reply to this message." When they answer, you can reply freely again.</span></div>`;
+    } else if(j.wa_status==='stopped') tail+=`<div class="wa-lock">🔕 This customer replied STOP — no more WhatsApps can be sent to them.</div>`;
+  } else tail=`<div class="wa-lock">Only the office can reply on WhatsApp — ring the customer from your phone if you need to.</div>`;
+  wp.innerHTML=`<div class="wa-info">${info}</div><div class="wa-list" id="wa-list">${list}${next}</div>${tail}`;
+  const l=$('wa-list'); if(l) l.scrollTop=l.scrollHeight; }
+async function waSendText(){ if(blockPreview() || !job) return;
+  const ta=$('wa-input'), text=ta.value.trim(); if(!text) return;
+  ta.disabled=true;
+  const { data, error }=await sb.functions.invoke(WA_FN,{body:{action:'text', job_id:job.id, text}});
+  ta.disabled=false;
+  if(error){ let m=error.message; try{ const b=await error.context.json(); m=b.message||b.error||m; }catch(e){} return toast('Not sent: '+m, 7000); }
+  ta.value=''; toast('📲 Sent on WhatsApp'); waLoadJob(); }
+async function waFollowup(){ if(blockPreview() || !job) return;
+  if(!await waConfirm('📲 Send follow-up?', `<div class="wa-prev"><div class="b">${esc(`Hi ${waFirst(job)||'there'}, this is Sean Doyle Windows about your service call on ${waDay(siteOf(job).work_date)}. Please reply to this message.`)}</div></div><div class="wa-note">When they reply, you can answer them freely for 24 hours.</div>`, '📲 Send')) return;
+  const { error }=await sb.functions.invoke(WA_FN,{body:{action:'followup', job_id:job.id}});
+  if(error){ let m=error.message; try{ const b=await error.context.json(); m=b.message||b.error||m; }catch(e){} return toast('Not sent: '+m, 7000); }
+  toast('📲 Follow-up sent'); waLoadJob(); }
+async function waToggle(){ if(blockPreview() || !job) return;
+  const on=job.wa_on===false;
+  const { error }=await sb.from('jobs').update({wa_on:on}).eq('id',job.id);
+  if(error) return toast('Could not save: '+error.message,6000);
+  if(!on) await sb.rpc('wa_cancel',{p_job:job.id});
+  job.wa_on=on; toast(on?'🔔 Reminders on — use 📲 Send on the day page if it hasn\'t been sent':'🔕 Reminders off for this job — nothing more will be sent');
+  await loadData(); waLoadJob(); }
+
+// ── 🚐 On my way (service man, on the day) ──
+function waOmw(){
+  let el=$('wa-omw');
+  if(!el){ el=document.createElement('div'); el.id='wa-omw'; el.className='wa-omw hidden'; const b=$('jv-body'); if(!b) return; b.before(el); }
+  const s=job&&siteOf(job);
+  const show=!!(hasWa && job && !isOffice && deptOf(job)==='calls' && s && s.work_date===todayYmd() && job.wa_mobile && job.wa_on!==false
+    && !['stopped','no_wa','cant'].includes(job.wa_status) && !waIsClosed(job));
+  el.classList.toggle('hidden', !show); if(!show){ el.innerHTML=''; return; }
+  el.innerHTML=`<button class="btn-wa" onclick="waOmwOpen()">🚐 On my way</button><span class="sent" id="wa-omw-st"></span>`;
+  const id=job.id;
+  sb.from('wa_messages').select('created_at,status').eq('job_id',id).eq('kind','sdw_on_my_way').order('created_at',{ascending:false}).limit(1)
+    .then(({data})=>{ const st=$('wa-omw-st'); if(st && job && job.id===id && data && data[0]) st.textContent=`✓ Sent at ${new Date(data[0].created_at).toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})}${data[0].status==='read'?' · read':''}`; }); }
+function waOmwOpen(){ if(blockPreview()) return; const d=new Date(); waEta=Math.ceil((d.getHours()*60+d.getMinutes()+20)/5)*5; waOmwModal(); }
+function waOmwModal(){
+  const name=waFirst(job)||'there', man=firstName(me.full_name);
+  openModal(`<h2>🚐 Tell ${esc(name)} you're on the way?</h2>
+    <div class="wa-prev"><div class="b">Hi ${esc(name)}, ${esc(man)} from Sean Doyle Windows is on his way and should be with you around <b>${ampm(waEta)}</b>. See you soon.</div></div>
+    <div class="wa-eta"><button class="btn-outline" onclick="waEta-=10;waOmwModal()">− 10 min</button><b>${ampm(waEta)}</b><button class="btn-outline" onclick="waEta+=10;waOmwModal()">+ 10 min</button></div>
+    <div class="wa-note" style="color:var(--slate)">Sent from the office WhatsApp number — your own number is never shown.</div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-wa" id="m-save" style="padding:10px 22px" onclick="waOmwSend()">📲 Send</button></div>`); }
+async function waOmwSend(){
+  const b=$('m-save'); b.disabled=true; b.innerHTML='<span class="spin"></span> Sending…';
+  const { error }=await sb.functions.invoke(WA_FN,{body:{action:'on_my_way', job_id:job.id, eta:ampm(waEta)}});
+  if(error){ let m=error.message; try{ const r=await error.context.json(); m=r.message||r.error||m; }catch(e){} b.disabled=false; b.textContent='📲 Try again'; return toast('Not sent: '+m, 7000); }
+  closeModal(); toast(`🚐 ${waFirst(job)||'The customer'} has been told you're on the way`); waOmw(); }
+
+// ── job form: name, extra line, reminders on/off, live preview ──
+function waFormHtml(j){ if(!hasWa) return ''; j=j||{};
+  return `<div class="wa-form" id="wa-form"><div class="wf-top"><b>🟢 WhatsApp to the customer</b><label><input type="checkbox" id="wa-on" ${j.wa_on===false?'':'checked'}> Send reminders for this job</label></div>
+    <div class="wf-row"><div class="field-group" style="margin:0"><label>Name in the message</label><input id="wa-name" autocomplete="off" maxlength="40" value="${esc(j.wa_name||'')}"></div>
+    <div class="field-group" style="margin:0"><label>Extra line <span class="optional">(optional)</span></label><input id="wa-extra" autocomplete="off" maxlength="120" placeholder="e.g. Please have the side gate open." value="${esc(j.wa_extra||'')}"></div></div>
+    <div id="wa-prev"></div></div>`; }
+function waFormBind(ctx){ waFormCtx=ctx; if(!$('wa-form')) return;
+  ['wa-on','wa-name','wa-extra','m-cust','m-title','m-ph','m-ph2','m-ref','m-av','m-av-d','m-av-t'].forEach(id=>{ const e=$(id); if(e){ e.addEventListener('input',waFormPrev); e.addEventListener('change',waFormPrev); } });
+  waFormPrev(); }
+function waFormAvail(){ const s=$('m-av'); if(!s) return (waFormCtx&&waFormCtx.job&&waFormCtx.job.avail)||''; let v=s.value;
+  if(v==='custom'){ const t=$('m-av-t'); v=($('m-av-d')||{}).value+':'+((t&&t.value)||'15:00'); } return v; }
+function waFormPrev(){
+  const box=$('wa-prev'); if(!box || !waFormCtx) return;
+  const cust=$('m-cust') ? $('m-cust').value : waCustName({title:($('m-title')||{}).value||''});
+  const auto=waFirst({title:'Job 1 – '+(cust||'')}), ni=$('wa-name'); if(ni) ni.placeholder=auto||'e.g. Mary';
+  const name=(ni&&ni.value.trim())||auto||'there';
+  const val=id=>($(id)||{}).value;
+  const mob=waMobileOf({customer_phone:val('m-ph'), customer_phone2:val('m-ph2'), ref_no:val('m-ref')});
+  if(!$('wa-on').checked){ box.innerHTML='<div class="wa-note">🔕 No WhatsApp messages for this job.</div>'; return; }
+  const time=waWinFor({avail:waFormAvail()}, waFormCtx.n), j=waFormCtx.job, sent=j&&j.wa_status;
+  box.innerHTML=`<div class="wa-prev"><div class="b">${esc(waBookingText(name, waFormCtx.day?waDay(waFormCtx.day):'…', time, ($('wa-extra').value||'').trim()))}</div><div class="q"><span>✅ Confirm</span><span>❌ I can't make it</span></div></div>
+    <div class="wa-note">${mob?`To <b>${esc(waShowNum(mob))}</b> · ${sent?'already sent — changes here apply to the next reminders':'goes when you press 📲 Send on the day page, then a reminder 3 days before and the day before'}`:'⚠ No mobile number — add one (08…) in a phone box, or the customer gets nothing.'}</div>`; }
+function waReadForm(){ if(!hasWa || !$('wa-on')) return null;
+  const c=s=>String(s||'').replace(/[\r\n\t]+/g,' ').replace(/ {2,}/g,' ').trim();
+  return {wa_on:$('wa-on').checked, wa_name:c($('wa-name').value)||null, wa_extra:c($('wa-extra').value)||null}; }
+
+// ── live updates for the WhatsApp tab ──
+function waSubscribe(){
+  if(waChan){ try{ sb.removeChannel(waChan); }catch(e){} waChan=null; }
+  if(!hasWa) return;
+  waChan=sb.channel('sashdash-wa')
+    .on('postgres_changes',{event:'*',schema:'public',table:'wa_messages'}, p=>{ const r=p.new||p.old||{};
+      if(job && r.job_id===job.id){ if(waView==='wa') waLoadJob(); else if(r.direction==='in'){ const t=document.querySelector('.wa-tb.wa'); if(t && !t.querySelector('.n')) t.insertAdjacentHTML('beforeend',' <span class="n">new</span>'); } waOmw(); } })
+    .subscribe(); }
 </script>
 </body>
 </html>
