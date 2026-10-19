@@ -823,6 +823,13 @@
     .wa-prev .q{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px}
     .wa-prev .q span{background:#fff;border-radius:8px;padding:6px;text-align:center;color:#0e7490;font-weight:700;font-size:12px}
     .wa-note{font-size:12px;color:#065f46;margin-top:6px}
+    .wa-sched{margin-top:8px;background:#fff;border:1px solid #bbf7d0;border-radius:10px;padding:6px 12px}
+    .wa-sched .sh{font-weight:800;font-size:13px;padding:2px 0 4px;color:var(--navy)}
+    .wa-sched .r{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-top:1px solid #f1f5f9}
+    .wa-sched .d{flex:none;width:20px;height:20px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+    .wa-sched .r.past .d{background:#cbd5e1}.wa-sched .r.past b{color:#64748b}
+    .wa-sched b{display:block;font-size:13px;color:var(--navy)}.wa-sched small{font-size:12px;color:#475569}.wa-sched i{color:#64748b}
+    .wa-sched .to{font-size:11px;color:#64748b;border-top:1px solid #f1f5f9;padding:6px 0 2px}
     .wa-eta{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0}
     .wa-eta b{font-size:22px;min-width:90px;text-align:center}
     .wa-eta button{padding:8px 12px}
@@ -5165,6 +5172,25 @@ function waBookingText(name, day, time, extra){
   return `Hi ${name||'there'}, this is Sean Doyle Windows. Your service call is booked for ${day}, ${time}. ${extra||'We look forward to seeing you.'} Please confirm below.`; }
 function waDay(d){ const x=parseYmd(d); return x.toLocaleDateString('en-IE',{weekday:'long'})+' '+x.getDate()+' '+x.toLocaleDateString('en-IE',{month:'long'}); }   // "Thursday 22 October" — same as the messages
 function waShort(ts){ return new Date(ts).toLocaleDateString('en-IE',{weekday:'short',day:'numeric',month:'short'}); }
+// the same rules as the database's wa_schedule: 10am, never a Sunday (moves to Saturday), skip what's past
+function waAt(work,back){ const d=addDays(parseYmd(work),-back); const sun=d.getDay()===0; if(sun) d.setDate(d.getDate()-1); d.setHours(10,0,0,0); return {d, sun}; }
+function waPlan(work){ const now=new Date(), b=waAt(work,7), r=waAt(work,3), y=waAt(work,1);
+  const book=b.d>now?b.d:null, bookDay=ymd(book||now), out=[{k:'booking', at:book, sun:b.sun&&!!book}];
+  if(r.d>now && ymd(r.d)>bookDay && ymd(r.d)<ymd(y.d)) out.push({k:'reminder3', at:r.d, sun:r.sun});
+  if(y.d>now && ymd(y.d)>bookDay) out.push({k:'daybefore', at:y.d, sun:y.sun});
+  return out; }
+function waWhen(d){ return d.toLocaleDateString('en-IE',{weekday:'short',day:'numeric',month:'short'})+' · '+ampm(d.getHours()*60+d.getMinutes()); }
+function waSchedHtml(name, mob, work, job){
+  if(!work) return '';
+  const L={booking:'Booking message', reminder3:'3-day reminder', daybefore:'Day-before reminder'}, sent=job&&job.wa_status&&!['no_wa','stopped'].includes(job.wa_status);
+  const rows=waPlan(work).map((x,i)=>{ let sub;
+    if(x.k==='booking'){
+      if(sent) sub=job.wa_go?`Sent ${esc(waWhen(new Date(job.wa_go)))}`:'Sent';
+      else sub=x.at?`${esc(waWhen(x.at))}${x.sun?' <i>(Sunday moves to Saturday)</i>':''}<br><i>— after you press 📲 Send on the day page</i>`:'As soon as you press 📲 Send on the day page<br><i>(the visit is less than a week away, so no waiting)</i>';
+    } else sub=`${esc(waWhen(x.at))}${x.sun?' <i>(Sunday moves to Saturday)</i>':''}${x.k==='reminder3'?'<br><i>— asks again to confirm if there\'s no reply yet</i>':''}`;
+    return `<div class="r ${x.k==='booking'&&sent?'past':''}"><span class="d">${x.k==='booking'&&sent?'✓':i+1}</span><span><b>${L[x.k]}</b><small>${sub}</small></span></div>`; }).join('');
+  const skipped=3-waPlan(work).length;
+  return `<div class="wa-sched"><div class="sh">📅 When ${esc(name)} gets messages</div>${rows}${skipped?`<div class="to">${skipped===1?'One reminder is':'Two reminders are'} left out — the visit is too soon for ${skipped===1?'it':'them'}.</div>`:''}<div class="to">To ${esc(waShowNum(mob))}</div></div>`; }
 function waFirstGo(work){ // when 📲 Send's first message goes: now, or 10am a week before (Saturday if that's a Sunday)
   const d=addDays(parseYmd(work),-7); if(d.getDay()===0) d.setDate(d.getDate()-1); d.setHours(10,0,0,0);
   return d>new Date() ? d : null; }
@@ -5446,7 +5472,7 @@ function waFormPrev(){
   if(!$('wa-on').checked){ box.innerHTML='<div class="wa-note">🔕 No WhatsApp messages for this job.</div>'; return; }
   const time=waWinFor({avail:waFormAvail()}, waFormCtx.n), j=waFormCtx.job, sent=j&&j.wa_status;
   box.innerHTML=`<div class="wa-prev"><div class="b">${esc(waBookingText(name, waFormCtx.day?waDay(waFormCtx.day):'…', time, ($('wa-extra').value||'').trim()))}</div><div class="q"><span>✅ Confirm</span><span>❌ I can't make it</span></div></div>
-    <div class="wa-note">${mob?`To <b>${esc(waShowNum(mob))}</b> · ${sent?'already sent — changes here apply to the next reminders':'goes when you press 📲 Send on the day page, then a reminder 3 days before and the day before'}`:'⚠ No mobile number — add one (08…) in a phone box, or the customer gets nothing.'}</div>`; }
+    ${mob?waSchedHtml(name==='there'?'the customer':name, mob, waFormCtx.day, j)+(sent?'<div class="wa-note">Already sent — changes here apply to the next reminders.</div>':''):'<div class="wa-note">⚠ No mobile number — add one (08…) in a phone box, or the customer gets nothing.</div>'}`; }
 function waReadForm(){ if(!waUI() || !$('wa-on')) return null;
   const c=s=>String(s||'').replace(/[\r\n\t]+/g,' ').replace(/ {2,}/g,' ').trim();
   return {wa_on:$('wa-on').checked, wa_name:c($('wa-name').value)||null, wa_extra:c($('wa-extra').value)||null}; }
