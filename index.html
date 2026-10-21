@@ -4418,6 +4418,8 @@ async function saveJobEdit(){
   if(hasContact && $('m-ph')) Object.assign(row,{customer_phone:$('m-ph').value.trim()||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:$('m-email').value.trim()||null});
   if(hasRoute && $('m-eir')){ const r=readAvail(); if(r===false) return; Object.assign(row,r); }
   const waRow=waReadForm(); if(waRow) Object.assign(row,waRow);
+  let waReset=false;
+  if(hasWa && j.wa_mobile && deptOf(j)==='calls'){ const nm=waMobileOf({...j, ...row}); if(nm!==j.wa_mobile){ waReset=true; Object.assign(row,{wa_status:null, wa_mobile:null, wa_go:null, wa_for:null, wa_time:null, wa_unread:false}); } }
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
   try{
     if(pendingFiles.length){
@@ -4436,7 +4438,8 @@ async function saveJobEdit(){
       const { error }=await sb.from('jobs').update(row).eq('id',j.id);
       if(error) throw error;
     }
-    if(waRow && waRow.wa_on===false && j.wa_on!==false && j.wa_status) await sb.rpc('wa_cancel',{p_job:j.id});
+    if((waReset || (waRow && waRow.wa_on===false && j.wa_on!==false)) && j.wa_status) await sb.rpc('wa_cancel',{p_job:j.id});
+    if(waReset) setTimeout(()=>toast('📲 New mobile number — WhatsApp set back to "Not sent yet". Press 📲 Send to message the new number.',7000),900);
     closeModal();
     if(job && job.id===j.id){ const swapped=!!row.pdf_path; Object.assign(job,row); delete job.markup; updateJobHeader(); if(swapped){ dirty=false; openJob(j.id); } }
     await loadData(); rerenderCurrent(); toast(row.pdf_path?'Sheet replaced — old file removed':'Saved');
@@ -5207,7 +5210,9 @@ function waFirstGo(work){ // when 📲 Send's first message goes: now, or 10am a
 // ── where each job is at ──
 function waState(j,n){
   if(!hasWa || deptOf(j)!=='calls') return null;
-  const st=j.wa_status, s=siteOf(j), past=!!(s&&s.work_date&&s.work_date<todayYmd());
+  const s=siteOf(j), past=!!(s&&s.work_date&&s.work_date<todayYmd());
+  let st=j.wa_status;
+  if((st==='no_wa'||st==='stopped') && waMobileOf(j) && waMobileOf(j)!==j.wa_mobile) st=null;   // number corrected since → send again
   const win=n!=null?waWinFor(j,n):null;
   let r;
   if(st==='stopped') r={k:'stopped', t:'🔕 Replied STOP', c:'grey'};
