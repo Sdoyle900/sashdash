@@ -1447,7 +1447,7 @@ function folderBoxes(list){
   const nh=list.filter(j=>jobOutcome(j)==='not_home'), rb=list.filter(j=>jobOutcome(j)==='rebook');
   const rq=deptRequests(), rqNew=rq.filter(r=>reqStatus(r)==='new'), rqWait=rq.filter(r=>reqStatus(r)==='sent');
   const wl=waFolderLists(list), FL={not_home:nh, rebook:rb, wa_cant:wl.cant, wa_noreply:wl.nr};
-  if(openFolder && openFolder!=='requests' && !(FL[openFolder]||[]).length) openFolder=null;   // Order requests stays open even when empty (➕ Add order)
+  if(openFolder && openFolder!=='requests' && openFolder!=='wa_log' && !(FL[openFolder]||[]).length) openFolder=null;   // Order requests stays open even when empty (➕ Add order)
   const reqBox=`<button class="folder-box f-blue ${openFolder==='requests'?'open':''} ${rqNew.length?'':'empty'}" onclick="toggleFolder('requests')">
       <span class="f-ico">📋</span><span class="f-txt"><b>Order requests</b><small>${rqNew.length?`${rqNew.length} new`:rqWait.length?`${rqWait.length} awaiting approval`:rq.length?'All approved':'Nothing here — click to add an order'}</small></span>
       <span class="f-n">${rqNew.length}</span><span class="f-arrow">${openFolder==='requests'?'▴':'▾'}</span></button>`;
@@ -1456,7 +1456,7 @@ function folderBoxes(list){
   const box=(key,icon,label,arr,cls,sub)=>`<button class="folder-box ${cls} ${openFolder===key?'open':''} ${arr.length?'':'empty'}" onclick="toggleFolder('${key}')">
       <span class="f-ico">${icon}</span><span class="f-txt"><b>${label}</b><small>${arr.length?`${arr.length} job${arr.length===1?'':'s'} ${sub||'to re-book'}`:'Nothing here'}</small></span>
       <span class="f-n">${arr.length}</span><span class="f-arrow">${openFolder===key?'▴':'▾'}</span></button>`;
-  return `<div class="folders">${box('not_home','🚪','Customers not home',nh,'f-red')}${box('rebook','🔁','Re-book unfinished',rb,'f-rb')}${waUI()?box('wa_cant','📲',"Can't make it (WhatsApp)",wl.cant,'f-wa','— ring to re-book')+box('wa_noreply','📵','No reply (WhatsApp)',wl.nr,'f-wa','— ring them'):''}</div>
+  return `<div class="folders">${box('not_home','🚪','Customers not home',nh,'f-red')}${box('rebook','🔁','Re-book unfinished',rb,'f-rb')}${waUI()?box('wa_cant','📲',"Can't make it (WhatsApp)",wl.cant,'f-wa','— ring to re-book')+box('wa_noreply','📵','No reply (WhatsApp)',wl.nr,'f-wa','— ring them')+waLogBox(list):''}</div>
     ${openFolder?`<div class="folder-panel" id="folder-panel"><div class="loading">Loading…</div></div>`:''}`;
 }
 function toggleFolder(k){ openFolder = openFolder===k ? null : k; renderDashboard(); if(openFolder) setTimeout(renderFolderPanel,0); }
@@ -1464,6 +1464,7 @@ async function renderFolderPanel(){
   let el=$('folder-panel'); if(!el||!openFolder) return;
   if(openFolder==='requests') return renderRequestsPanel(el);
   if(openFolder==='wa_cant'||openFolder==='wa_noreply') return waFolderPanel(el, openFolder);
+  if(openFolder==='wa_log') return waLogPanel(el);
   const key=openFolder, list=dJobs().filter(j=>jobOutcome(j)===key)
     .sort((a,b)=>new Date(b.last_activity_at)-new Date(a.last_activity_at));
   // the man's note is on the status entry he added
@@ -5133,11 +5134,11 @@ function togglePw(btn){
 // 🧪 TEST MODE — until WhatsApp goes live: only the Office login (admin) sees the WhatsApp parts,
 // the red "not sent" box is hidden, and 📲 Send only sends to the test mobiles below.
 // To go live: set WA_TEST=false and upload index.html again.
-const WA_TEST=true, WA_TEST_MOBILES=['353860418900'];   // Sean's mobile (on Meta's test list)
+const WA_TEST=false, WA_TEST_MOBILES=['353860418900'];   // live since 21 Oct 2026   // Sean's mobile (on Meta's test list)
 function waUI(){ return hasWa && (!WA_TEST || (isAdmin && !previewing)); }
 const WA_FN='smart-service';
 // 📲 Send to all (whole day) or Send individually (a 📲 Send button on each job box) — remembered on this computer
-let waMode=(()=>{ try{ return localStorage.getItem('waMode')||'one'; }catch(e){ return 'one'; } })();
+let waMode=(()=>{ const d=WA_TEST?'one':'all'; try{ return localStorage.getItem('waMode')||d; }catch(e){ return d; } })();
 function waSetMode(m){ waMode=m; try{ localStorage.setItem('waMode',m); }catch(e){} rerenderCurrent(); }   // the wa-send Edge Function (Supabase named it smart-service)
 const WA_COLS=',wa_on,wa_name,wa_extra,wa_mobile,wa_status,wa_time,wa_for,wa_go,wa_last_in,wa_unread,wa_man_unread'; let hasWa=true;
 let waCfg={morning_jobs:3}, waView='team', waMsgs=[], waQueue=[], waChan=null, waLoadTok=0, waFormCtx=null, waEta=0;
@@ -5525,7 +5526,61 @@ function waSubscribe(){
   waChan=sb.channel('sashdash-wa')
     .on('postgres_changes',{event:'*',schema:'public',table:'wa_messages'}, p=>{ const r=p.new||p.old||{};
       if(job && r.job_id===job.id){ if(waView==='wa') waLoadJob(); else if(r.direction==='in'){ const t=document.querySelector('.wa-tb.wa'); if(t && !t.querySelector('.n')) t.insertAdjacentHTML('beforeend',' <span class="n">new</span>'); } waOmw(); } })
+    .on('postgres_changes',{event:'*',schema:'public',table:'wa_messages'}, ()=>{ if(openFolder==='wa_log'){ clearTimeout(waLogT); waLogT=setTimeout(()=>{ const el=$('folder-panel'); if(el&&openFolder==='wa_log') waLogPanel(el); },800); } })
     .subscribe(); }
+
+// ══ 💬 WhatsApp log — every WhatsApp sent and received, newest first ══
+let waLogF={who:'all', range:'today', q:''}, waLogT=null;
+function waLogBox(list){
+  const n=list.filter(j=>j.wa_unread).length;
+  return `<button class="folder-box f-blue ${openFolder==='wa_log'?'open':''} ${n?'':'empty'}" onclick="toggleFolder('wa_log')">
+      <span class="f-ico">💬</span><span class="f-txt"><b>WhatsApp log</b><small>${n?`${n} job${n===1?'':'s'} with new replies`:'Every WhatsApp sent and received'}</small></span>
+      <span class="f-n" style="${n?'background:var(--indigo)':''}">${n}</span><span class="f-arrow">${openFolder==='wa_log'?'▴':'▾'}</span></button>`; }
+function waLogSet(k,v){ waLogF[k]=v; const el=$('folder-panel'); if(el) waLogPanel(el); }
+function waLogWhat(m){   // → {ic, t, c, line}
+  const q=s=>'“'+esc(String(s||'').slice(0,160))+'”', tk=waTick(m.status).replace(/^ · /,'');
+  if(m.direction==='out'){
+    if(m.status==='failed') return {ic:'⚠', t:'Not delivered', c:'red', line:`${esc(WA_KIND[m.kind]||m.kind)}${m.error?' · '+esc(String(m.error).slice(0,120)):''}`};
+    if(m.kind==='auto_reply') return {ic:'🤖', t:'Auto reply', c:'grey', line:q(m.body)};
+    if(m.kind==='text') return {ic:'✍', t:'Office reply', c:'indigo', line:q(m.body)+(tk?' · '+tk:'')};
+    const lbl={sdw_booking_confirm:'Booking sent', sdw_booking_reminder:'Reminder sent', sdw_visit_reminder:'Reminder sent', sdw_day_before:'Day-before sent', sdw_time_update:'Time update sent', sdw_on_my_way:'On my way sent', sdw_on_the_way:'On my way sent', sdw_office_followup:'Follow-up sent'}[m.kind]||'Sent';
+    return {ic:'📲', t:lbl, c:'blue', line:`${esc(WA_KIND[m.kind]||m.kind)}${tk?' · '+tk:''}`}; }
+  const b=String(m.body||'');
+  if(m.kind!=='text' && /confirm/i.test(b)) return {ic:'🟢', t:'Confirmed', c:'green', line:'Tapped “Confirm”'};
+  if(m.kind!=='text' && /can.?t make/i.test(b)) return {ic:'🔴', t:"Can't make it", c:'red', line:'Tapped “I can\'t make it”'};
+  if(/^\s*(stop|unsubscribe|stop messages)\s*[.!]*\s*$/i.test(b)) return {ic:'🔕', t:'STOP', c:'grey', line:'Replied “'+esc(b.trim())+'” — no more WhatsApps to this number'};
+  return {ic:'💬', t:'Replied', c:'indigo', line:q(b)}; }
+async function waLogPanel(el){
+  const since={today:(()=>{ const d=new Date(); d.setHours(0,0,0,0); return d; })(), week:addDays(new Date(),-7), month:addDays(new Date(),-30)}[waLogF.range];
+  const { data, error }=await sb.from('wa_messages').select('id,job_id,phone,direction,kind,body,status,error,author_id,created_at').gte('created_at',since.toISOString()).order('created_at',{ascending:false}).limit(500);
+  if(openFolder!=='wa_log') return; el=$('folder-panel'); if(!el) return;
+  if(error){ el.innerHTML=`<div class="loading">Couldn't load the log: ${esc(error.message)}</div>`; return; }
+  const all=(data||[]).filter(m=>m.created_at>=since.toISOString()).sort((a,b)=>a.created_at<b.created_at?1:-1);
+  // a reply is "new" until someone opens the job's WhatsApp tab (or the office answers after it)
+  const lastOffice={}; for(const m of all) if(m.direction==='out' && m.author_id && !lastOffice[m.job_id]) lastOffice[m.job_id]=m.created_at;
+  const isNew=m=>{ if(m.direction!=='in') return false; const j=jobs.find(x=>x.id===m.job_id); return !!(j&&j.wa_unread&&(!lastOffice[m.job_id]||m.created_at>lastOffice[m.job_id])); };
+  const nIn=all.filter(m=>m.direction==='in').length, nBad=all.filter(m=>m.status==='failed').length;
+  const q=waLogF.q.trim().toLowerCase(), qd=q.replace(/[^\d]/g,'');
+  const rows=all.filter(m=> waLogF.who==='in'?m.direction==='in' : waLogF.who==='out'?m.direction==='out' : waLogF.who==='bad'?m.status==='failed' : true)
+    .filter(m=>{ if(!q) return true; const j=jobs.find(x=>x.id===m.job_id)||{}; return (waCustName(j)||'').toLowerCase().includes(q) || (qd.length>=3 && (String(m.phone).includes(qd) || ('0'+String(m.phone).slice(3)).includes(qd))); });
+  const rng=m=>{ const d=new Date(m.created_at), t=d.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'});
+    if(d.toDateString()===new Date().toDateString()) return t; if(d.toDateString()===addDays(new Date(),-1).toDateString()) return 'Yesterday '+t; return esc(waShort(d))+' '+t; };
+  const segBtn=(k,v,l)=>`<button class="${waLogF[k]===v?'on':''}" onclick="waLogSet('${k}','${v}')">${l}</button>`;
+  el.innerHTML=`<div class="fp-head">💬 WhatsApp log <span>— every WhatsApp sent and received, newest first. Red rows are replies nobody has opened yet.</span></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 2px 10px">
+      <div class="seg">${segBtn('who','all','All')}${segBtn('who','in',`Customer replies (${nIn})`)}${segBtn('who','out','Sent by SashDash')}${segBtn('who','bad',`Problems (${nBad})`)}</div>
+      <div class="seg">${segBtn('range','today','Today')}${segBtn('range','week','Last 7 days')}${segBtn('range','month','Last 30 days')}</div>
+      <input id="wa-log-q" placeholder="🔍 Search name or number" value="${esc(waLogF.q)}" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font:inherit;font-size:13px;min-width:200px" oninput="waLogF.q=this.value;clearTimeout(waLogT);waLogT=setTimeout(()=>{const e=$('folder-panel');if(e)waLogPanel(e).then(()=>{const i=$('wa-log-q');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}})},300)">
+      <span style="margin-left:auto;font-size:12px;color:var(--slate)">Updates live as messages come in</span></div>
+    ${rows.length?`<div class="s-table-wrap"><table class="s-table"><thead><tr><th>When</th><th>Customer</th><th>Service man · day</th><th>What happened</th><th></th></tr></thead><tbody>
+    ${rows.map(m=>{ const j=jobs.find(x=>x.id===m.job_id), st=j&&siteOf(j), t=j&&prof(j.serviceman_id), w=waLogWhat(m), nw=isNew(m);
+      return `<tr style="${nw?'background:#fef2f2':''}"><td style="white-space:nowrap"><b>${rng(m)}</b>${nw?'<div><span class="tag red">New</span></div>':''}</td>
+        <td class="s-title">${j?esc(waCustName(j)||j.title):'<span class="s-sub">Not linked to a job</span>'}<div class="s-sub">${esc(waShowNum(m.phone))}</div></td>
+        <td>${t?esc(firstName(t.full_name)):'—'}${st&&st.work_date?`<div class="s-sub">${esc(dayLabel(st.work_date))}</div>`:''}</td>
+        <td><span class="wa-pill wa-${w.c}">${w.ic} ${esc(w.t)}</span><div class="s-sub" style="margin-top:4px;max-width:380px">${m.direction==='in'?'⬅ from customer':'➡ from SashDash'} · ${w.line}</div></td>
+        <td class="fp-act">${j&&m.direction==='in'&&w.ic==='💬'?`<button class="btn-primary" onclick="waLogOpen('${j.id}',true)">💬 Reply</button>`:''}${j?`<button class="btn-outline" onclick="waLogOpen('${j.id}',false)">Open</button>`:''}</td></tr>`; }).join('')}
+    </tbody></table></div>`:`<div class="empty" style="margin:0">No WhatsApp messages ${waLogF.range==='today'?'today':waLogF.range==='week'?'in the last 7 days':'in the last 30 days'}${waLogF.who!=='all'||q?' that match':''}.</div>`}`; }
+function waLogOpen(id, wa){ if(!jobs.find(x=>x.id===id)) return toast('That job is no longer in SashDash.'); goToJob(id); setTimeout(()=>{ setJvTab('chat'); waSetView('wa'); if(wa){ setTimeout(()=>{ const t=$('wa-input'); if(t) t.focus(); },600); } },500); }
 </script>
 </body>
 </html>
