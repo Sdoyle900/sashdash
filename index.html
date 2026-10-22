@@ -636,6 +636,23 @@
     .pk-tabs{display:none;background:#fff;border-bottom:1px solid var(--border);flex:none}.pk-tabs button{flex:1;border:none;background:none;padding:11px;font:inherit;font-weight:700;color:var(--slate);border-bottom:3px solid transparent}.pk-tabs button.on{color:#4f46e5;border-bottom-color:#4f46e5}
     @media (max-width:900px){ .pk-tabs{display:flex} .pk-body{flex-direction:column} .pk-body .hc-sheet,.pk-body .hc-chat{flex:1;min-height:0;width:auto}
       .pk-body[data-tab="sheet"] .hc-chat{display:none} .pk-body[data-tab="chat"] .hc-sheet{display:none} .peek-view .pk-done{padding:9px 14px} .pk-l{display:none} .jv-show .lbl{display:none} }
+    .oc-tabs{display:flex;align-items:center;gap:6px;margin:14px 0 16px;flex-wrap:wrap}
+    .oc-tabs button{border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:8px 16px;font:inherit;font-weight:700;font-size:14px;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+    .oc-tabs button.on{background:var(--navy,#0f172a);border-color:var(--navy,#0f172a);color:#fff}
+    .oc-n{background:#dc2626;color:#fff;border-radius:999px;font-size:11.5px;min-width:19px;height:19px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center}
+    .oc-with{font-size:12.5px;color:#64748b;margin-left:6px}
+    .oc-wrap{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 290px);min-height:380px;max-width:860px}
+    .oc-list{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#f8fafc}
+    .oc-list .msg.oc-off:not(.me) .bub{background:#eef2ff;border-color:#c7d2fe}
+    .oc-day{text-align:center;margin:6px 0}.oc-day span{background:#e2e8f0;color:#475569;font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 10px}
+    .oc-empty{margin:auto;text-align:center;color:#64748b;font-size:26px;line-height:1.5}.oc-empty span{font-size:13.5px}
+    .oc-ro{flex:1;text-align:center;color:#64748b;font-size:13px;padding:8px}
+    .oc-pill{position:absolute;top:10px;right:10px;background:#dc2626;color:#fff;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 8px}
+    .oc-chip{background:#dc2626;color:#fff;font-size:10.5px;font-weight:800;border-radius:999px;padding:1px 6px;margin-left:4px}
+    @media (max-width:900px){ .oc-wrap{height:calc(100vh - 230px);border-radius:12px} .oc-with{width:100%;margin:2px 0 0} }
+    .oc-older{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:6px}.oc-older span{font-size:12px;color:#94a3b8}.oc-older .btn-outline{font-size:13px;padding:6px 12px}
+    .oc-arc .bub{opacity:.82;border-style:dashed !important}
+    .oc-split span{background:#c7d2fe;color:#3730a3}
     @media (max-width:900px){
       .chat-pane{width:auto;border-left:none}
       .jv-tabs{display:flex}
@@ -1051,7 +1068,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-17-1100';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-22-1100';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1181,6 +1198,7 @@ async function startApp(user){
   if(isOffice) showDashboard(); else openPortal(me.id);
   subscribeRealtime();
   promptWatch();
+  try{ ocWatch(); }catch(e){}
   initNotifications();
   openJobFromLink();
   await ensureWeeks();
@@ -1261,6 +1279,9 @@ function openJobFromLink(url){
     if(rq && isOffice){ if(!url) history.replaceState(null,'',location.pathname);
       const r=orderReqs.find(x=>x.id===rq); if(r && r.department!==dept){ dept=r.department; renderDeptBar(); }
       openFolder='requests'; if(job){ dirty=false; closeJob(); } showDashboard(); setTimeout(renderFolderPanel,0); return; }
+    const oc=u.searchParams.get('ochat');
+    if(oc && hasOc){ if(!url) history.replaceState(null,'',location.pathname); if(job){ dirty=false; closeJob(); }
+      const t=isOffice?oc:me.id; if(isOffice && !techs().some(x=>x.id===t)) return; ocView='chat'; openPortal(t); return; }
     const id=u.searchParams.get('job'); if(!id) return;
     if(!url) history.replaceState(null,'',location.pathname);
     if(jobs.find(j=>j.id===id)) goToJob(id); else toast('That job is no longer available.');
@@ -1285,6 +1306,7 @@ async function loadData(){
   { const r=await sb.from('order_requests').select('*').order('created_at',{ascending:false}).limit(300); orderReqs = r.error ? [] : (r.data||[]); }
   { const r=await sb.from('job_shares').select('*'); hasShares=!r.error; shares = r.error ? [] : (r.data||[]); }
   await loadHist();
+  try{ await ocLoadSummary(); }catch(e){ hasOc=false; }
   if(hasWa) await waLoadSettings();
   await loadBackups(); if(hasBk && bkAccount() && !previewing){ bkDev=await bkDevice(); bkLocalLast=await kvGet('bkLast'); }
   if(previewing){   // show only what that person's own login is allowed to see
@@ -1409,7 +1431,7 @@ function renderDashboardFor(jobs, sites, allJobs){
     return `<div class="tech-card" style="--c:${esc(t.colour)}" onclick="openPortal('${t.id}')">
       ${nNew?`<span class="new-pill">${nNew} new</span>`:''}
       <div class="row" style="flex-wrap:nowrap"><div class="avatar">${esc(initials(t.full_name))}</div>
-        <div style="min-width:0"><div class="name">${esc(t.full_name||'Unnamed')}</div><div class="phone">${t.phone?esc(t.phone):'&nbsp;'}</div></div></div>
+        <div style="min-width:0"><div class="name">${esc(t.full_name||'Unnamed')}<span class="oc-chip ${ocUnread(t.id)?'':'hidden'}" data-oc-tech="${t.id}">💬 ${ocUnread(t.id)}</span></div><div class="phone">${t.phone?esc(t.phone):'&nbsp;'}</div></div></div>
       <div class="tech-nums">
         ${dept==='calls'?`<div><b>${tj.length}</b><span>Jobs</span></div>`:`<div><b>${sites.filter(s=>s.serviceman_id===t.id).length}</b><span>${D.many}</span></div>`}
         <div><b>${tj.filter(j=>!j.completed).length}</b><span>Open</span></div>
@@ -2207,13 +2229,15 @@ function renderPortal(){
   let html='';
   if(isOffice){
     html+=`<div class="crumbs">${techs().map(x=>{const n=dJobs().filter(j=>j.serviceman_id===x.id&&j.admin_unread).length;
-      return `<button class="team-chip ${x.id===currentTechId?'active':''}" onclick="openPortal('${x.id}')"><span class="avatar sm" style="--c:${esc(x.colour)}">${esc(initials(x.full_name))}</span>${esc(firstName(x.full_name))}${n?'<span class="dot"></span>':''}</button>`;}).join('')}</div>`;
+      return `<button class="team-chip ${x.id===currentTechId?'active':''}" onclick="openPortal('${x.id}')"><span class="avatar sm" style="--c:${esc(x.colour)}">${esc(initials(x.full_name))}</span>${esc(firstName(x.full_name))}${n?'<span class="dot"></span>':''}<span class="oc-chip ${ocUnread(x.id)?'':'hidden'}" data-oc-tech="${x.id}">💬 ${ocUnread(x.id)}</span></button>`;}).join('')}</div>`;
     html+=`<div class="row"><div><div class="page-title">${esc(t.full_name)} · ${D.label}</div><div class="page-sub">${tJobs.filter(j=>!j.completed).length} open · ${tJobs.filter(j=>j.completed).length} completed${t.phone?' · '+esc(t.phone):''}</div></div></div>`+shareStrip(currentTechId);
   } else {
     const open=tJobs.filter(j=>!j.completed).length;
     html+=`<div class="page-title">Hi ${esc(firstName(me.full_name))} 👋</div><div class="page-sub">${D.label}: ${open} open job${open===1?'':'s'}${dept==='calls'?'':` across ${mySites.length} ${mySites.length===1?D.one:D.many.toLowerCase()}`}${cJobs.length?` · 🤝 covering ${cJobs.filter(j=>!j.completed).length} for ${[...new Set(cJobs.map(j=>firstName(prof(j.serviceman_id).full_name)))].join(' & ')}`:''}</div>`;
   }
 
+  if(hasOc){ html+=ocTabs(currentTechId);
+    if(ocView==='chat'){ ocWasFocused=!!(document.activeElement&&document.activeElement.id==='oc-input'); html+=ocPanel(currentTechId); $('view-portal').innerHTML=html; ocAfterRender(); if(!ocLoaded.has(currentTechId)) ocOpen(currentTechId); return; } }
   if(dept==='calls'){
     const wi=weeks.indexOf(calWeek);
     html+=`<div class="week-bar">
@@ -3447,6 +3471,7 @@ async function runBackup(opts={}){
       done++; $('bk-bar') && ($('bk-bar').style.width=Math.round(done/todo.length*100)+'%'); $('bk-pct') && ($('bk-pct').textContent=Math.round(done/todo.length*100)+'%');
     }
     for(const j of mark) saved.push({job_id:j.id, account:a, version:jobVersion(j), device_id:bkDev.id, backed_at:new Date().toISOString()});
+    let ocRes=null; try{ ocRes=await ocBackupTo(dir); }catch(e){ console.warn('office chat backup',e); }
     const at=new Date().toISOString(); idx.updated_at=at; idx.account=idx.account||a;
     await bkWriteFile(dir,'index-previous.json', oldText); await bkWriteFile(dir,'index.json', JSON.stringify(idx));
     const calls=Object.values(idx.calls), info={sashdash:'archive', account:a, device_name:bkDev.name||(a==='office'?'Office PC':'Service PC'), last_at:at, calls:calls.filter(e=>e.dept==='calls').length, sites:calls.filter(e=>e.dept==='sites').length};
@@ -3460,13 +3485,13 @@ async function runBackup(opts={}){
     bkLocalLast=at; await kvSet('bkLast',at); await loadBackups();
     const {ready, waiting, need}=bkClearable(), miss=need.filter(x=>x!==a && waiting.some(j=>!bkHas(j,x)));
     if(auto){ show(`<div class="bk-a-h">✅ <b>Automatic backup done</b><button class="bk-a-x" onclick="bkPopClose()" aria-label="Close">✕</button></div>
-      <div class="bk-a-s"><b>${todo.length} job${todo.length===1?'':'s'}</b> saved to 📁 ${esc(dir.name)} · ${esc(bkWhen(at))}<br>${nNew} new · ${nUpd} brought up to date · nothing deleted</div>
+      <div class="bk-a-s"><b>${todo.length} job${todo.length===1?'':'s'}</b> saved to 📁 ${esc(dir.name)} · ${esc(bkWhen(at))}<br>${nNew} new · ${nUpd} brought up to date · nothing deleted${ocBkLine(ocRes)}</div>
       ${ready.length?`<div class="bk-a-s" style="color:#0f172a">🧹 <b>${ready.length} All done job${ready.length===1?'':'s'}</b> ${ready.length===1?'is':'are'} now on ${need.length>1?'both backups':'the backup'} and can be cleared.</div><div class="bk-a-b"><button class="btn-outline" onclick="bkPopClose()">Later</button><button class="btn-primary" onclick="bkPopClose();bkClearNow()">🧹 Clear ${ready.length}</button></div>`
         :waiting.length&&miss.length?`<div class="bk-a-s">⏳ ${waiting.length} job${waiting.length===1?'':'s'} will be cleared once the <b>${miss.map(bkSideName).join(' and ')} PC</b> has backed up too.</div>`:''}`, 'done');
       if(!ready.length) setTimeout(()=>{ const p=$('bk-auto'); if(p && p.classList.contains('done')) bkPopClose(); }, 20000);
       rerenderCurrent(); return; }
     show(`<div style="text-align:center;font-size:40px">✅</div><h2 style="text-align:center">Backed up — ${esc(bkWhen(at))}</h2>
-      <div class="sub" style="text-align:center"><b>${todo.length} job${todo.length===1?'':'s'}</b> saved to ${esc(dir.name)}${a==='office'&&todo.length?` (${pc} Private Calls · ${st} Sites)`:''}<br>${nNew} new folder${nNew===1?'':'s'} · ${nUpd} brought up to date · nothing deleted</div>
+      <div class="sub" style="text-align:center"><b>${todo.length} job${todo.length===1?'':'s'}</b> saved to ${esc(dir.name)}${a==='office'&&todo.length?` (${pc} Private Calls · ${st} Sites)`:''}<br>${nNew} new folder${nNew===1?'':'s'} · ${nUpd} brought up to date · nothing deleted${ocBkLine(ocRes)}</div>
       ${ready.length?`<div class="bk-box">🧹 <b>${ready.length} All done job${ready.length===1?'':'s'}</b> ${ready.length===1?'is':'are'} now on ${need.length>1?'<b>both</b> backups':'the backup'} and older than 3 weeks. <b>Clear ${ready.length===1?'it':'them'} from SashDash now?</b> Re-book and Not home jobs stay until they're rescheduled.</div>`:''}
       ${waiting.length&&miss.length?`<div class="bk-box">⏳ <b>${waiting.length} All done job${waiting.length===1?'':'s'}</b> ${waiting.length===1?'is':'are'} ready to clear, but the <b>${miss.map(bkSideName).join(' and ')} PC</b> hasn't backed ${waiting.length===1?'it':'them'} up yet (last backup <b>${esc(bkWhen((bkLastFor(miss[0])||{}).at))}</b>). They'll be cleared once it has.</div>`:''}
       <div class="modal-actions" style="justify-content:center">${ready.length?`<button class="btn-outline" onclick="closeModal()">Later</button><button class="btn-primary" onclick="bkClearNow()">🧹 Clear ${ready.length} job${ready.length===1?'':'s'}</button>`:'<button class="btn-primary" onclick="closeModal()">Done</button>'}</div>`);
@@ -3744,6 +3769,157 @@ async function peekSend(){ const ta=$('pk-input'), body=(ta.value||'').trim(); i
   const j=jobs.find(x=>x.id===peekJobId); if(j) peekLoad(j); scheduleReload(); }
 async function peekClose(){ const ov=$('peek-view'); if(ov){ ov.classList.add('hidden'); ov.innerHTML=''; }
   if(peekPrompt) sb.from('screen_prompts').update({closed_at:new Date().toISOString()}).eq('id',peekPrompt).then(()=>{}); peekPrompt=null; peekJobId=null; }
+
+// ── 💬 Office chat — one thread per service man, between him and the office side (Office + Service dept) ──
+let hasOc=true, ocView='jobs';                       // the man's page: 📅 Jobs | 💬 Office chat
+const ocMsgs=new Map(), ocLoaded=new Set(), ocReads=new Map(), ocDraft={};   // techId → messages · techId → my last read
+let ocSummary=[], ocChan=null, ocSending=false;
+const ocIsOfficeSide=uid=>{ const p=prof(uid); return p.role==='admin'||p.role==='service_office'; };
+async function ocLoadSummary(){
+  if(!hasOc || !me) return;
+  const since=new Date(Date.now()-60*864e5).toISOString();
+  const [m, r]=await Promise.all([ sb.from('office_chat').select('id,tech_id,author_id,created_at').gte('created_at',since).order('created_at',{ascending:false}).limit(1000),
+    sb.from('office_chat_reads').select('tech_id,read_at').eq('user_id', realMe.id) ]);
+  if(m.error || r.error){ hasOc=false; return; }
+  ocSummary=m.data||[]; ocReads.clear(); (r.data||[]).forEach(x=>ocReads.set(x.tech_id, x.read_at));
+}
+function ocUnread(techId){ if(!hasOc) return 0; const rd=ocReads.get(techId)||'1970';
+  return ocSummary.filter(x=>x.tech_id===techId && x.author_id!==realMe.id && x.created_at>rd).length; }
+async function ocLoadThread(techId, force){
+  if(ocLoaded.has(techId) && !force) return ocMsgs.get(techId)||[];
+  const { data, error }=await sb.from('office_chat').select('*').eq('tech_id',techId).order('created_at',{ascending:false}).limit(300);
+  if(error){ toast('Office chat not available: '+error.message,6000); return []; }
+  ocMsgs.set(techId, (data||[]).reverse()); ocLoaded.add(techId); return ocMsgs.get(techId);
+}
+async function ocMarkRead(techId){
+  if(previewing || !hasOc) return; const at=new Date().toISOString(); ocReads.set(techId, at);
+  await sb.from('office_chat_reads').upsert({user_id:realMe.id, tech_id:techId, read_at:at},{onConflict:'user_id,tech_id'});
+}
+function ocTabs(techId){ if(!hasOc) return ''; const n=ocUnread(techId), t=prof(techId);
+  return `<div class="oc-tabs"><button class="${ocView==='jobs'?'on':''}" onclick="ocSetView('jobs')">📅 Jobs</button><button class="${ocView==='chat'?'on':''}" onclick="ocSetView('chat')">💬 Office chat${n?`<span class="oc-n">${n}</span>`:''}</button>
+    ${ocView==='chat'?`<span class="oc-with">${isOffice?`Direct with <b>${esc(firstName(t.full_name))}</b> — seen by the office and the service department`:'Direct with the office and the service department'}</span>`:''}</div>`; }
+function ocSetView(v){ ocView=v; if(job){ closeJob(); } renderPortal(); window.scrollTo(0,0); if(v==='chat') ocOpen(currentTechId); }
+function ocDay(iso){ const d=new Date(iso), t=new Date(); const same=(a,b)=>a.toDateString()===b.toDateString();
+  if(same(d,t)) return 'Today'; const y=new Date(t); y.setDate(t.getDate()-1); if(same(d,y)) return 'Yesterday';
+  return d.toLocaleDateString('en-IE',{weekday:'long',day:'numeric',month:'long'}); }
+function ocBubble(c){
+  const officeViewer=isOffice, a=prof(c.author_id), offc=ocIsOfficeSide(c.author_id), mine= officeViewer ? offc : c.author_id===realMe.id;
+  const who= c.author_id===realMe.id ? '' : `${esc(firstName(a.full_name))}${roleLabel(a.role)?' · '+roleLabel(a.role):''}`;
+  const ph=c._arc ? (c._url?`<div class="photo-wrap loaded"><img class="chat-photo" src="${c._url}" alt="Photo" onclick="window.open(this.src)"></div>`:(c.photo_path?'<div class="cap">📷 (photo)</div>':''))
+    : c.photo_path?`<div class="photo-wrap"><img class="chat-photo" data-path="${esc(c.photo_path)}" alt="Photo" onclick="openLightbox(this)"><span class="ph-load">📷</span></div>`:'';
+  return `<div class="msg ${mine?'me':''} ${offc?'oc-off':''} ${c._arc?'oc-arc':''}" data-id="${esc(c.id)}">${who?`<div class="who">${who}</div>`:''}<div class="bub ${c.photo_path?'has-photo':''}">${ph}${c.body?`<div class="cap">${esc(c.body)}</div>`:''}</div><div class="when">${new Date(c.created_at).toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})}</div></div>`; }
+function ocListHtml(list){ let last='', h='';
+  const arc=ocArc.get(currentTechId)||[];
+  if(isOffice && !previewing && typeof hasBk!=='undefined' && hasBk && canPickFolder) h+= arc.length
+    ? `<div class="oc-older">📁 ${arc.length} older message${arc.length===1?'':'s'} from this computer's backup (read-only)</div>`
+    : `<div class="oc-older"><button class="btn-outline" onclick="ocShowOlder('${currentTechId}')">📁 Show older messages from this computer's backup</button><span>Messages stay on SashDash for 4 months, then they're kept in the office backup.</span></div>`;
+  else if(!isOffice) h+=`<div class="oc-older"><span>Messages are kept for 4 months.</span></div>`;
+  for(const c of arc){ const d=ocDay(c.created_at); if(d!==last){ h+=`<div class="oc-day"><span>${esc(d)}</span></div>`; last=d; } h+=ocBubble(c); }
+  if(arc.length) h+=`<div class="oc-day oc-split"><span>On SashDash now</span></div>`;
+  if(!list.length && arc.length) return h;
+  for(const c of list){ const d=ocDay(c.created_at); if(d!==last){ h+=`<div class="oc-day"><span>${esc(d)}</span></div>`; last=d; } h+=ocBubble(c); }
+  return list.length ? h : h+`<div class="oc-empty">💬<br>No messages yet.<br><span>${isOffice?`Anything you send here goes straight to ${esc(firstName(prof(currentTechId).full_name))}'s phone.`:'Anything you send here goes straight to the office and the service department.'}</span></div>`; }
+function ocPanel(techId){
+  const list=ocMsgs.get(techId);
+  return `<div class="oc-wrap"><div class="oc-list" id="oc-list">${list?ocListHtml(list):'<div class="oc-empty">Loading…</div>'}</div>
+    <div class="composer oc-comp">${previewing?`<div class="oc-ro">👁 Viewing as — you can read but not send</div>`:`<label class="icon-btn" title="Send a photo">📷<input type="file" accept="image/*" multiple hidden onchange="ocSendPhotos(this.files);this.value=''"></label>
+      <textarea id="oc-input" rows="1" placeholder="${isOffice?`Message ${esc(firstName(prof(techId).full_name))}…`:'Message the office…'}" oninput="autoGrow(this);ocDraft['${techId}']=this.value" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&window.innerWidth>900){event.preventDefault();ocSend();}">${esc(ocDraft[techId]||'')}</textarea>
+      <button class="send" onclick="ocSend()" aria-label="Send">➤</button>`}</div></div>`; }
+function ocScroll(){ const l=$('oc-list'); if(l){ l.scrollTop=l.scrollHeight; l.querySelectorAll('img.chat-photo:not([src])').forEach(img=>ocLoadPhoto(img)); } }
+async function ocLoadPhoto(img){ try{ img.onload=()=>{ img.parentElement.classList.add('loaded'); const l=$('oc-list'); if(l) l.scrollTop=l.scrollHeight; }; img.src=await photoUrl(img.dataset.path); }catch(e){ const s=img.parentElement.querySelector('.ph-load'); if(s) s.textContent='⚠️ Photo unavailable'; } }
+async function ocOpen(techId){ await ocLoadThread(techId); if(ocView!=='chat'||currentTechId!==techId) return;
+  const l=$('oc-list'); if(l) l.innerHTML=ocListHtml(ocMsgs.get(techId)||[]); ocScroll(); await ocMarkRead(techId); ocBadges(); }
+// keep the thread + half-typed message when the page redraws
+function ocAfterRender(){ if(ocView!=='chat') return; const ta=$('oc-input'); if(ta){ autoGrow(ta); if(ocWasFocused){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } } ocScroll(); }
+let ocWasFocused=false;
+function ocBadges(){ document.querySelectorAll('[data-oc-tech]').forEach(el=>{ const n=ocUnread(el.dataset.ocTech); el.textContent=n?('💬 '+n):''; el.classList.toggle('hidden',!n); });
+  const tab=document.querySelector('.oc-tabs button:nth-child(2)'); if(tab && currentTechId){ const n=ocUnread(currentTechId); tab.innerHTML='💬 Office chat'+(n?`<span class="oc-n">${n}</span>`:''); } }
+async function ocSend(){ if(blockPreview() || ocSending) return; const ta=$('oc-input'), body=(ta&&ta.value||'').trim(), techId=currentTechId; if(!body||!techId) return;
+  ocSending=true; ta.value=''; ocDraft[techId]=''; autoGrow(ta);
+  const { data, error }=await sb.from('office_chat').insert({tech_id:techId, author_id:realMe.id, body}).select().single(); ocSending=false;
+  if(error){ ta.value=body; ocDraft[techId]=body; return toast('Not sent: '+error.message,5000); }
+  ocAdd(data); ta.focus(); }
+async function ocSendPhotos(fl){ if(blockPreview()) return; const techId=currentTechId; const files=Array.from(fl||[]).filter(f=>f.type.startsWith('image/')||/\.(jpe?g|png|heic|webp)$/i.test(f.name)); if(!files.length) return;
+  const ta=$('oc-input'); let caption=(ta&&ta.value||'').trim(); if(ta){ ta.value=''; ocDraft[techId]=''; }
+  for(const f of files){ try{ const im=await imageToJpeg(f,1600), path=`officechat/${techId}/${uuid()}.jpg`;
+      const up=await sb.storage.from(BUCKET).upload(path, new Blob([im.bytes],{type:'image/jpeg'}),{contentType:'image/jpeg'}); if(up.error) throw up.error;
+      const { data, error }=await sb.from('office_chat').insert({tech_id:techId, author_id:realMe.id, body:caption||null, photo_path:path, photo_bytes:im.bytes.length}).select().single();
+      if(error){ await sb.storage.from(BUCKET).remove([path]); throw error; } caption=''; ocAdd(data);
+    }catch(e){ toast('Photo not sent: '+(e.message||e),6000); } } }
+function ocAdd(c){ const list=ocMsgs.get(c.tech_id); if(list && !list.some(x=>x.id===c.id)) list.push(c);
+  if(!ocSummary.some(x=>x.id===c.id)) ocSummary.unshift({id:c.id, tech_id:c.tech_id, author_id:c.author_id, created_at:c.created_at});
+  if(ocView==='chat' && currentTechId===c.tech_id && $('oc-list') && !$('view-portal').classList.contains('hidden')){
+    const l=$('oc-list'); l.innerHTML=ocListHtml(ocMsgs.get(c.tech_id)||[c]); ocScroll();
+    if(document.visibilityState==='visible') ocMarkRead(c.tech_id); }
+  ocBadges(); }
+function ocWatch(){
+  if(!hasOc || ocChan) return;
+  ocChan=sb.channel('sashdash-officechat').on('postgres_changes',{event:'INSERT',schema:'public',table:'office_chat'}, p=>{ const c=p.new; if(!c) return;
+      if(!isOffice && c.tech_id!==realMe.id) return;
+      if(c.author_id!==realMe.id && !(ocView==='chat'&&currentTechId===c.tech_id) && !isOffice) toast(`💬 ${firstName(prof(c.author_id).full_name)}: ${(c.body||'📷 Photo').slice(0,60)}`,5000);
+      ocAdd(c); }).subscribe();
+  setInterval(async()=>{ if(document.visibilityState!=='visible') return; await ocLoadSummary();
+    if(ocView==='chat' && currentTechId){ const before=(ocMsgs.get(currentTechId)||[]).length; await ocLoadThread(currentTechId,true); if((ocMsgs.get(currentTechId)||[]).length!==before){ const l=$('oc-list'); if(l){ l.innerHTML=ocListHtml(ocMsgs.get(currentTechId)); ocScroll(); ocMarkRead(currentTechId); } } }
+    ocBadges(); }, 20000);
+}
+
+// ── 💬 Office chat in the office backup: saved by month, cleared from the server after 4 months ──
+const OC_KEEP_MONTHS=4;
+function ocCutoff(){ const d=new Date(); d.setMonth(d.getMonth()-OC_KEEP_MONTHS); return d.toISOString(); }
+const ocMonthKey=iso=>iso.slice(0,7);
+const ocMonthName=k=>new Date(k+'-15T12:00:00').toLocaleDateString('en-IE',{month:'long',year:'numeric'});
+function ocManFolder(techId){ return `Office chat/${safeName(prof(techId).full_name||'Unknown')}`; }
+async function ocMonthHtml(techId, k, msgs, photoNames){
+  const rows=msgs.map(c=>{ const a=prof(c.author_id), ph=photoNames[c.id]?`<br><a href="photos/${photoNames[c.id]}"><img src="photos/${photoNames[c.id]}" style="max-width:260px;border-radius:8px;margin-top:4px"></a>`:'';
+    return `<tr><td style="white-space:nowrap;color:#64748b;vertical-align:top;padding:6px 10px">${esc(new Date(c.created_at).toLocaleString('en-IE',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}))}</td><td style="vertical-align:top;padding:6px 10px"><b>${esc(a.full_name||'')}</b>${roleLabel(a.role)?' · '+roleLabel(a.role):''}<br>${esc(c.body||'')}${ph}</td></tr>`; }).join('');
+  return `<!doctype html><meta charset="utf-8"><title>Office chat — ${esc(prof(techId).full_name)} — ${esc(ocMonthName(k))}</title><body style="font-family:Segoe UI,Arial,sans-serif;max-width:900px;margin:24px auto"><h2>💬 Office chat — ${esc(prof(techId).full_name)}</h2><p>${esc(ocMonthName(k))} · ${msgs.length} message${msgs.length===1?'':'s'}</p><table style="border-collapse:collapse;font-size:14px">${rows}</table></body>`; }
+// called by 💾 Back up (office PC only). Saves every month that changed, then clears messages older than 4 months that are safely saved.
+async function ocBackupTo(dir){
+  if(!hasOc || bkAccount()!=='office') return null;
+  const { data, error }=await sb.from('office_chat').select('*').order('created_at');
+  if(error) return null;
+  const idx=JSON.parse(await bkReadText(dir,'office-chat-index.json')||'{}'); let saved=0;
+  const by=new Map(); for(const c of data||[]){ const key=c.tech_id+'|'+ocMonthKey(c.created_at); if(!by.has(key)) by.set(key,[]); by.get(key).push(c); }
+  for(const [key, msgs] of by){
+    const [techId, k]=key.split('|'), base=`${ocManFolder(techId)}/${k} ${ocMonthName(k)}`;
+    const prevDisk=JSON.parse(await bkReadText(await bkDirAt(dir,base)||dir, 'chat.json')||'null');
+    const old=(prevDisk&&prevDisk.tech_id===techId)?prevDisk.messages:[];      // keep anything already cleared from the server
+    const all=[...old.filter(o=>!msgs.some(m=>m.id===o.id)), ...msgs].sort((x,y)=>x.created_at<y.created_at?-1:1);
+    const sig=all.length+'|'+all[all.length-1].id;
+    if(idx[key]===sig) continue;
+    const photoNames={}; let n=0;
+    for(const c of all){ if(!c.photo_path) continue; const fn=`photo-${String(++n).padStart(3,'0')}.jpg`; photoNames[c.id]=fn;
+      if(msgs.some(m=>m.id===c.id)){ try{ const { data:b }=await sb.storage.from(BUCKET).download(c.photo_path); if(b) await bkWriteFile(dir, `${base}/photos/${fn}`, await b.arrayBuffer()); }catch(e){} } }
+    const people={}; all.forEach(c=>{ const p=prof(c.author_id); people[c.author_id]={name:p.full_name||'', role:p.role||''}; });
+    await bkWriteFile(dir, `${base}/chat.json`, JSON.stringify({sashdash:'office-chat', tech_id:techId, man:prof(techId).full_name, month:k, people, messages:all.map(c=>({...c, photo_file:photoNames[c.id]||null}))}));
+    await bkWriteFile(dir, `${base}/chat.html`, await ocMonthHtml(techId, k, all, photoNames));
+    idx[key]=sig; saved+=msgs.length;
+  }
+  await bkWriteFile(dir,'office-chat-index.json', JSON.stringify(idx));
+  // clear from the server: older than 4 months AND in the backup just written
+  const cut=ocCutoff(), old=(data||[]).filter(c=>c.created_at<cut && idx[c.tech_id+'|'+ocMonthKey(c.created_at)]);
+  if(old.length){ const ph=old.map(c=>c.photo_path).filter(Boolean);
+    for(let i=0;i<ph.length;i+=100) await sb.storage.from(BUCKET).remove(ph.slice(i,i+100));
+    for(let i=0;i<old.length;i+=100){ const r=await sb.from('office_chat').delete().in('id',old.slice(i,i+100).map(c=>c.id)); if(r.error) throw r.error; }
+    ocMsgs.clear(); ocLoaded.clear(); await ocLoadSummary(); }
+  return {saved, cleared:old.length, total:(data||[]).length};
+}
+function ocBkLine(r){ if(!r) return ''; return `<br>💬 Office chat: ${r.saved?`${r.saved} message${r.saved===1?'':'s'} saved`:'up to date'}${r.cleared?` · ${r.cleared} older than 4 months cleared from the server (kept in the backup)`:''}`; }
+// 📁 the office reads older messages back from this computer's backup (nothing is uploaded again)
+const ocArc=new Map();   // techId → messages from the backup
+async function ocShowOlder(techId){
+  const dir=await bkArchive(true); if(!dir) return toast('Open this on the office backup computer — the older messages are in its backup folder.',6000);
+  const man=await bkDirAt(dir, ocManFolder(techId)); if(!man) return toast(`No older Office chat for ${firstName(prof(techId).full_name)} in this computer's backup yet.`,5000);
+  const msgs=[], urls={};
+  for await (const [n,x] of man.entries()){ if(x.kind!=='directory') continue;
+    const j=JSON.parse(await bkReadText(x,'chat.json')||'null'); if(!j||j.tech_id!==techId) continue;
+    for(const c of j.messages){ if(c.photo_file){ try{ const ph=await x.getDirectoryHandle('photos'), f=await (await ph.getFileHandle(c.photo_file)).getFile(); urls[c.id]=URL.createObjectURL(f); }catch(e){} }
+      msgs.push({...c, _arc:true, _url:urls[c.id]||null}); } }
+  const live=new Set((ocMsgs.get(techId)||[]).map(c=>c.id));
+  ocArc.set(techId, msgs.filter(c=>!live.has(c.id)).sort((a,b)=>a.created_at<b.created_at?-1:1));
+  const l=$('oc-list'); if(l){ l.innerHTML=ocListHtml(ocMsgs.get(techId)||[]); l.scrollTop=0; }
+  if(!ocArc.get(techId).length) toast('Everything in the backup is already showing.',4000);
+}
 
 function safeName(t){ return String(t||'').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim().slice(0,80)||'untitled'; }
 
