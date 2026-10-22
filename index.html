@@ -748,6 +748,13 @@
     .p-sig{margin:18px 0;border:2px solid #16a34a;border-radius:10px;padding:10px 14px;page-break-inside:avoid}.p-sig.no{border-color:#f59e0b}
     .p-sig-box{border-bottom:2px solid #94a3b8;height:150px;display:flex;align-items:flex-end;margin:6px 0 10px}.p-sig-box img{max-height:150px;max-width:100%}
     .crew-b{white-space:nowrap;flex:none}
+    .ja-grid.ja-sgrid{grid-template-columns:minmax(0,1fr) 16px var(--ja-mapw,36%) !important;gap:0 !important}
+    .ja-split{align-self:stretch;cursor:col-resize;display:flex;align-items:center;justify-content:center;touch-action:none;min-height:420px}
+    .ja-split span{width:6px;height:64px;border-radius:999px;background:#cbd5e1;box-shadow:0 0 0 1px #fff inset;transition:background .15s,height .15s}
+    .ja-split:hover span,.ja-split.drag span{background:#4f46e5;height:120px}
+    body.ja-dragging{cursor:col-resize;user-select:none}body.ja-dragging #ja-map{pointer-events:none}
+    .ja-sel-note{font-weight:500;opacity:.75;font-size:12.5px}
+    @media (max-width:1100px){ .ja-grid.ja-sgrid{grid-template-columns:1fr !important;gap:16px !important} .ja-split{display:none} }
     @media (max-width:900px){
       .chat-pane{width:auto;border-left:none}
       .jv-tabs{display:flex}
@@ -1163,7 +1170,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-22-1700';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-22-1900';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -4114,12 +4121,15 @@ async function openAlloc(){ if(job){ dirty=false; closeJob(); } jaOpen=true; dep
   $('view-portal').classList.add('hidden'); $('view-dashboard').classList.remove('hidden'); window.scrollTo(0,0);
   await Promise.all([loadNewCalls(), jaLoadNotes()]); renderAlloc(); }
 function closeAlloc(){ jaOpen=false; jaSel.clear(); if(jaMap){ jaMap.remove(); jaMap=null; jaMarkers.clear(); } showDashboard(); }
+let jaOnlySel=false;
+const jaListItems=shown=>jaOnlySel&&jaSel.size ? shown.filter(x=>jaSel.has(x.id)) : shown;
+function jaRefreshList(){ const l=$('ja-list'); if(l) l.innerHTML=jaListHtml(jaListItems(jaShown(jaItems()))); }
 function renderAlloc(){
   const v=$('view-dashboard'); if(!v) return;
   const all=jaItems(), shown=jaShown(all), cnt=k=>all.filter(x=>x.kind===k).length;
   const counties=[...new Set(all.map(x=>(eirPlace(x.eircode)||{}).county).filter(Boolean))].sort();
   [...jaSel].forEach(id=>{ if(!all.some(x=>x.id===id)) jaSel.delete(id); });
-  const listHtml=jaListHtml(shown);
+  if(!jaSel.size) jaOnlySel=false; const listHtml=jaListHtml(jaListItems(shown));
   if(v.querySelector('#ja-page')){                     // page already up — just refresh the list and pins (keeps the map where it is)
     $('ja-filters').innerHTML=jaFiltersHtml(all,cnt,counties); $('ja-list').innerHTML=listHtml; $('ja-selbar').innerHTML=jaSelBar(); jaPins(shown); return; }
   v.innerHTML=`<div id="ja-page">
@@ -4128,16 +4138,27 @@ function renderAlloc(){
       <button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new calls</button></div>
     <div id="ja-filters">${jaFiltersHtml(all,cnt,counties)}</div>
     <div id="ja-selbar">${jaSelBar()}</div>
-    <div class="ja-grid"><div class="ja-listwrap" id="ja-list">${listHtml}</div>
+    <div class="ja-grid ja-sgrid" id="ja-grid" style="${jaMapW()?'--ja-mapw:'+jaMapW()+'px':''}"><div class="ja-listwrap" id="ja-list">${listHtml}</div>
+      <div class="ja-split" id="ja-split" title="Drag to make the map bigger or smaller · double-click to reset" onpointerdown="jaSplitStart(event)" ondblclick="jaSplitReset()"><span></span></div>
       <div class="ja-mapwrap"><div id="ja-map"></div><div class="ja-legend">${['not_home','rebook','new'].map(k=>`<span><i style="background:${JA_KIND[k].c}"></i>${JA_KIND[k].short}</span>`).join('')}</div><div class="ja-mapnote" id="ja-mapnote"></div></div></div></div>`;
   jaDrawMap(shown);
 }
+// ── drag bar: list ⟷ map (remembered on this computer) ──
+function jaMapW(){ try{ return +localStorage.getItem('jaMapW')||0; }catch(e){ return 0; } }
+let jaSplitT=null;
+function jaSplitStart(e){ const g=$('ja-grid'), sp=$('ja-split'); if(!g) return; e.preventDefault(); sp.setPointerCapture(e.pointerId); sp.classList.add('drag'); document.body.classList.add('ja-dragging');
+  const move=ev=>{ const r=g.getBoundingClientRect(); let w=r.right-ev.clientX-8; w=Math.max(280, Math.min(r.width-380, w)); g.style.setProperty('--ja-mapw', w+'px');
+    clearTimeout(jaSplitT); jaSplitT=setTimeout(()=>{ if(jaMap) jaMap.invalidateSize(); },60); };
+  const up=()=>{ sp.removeEventListener('pointermove',move); sp.removeEventListener('pointerup',up); sp.classList.remove('drag'); document.body.classList.remove('ja-dragging');
+    const w=parseInt(g.style.getPropertyValue('--ja-mapw'))||0; try{ if(w) localStorage.setItem('jaMapW',w); }catch(e){} if(jaMap) jaMap.invalidateSize(); };
+  sp.addEventListener('pointermove',move); sp.addEventListener('pointerup',up); }
+function jaSplitReset(){ const g=$('ja-grid'); if(g) g.style.removeProperty('--ja-mapw'); try{ localStorage.removeItem('jaMapW'); }catch(e){} setTimeout(()=>{ if(jaMap) jaMap.invalidateSize(); },50); }
 function jaFiltersHtml(all,cnt,counties){
   const chip=(k,l,n,c)=>`<button class="ja-chip ${jaFilter===k?'on':''}" style="--c:${c}" onclick="jaFilter='${k}';jaSel.clear();renderAlloc()">${l} <b>${n}</b></button>`;
   return `<div class="ja-filters">${chip('all','All',all.length,'#0f172a')}${chip('not_home','🚪 Not home',cnt('not_home'),JA_KIND.not_home.c)}${chip('rebook','🔁 Unfinished',cnt('rebook'),JA_KIND.rebook.c)}${chip('new','🆕 New calls',cnt('new'),JA_KIND.new.c)}
     ${jaCrewChips(all)}<select class="ja-county" onchange="jaCounty=this.value;jaSel.clear();renderAlloc()"><option value="">All counties</option>${counties.map(c=>`<option ${c===jaCounty?'selected':''}>${esc(c)}</option>`).join('')}</select>
-    <input class="ja-q" placeholder="🔍 Name, phone, town, Eircode…" value="${esc(jaQ)}" oninput="jaQ=this.value;clearTimeout(window.jaQT);window.jaQT=setTimeout(()=>{ $('ja-list').innerHTML=jaListHtml(jaShown(jaItems())); jaPins(jaShown(jaItems())); },200)"></div>`; }
-function jaSelBar(){ if(!jaSel.size) return ''; return `<div class="ja-sel"><b>${jaSel.size} selected</b><button class="btn-outline" onclick="jaSel.clear();renderAlloc()">Clear</button><button class="btn-primary" onclick="jaAllocate([...jaSel])">🗓 Allocate ${jaSel.size} job${jaSel.size===1?'':'s'} →</button></div>`; }
+    <input class="ja-q" placeholder="🔍 Name, phone, town, Eircode…" value="${esc(jaQ)}" oninput="jaQ=this.value;clearTimeout(window.jaQT);window.jaQT=setTimeout(()=>{ jaRefreshList(); jaPins(jaShown(jaItems())); },200)"></div>`; }
+function jaSelBar(){ if(!jaSel.size) return ''; return `<div class="ja-sel"><b>${jaSel.size} selected${jaOnlySel?' <span class="ja-sel-note">— list shows these only, every pin stays on the map</span>':''}</b><button class="btn-outline" onclick="jaOnlySel=!jaOnlySel;$('ja-selbar').innerHTML=jaSelBar();jaRefreshList()">${jaOnlySel?'👁 Show all jobs':'☑ Show selected only'}</button><button class="btn-outline" onclick="jaSel.clear();jaOnlySel=false;renderAlloc()">Clear</button><button class="btn-primary" onclick="jaAllocate([...jaSel])">🗓 Allocate ${jaSel.size} job${jaSel.size===1?'':'s'} →</button></div>`; }
 function jaListHtml(shown){
   if(!shown.length) return `<div class="empty"><div class="big">✅</div>Nothing here${jaFilter!=='all'||jaCounty||jaQ?' for this filter':''}.</div>`;
   return `<table class="s-table ja-table"><thead><tr><th></th><th>Customer</th><th>Town / county</th><th>Time / men</th><th>Was with</th><th>Waiting</th><th>Note</th><th></th></tr></thead><tbody>
@@ -4151,8 +4172,15 @@ function jaListHtml(shown){
       <td><span class="ja-wait ${d>=7?'old':''}">${jaWait(x.since)}</span></td>
       <td class="ja-note">${x.note?esc(x.note):'<span class="s-sub">—</span>'}</td>
       <td class="ja-act"><button class="btn-primary" onclick="jaAllocate(['${x.id}'])">🗓 Allocate</button><div>${x.eircode?`<button class="btn-outline" title="Show on the map" onclick="jaShowPin('${x.id}')">📍</button>`:''}<button class="btn-outline" onclick="jaOpenItem('${x.id}')">Open</button></div></td></tr>`; }).join('')}</tbody></table>`; }
-function jaToggle(id){ jaSel.has(id)?jaSel.delete(id):jaSel.add(id); $('ja-selbar').innerHTML=jaSelBar(); const r=document.querySelector(`.ja-row[data-id="${id}"]`); if(r){ r.classList.toggle('sel',jaSel.has(id)); const c=r.querySelector('input'); if(c) c.checked=jaSel.has(id); } jaPinStyle(id); }
-function jaOpenItem(id){ const x=jaItems().find(y=>y.id===id); if(!x) return; if(x.kind==='new') return jaEditCall(id); jaOpen=false; goToJob(id); }
+function jaToggle(id, fromPin){ jaSel.has(id)?jaSel.delete(id):jaSel.add(id);
+  if(!jaSel.size) jaOnlySel=false; else if(fromPin) jaOnlySel=true;          // picking on the map → the list shows just the picked jobs
+  if(fromPin || jaOnlySel || !jaSel.size){ $('ja-selbar').innerHTML=jaSelBar(); jaRefreshList(); jaPinStyle(id); return; }
+  $('ja-selbar').innerHTML=jaSelBar(); const r=document.querySelector(`.ja-row[data-id="${id}"]`); if(r){ r.classList.toggle('sel',jaSel.has(id)); const c=r.querySelector('input'); if(c) c.checked=jaSel.has(id); } jaPinStyle(id); }
+function jaOpenItem(id){ const x=jaItems().find(y=>y.id===id); if(!x) return; if(x.kind==='new') return jaEditCall(id);
+  // open the job on top of Job allocations — closing it comes straight back here (same filters, scroll and map)
+  if(jaMap) jaMap.closePopup(); const j=x.j, st=sites.find(s=>s.id===j.site_id)||{};
+  currentTechId=j.serviceman_id; currentSiteId=j.site_id; if(st.work_date) calWeek=weekOf(st.work_date);
+  openJob(id); }
 // ── the map ──
 function jaPinHtml(x){ const K=JA_KIND[x.kind], on=jaSel.has(x.id); return `<div class="ja-pin ${on?'on':''}" style="--c:${K.c}">${on?'✓':''}</div>`; }
 function jaPinStyle(id){ const m=jaMarkers.get(id); if(!m) return; const x=jaItems().find(y=>y.id===id); if(x) m.setIcon(L.divIcon({html:jaPinHtml(x), className:'ja-pin-wrap', iconSize:[26,26], iconAnchor:[13,13]})); }
@@ -4177,7 +4205,7 @@ function jaPopup(id){ const x=jaItems().find(y=>y.id===id); if(!x) return ''; co
     <div>📞 ${esc(x.phone||'—')}</div><div>📍 ${pl?`<b>${esc(pl.town)}${pl.exact?'':' area'}</b>, Co. ${esc(pl.county)}`:''} · ${esc(normEir(x.eircode))}</div>
     ${t?`<div>👷 ${esc(t.full_name)} · was ${esc(dayLabel(x.booked))}</div>`:'<div>👷 Not allocated yet</div>'}<div class="ja-crew">${crewChip(x.j||x.nc)}${estChip(x.j||x.nc)}</div>
     ${x.note?`<div class="ja-pop-n">“${esc(x.note)}”</div>`:''}
-    <div class="ja-pop-b"><button class="btn-primary" onclick="jaAllocate(['${x.id}'])">🗓 Allocate</button><button class="btn-outline" onclick="jaToggle('${x.id}');jaMap.closePopup()">${jaSel.has(x.id)?'☑ Selected':'☐ Select'}</button><button class="btn-outline" onclick="jaOpenItem('${x.id}')">Open</button></div></div>`; }
+    <div class="ja-pop-b"><button class="btn-primary" onclick="jaAllocate(['${x.id}'])">🗓 Allocate</button><button class="btn-outline" onclick="jaToggle('${x.id}',1);jaMap.closePopup()">${jaSel.has(x.id)?'☑ Selected':'☐ Select'}</button><button class="btn-outline" onclick="jaOpenItem('${x.id}')">Open</button></div></div>`; }
 function jaHover(id,on,fromPin){ const r=document.querySelector(`.ja-row[data-id="${id}"]`); if(r) r.classList.toggle('hl',!!on);
   const m=jaMarkers.get(id); if(m&&m._icon) m._icon.classList.toggle('hl',!!on); if(on&&fromPin&&r) r.scrollIntoView({block:'nearest'}); }
 function jaShowPin(id){ const m=jaMarkers.get(id); if(!m) return toast('That job has no Eircode on the map.'); jaFocus=id; jaMap.setView(m.getLatLng(),12); m.openPopup(); setTimeout(()=>{ jaFocus=null; },500); }
