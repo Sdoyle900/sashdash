@@ -755,6 +755,14 @@
     body.ja-dragging{cursor:col-resize;user-select:none}body.ja-dragging #ja-map{pointer-events:none}
     .ja-sel-note{font-weight:500;opacity:.75;font-size:12.5px}
     @media (max-width:1100px){ .ja-grid.ja-sgrid{grid-template-columns:1fr !important;gap:16px !important} .ja-split{display:none} }
+    .nc-sub{font-size:13px;font-weight:600;color:#9d174d}
+    .nc-wa{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:10px;padding:9px 12px;font-size:13px;margin:4px 0 10px}
+    .nc-p{color:var(--slate);font-size:13.5px;margin:-6px 0 12px}
+    .ja-bulk{background:#fff !important;color:#9d174d !important;border:1.5px solid #f9a8d4 !important}
+    /* maps never sit on top of pop-up boxes */
+    .leaflet-container{isolation:isolate;z-index:0}
+    /* map tiles: no hairline gaps between tiles when Windows display scaling isn't 100% */
+    .leaflet-container .leaflet-tile-container img{outline:1px solid transparent}
     @media (max-width:900px){
       .chat-pane{width:auto;border-left:none}
       .jv-tabs{display:flex}
@@ -1170,7 +1178,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-22-1900';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-22-2100';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -3395,7 +3403,7 @@ function histFormCheck(){
   box.classList.remove('hidden');
   box.innerHTML=`<div class="hw-t">🕘 ${esc(name)} has called before — this will be the <b>${ordN(calls.length+1)} call</b></div>
     ${calls.map((c,i)=>`<div class="hw-r"><span>${ordN(i+1)} call · <b>${esc(shortDate(c.date))}</b> · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}${c.note?` · <i>“${esc(c.note)}”</i>`:''}</span><button type="button" class="hm-x" onclick="formSkip.add('${c.key}');histFormCheck()">Not the same customer</button></div>`).join('')}
-    <div class="hw-n">After you send the job, the old calls show as tabs on it. <b>📥 Send &amp; import</b> lets you add the old jobs from your computer straight away.</div>`;
+    <div class="hw-n">${document.querySelector('.modal .nc-wa')?'When this call is allocated, the old calls show as tabs on the job, and you can import them from your computer then.':'After you send the job, the old calls show as tabs on it. <b>📥 Send &amp; import</b> lets you add the old jobs from your computer straight away.'}</div>`;
   const b=$('m-save2'); if(b) b.classList.remove('hidden');
 }
 
@@ -4135,7 +4143,7 @@ function renderAlloc(){
   v.innerHTML=`<div id="ja-page">
     <div class="row ja-top"><button class="btn-outline" onclick="closeAlloc()">‹ Private Calls</button>
       <div style="flex:1;min-width:220px"><div class="page-title">📋 Job allocations</div><div class="page-sub">Everything waiting for a service man and a day — <b>oldest first</b>. Tick jobs (or click a pin) and allocate them.</div></div>
-      <button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new calls</button></div>
+      <button class="btn-outline ja-bulk" onclick="jaBulkAdd()">📥 Pile of sheets</button><button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new call</button></div>
     <div id="ja-filters">${jaFiltersHtml(all,cnt,counties)}</div>
     <div id="ja-selbar">${jaSelBar()}</div>
     <div class="ja-grid ja-sgrid" id="ja-grid" style="${jaMapW()?'--ja-mapw:'+jaMapW()+'px':''}"><div class="ja-listwrap" id="ja-list">${listHtml}</div>
@@ -4237,7 +4245,10 @@ async function jaTargetSite(tid, day){
   const { error }=await sb.from('sites').insert(rows); if(error) throw error; await loadData();
   t=sites.find(x=>x.serviceman_id===tid&&deptOf(x)==='calls'&&x.work_date===day); if(!t) throw new Error('Could not create the day'); return t; }
 async function jaDoAllocate(){
-  const {ids, tid, day}=jaAlloc; const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Allocating…';
+  const {ids, tid, day}=jaAlloc;
+  const noSheet=jaItems().filter(x=>ids.includes(x.id) && x.kind==='new' && !x.nc.pdf_path);
+  if(noSheet.length) return toast(`Add the job sheet first: ${noSheet.map(x=>x.name).join(', ')} (click Open on ${noSheet.length===1?'it':'them'})`,7000);
+  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Allocating…';
   try{
     const items=jaItems().filter(x=>ids.includes(x.id)); let done=0;
     for(const x of items){
@@ -4247,7 +4258,8 @@ async function jaDoAllocate(){
         if(c.pdf_path){ const f=await sb.storage.from(BUCKET).download(c.pdf_path); if(f.error) throw f.error;   // copy into the man's folder, then tidy up
           const u=await sb.storage.from(BUCKET).upload(dest, f.data, {contentType:'application/pdf'}); if(u.error) throw u.error; }
         const row={id:newId, site_id:target.id, serviceman_id:tid, department:'calls', title:`Job ${n}${c.title?' – '+c.title:''}`, ref_no:c.ref_no||c.customer_phone||null, notes:c.notes||null,
-          pdf_path:c.pdf_path?dest:null, pdf_bytes:c.pdf_bytes||0, customer_phone:c.customer_phone||null, eircode:c.eircode||null, avail:c.avail||null, tech_unread:true, admin_unread:false, completed:false, last_activity_at:now};
+          pdf_path:c.pdf_path?dest:null, pdf_bytes:c.pdf_bytes||0, customer_phone:c.customer_phone||null, customer_phone2:c.customer_phone2||null, customer_email:c.customer_email||null, eircode:c.eircode||null, avail:c.avail||null,
+          est_minutes:c.est_minutes||null, crew:c.crew||null, hist_skip:Array.isArray(c.hist_skip)?c.hist_skip:[], tech_unread:true, admin_unread:false, completed:false, last_activity_at:now};
         const ins=await sb.from('jobs').insert(row); if(ins.error) throw ins.error;
         await sb.from('new_calls').delete().eq('id',c.id); if(c.pdf_path) await sb.storage.from(BUCKET).remove([c.pdf_path]);
         await sb.from('comments').insert({job_id:newId, author_id:me.id, kind:'event', body:`🗓 Allocated from Job allocations to ${dayLong(day)}`});
@@ -4268,39 +4280,65 @@ async function jaDoAllocate(){
   }catch(e){ btn.disabled=false; btn.textContent='🗓 Try again'; toast('Could not allocate: '+(e.message||e),6000); }
 }
 // ── ＋ Add new calls (no man or day yet) ──
-let jaFiles=[];
-function jaAddCalls(editId){ if(blockPreview()) return; const c=editId?newCalls.find(x=>x.id===editId)||{}:{}; jaFiles=[];
-  openModal(`<h2>${editId?'✎ New call':'＋ Add new calls'}</h2>
-    ${editId?'':`<div class="ja-drop" id="ja-drop" onclick="$('ja-files').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');jaDropMany(event.dataTransfer.files)">
-      <b>📥 Drop a load of job sheets here</b><span>PDFs or photos — each one becomes a new call. Fill in the details after, or one at a time below.</span><input type="file" id="ja-files" accept="application/pdf,image/*" multiple hidden onchange="jaDropMany(this.files)"></div>
-      <div class="ja-or">or add one</div>`}
+// ── 🆕 New call form — same as the Add job form, but no man or day yet ──
+let jaEditId=null;
+function jaAddCalls(editId){ if(blockPreview()) return;
+  const c=editId?(newCalls.find(x=>x.id===editId)||{}):{}; jaEditId=editId||null; pendingFiles=[];
+  openModal(`<h2>${editId?'✎ New call':'🆕 Add a new call'} <span class="nc-sub">— goes to Job allocations, not given to a man or day yet</span></h2>
     <div class="slot-form">
-      <div class="field-group"><label>Customer name</label><input id="jn-name" value="${esc(c.title||'')}" placeholder="e.g. Mary Kelly"></div>
-      <div class="field-group"><label>Phone number <span class="optional">(= job number)</span></label><input id="jn-ph" value="${esc(c.customer_phone||'')}" placeholder="e.g. 087 123 4567"></div>
-      <div class="field-group"><label>Eircode</label><input id="m-eir" value="${esc(c.eircode||'')}" maxlength="9" style="text-transform:uppercase" placeholder="e.g. F42 X7Y2" oninput="eirFormHint()" onblur="if(this.value){this.value=normEir(this.value);eirFormHint();}"><div class="eir-town" id="m-eir-town">${c.eircode?'📍 '+esc(eirPlaceText(c.eircode,true)):''}</div></div>
-      ${crewFields(c)}
-      <div class="field-group"><label>Customer available</label><select id="jn-av"><option value="">Any time</option><option value="am" ${c.avail==='am'?'selected':''}>Between 8am – 12</option><option value="pm" ${c.avail==='pm'?'selected':''}>Between 12 – 5pm</option></select></div>
-      <div class="field-group sf-wide"><label>Note <span class="optional">(what's the call about)</span></label><input id="jn-note" value="${esc(c.notes||'')}" placeholder="e.g. Back door dropped, won't lock"></div>
-      ${editId&&c.pdf_path?'<div class="field-group sf-wide"><span class="s-sub">📄 Job sheet attached</span></div>':`<div class="field-group sf-wide"><label>Job sheet <span class="optional">(PDF or photo — can be added later)</span></label><input type="file" id="jn-file" accept="application/pdf,image/*"></div>`}
+      <div class="field-group"><label>Job number</label><input id="m-ref" placeholder="e.g. 4521" autocomplete="off" value="${esc(c.ref_no||'')}"></div>
+      <div class="field-group"><label>Customer name</label><input id="m-cust" placeholder="e.g. Mary Kelly" autocomplete="off" value="${esc(c.title||'')}"></div>
+      <div class="field-group"><label>Phone number</label><input id="m-ph" type="tel" placeholder="e.g. 087 123 4567" autocomplete="off" value="${esc(c.customer_phone||'')}"></div>
+      <div class="field-group"><label>Second phone <span class="optional">(if any)</span></label><input id="m-ph2" type="tel" placeholder="optional" autocomplete="off" value="${esc(c.customer_phone2||'')}"></div>
+      <div class="field-group sf-wide"><label>Email address <span class="optional">(if any)</span></label><input id="m-email" type="email" placeholder="e.g. mary@gmail.com" autocomplete="off" value="${esc(c.customer_email||'')}"></div>
+      ${hasRoute?availField(c):''}
     </div>
-    <div class="modal-actions">${editId?`<button class="btn-danger" onclick="jaDeleteCall('${editId}')">🗑 Delete</button>`:''}<button class="btn-outline" onclick="closeModal()">Close</button>${editId?'':`<button class="btn-outline" onclick="jaSaveCall(null,true)">＋ Save &amp; add another</button>`}<button class="btn-primary ja-add" id="m-save" onclick="jaSaveCall(${editId?`'${editId}'`:'null'})">✓ Save new call</button></div>`); }
+    <div class="nc-wa">📲 WhatsApp reminders are set up when the call is allocated to a man and a day.</div>
+    <div id="m-hist" class="hist-warn hidden"></div>
+    <label class="drop" id="m-drop" for="m-file">
+      <span class="drop-icon">📄</span>
+      <span class="drop-main">${c.pdf_path?'📄 Job sheet attached — drag a new one here to replace it':'Drag the job sheet here'}</span>
+      <span class="drop-sub">or click to choose · PDF or photos (several photos become one PDF)${c.pdf_path?'':' · can be added later'}</span>
+    </label>
+    <input type="file" id="m-file" accept="application/pdf,image/*" multiple style="display:none" onchange="filesPicked(this.files);this.value=''">
+    <div class="file-list" id="m-files"></div>
+    <div class="field-group"><label>Note <span class="optional">(what's the call about — goes to the man when it's allocated)</span></label><textarea id="m-notes" rows="2">${esc(c.notes||'')}</textarea></div>
+    <div class="modal-actions">${editId?`<button class="btn-danger" onclick="jaDeleteCall('${editId}')">🗑 Delete</button>`:''}<button class="btn-outline" onclick="closeModal()">Cancel</button>${editId?'':`<button class="btn-outline" id="m-save2" onclick="jaSaveCall(null,true)">＋ Save &amp; add another</button>`}<button class="btn-primary ja-add" id="m-save" onclick="jaSaveCall(${editId?`'${editId}'`:'null'})">✓ Save new call</button></div>`);
+  formSkip=new Set(Array.isArray(c.hist_skip)?c.hist_skip:[]);
+  ['m-ref','m-ph','m-ph2','m-eir'].forEach(id=>{ const e=$(id); if(e) e.addEventListener('input',histFormCheck); });
+  attachDrop(); histFormCheck(); if(c.eircode) eirFormHint();
+  setTimeout(()=>{ const r=$('m-ref'); if(r) r.focus(); },50);
+}
 function jaEditCall(id){ jaAddCalls(id); }
-async function jaPutFile(f, id){ const path=`calls/unallocated/${id}/original.pdf`, bytes=await buildUploadPdf([f]);
+async function jaPutFile(files, id){ const path=`calls/unallocated/${id}/original.pdf`, bytes=await buildUploadPdf(files);
   const up=await sb.storage.from(BUCKET).upload(path, new Blob([bytes],{type:'application/pdf'}),{contentType:'application/pdf', upsert:true}); if(up.error) throw up.error; return {path, bytes:bytes.length}; }
 async function jaSaveCall(editId, again){
-  const name=$('jn-name').value.trim(), ph=$('jn-ph').value.trim(), eir=$('m-eir').value.trim()?normEir($('m-eir').value):'';
-  if(!name && !ph) return toast('Add the customer name or phone number.'); if(eir && !eirValid(eir)) return toast("That Eircode doesn't look right.");
-  const row={title:name||null, customer_phone:ph||null, ref_no:phoneKey(ph)||null, eircode:eir||null, avail:$('jn-av').value||null, notes:$('jn-note').value.trim()||null, ...readCrew()};
-  try{ if(editId){ const r=await sb.from('new_calls').update(row).eq('id',editId); if(r.error) throw r.error; }
-    else { const id=uuid(); const f=$('jn-file')&&$('jn-file').files[0]; if(f){ const u=await jaPutFile(f,id); row.pdf_path=u.path; row.pdf_bytes=u.bytes; }
-      const r=await sb.from('new_calls').insert({id, ...row, created_by:me.id}); if(r.error) throw r.error; }
-  }catch(e){ return toast('Not saved: '+(e.message||e),6000); }
-  await loadNewCalls(); if(eir) eirTownLookup(eir);
-  if(again){ jaAddCalls(); toast(`🆕 ${name||ph} added — next one`); } else { closeModal(); toast(`🆕 ${name||ph} added to Job allocations`); }
+  const ref=$('m-ref').value.trim(), cust=$('m-cust').value.trim(), ph=$('m-ph').value.trim(), email=$('m-email').value.trim();
+  if(!ref && !cust && !ph) return toast('Add the job number, customer name or phone number.');
+  if(email && !/^\S+@\S+\.\S+$/.test(email)) return toast('That email address doesn\'t look right.');
+  const route=readAvail(); if(route===false) return;
+  const row={title:cust||null, ref_no:ref||phoneKey(ph)||null, customer_phone:ph||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:email||null,
+    eircode:route?route.eircode:null, avail:route?route.avail:null, est_minutes:route?route.est_minutes:null, crew:route?route.crew:null,
+    notes:$('m-notes').value.trim()||null, hist_skip:[...formSkip]};
+  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
+  try{ const id=editId||uuid();
+    if(pendingFiles.length){ const u=await jaPutFile(pendingFiles, id); row.pdf_path=u.path; row.pdf_bytes=u.bytes; }
+    const r=editId ? await sb.from('new_calls').update(row).eq('id',id) : await sb.from('new_calls').insert({id, ...row, created_by:me.id});
+    if(r.error) throw r.error;
+  }catch(e){ btn.disabled=false; btn.textContent='✓ Save new call'; return toast('Not saved: '+(e.message||e)+(/column/i.test(e.message||'')?' — run update-25 in Supabase':''),7000); }
+  pendingFiles=[]; await loadNewCalls(); if(row.eircode) eirTownLookup(row.eircode);
+  const who=cust||ph||ref;
+  if(again){ jaAddCalls(); toast(`🆕 ${who} added — next one`); } else { closeModal(); toast(`🆕 ${who} ${editId?'saved':'added to Job allocations'}`); }
   if(jaOpen) renderAlloc(); }
+// 📥 a pile of sheets at once — each becomes a new call straight away, details filled in after
+function jaBulkAdd(){ if(blockPreview()) return;
+  openModal(`<h2>📥 Add a pile of job sheets</h2><p class="nc-p">Each PDF or photo becomes its own <b>new call</b> straight away, named after the file. Then click <b>Open</b> on each one to fill in the phone, Eircode and so on.</p>
+    <div class="ja-drop" id="ja-drop" onclick="$('ja-files').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');jaDropMany(event.dataTransfer.files)">
+      <b>📥 Drop the job sheets here</b><span>or click to choose several</span><input type="file" id="ja-files" accept="application/pdf,image/*" multiple hidden onchange="jaDropMany(this.files)"></div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button></div>`); }
 async function jaDropMany(fl){ const files=[...fl||[]].filter(f=>/pdf|image/.test(f.type)||/\.(pdf|jpe?g|png)$/i.test(f.name)); if(!files.length) return;
   $('ja-drop').innerHTML=`<span class="spin" style="border-color:#fbcfe8;border-top-color:#ff2fb3"></span> Adding ${files.length} new call${files.length===1?'':'s'}…`;
-  let n=0; for(const f of files){ try{ const id=uuid(), u=await jaPutFile(f,id); const nm=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
+  let n=0; for(const f of files){ try{ const id=uuid(), u=await jaPutFile([f],id); const nm=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
       const r=await sb.from('new_calls').insert({id, title:nm, pdf_path:u.path, pdf_bytes:u.bytes, created_by:me.id}); if(!r.error) n++; }catch(e){ console.warn(e); } }
   closeModal(); await loadNewCalls(); if(jaOpen) renderAlloc(); toast(`🆕 ${n} new call${n===1?'':'s'} added — click Open on each to fill in the phone and Eircode`,6000); }
 async function jaDeleteCall(id){ const c=newCalls.find(x=>x.id===id); if(!c) return; if(!confirm(`Delete the new call "${c.title||c.customer_phone||''}"?`)) return;
