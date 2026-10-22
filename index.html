@@ -755,6 +755,40 @@
     body.ja-dragging{cursor:col-resize;user-select:none}body.ja-dragging #ja-map{pointer-events:none}
     .ja-sel-note{font-weight:500;opacity:.75;font-size:12.5px}
     @media (max-width:1100px){ .ja-grid.ja-sgrid{grid-template-columns:1fr !important;gap:16px !important} .ja-split{display:none} }
+    .nc-sub{font-size:13px;font-weight:600;color:#9d174d}
+    .nc-wa{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:10px;padding:9px 12px;font-size:13px;margin:4px 0 10px}
+    .nc-p{color:var(--slate);font-size:13.5px;margin:-6px 0 12px}
+    .ja-bulk{background:#fff !important;color:#9d174d !important;border:1.5px solid #f9a8d4 !important}
+    /* maps never sit on top of pop-up boxes */
+    .leaflet-container{isolation:isolate;z-index:0}
+    /* map tiles: no hairline gaps between tiles when Windows display scaling isn't 100% */
+    .leaflet-container .leaflet-tile-container img{outline:1px solid transparent}
+    .slot-town{flex-basis:100%;font-size:11.5px;font-weight:700;color:#475569;margin-top:-1px;text-align:center;line-height:1.3}
+    .ja-sendback{margin-right:auto;color:#9d174d !important;border-color:#f9a8d4 !important;background:#fff7fb !important}
+    .jc{border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff}
+    .jc-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}.jc-head b{flex:1;text-align:center;font-size:15px}.jc-today{font-size:12px;padding:5px 10px}
+    .jc-hint{font-size:12.5px;color:#64748b;text-align:center;margin:-2px 0 6px}
+    .jc-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+    .jc-w{font-size:11px;font-weight:800;color:#64748b;text-align:center;text-transform:uppercase;padding:2px 0}
+    .jc-d{border:1.5px solid #e2e8f0;background:#fff;border-radius:9px;min-height:50px;padding:4px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;font:inherit;cursor:pointer;color:#0f172a}
+    .jc-d b{font-size:14px}.jc-d small{font-size:10.5px;line-height:1.2;color:#475569;font-weight:700;text-align:center}
+    .jc-d.out{opacity:.55}.jc-d.past{background:#f8fafc;color:#cbd5e1;cursor:default;border-color:#f1f5f9}
+    .jc-d.free{background:#f0fdf4;border-color:#bbf7d0}.jc-d.free small{color:#15803d}
+    .jc-d.busy{background:#fffbeb;border-color:#fde68a}.jc-d.full{background:#fef2f2;border-color:#fecaca}.jc-d.full small{color:#b91c1c}
+    .jc-d.today{box-shadow:inset 0 0 0 2px #f59e0b}
+    .jc-d.on{border-color:#ff2fb3;background:#ffe4f4;box-shadow:0 0 0 2px #ff2fb3}
+    .jc-d:not(.past):hover{border-color:#a5b4fc}
+    .jc-key{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:#64748b;margin-top:8px}
+    .jc-key .k{width:12px;height:12px;border-radius:3px;border:1.5px solid #e2e8f0;background:#fff;display:inline-block}.jc-key .k.free{background:#f0fdf4;border-color:#bbf7d0}.jc-key .k.busy{background:#fffbeb;border-color:#fde68a}.jc-key .k.full{background:#fef2f2;border-color:#fecaca}
+    .jc-men{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:12.5px}.jc-men>span{font-weight:700;color:#334155}
+    .jc-m{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:3px 9px 3px 3px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+    .jc-m small{color:#64748b;font-weight:600}.jc-m.on{border-color:#0f172a;background:#0f172a;color:#fff}.jc-m.on small{color:#cbd5e1}
+    .modal{position:relative}
+    .md-grip{position:sticky;top:-24px;margin:-24px -24px 6px;height:20px;display:flex;align-items:center;justify-content:center;cursor:move;touch-action:none;z-index:5;background:linear-gradient(#fff,rgba(255,255,255,.92));border-radius:16px 16px 0 0}
+    .md-grip span{width:42px;height:5px;border-radius:999px;background:#cbd5e1}
+    .md-grip:hover span{background:#4f46e5}
+    .modal-back.md-moving{background:rgba(15,23,42,.2);cursor:move}.modal-back.md-moving .modal{box-shadow:0 30px 70px rgba(0,0,0,.45)}
+    .ja-wait.soon{color:#15803d}
     @media (max-width:900px){
       .chat-pane{width:auto;border-left:none}
       .jv-tabs{display:flex}
@@ -1170,7 +1204,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-22-1900';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-23-1100';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -2451,6 +2485,16 @@ function readAvail(){ const e=$('m-eir'), s=$('m-av'); if(!e||!s) return null;
   let av=s.value;
   if(av==='custom'){ const t=$('m-av-t').value; if(!t){ toast('Pick the custom time.'); return false; } av=$('m-av-d').value+':'+t; }
   return {eircode:eir||null, avail:av||null, ...readCrew()}; }
+// the town and county under the Eircode on a job card (exact town looked up once per Eircode, then shared)
+function slotTown(j){ if(!j.eircode || typeof eirPlace!=='function') return ''; const p=eirPlace(j.eircode); if(!p) return '';
+  if(!p.exact) eirTownsQueue([j]);
+  return `<div class="slot-town">${esc(p.town)}${p.exact||/^dublin \d/i.test(p.town)?'':' area'} · Co. ${esc(p.county)}</div>`; }
+function eirTownsQueue(list){ if(!isOffice || previewing || !hasEirTown) return;
+  (list||[]).forEach(j=>{ if(j && j.eircode){ const n=normEir(j.eircode); if(eirValid(n) && !eirTowns.has(n)) eirTownQ.add(n); } });
+  if(!eirTownQ.size) return; clearTimeout(eirTownT);
+  eirTownT=setTimeout(async()=>{ const todo=[...eirTownQ].slice(0,25); todo.forEach(n=>eirTownQ.delete(n)); let got=0;
+    for(const n of todo){ const v=await eirTownLookup(n); if(v&&v.town) got++; }
+    if(got && !$('modal-root').innerHTML.trim() && !job) rerenderCurrent(); }, 800); }
 function eirChip(j){ if(!j.eircode) return '';
   return `<a class="cc eir" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(j.eircode+', Ireland')}&travelmode=driving" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Directions in Google Maps">📍 ${esc(j.eircode)}</a>`; }
 
@@ -2500,6 +2544,7 @@ function loadLeaflet(){
   if(leafletP) return leafletP;
   leafletP=new Promise((res,rej)=>{
     const css=document.createElement('link'); css.rel='stylesheet'; css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(css);
+    window.L_DISABLE_3D=true;   // place map tiles without the graphics card — stops white lines between tiles on scaled Windows screens
     const s=document.createElement('script'); s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; s.onload=()=>res(window.L); s.onerror=()=>{ leafletP=null; rej(new Error('the map did not load')); };
     document.head.appendChild(s); });
   return leafletP;
@@ -2924,7 +2969,7 @@ function slotCard(j,n){
   return `<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'}" data-job="${j.id}" onclick="openJob('${j.id}')">
     <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag red">New</span>':''}${outcomeTag(j)}${crewBadge(j)}</div>
     <div class="slot-pdf">📄${(manNotes(j).notes||manNotes(j).photos)?'<span class="pdf-dot" title="Has notes">💬</span>':''}</div>
-    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${coverTag(j)?`<div class="slot-cov">${coverTag(j)}</div>`:''}${j.customer_phone||j.customer_phone2||j.eircode||j.avail?`<div class="slot-cc">${contactChips(j,true)}${eirChip(j)}${isOffice?availChip(j):''}</div>`:''}${j.est_minutes?`<div class="slot-cc">${estChip(j)}</div>`:''}
+    <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${coverTag(j)?`<div class="slot-cov">${coverTag(j)}</div>`:''}${j.customer_phone||j.customer_phone2||j.eircode||j.avail?`<div class="slot-cc">${contactChips(j,true)}${eirChip(j)}${slotTown(j)}${isOffice?availChip(j):''}</div>`:''}${j.est_minutes?`<div class="slot-cc">${estChip(j)}</div>`:''}
     ${j.sig_at?`<div class="slot-cc">${sigChip(j)}</div>`:''}${histBadge(j)}${notesBadge(j)}${waBadges(j,n)}
     ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button>${hasShares?`<button class="ja-btn" onclick="event.stopPropagation();openShareModal({kind:'job',jobId:'${j.id}'})" title="Share with another service man">🤝</button>`:''}<button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
@@ -3395,7 +3440,7 @@ function histFormCheck(){
   box.classList.remove('hidden');
   box.innerHTML=`<div class="hw-t">🕘 ${esc(name)} has called before — this will be the <b>${ordN(calls.length+1)} call</b></div>
     ${calls.map((c,i)=>`<div class="hw-r"><span>${ordN(i+1)} call · <b>${esc(shortDate(c.date))}</b> · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}${c.note?` · <i>“${esc(c.note)}”</i>`:''}</span><button type="button" class="hm-x" onclick="formSkip.add('${c.key}');histFormCheck()">Not the same customer</button></div>`).join('')}
-    <div class="hw-n">After you send the job, the old calls show as tabs on it. <b>📥 Send &amp; import</b> lets you add the old jobs from your computer straight away.</div>`;
+    <div class="hw-n">${document.querySelector('.modal .nc-wa')?'When this call is allocated, the old calls show as tabs on the job, and you can import them from your computer then.':'After you send the job, the old calls show as tabs on it. <b>📥 Send &amp; import</b> lets you add the old jobs from your computer straight away.'}</div>`;
   const b=$('m-save2'); if(b) b.classList.remove('hidden');
 }
 
@@ -4089,27 +4134,40 @@ let jaCrew=0, jaOpen=false, jaFilter='all', jaCounty='', jaQ='', jaSel=new Set()
 let jaMap=null, jaLayer=null, jaMarkers=new Map(), jaFocus=null;
 const JA_KIND={not_home:{label:'Customer not home', short:'Not home', ico:'🚪', c:'#dc2626', bg:'#fef2f2'},
   rebook:{label:'Re-book unfinished', short:'Unfinished', ico:'🔁', c:'#2563eb', bg:'#eff6ff'},
+  booked:{label:'Booked in', short:'Booked in', ico:'📅', c:'#16a34a', bg:'#f0fdf4'},
   new:{label:'New call', short:'New call', ico:'🆕', c:'#ff2fb3', bg:'#ffe4f4'}};
+const JA_ORDER=['not_home','rebook','booked','new'];
+let jaKinds=new Set(), jaCrews=new Set();      // the type / men buttons — each one switches on and off; none on = show everything
+const jaKindOk=x=>!jaKinds.size || jaKinds.has(x.kind);
+const jaCrewOk=x=>!jaCrews.size || jaCrews.has(+(x.j||x.nc||{}).crew||1);
+function jaToggleKind(k){ if(k==='all') jaKinds.clear(); else jaKinds.has(k)?jaKinds.delete(k):jaKinds.add(k); if(jaKinds.size===JA_ORDER.length) jaKinds.clear(); jaSel.clear(); renderAlloc(); }
+function jaToggleCrew(c){ if(!c) jaCrews.clear(); else jaCrews.has(c)?jaCrews.delete(c):jaCrews.add(c); if(jaCrews.size===3) jaCrews.clear(); jaSel.clear(); renderAlloc(); }
+const jaUntil=v=>{ const d=Math.round((parseYmd(v)-parseYmd(todayYmd()))/864e5); return d<=1?'tomorrow':`in ${d} days`; };
+function jaWhen(x){ return x.kind==='booked' ? `<span class="ja-wait soon">${jaUntil(x.booked)}</span>` : `<span class="ja-wait ${jaDays(x.since)>=7?'old':''}">${jaWait(x.since)}</span>`; }
 async function loadNewCalls(){ if(!hasNewCalls) return; const r=await sb.from('new_calls').select('*').order('created_at'); if(r.error){ hasNewCalls=false; newCalls=[]; return; } newCalls=r.data||[]; }
 function jaItems(){
   const out=[];
   for(const j of dJobs('calls')){ const k=jobOutcome(j); if(k!=='not_home'&&k!=='rebook') continue;
     const st=sites.find(x=>x.id===j.site_id)||{}, n=jaNotes[j.id]||{};
     out.push({kind:k, id:j.id, j, name:custName(j), title:j.title, phone:j.customer_phone||phoneKey(j.ref_no)||'', eircode:j.eircode||'', man:j.serviceman_id, booked:st.work_date||'', since:n.at||j.last_activity_at||j.created_at, note:n.note||''}); }
+  const today=todayYmd();
+  for(const j of dJobs('calls')){ if(j.completed || jobOutcome(j)) continue; const st=sites.find(x=>x.id===j.site_id)||{}; if(!st.work_date || st.work_date<=today) continue;   // leaves the list on its day
+    out.push({kind:'booked', id:j.id, j, name:custName(j), title:j.title, phone:j.customer_phone||phoneKey(j.ref_no)||'', eircode:j.eircode||'', man:j.serviceman_id, booked:st.work_date, since:j.created_at, note:j.notes||''}); }
   for(const c of newCalls) out.push({kind:'new', id:c.id, nc:c, name:c.title||'New call', title:c.title||'New call', phone:c.customer_phone||phoneKey(c.ref_no)||'', eircode:c.eircode||'', man:null, booked:'', since:c.created_at, note:c.notes||''});
   return out.sort((a,b)=>a.since<b.since?-1:1);    // oldest first
 }
 function jaShown(all){ const q=norm(jaQ);
-  return all.filter(x=>(jaFilter==='all'||x.kind===jaFilter) && (!jaCounty || (eirPlace(x.eircode)||{}).county===jaCounty) && (!jaCrew || (+(x.j||x.nc||{}).crew||1)===jaCrew)
+  return all.filter(x=>jaKindOk(x) && (!jaCounty || (eirPlace(x.eircode)||{}).county===jaCounty) && jaCrewOk(x)
     && (!q || norm([x.title,x.phone,x.eircode,eirPlaceText(x.eircode,true),x.note,x.man?prof(x.man).full_name:''].join(' ')).includes(q))); }
 const jaDays=iso=>{ const a=new Date(iso), b=new Date(); a.setHours(12,0,0,0); b.setHours(12,0,0,0); return Math.max(0,Math.round((b-a)/864e5)); };
 const jaWait=iso=>{ const d=jaDays(iso); return d===0?'today':d===1?'since yesterday':`${d} days`; };
 function jaPill(k){ const K=JA_KIND[k]; return `<span class="ja-pill" style="--c:${K.c};--bg:${K.bg}">${K.ico} ${K.short}</span>`; }
 // the box on the Private Calls dashboard (replaces Customers not home + Re-book unfinished)
 function jaBox(list){
-  const nh=list.filter(j=>jobOutcome(j)==='not_home').length, rb=list.filter(j=>jobOutcome(j)==='rebook').length, nc=newCalls.length, all=nh+rb+nc;
+  const nh=list.filter(j=>jobOutcome(j)==='not_home').length, rb=list.filter(j=>jobOutcome(j)==='rebook').length, nc=newCalls.length, today=todayYmd();
+  const bk=list.filter(j=>!j.completed && !jobOutcome(j) && ((sites.find(s=>s.id===j.site_id)||{}).work_date||'')>today).length, all=nh+rb+nc+bk;
   return `<button class="folder-box ja-box ${all?'':'empty'}" onclick="openAlloc()">
-    <span class="f-ico">📋</span><span class="f-txt"><b>Job allocations</b><small>${all?`<span class="ja-c" style="--c:${JA_KIND.not_home.c}">● ${nh} not home</span> <span class="ja-c" style="--c:${JA_KIND.rebook.c}">● ${rb} unfinished</span> <span class="ja-c" style="--c:${JA_KIND.new.c}">● ${nc} new call${nc===1?'':'s'}</span>`:'Nothing to allocate — click to add new calls'}</small></span>
+    <span class="f-ico">📋</span><span class="f-txt"><b>Job allocations</b><small>${all?`<span class="ja-c" style="--c:${JA_KIND.not_home.c}">● ${nh} not home</span> <span class="ja-c" style="--c:${JA_KIND.rebook.c}">● ${rb} unfinished</span> <span class="ja-c" style="--c:${JA_KIND.booked.c}">● ${bk} booked in</span> <span class="ja-c" style="--c:${JA_KIND.new.c}">● ${nc} new call${nc===1?'':'s'}</span>`:'Nothing to allocate — click to add new calls'}</small></span>
     <span class="f-n">${all}</span><span class="f-arrow">›</span></button>`; }
 async function jaLoadNotes(){
   const fl=dJobs('calls').filter(j=>['not_home','rebook'].includes(jobOutcome(j))), key=fl.map(j=>j.id+j.last_activity_at).join();
@@ -4135,12 +4193,12 @@ function renderAlloc(){
   v.innerHTML=`<div id="ja-page">
     <div class="row ja-top"><button class="btn-outline" onclick="closeAlloc()">‹ Private Calls</button>
       <div style="flex:1;min-width:220px"><div class="page-title">📋 Job allocations</div><div class="page-sub">Everything waiting for a service man and a day — <b>oldest first</b>. Tick jobs (or click a pin) and allocate them.</div></div>
-      <button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new calls</button></div>
+      <button class="btn-outline ja-bulk" onclick="jaBulkAdd()">📥 Pile of sheets</button><button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new call</button></div>
     <div id="ja-filters">${jaFiltersHtml(all,cnt,counties)}</div>
     <div id="ja-selbar">${jaSelBar()}</div>
     <div class="ja-grid ja-sgrid" id="ja-grid" style="${jaMapW()?'--ja-mapw:'+jaMapW()+'px':''}"><div class="ja-listwrap" id="ja-list">${listHtml}</div>
       <div class="ja-split" id="ja-split" title="Drag to make the map bigger or smaller · double-click to reset" onpointerdown="jaSplitStart(event)" ondblclick="jaSplitReset()"><span></span></div>
-      <div class="ja-mapwrap"><div id="ja-map"></div><div class="ja-legend">${['not_home','rebook','new'].map(k=>`<span><i style="background:${JA_KIND[k].c}"></i>${JA_KIND[k].short}</span>`).join('')}</div><div class="ja-mapnote" id="ja-mapnote"></div></div></div></div>`;
+      <div class="ja-mapwrap"><div id="ja-map"></div><div class="ja-legend">${JA_ORDER.map(k=>`<span><i style="background:${JA_KIND[k].c}"></i>${JA_KIND[k].short}</span>`).join('')}</div><div class="ja-mapnote" id="ja-mapnote"></div></div></div></div>`;
   jaDrawMap(shown);
 }
 // ── drag bar: list ⟷ map (remembered on this computer) ──
@@ -4154,14 +4212,14 @@ function jaSplitStart(e){ const g=$('ja-grid'), sp=$('ja-split'); if(!g) return;
   sp.addEventListener('pointermove',move); sp.addEventListener('pointerup',up); }
 function jaSplitReset(){ const g=$('ja-grid'); if(g) g.style.removeProperty('--ja-mapw'); try{ localStorage.removeItem('jaMapW'); }catch(e){} setTimeout(()=>{ if(jaMap) jaMap.invalidateSize(); },50); }
 function jaFiltersHtml(all,cnt,counties){
-  const chip=(k,l,n,c)=>`<button class="ja-chip ${jaFilter===k?'on':''}" style="--c:${c}" onclick="jaFilter='${k}';jaSel.clear();renderAlloc()">${l} <b>${n}</b></button>`;
-  return `<div class="ja-filters">${chip('all','All',all.length,'#0f172a')}${chip('not_home','🚪 Not home',cnt('not_home'),JA_KIND.not_home.c)}${chip('rebook','🔁 Unfinished',cnt('rebook'),JA_KIND.rebook.c)}${chip('new','🆕 New calls',cnt('new'),JA_KIND.new.c)}
+  const chip=(k,l,n,c)=>`<button class="ja-chip ${k==='all'?(jaKinds.size?'':'on'):(jaKinds.has(k)?'on':'')}" style="--c:${c}" onclick="jaToggleKind('${k}')" title="${k==='all'?'Show every type':'Click to switch on / off'}">${k!=='all'&&jaKinds.has(k)?'✓ ':''}${l} <b>${n}</b></button>`;
+  return `<div class="ja-filters">${chip('all','All',all.length,'#0f172a')}${chip('not_home','🚪 Not home',cnt('not_home'),JA_KIND.not_home.c)}${chip('rebook','🔁 Unfinished',cnt('rebook'),JA_KIND.rebook.c)}${chip('booked','📅 Booked in',cnt('booked'),JA_KIND.booked.c)}${chip('new','🆕 New calls',cnt('new'),JA_KIND.new.c)}
     ${jaCrewChips(all)}<select class="ja-county" onchange="jaCounty=this.value;jaSel.clear();renderAlloc()"><option value="">All counties</option>${counties.map(c=>`<option ${c===jaCounty?'selected':''}>${esc(c)}</option>`).join('')}</select>
     <input class="ja-q" placeholder="🔍 Name, phone, town, Eircode…" value="${esc(jaQ)}" oninput="jaQ=this.value;clearTimeout(window.jaQT);window.jaQT=setTimeout(()=>{ jaRefreshList(); jaPins(jaShown(jaItems())); },200)"></div>`; }
 function jaSelBar(){ if(!jaSel.size) return ''; return `<div class="ja-sel"><b>${jaSel.size} selected${jaOnlySel?' <span class="ja-sel-note">— list shows these only, every pin stays on the map</span>':''}</b><button class="btn-outline" onclick="jaOnlySel=!jaOnlySel;$('ja-selbar').innerHTML=jaSelBar();jaRefreshList()">${jaOnlySel?'👁 Show all jobs':'☑ Show selected only'}</button><button class="btn-outline" onclick="jaSel.clear();jaOnlySel=false;renderAlloc()">Clear</button><button class="btn-primary" onclick="jaAllocate([...jaSel])">🗓 Allocate ${jaSel.size} job${jaSel.size===1?'':'s'} →</button></div>`; }
 function jaListHtml(shown){
-  if(!shown.length) return `<div class="empty"><div class="big">✅</div>Nothing here${jaFilter!=='all'||jaCounty||jaQ?' for this filter':''}.</div>`;
-  return `<table class="s-table ja-table"><thead><tr><th></th><th>Customer</th><th>Town / county</th><th>Time / men</th><th>Was with</th><th>Waiting</th><th>Note</th><th></th></tr></thead><tbody>
+  if(!shown.length) return `<div class="empty"><div class="big">✅</div>Nothing here${jaKinds.size||jaCrews.size||jaCounty||jaQ?' for this filter':''}.</div>`;
+  return `<table class="s-table ja-table"><thead><tr><th></th><th>Customer</th><th>Town / county</th><th>Time / men</th><th>Man / day</th><th>Waiting</th><th>Note</th><th></th></tr></thead><tbody>
   ${shown.map(x=>{ const K=JA_KIND[x.kind], t=x.man?prof(x.man):null, pl=eirPlace(x.eircode), d=jaDays(x.since);
     return `<tr class="ja-row ${jaSel.has(x.id)?'sel':''}" style="--c:${K.c};--bg:${K.bg}" data-id="${x.id}" onmouseenter="jaHover('${x.id}',1)" onmouseleave="jaHover('${x.id}',0)">
       <td class="ja-ck"><input type="checkbox" ${jaSel.has(x.id)?'checked':''} onclick="jaToggle('${x.id}')"></td>
@@ -4169,7 +4227,7 @@ function jaListHtml(shown){
       <td>${pl?`<b class="ja-town">${esc(pl.town)}${pl.exact?'':' area'}</b><div class="s-sub">Co. ${esc(pl.county)} · ${esc(normEir(x.eircode))}</div>`:'<span class="s-sub">⚠ No Eircode</span>'}</td>
       <td class="ja-size">${(x.j||x.nc).est_minutes?`<b>⏱ ${esc(estLabel((x.j||x.nc).est_minutes))}</b>`:'<span class="s-sub">⏱ not set</span>'}<div>${crewMini(x.j||x.nc)}</div></td>
       <td>${t?`<div class="ja-man"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(firstName(t.full_name))}</div><div class="s-sub">${esc(dayLabel(x.booked))}</div>`:`<span class="s-sub">New · added ${esc(fmtWhen(x.since))}</span>`}</td>
-      <td><span class="ja-wait ${d>=7?'old':''}">${jaWait(x.since)}</span></td>
+      <td>${jaWhen(x)}</td>
       <td class="ja-note">${x.note?esc(x.note):'<span class="s-sub">—</span>'}</td>
       <td class="ja-act"><button class="btn-primary" onclick="jaAllocate(['${x.id}'])">🗓 Allocate</button><div>${x.eircode?`<button class="btn-outline" title="Show on the map" onclick="jaShowPin('${x.id}')">📍</button>`:''}<button class="btn-outline" onclick="jaOpenItem('${x.id}')">Open</button></div></td></tr>`; }).join('')}</tbody></table>`; }
 function jaToggle(id, fromPin){ jaSel.has(id)?jaSel.delete(id):jaSel.add(id);
@@ -4200,10 +4258,10 @@ async function jaPins(shown){
   const n=$('ja-mapnote'); if(n) n.textContent=missing?`${missing} job${missing===1?'':'s'} not on the map (no Eircode)`:'';
 }
 function jaPopup(id){ const x=jaItems().find(y=>y.id===id); if(!x) return ''; const K=JA_KIND[x.kind], pl=eirPlace(x.eircode), t=x.man?prof(x.man):null;
-  return `<div class="ja-pop" style="--c:${K.c}"><div>${jaPill(x.kind)} <span class="ja-wait ${jaDays(x.since)>=7?'old':''}">waiting ${jaWait(x.since)}</span></div>
+  return `<div class="ja-pop" style="--c:${K.c}"><div>${jaPill(x.kind)} ${x.kind==='booked'?`<span class="ja-wait soon">booked ${jaUntil(x.booked)}</span>`:`<span class="ja-wait ${jaDays(x.since)>=7?'old':''}">waiting ${jaWait(x.since)}</span>`}</div>
     <b class="ja-pop-t">${esc(x.name)}</b>
     <div>📞 ${esc(x.phone||'—')}</div><div>📍 ${pl?`<b>${esc(pl.town)}${pl.exact?'':' area'}</b>, Co. ${esc(pl.county)}`:''} · ${esc(normEir(x.eircode))}</div>
-    ${t?`<div>👷 ${esc(t.full_name)} · was ${esc(dayLabel(x.booked))}</div>`:'<div>👷 Not allocated yet</div>'}<div class="ja-crew">${crewChip(x.j||x.nc)}${estChip(x.j||x.nc)}</div>
+    ${t?`<div>👷 ${esc(t.full_name)} · ${x.kind==='booked'?'booked':'was'} ${esc(dayLabel(x.booked))}</div>`:'<div>👷 Not allocated yet</div>'}<div class="ja-crew">${crewChip(x.j||x.nc)}${estChip(x.j||x.nc)}</div>
     ${x.note?`<div class="ja-pop-n">“${esc(x.note)}”</div>`:''}
     <div class="ja-pop-b"><button class="btn-primary" onclick="jaAllocate(['${x.id}'])">🗓 Allocate</button><button class="btn-outline" onclick="jaToggle('${x.id}',1);jaMap.closePopup()">${jaSel.has(x.id)?'☑ Selected':'☐ Select'}</button><button class="btn-outline" onclick="jaOpenItem('${x.id}')">Open</button></div></div>`; }
 function jaHover(id,on,fromPin){ const r=document.querySelector(`.ja-row[data-id="${id}"]`); if(r) r.classList.toggle('hl',!!on);
@@ -4212,20 +4270,37 @@ function jaShowPin(id){ const m=jaMarkers.get(id); if(!m) return toast('That job
 // ── allocate: pick a man and a day ──
 let jaAlloc={ids:[], tid:null, day:null};
 function jaAllocate(ids){ if(blockPreview()) return; if(jaMap) jaMap.closePopup(); const items=jaItems().filter(x=>ids.includes(x.id)); if(!items.length) return;
-  const one=items.length===1&&items[0].man; jaAlloc={ids:items.map(x=>x.id), tid:one?items[0].man:(jaAlloc.tid||null), day:null}; jaAllocRender(); }
+  const one=items.length===1&&items[0].man; jaAlloc={ids:items.map(x=>x.id), tid:one?items[0].man:(jaAlloc.tid||null), day:null, month:null}; jaAllocRender(); }
 function jaAllocRender(){
   const items=jaItems().filter(x=>jaAlloc.ids.includes(x.id)), men=techs('calls'), tid=jaAlloc.tid, mon=mondayOf(new Date()), today=todayYmd();
   const dayJobs=(t,d)=>jobs.filter(j=>j.serviceman_id===t && deptOf(j)==='calls' && (sites.find(s=>s.id===j.site_id)||{}).work_date===d);
-  const dchip=d=>{ const v=ymd(d); if(v<today) return `<span class="rs-day past"><b>${d.toLocaleDateString('en-IE',{weekday:'short'})}</b><small>${d.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</small></span>`;
-    const dj=tid?dayJobs(tid,v):[], n=dj.length, hrs=dj.reduce((a,j)=>a+(+j.est_minutes||60),0); return `<button class="rs-day ja-dc ${jaAlloc.day===v?'on':''}" onclick="jaAlloc.day='${v}';jaAllocRender()"><b>${d.toLocaleDateString('en-IE',{weekday:'short'})}</b><small>${d.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</small>${tid?`<em class="${n>=6||hrs>=480?'full':''}">${n} job${n===1?'':'s'}${n?' · '+hrsLabel(hrs):''}</em>`:''}</button>`; };
-  const week=k=>[0,1,2,3,4,5].map(i=>dchip(addDays(mon,7*k+i))).join('');
+  const load=(t,v)=>{ const dj=dayJobs(t,v); return {n:dj.length, hrs:dj.reduce((a,j)=>a+(+j.est_minutes||60),0)}; };
+  if(!jaAlloc.month){ const b=jaAlloc.day?parseYmd(jaAlloc.day):new Date(); jaAlloc.month=ymd(new Date(b.getFullYear(), b.getMonth(), 1)); }
+  const m0=parseYmd(jaAlloc.month), first=mondayOf(m0), lastDay=new Date(m0.getFullYear(), m0.getMonth()+1, 0);
+  let cells='';
+  for(let d=new Date(first); d<=lastDay || d.getDay()!==1; d=addDays(d,1)){
+    if(d.getDay()===0) continue;                                   // Mon–Sat, like the diary
+    const v=ymd(d), out=d.getMonth()!==m0.getMonth(), past=v<today;
+    if(past){ cells+=`<div class="jc-d past ${out?'out':''}"><b>${d.getDate()}</b></div>`; continue; }
+    const L=tid?load(tid,v):null, cls=!L?'':L.n===0?'free':(L.n>=6||L.hrs>=480)?'full':L.n>=4?'busy':'';
+    cells+=`<button class="jc-d ${cls} ${out?'out':''} ${jaAlloc.day===v?'on':''} ${v===today?'today':''}" onclick="jaAlloc.day='${v}';jaAllocRender()" title="${esc(dayLong(v))}">
+      <b>${d.getDate()}</b>${L?`<small>${L.n?`${L.n} job${L.n===1?'':'s'}<br>${hrsLabel(L.hrs)}`:'free'}</small>`:''}</button>`;
+  }
+  const mv=k=>ymd(new Date(m0.getFullYear(), m0.getMonth()+k, 1));
+  const cal=`<div class="jc"><div class="jc-head"><button class="wk-nav" onclick="jaAlloc.month='${mv(-1)}';jaAllocRender()" ${ymd(new Date(m0.getFullYear(),m0.getMonth(),0))<today?'disabled':''} aria-label="Previous month">‹</button>
+      <b>${m0.toLocaleDateString('en-IE',{month:'long',year:'numeric'})}</b><button class="wk-nav" onclick="jaAlloc.month='${mv(1)}';jaAllocRender()" aria-label="Next month">›</button>
+      <button class="btn-outline jc-today" onclick="jaAlloc.month=null;jaAllocRender()">This month</button></div>
+    ${tid?'':'<div class="jc-hint">👆 Pick a service man to see how busy each day is</div>'}
+    <div class="jc-grid">${['Mon','Tue','Wed','Thu','Fri','Sat'].map(x=>`<span class="jc-w">${x}</span>`).join('')}${cells}</div>
+    <div class="jc-key"><span class="k free"></span>free <span class="k"></span>1–3 jobs <span class="k busy"></span>4–5 <span class="k full"></span>6+ or a full day</div></div>`;
+  // the chosen day for every man — tap one to switch
+  const dayMen=jaAlloc.day?`<div class="jc-men"><span>📅 ${esc(dayLong(jaAlloc.day))}:</span>${men.map(t=>{ const L=load(t.id,jaAlloc.day); return `<button class="jc-m ${t.id===tid?'on':''}" onclick="jaAlloc.tid='${t.id}';jaAllocRender()"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span>${esc(firstName(t.full_name))} <small>${L.n?`${L.n} · ${hrsLabel(L.hrs)}`:'free'}</small></button>`; }).join('')}</div>`:'';
   const already=tid&&jaAlloc.day?dayJobs(tid,jaAlloc.day):[];
   const towns=already.map(j=>{ const p=eirPlace(j.eircode); return p?p.town:null; }).filter(Boolean);
   openModal(`<h2>🗓 Allocate ${items.length===1?esc(items[0].name):items.length+' jobs'}</h2>
-    <div class="ja-al-list">${items.map(x=>{ const p=eirPlace(x.eircode); return `<div>${jaPill(x.kind)} <b>${esc(x.name)}</b> <span class="s-sub">${p?esc(p.town+(p.exact?'':' area')+', Co. '+p.county):'no Eircode'} · waiting ${jaWait(x.since)}</span></div>`; }).join('')}</div>
+    <div class="ja-al-list">${items.map(x=>{ const p=eirPlace(x.eircode); return `<div>${jaPill(x.kind)} <b>${esc(x.name)}</b> <span class="s-sub">${p?esc(p.town+(p.exact?'':' area')+', Co. '+p.county):'no Eircode'} · ${x.kind==='booked'?'now on '+esc(firstName(prof(x.man).full_name))+' · '+esc(dayLabel(x.booked)):'waiting '+jaWait(x.since)}</span></div>`; }).join('')}</div>
     <div class="field-group"><label>Service man</label><div class="ja-men">${men.map(t=>`<button class="team-chip ${t.id===tid?'active':''}" onclick="jaAlloc.tid='${t.id}';jaAllocRender()"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span>${esc(firstName(t.full_name))}</button>`).join('')}</div></div>
-    <div class="field-group"><label>This week</label><div class="rs-grid">${week(0)}</div></div>
-    <div class="field-group"><label>Next week</label><div class="rs-grid">${week(1)}</div></div>
+    <div class="field-group"><label>Day</label>${cal}${dayMen}</div>
     ${tid&&jaAlloc.day?`<div class="ja-al-day">📅 <b>${esc(firstName(prof(tid).full_name))} · ${esc(dayLong(jaAlloc.day))}</b> already has <b>${already.length} job${already.length===1?'':'s'}</b>${towns.length?` — ${esc([...new Set(towns)].join(', '))}`:''}. ${items.length===1?'This one':'These'} will be Job ${already.length+1}${items.length>1?`–${already.length+items.length}`:''}.
       <br>⏱ Day after this: about <b>${hrsLabel(already.reduce((a,j)=>a+(+j.est_minutes||60),0)+items.reduce((a,x)=>a+(+(x.j||x.nc).est_minutes||60),0))}</b> of work${already.reduce((a,j)=>a+(+j.est_minutes||60),0)+items.reduce((a,x)=>a+(+(x.j||x.nc).est_minutes||60),0)>480?' <span class="ja-warn">— more than a full day</span>':''}${items.some(x=>+(x.j||x.nc).crew>1)?` · <span class="ja-warn">${CREW_ICON[Math.max(...items.map(x=>+(x.j||x.nc).crew||1))]} ${Math.max(...items.map(x=>+(x.j||x.nc).crew||1))}-man job — make sure he has help that day</span>`:''}</div>`:''}
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" ${tid&&jaAlloc.day?'':'disabled'} onclick="jaDoAllocate()">🗓 Allocate${tid&&jaAlloc.day?` to ${esc(firstName(prof(tid).full_name))} · ${esc(dayLabel(jaAlloc.day))}`:''}</button></div>`);
@@ -4237,7 +4312,10 @@ async function jaTargetSite(tid, day){
   const { error }=await sb.from('sites').insert(rows); if(error) throw error; await loadData();
   t=sites.find(x=>x.serviceman_id===tid&&deptOf(x)==='calls'&&x.work_date===day); if(!t) throw new Error('Could not create the day'); return t; }
 async function jaDoAllocate(){
-  const {ids, tid, day}=jaAlloc; const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Allocating…';
+  const {ids, tid, day}=jaAlloc;
+  const noSheet=jaItems().filter(x=>ids.includes(x.id) && x.kind==='new' && !x.nc.pdf_path);
+  if(noSheet.length) return toast(`Add the job sheet first: ${noSheet.map(x=>x.name).join(', ')} (click Open on ${noSheet.length===1?'it':'them'})`,7000);
+  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Allocating…';
   try{
     const items=jaItems().filter(x=>ids.includes(x.id)); let done=0;
     for(const x of items){
@@ -4247,14 +4325,15 @@ async function jaDoAllocate(){
         if(c.pdf_path){ const f=await sb.storage.from(BUCKET).download(c.pdf_path); if(f.error) throw f.error;   // copy into the man's folder, then tidy up
           const u=await sb.storage.from(BUCKET).upload(dest, f.data, {contentType:'application/pdf'}); if(u.error) throw u.error; }
         const row={id:newId, site_id:target.id, serviceman_id:tid, department:'calls', title:`Job ${n}${c.title?' – '+c.title:''}`, ref_no:c.ref_no||c.customer_phone||null, notes:c.notes||null,
-          pdf_path:c.pdf_path?dest:null, pdf_bytes:c.pdf_bytes||0, customer_phone:c.customer_phone||null, eircode:c.eircode||null, avail:c.avail||null, tech_unread:true, admin_unread:false, completed:false, last_activity_at:now};
+          pdf_path:c.pdf_path?dest:null, pdf_bytes:c.pdf_bytes||0, customer_phone:c.customer_phone||null, customer_phone2:c.customer_phone2||null, customer_email:c.customer_email||null, eircode:c.eircode||null, avail:c.avail||null,
+          est_minutes:c.est_minutes||null, crew:c.crew||null, hist_skip:Array.isArray(c.hist_skip)?c.hist_skip:[], tech_unread:true, admin_unread:false, completed:false, last_activity_at:now};
         const ins=await sb.from('jobs').insert(row); if(ins.error) throw ins.error;
         await sb.from('new_calls').delete().eq('id',c.id); if(c.pdf_path) await sb.storage.from(BUCKET).remove([c.pdf_path]);
         await sb.from('comments').insert({job_id:newId, author_id:me.id, kind:'event', body:`🗓 Allocated from Job allocations to ${dayLong(day)}`});
       } else {
         const j=x.j, from=sites.find(s=>s.id===j.site_id)||{}, rest=(j.title||'').replace(/^job\s*\d+\s*/i,'');
         const upd={site_id:target.id, title:/^job\s*\d+/i.test(j.title||'')?`Job ${n}${rest?' '+rest:''}`:j.title, tech_unread:true, last_activity_at:now, outcome:null, completed:false, completed_at:null};
-        await saveHistRows([histRow(j)]);
+        if(['rebook','not_home'].includes(jobOutcome(j))) await saveHistRows([histRow(j)]);
         if(tid!==j.serviceman_id){ const oldPre=filePrefix('calls',j.serviceman_id)+'/', newPre=filePrefix('calls',tid)+'/';
           const mv=async p=>{ if(!p||!p.startsWith(oldPre)) return p; const np=newPre+p.slice(oldPre.length); const r=await sb.storage.from(BUCKET).move(p,np); if(r.error) throw r.error; return np; };
           upd.serviceman_id=tid; upd.pdf_path=await mv(j.pdf_path); upd.marked_path=await mv(j.marked_path); }
@@ -4268,39 +4347,65 @@ async function jaDoAllocate(){
   }catch(e){ btn.disabled=false; btn.textContent='🗓 Try again'; toast('Could not allocate: '+(e.message||e),6000); }
 }
 // ── ＋ Add new calls (no man or day yet) ──
-let jaFiles=[];
-function jaAddCalls(editId){ if(blockPreview()) return; const c=editId?newCalls.find(x=>x.id===editId)||{}:{}; jaFiles=[];
-  openModal(`<h2>${editId?'✎ New call':'＋ Add new calls'}</h2>
-    ${editId?'':`<div class="ja-drop" id="ja-drop" onclick="$('ja-files').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');jaDropMany(event.dataTransfer.files)">
-      <b>📥 Drop a load of job sheets here</b><span>PDFs or photos — each one becomes a new call. Fill in the details after, or one at a time below.</span><input type="file" id="ja-files" accept="application/pdf,image/*" multiple hidden onchange="jaDropMany(this.files)"></div>
-      <div class="ja-or">or add one</div>`}
+// ── 🆕 New call form — same as the Add job form, but no man or day yet ──
+let jaEditId=null;
+function jaAddCalls(editId){ if(blockPreview()) return;
+  const c=editId?(newCalls.find(x=>x.id===editId)||{}):{}; jaEditId=editId||null; pendingFiles=[];
+  openModal(`<h2>${editId?'✎ New call':'🆕 Add a new call'} <span class="nc-sub">— goes to Job allocations, not given to a man or day yet</span></h2>
     <div class="slot-form">
-      <div class="field-group"><label>Customer name</label><input id="jn-name" value="${esc(c.title||'')}" placeholder="e.g. Mary Kelly"></div>
-      <div class="field-group"><label>Phone number <span class="optional">(= job number)</span></label><input id="jn-ph" value="${esc(c.customer_phone||'')}" placeholder="e.g. 087 123 4567"></div>
-      <div class="field-group"><label>Eircode</label><input id="m-eir" value="${esc(c.eircode||'')}" maxlength="9" style="text-transform:uppercase" placeholder="e.g. F42 X7Y2" oninput="eirFormHint()" onblur="if(this.value){this.value=normEir(this.value);eirFormHint();}"><div class="eir-town" id="m-eir-town">${c.eircode?'📍 '+esc(eirPlaceText(c.eircode,true)):''}</div></div>
-      ${crewFields(c)}
-      <div class="field-group"><label>Customer available</label><select id="jn-av"><option value="">Any time</option><option value="am" ${c.avail==='am'?'selected':''}>Between 8am – 12</option><option value="pm" ${c.avail==='pm'?'selected':''}>Between 12 – 5pm</option></select></div>
-      <div class="field-group sf-wide"><label>Note <span class="optional">(what's the call about)</span></label><input id="jn-note" value="${esc(c.notes||'')}" placeholder="e.g. Back door dropped, won't lock"></div>
-      ${editId&&c.pdf_path?'<div class="field-group sf-wide"><span class="s-sub">📄 Job sheet attached</span></div>':`<div class="field-group sf-wide"><label>Job sheet <span class="optional">(PDF or photo — can be added later)</span></label><input type="file" id="jn-file" accept="application/pdf,image/*"></div>`}
+      <div class="field-group"><label>Job number</label><input id="m-ref" placeholder="e.g. 4521" autocomplete="off" value="${esc(c.ref_no||'')}"></div>
+      <div class="field-group"><label>Customer name</label><input id="m-cust" placeholder="e.g. Mary Kelly" autocomplete="off" value="${esc(c.title||'')}"></div>
+      <div class="field-group"><label>Phone number</label><input id="m-ph" type="tel" placeholder="e.g. 087 123 4567" autocomplete="off" value="${esc(c.customer_phone||'')}"></div>
+      <div class="field-group"><label>Second phone <span class="optional">(if any)</span></label><input id="m-ph2" type="tel" placeholder="optional" autocomplete="off" value="${esc(c.customer_phone2||'')}"></div>
+      <div class="field-group sf-wide"><label>Email address <span class="optional">(if any)</span></label><input id="m-email" type="email" placeholder="e.g. mary@gmail.com" autocomplete="off" value="${esc(c.customer_email||'')}"></div>
+      ${hasRoute?availField(c):''}
     </div>
-    <div class="modal-actions">${editId?`<button class="btn-danger" onclick="jaDeleteCall('${editId}')">🗑 Delete</button>`:''}<button class="btn-outline" onclick="closeModal()">Close</button>${editId?'':`<button class="btn-outline" onclick="jaSaveCall(null,true)">＋ Save &amp; add another</button>`}<button class="btn-primary ja-add" id="m-save" onclick="jaSaveCall(${editId?`'${editId}'`:'null'})">✓ Save new call</button></div>`); }
+    <div class="nc-wa">📲 WhatsApp reminders are set up when the call is allocated to a man and a day.</div>
+    <div id="m-hist" class="hist-warn hidden"></div>
+    <label class="drop" id="m-drop" for="m-file">
+      <span class="drop-icon">📄</span>
+      <span class="drop-main">${c.pdf_path?'📄 Job sheet attached — drag a new one here to replace it':'Drag the job sheet here'}</span>
+      <span class="drop-sub">or click to choose · PDF or photos (several photos become one PDF)${c.pdf_path?'':' · can be added later'}</span>
+    </label>
+    <input type="file" id="m-file" accept="application/pdf,image/*" multiple style="display:none" onchange="filesPicked(this.files);this.value=''">
+    <div class="file-list" id="m-files"></div>
+    <div class="field-group"><label>Note <span class="optional">(what's the call about — goes to the man when it's allocated)</span></label><textarea id="m-notes" rows="2">${esc(c.notes||'')}</textarea></div>
+    <div class="modal-actions">${editId?`<button class="btn-danger" onclick="jaDeleteCall('${editId}')">🗑 Delete</button>`:''}<button class="btn-outline" onclick="closeModal()">Cancel</button>${editId?'':`<button class="btn-outline" id="m-save2" onclick="jaSaveCall(null,true)">＋ Save &amp; add another</button>`}<button class="btn-primary ja-add" id="m-save" onclick="jaSaveCall(${editId?`'${editId}'`:'null'})">✓ Save new call</button></div>`);
+  formSkip=new Set(Array.isArray(c.hist_skip)?c.hist_skip:[]);
+  ['m-ref','m-ph','m-ph2','m-eir'].forEach(id=>{ const e=$(id); if(e) e.addEventListener('input',histFormCheck); });
+  attachDrop(); histFormCheck(); if(c.eircode) eirFormHint();
+  setTimeout(()=>{ const r=$('m-ref'); if(r) r.focus(); },50);
+}
 function jaEditCall(id){ jaAddCalls(id); }
-async function jaPutFile(f, id){ const path=`calls/unallocated/${id}/original.pdf`, bytes=await buildUploadPdf([f]);
+async function jaPutFile(files, id){ const path=`calls/unallocated/${id}/original.pdf`, bytes=await buildUploadPdf(files);
   const up=await sb.storage.from(BUCKET).upload(path, new Blob([bytes],{type:'application/pdf'}),{contentType:'application/pdf', upsert:true}); if(up.error) throw up.error; return {path, bytes:bytes.length}; }
 async function jaSaveCall(editId, again){
-  const name=$('jn-name').value.trim(), ph=$('jn-ph').value.trim(), eir=$('m-eir').value.trim()?normEir($('m-eir').value):'';
-  if(!name && !ph) return toast('Add the customer name or phone number.'); if(eir && !eirValid(eir)) return toast("That Eircode doesn't look right.");
-  const row={title:name||null, customer_phone:ph||null, ref_no:phoneKey(ph)||null, eircode:eir||null, avail:$('jn-av').value||null, notes:$('jn-note').value.trim()||null, ...readCrew()};
-  try{ if(editId){ const r=await sb.from('new_calls').update(row).eq('id',editId); if(r.error) throw r.error; }
-    else { const id=uuid(); const f=$('jn-file')&&$('jn-file').files[0]; if(f){ const u=await jaPutFile(f,id); row.pdf_path=u.path; row.pdf_bytes=u.bytes; }
-      const r=await sb.from('new_calls').insert({id, ...row, created_by:me.id}); if(r.error) throw r.error; }
-  }catch(e){ return toast('Not saved: '+(e.message||e),6000); }
-  await loadNewCalls(); if(eir) eirTownLookup(eir);
-  if(again){ jaAddCalls(); toast(`🆕 ${name||ph} added — next one`); } else { closeModal(); toast(`🆕 ${name||ph} added to Job allocations`); }
+  const ref=$('m-ref').value.trim(), cust=$('m-cust').value.trim(), ph=$('m-ph').value.trim(), email=$('m-email').value.trim();
+  if(!ref && !cust && !ph) return toast('Add the job number, customer name or phone number.');
+  if(email && !/^\S+@\S+\.\S+$/.test(email)) return toast('That email address doesn\'t look right.');
+  const route=readAvail(); if(route===false) return;
+  const row={title:cust||null, ref_no:ref||phoneKey(ph)||null, customer_phone:ph||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:email||null,
+    eircode:route?route.eircode:null, avail:route?route.avail:null, est_minutes:route?route.est_minutes:null, crew:route?route.crew:null,
+    notes:$('m-notes').value.trim()||null, hist_skip:[...formSkip]};
+  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
+  try{ const id=editId||uuid();
+    if(pendingFiles.length){ const u=await jaPutFile(pendingFiles, id); row.pdf_path=u.path; row.pdf_bytes=u.bytes; }
+    const r=editId ? await sb.from('new_calls').update(row).eq('id',id) : await sb.from('new_calls').insert({id, ...row, created_by:me.id});
+    if(r.error) throw r.error;
+  }catch(e){ btn.disabled=false; btn.textContent='✓ Save new call'; return toast('Not saved: '+(e.message||e)+(/column/i.test(e.message||'')?' — run update-25 in Supabase':''),7000); }
+  pendingFiles=[]; await loadNewCalls(); if(row.eircode) eirTownLookup(row.eircode);
+  const who=cust||ph||ref;
+  if(again){ jaAddCalls(); toast(`🆕 ${who} added — next one`); } else { closeModal(); toast(`🆕 ${who} ${editId?'saved':'added to Job allocations'}`); }
   if(jaOpen) renderAlloc(); }
+// 📥 a pile of sheets at once — each becomes a new call straight away, details filled in after
+function jaBulkAdd(){ if(blockPreview()) return;
+  openModal(`<h2>📥 Add a pile of job sheets</h2><p class="nc-p">Each PDF or photo becomes its own <b>new call</b> straight away, named after the file. Then click <b>Open</b> on each one to fill in the phone, Eircode and so on.</p>
+    <div class="ja-drop" id="ja-drop" onclick="$('ja-files').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');jaDropMany(event.dataTransfer.files)">
+      <b>📥 Drop the job sheets here</b><span>or click to choose several</span><input type="file" id="ja-files" accept="application/pdf,image/*" multiple hidden onchange="jaDropMany(this.files)"></div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button></div>`); }
 async function jaDropMany(fl){ const files=[...fl||[]].filter(f=>/pdf|image/.test(f.type)||/\.(pdf|jpe?g|png)$/i.test(f.name)); if(!files.length) return;
   $('ja-drop').innerHTML=`<span class="spin" style="border-color:#fbcfe8;border-top-color:#ff2fb3"></span> Adding ${files.length} new call${files.length===1?'':'s'}…`;
-  let n=0; for(const f of files){ try{ const id=uuid(), u=await jaPutFile(f,id); const nm=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
+  let n=0; for(const f of files){ try{ const id=uuid(), u=await jaPutFile([f],id); const nm=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
       const r=await sb.from('new_calls').insert({id, title:nm, pdf_path:u.path, pdf_bytes:u.bytes, created_by:me.id}); if(!r.error) n++; }catch(e){ console.warn(e); } }
   closeModal(); await loadNewCalls(); if(jaOpen) renderAlloc(); toast(`🆕 ${n} new call${n===1?'':'s'} added — click Open on each to fill in the phone and Eircode`,6000); }
 async function jaDeleteCall(id){ const c=newCalls.find(x=>x.id===id); if(!c) return; if(!confirm(`Delete the new call "${c.title||c.customer_phone||''}"?`)) return;
@@ -4319,8 +4424,8 @@ function crewFields(j){ j=j||{}; const c=+j.crew||1, m=+j.est_minutes||0;
 function readCrew(){ const e=$('m-est'), c=document.querySelector('input[name=m-crew]:checked'); return {est_minutes:e&&e.value?+e.value:null, crew:c?+c.value:null}; }
 function hrsLabel(m){ const h=Math.floor(m/60), r=m%60; return `${h}${r>=30?'½':''} hr${h===1&&r<30?'':'s'}`; }
 function crewMini(j){ const c=+(j&&j.crew)||1; return `<span class="crew-chip c${c}">${CREW_ICON[c]} ${c}-man</span>`; }
-function jaCrewChips(all){ const base=all.filter(x=>jaFilter==='all'||x.kind===jaFilter), n=c=>base.filter(x=>(+(x.j||x.nc||{}).crew||1)===c).length;
-  const b=(c,l)=>`<button class="ja-mchip ${jaCrew===c?'on':''} ${c?'m'+c:''}" onclick="jaCrew=${c};jaSel.clear();renderAlloc()">${l}${c?` <b>${n(c)}</b>`:''}</button>`;
+function jaCrewChips(all){ const base=all.filter(jaKindOk), n=c=>base.filter(x=>(+(x.j||x.nc||{}).crew||1)===c).length;
+  const b=(c,l)=>`<button class="ja-mchip ${c?(jaCrews.has(c)?'on':''):(jaCrews.size?'':'on')} ${c?'m'+c:''}" onclick="jaToggleCrew(${c})">${l}${c?` <b>${n(c)}</b>`:''}</button>`;
   return `<span class="ja-men-f">${b(0,'Any men')}${b(1,'👷 1-man')}${b(2,'👷👷 2-man')}${b(3,'👷👷👷 3-man')}</span>`; }
 
 // ══ ✍️ Customer signature — when the service man ticks All done, the customer signs on his phone ══
@@ -4861,8 +4966,25 @@ async function deleteWeek(){ if(blockPreview()) return;
 }
 
 // ── Modals ─────────────────────────────────────────────────────────
-function openModal(html){ $('modal-root').innerHTML=`<div class="modal-back" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`; const f=$('modal-root').querySelector('input,textarea'); if(f&&window.innerWidth>720) f.focus(); }
-function closeModal(){ if(window._confirmResolve){ const r=window._confirmResolve; window._confirmResolve=null; r(false); } $('modal-root').innerHTML=''; }
+// pop-up boxes can be dragged by their top bar (they stay where you put them until closed)
+let mdOff=null;
+function openModal(html){ if(!$('modal-root').innerHTML.trim()) mdOff=null;   // a fresh box starts in the middle; a box that redraws stays put
+  $('modal-root').innerHTML=`<div class="modal-back" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="md-grip" title="Drag to move this box · double-click to put it back" onpointerdown="mdDrag(event)" ondblclick="mdReset()"><span></span></div>${html}</div></div>`;
+  if(mdOff) mdPlace(mdOff.x, mdOff.y);
+  const f=$('modal-root').querySelector('input,textarea'); if(f&&window.innerWidth>720) f.focus(); }
+function closeModal(){ if(window._confirmResolve){ const r=window._confirmResolve; window._confirmResolve=null; r(false); } $('modal-root').innerHTML=''; mdOff=null; }
+function mdPlace(x,y){ const m=document.querySelector('#modal-root .modal'); if(!m) return; m.style.transform=`translate(${x}px,${y}px)`; }
+function mdReset(){ mdOff=null; const m=document.querySelector('#modal-root .modal'); if(m) m.style.transform=''; }
+function mdDrag(e){ const m=document.querySelector('#modal-root .modal'), g=e.currentTarget, back=m.parentElement; if(!m) return;
+  e.preventDefault(); g.setPointerCapture(e.pointerId);
+  const start={x:e.clientX, y:e.clientY}, o=mdOff||{x:0,y:0}, r=m.getBoundingClientRect(), base={l:r.left-o.x, t:r.top-o.y};
+  back.classList.add('md-moving');
+  const move=ev=>{ let x=o.x+ev.clientX-start.x, y=o.y+ev.clientY-start.y;
+    // keep at least the top bar on screen
+    x=Math.max(-base.l-r.width+120, Math.min(window.innerWidth-base.l-120, x)); y=Math.max(-base.t, Math.min(window.innerHeight-base.t-48, y));
+    mdOff={x,y}; mdPlace(x,y); };
+  const up=()=>{ g.removeEventListener('pointermove',move); g.removeEventListener('pointerup',up); g.removeEventListener('pointercancel',up); back.classList.remove('md-moving'); };
+  g.addEventListener('pointermove',move); g.addEventListener('pointerup',up); g.addEventListener('pointercancel',up); }
 // A proper in-app confirm box (resolves true/false)
 function confirmBox({icon='⚠️', title, body, ok='Proceed', okClass='btn-primary'}){
   return new Promise(res=>{
@@ -5659,7 +5781,39 @@ function openReschedule(id){ if(blockPreview()) return;
     <div class="field-group"><label>Next week</label><div class="rs-grid">${week(1)}</div></div>
     <div class="field-group"><label>Or another date</label><input type="date" id="rs-date" onchange="document.querySelectorAll('input[name=rs]').forEach(r=>r.checked=false)"></div>
     <div class="field-group"><label>Reason <span class="optional">(optional — added to the chat)</span></label><input id="rs-why" placeholder="e.g. customer not home"></div>
-    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="doReschedule()">📅 Move job</button></div>`);
+    <div class="modal-actions">${isOffice&&deptOf(j)==='calls'&&hasNewCalls?`<button class="btn-outline ja-sendback" onclick="sendBackToAlloc('${j.id}')">📋 Send back to Job allocations</button>`:''}<button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="doReschedule()">📅 Move job</button></div>`);
+}
+
+// 📋 take a job off the man's day and put it back in Job allocations as a new call (details, time, men, sheet + mark-ups kept)
+async function sendBackToAlloc(id){ if(blockPreview()) return;
+  const j=jobs.find(x=>x.id===id); if(!j) return;
+  const st=siteOf(j)||{}, man=prof(j.serviceman_id), name=custName(j)||j.title;
+  const { data:cm }=await sb.from('comments').select('kind,body,photo_path,author_id,created_at').eq('job_id',j.id).order('created_at');
+  const msgs=(cm||[]).filter(c=>c.kind!=='event'), texts=msgs.filter(c=>(c.body||'').trim() && !/^✍️ Signed by/.test(c.body)), photos=msgs.filter(c=>c.photo_path).length;
+  const waTold=['sent','confirmed','phone_ok','cant','noreply'].includes(j.wa_status);
+  const ok=await confirmBox({icon:'📋', title:'Send back to Job allocations?', okClass:'btn-primary', ok:'📋 Send back',
+    body:`<b>${esc(name)}</b> comes off ${esc(firstName(man.full_name))}'s ${st.work_date?esc(dayLong(st.work_date)):'day'} and goes back to <b>Job allocations</b> as a 🆕 new call — with its details, time, men needed and job sheet${j.marked_path?' (with the mark-ups)':''}.
+      ${texts.length?`<br>💬 Its ${texts.length} chat message${texts.length===1?' is':'s are'} copied into the note.`:''}
+      ${photos?`<br><b>⚠ ${photos} photo${photos===1?'':'s'} in the chat can't be kept.</b>`:''}
+      ${waTold?`<br><b>⚠ The customer has already had a WhatsApp for ${st.work_date?esc(dayLong(st.work_date)):'this day'} — let them know it's changing.</b>`:''}`});
+  if(!ok) return;
+  try{
+    const newId=uuid(), src=j.marked_path||j.pdf_path; let pdf_path=null, pdf_bytes=0;
+    if(src){ const f=await sb.storage.from(BUCKET).download(src); if(f.error) throw f.error; pdf_path=`calls/unallocated/${newId}/original.pdf`;
+      const u=await sb.storage.from(BUCKET).upload(pdf_path, f.data, {contentType:'application/pdf'}); if(u.error) throw u.error; pdf_bytes=f.data.size||0; }
+    const chatNote=texts.map(c=>`${firstName(prof(c.author_id).full_name)||'?'}: ${c.body.trim()}`).join('\n');
+    const notes=[j.notes, chatNote?`From the chat (${firstName(man.full_name)}'s ${st.work_date?dayLabel(st.work_date):'day'}):\n${chatNote}`:''].filter(Boolean).join('\n\n')||null;
+    const row={id:newId, title:name||null, ref_no:j.ref_no||null, customer_phone:j.customer_phone||null, customer_phone2:j.customer_phone2||null, customer_email:j.customer_email||null,
+      eircode:j.eircode||null, avail:j.avail||null, est_minutes:j.est_minutes||null, crew:j.crew||null, notes, hist_skip:Array.isArray(j.hist_skip)?j.hist_skip:[], pdf_path, pdf_bytes, created_by:me.id};
+    const ins=await sb.from('new_calls').insert(row); if(ins.error){ if(pdf_path) await sb.storage.from(BUCKET).remove([pdf_path]); throw ins.error; }
+    if(['rebook','not_home'].includes(jobOutcome(j))) await saveHistRows([histRow(j)]);   // a visit that happened still counts as a call
+    const paths=[j.pdf_path,j.marked_path, ...await chatPhotoPaths([j.id]), ...importPathsFor([j.id])].filter(Boolean);
+    if(paths.length) await sb.storage.from(BUCKET).remove(paths);
+    const del=await sb.from('jobs').delete().eq('id',j.id); if(del.error) throw del.error;
+    closeModal(); if(job && job.id===j.id){ dirty=false; closeJob(); }
+    jobs=jobs.filter(x=>x.id!==j.id); await loadNewCalls(); await loadData(); rerenderCurrent();
+    toast(`📋 ${name} is back in Job allocations as a new call`,5000);
+  }catch(e){ toast('Could not send it back: '+(e.message||e),7000); }
 }
 async function doReschedule(){
   const j=jobs.find(x=>x.id===reschedId); if(!j) return closeModal();
