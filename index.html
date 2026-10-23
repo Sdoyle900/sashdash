@@ -743,6 +743,14 @@
     .ja-ck{width:28px}.ja-name{font-weight:700;color:#0f172a;white-space:nowrap}.ja-sub2{display:flex;gap:6px;align-items:center;margin-top:3px;white-space:nowrap}
     .ja-man{display:flex;align-items:center;gap:5px;white-space:nowrap}
     .ja-note{max-width:190px;color:#475569;font-size:12.5px;line-height:1.35}
+    .ja-undo{font-size:12px;padding:4px 7px;margin-left:4px}
+    .st-now{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.5;margin:-4px 0 14px}
+    .st-opts{display:flex;gap:16px;flex-wrap:wrap;font-weight:600;font-size:14px}.st-opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+    .st-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.st-hint{color:var(--slate);font-size:12.5px;margin:4px 0 0}
+    .ja-onote{min-width:118px;width:128px;max-width:128px}
+    .ja-on{width:100%;min-height:38px;resize:none;border:1.5px dashed #cbd5e1;border-radius:8px;padding:6px 8px;font:inherit;font-size:12.5px;line-height:1.35;background:#fffdf5;color:var(--navy);overflow:hidden}
+    .ja-on:hover{border-color:#94a3b8}.ja-on:focus{outline:none;border-style:solid;border-color:var(--indigo);background:#fff;box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+    .ja-on::placeholder{color:#94a3b8}.ja-onby{font-size:11px;color:#94a3b8;margin-top:2px;min-height:13px}
     .ja-act{white-space:nowrap;text-align:right}.ja-act .btn-primary{font-size:12.5px;padding:6px 10px;width:100%}.ja-act div{display:flex;gap:4px;margin-top:4px}.ja-act div .btn-outline{flex:1;font-size:12px;padding:4px 6px}
     .ja-pill{font-size:10.5px;padding:1px 7px}
     .crew-b{margin-left:auto;display:inline-flex;align-items:center;gap:2px;font-size:15px;line-height:1;background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:999px;padding:3px 7px 3px 6px}
@@ -757,7 +765,8 @@
     .ja-warn{color:#92400e;font-weight:700}
     .ja-size{white-space:nowrap}.ja-size b{color:#166534;font-size:13px}.ja-size div{margin-top:4px}
     .ja-grid{grid-template-columns:minmax(0,2.15fr) minmax(300px,1fr) !important}
-    .ja-note{max-width:150px !important}.ja-table td{padding:9px 6px !important}
+    .ja-note{max-width:130px !important}.ja-table td{padding:9px 5px !important}
+    .ja-table th:nth-child(7),.ja-table th:nth-child(8){white-space:normal}
     .ja-size .crew-chip{font-size:11px;padding:2px 7px}
     .ja-man{font-size:13px}
     .crew-chip{color:#334155}
@@ -792,7 +801,9 @@
     .p-sig{margin:18px 0;border:2px solid #16a34a;border-radius:10px;padding:10px 14px;page-break-inside:avoid}.p-sig.no{border-color:#f59e0b}
     .p-sig-box{border-bottom:2px solid #94a3b8;height:150px;display:flex;align-items:flex-end;margin:6px 0 10px}.p-sig-box img{max-height:150px;max-width:100%}
     .crew-b{white-space:nowrap;flex:none}
-    .ja-grid.ja-sgrid{grid-template-columns:minmax(0,1fr) 16px var(--ja-mapw,36%) !important;gap:0 !important}
+    .ja-grid.ja-sgrid{grid-template-columns:minmax(0,1fr) 16px var(--ja-mapw,30%) !important;gap:0 !important}
+    .ja-table td:nth-child(2){max-width:170px}.ja-table td:nth-child(2) .ja-sub2{flex-wrap:wrap;white-space:normal}.ja-table td:nth-child(2) .ja-sub2 .s-sub{white-space:nowrap}
+    @media (max-width:1400px){ .ja-table{font-size:12.5px} .ja-table td{padding:8px 4px !important} .ja-onote{min-width:108px;width:112px;max-width:112px} }
     .ja-split{align-self:stretch;cursor:col-resize;display:flex;align-items:center;justify-content:center;touch-action:none;min-height:420px}
     .ja-split span{width:6px;height:64px;border-radius:999px;background:#cbd5e1;box-shadow:0 0 0 1px #fff inset;transition:background .15s,height .15s}
     .ja-split:hover span,.ja-split.drag span{background:#4f46e5;height:120px}
@@ -1255,7 +1266,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-23-2200';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-24-0900';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -4353,7 +4364,7 @@ function jaItems(){
 }
 function jaShown(all){ const q=norm(jaQ);
   return all.filter(x=>jaKindOk(x) && (!jaCounty || (eirPlace(x.eircode)||{}).county===jaCounty) && jaCrewOk(x)
-    && (!q || norm([x.title,x.phone,x.eircode,eirPlaceText(x.eircode,true),x.note,x.man?prof(x.man).full_name:''].join(' ')).includes(q))); }
+    && (!q || norm([x.title,x.phone,x.eircode,eirPlaceText(x.eircode,true),x.note,(officeNotes[x.id]||{}).body,x.man?prof(x.man).full_name:''].join(' ')).includes(q))); }
 const jaDays=iso=>{ const a=new Date(iso), b=new Date(); a.setHours(12,0,0,0); b.setHours(12,0,0,0); return Math.max(0,Math.round((b-a)/864e5)); };
 const jaWait=iso=>{ const d=jaDays(iso); return d===0?'today':d===1?'since yesterday':`${d} days`; };
 function jaPill(k){ const K=JA_KIND[k]; return `<span class="ja-pill" style="--c:${K.c};--bg:${K.bg}">${K.ico} ${K.short}</span>`; }
@@ -4364,6 +4375,26 @@ function jaBox(list){
   return `<button class="folder-box ja-box ${all?'':'empty'}" onclick="openAlloc()">
     <span class="f-ico">📋</span><span class="f-txt"><b>Job allocations</b><small>${all?`<span class="ja-c" style="--c:${JA_KIND.not_home.c}">● ${nh} not home</span> <span class="ja-c" style="--c:${JA_KIND.rebook.c}">● ${rb} unfinished</span> <span class="ja-c" style="--c:${JA_KIND.booked.c}">● ${bk} booked in</span> <span class="ja-c" style="--c:${JA_KIND.new.c}">● ${nc} new call${nc===1?'':'s'}</span>`:'Nothing to allocate — click to add new calls'}</small></span>
     <span class="f-n">${all}</span><span class="f-arrow">›</span></button>`; }
+// 📝 Office notes — typed straight into the Job allocations list; office + service department only (update-34)
+let officeNotes={}, hasONotes=true; const onoteT={};
+async function jaLoadONotes(){ if(!hasONotes || !isOffice) return; const r=await sb.from('office_notes').select('*'); if(r.error){ hasONotes=false; return; } officeNotes={}; (r.data||[]).forEach(n=>officeNotes[n.item_id]=n); }
+function jaONoteBy(n){ if(!n||!n.updated_at) return ''; const d=new Date(n.updated_at); return `${esc(firstName(prof(n.updated_by).full_name)||'')} · ${d.toLocaleDateString('en-IE',{day:'numeric',month:'short'})} ${d.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})}`; }
+function jaONoteCell(id){ if(!hasONotes) return '<span class="s-sub" title="Run update-34 in Supabase">—</span>'; const n=officeNotes[id]||{};
+  return `<textarea class="ja-on" data-id="${id}" rows="2" placeholder="Click to add a note…" onclick="event.stopPropagation()" oninput="autoGrow(this);jaONoteType(this)" onblur="jaONoteSave(this)" onkeydown="if(event.key==='Escape')this.blur()">${esc(n.body||'')}</textarea><div class="ja-onby" data-by="${id}">${jaONoteBy(n)}</div>`; }
+function jaONoteType(el){ clearTimeout(onoteT[el.dataset.id]); const b=document.querySelector(`.ja-onby[data-by="${el.dataset.id}"]`); if(b) b.textContent='typing…'; onoteT[el.dataset.id]=setTimeout(()=>jaONoteSave(el),1500); }
+async function jaONoteSave(el){ const id=el.dataset.id; clearTimeout(onoteT[id]); const body=el.value.trim(), old=officeNotes[id]||{};
+  const b=document.querySelector(`.ja-onby[data-by="${id}"]`);
+  if(body===(old.body||'')){ if(b) b.innerHTML=jaONoteBy(old); return; }
+  if(b) b.textContent='saving…';
+  const row={item_id:id, body:body||null, updated_by:me.id, updated_at:new Date().toISOString()};
+  const r=body ? await sb.from('office_notes').upsert(row,{onConflict:'item_id'}) : await sb.from('office_notes').delete().eq('item_id',id);
+  if(r.error){ if(b) b.innerHTML='<span style="color:#b91c1c">⚠ not saved</span>'; return toast('Office note not saved: '+r.error.message,6000); }
+  if(body) officeNotes[id]=row; else delete officeNotes[id];
+  const b2=document.querySelector(`.ja-onby[data-by="${id}"]`); if(b2) b2.innerHTML=body?'✓ saved · '+jaONoteBy(row):''; }
+// keep what's being typed if the list redraws underneath (new data arriving)
+function jaKeepTyping(fn){ const a=document.activeElement; if(!a || !a.classList || !a.classList.contains('ja-on')) return fn();
+  const id=a.dataset.id, v=a.value, s0=a.selectionStart, s1=a.selectionEnd; fn();
+  const t=document.querySelector(`.ja-on[data-id="${id}"]`); if(t){ t.value=v; t.focus(); try{ t.setSelectionRange(s0,s1); }catch(e){} autoGrow(t); } }
 async function jaLoadNotes(){
   const fl=dJobs('calls').filter(j=>['not_home','rebook'].includes(jobOutcome(j))), key=fl.map(j=>j.id+j.last_activity_at).join();
   if(key===jaNotesFor) return; jaNotesFor=key; jaNotes={}; if(!fl.length) return;
@@ -4372,12 +4403,13 @@ async function jaLoadNotes(){
 }
 async function openAlloc(){ if(job){ dirty=false; closeJob(); } jaOpen=true; dept='calls'; renderDeptBar();
   $('view-portal').classList.add('hidden'); $('view-dashboard').classList.remove('hidden'); window.scrollTo(0,0);
-  await Promise.all([loadNewCalls(), jaLoadNotes()]); renderAlloc(); }
+  await Promise.all([loadNewCalls(), jaLoadNotes(), jaLoadONotes()]); renderAlloc(); }
 function closeAlloc(){ jaOpen=false; jaSel.clear(); if(jaMap){ jaMap.remove(); jaMap=null; jaMarkers.clear(); } showDashboard(); }
 let jaOnlySel=false;
 const jaListItems=shown=>jaOnlySel&&jaSel.size ? shown.filter(x=>jaSel.has(x.id)) : shown;
-function jaRefreshList(){ const l=$('ja-list'); if(l) l.innerHTML=jaListHtml(jaListItems(jaShown(jaItems()))); }
-function renderAlloc(){
+function jaRefreshList(){ jaKeepTyping(()=>{ const l=$('ja-list'); if(l) l.innerHTML=jaListHtml(jaListItems(jaShown(jaItems()))); setTimeout(()=>document.querySelectorAll('.ja-on').forEach(autoGrow),0); }); }
+function renderAlloc(){ const r=jaKeepTyping(_renderAlloc); setTimeout(()=>document.querySelectorAll('.ja-on').forEach(autoGrow),0); return r; }
+function _renderAlloc(){
   const v=$('view-dashboard'); if(!v) return;
   const all=jaItems(), shown=jaShown(all), cnt=k=>all.filter(x=>x.kind===k).length;
   const counties=[...new Set(all.map(x=>(eirPlace(x.eircode)||{}).county).filter(Boolean))].sort();
@@ -4419,7 +4451,7 @@ function jaSortWait(){ jaSort=jaSort==='desc'?'asc':'desc'; jaRefreshList(); }
 function jaListHtml(shown){
   if(jaSort){ const dir=jaSort==='desc'?-1:1; shown=shown.map((x,i)=>[x,i]).sort((a,b)=>((jaWaitKey(a[0])-jaWaitKey(b[0]))*dir)||(a[0].since<b[0].since?-1:1)||(a[1]-b[1])).map(p=>p[0]); }
   if(!shown.length) return `<div class="empty"><div class="big">✅</div>Nothing here${jaKinds.size||jaCrews.size||jaCounty||jaQ?' for this filter':''}.</div>`;
-  return `<table class="s-table ja-table"><thead><tr><th></th><th>Customer</th><th>Town / county</th><th>Time / men</th><th>Man / day</th><th class="ja-sorth ${jaSort?'on':''}" onclick="jaSortWait()" title="Click to sort by how long they've been waiting">Waiting <span>${jaSort==='desc'?'▼ longest':jaSort==='asc'?'▲ shortest':'⇅'}</span></th><th>Note</th><th></th></tr></thead><tbody>
+  return `<table class="s-table ja-table"><thead><tr><th></th><th>Customer</th><th>Town / county</th><th>Time / men</th><th>Man / day</th><th class="ja-sorth ${jaSort?'on':''}" onclick="jaSortWait()" title="Click to sort by how long they've been waiting">Waiting <span>${jaSort==='desc'?'▼ longest':jaSort==='asc'?'▲ shortest':'⇅'}</span></th><th>Site report</th><th>Office notes</th><th></th></tr></thead><tbody>
   ${shown.map(x=>{ const K=JA_KIND[x.kind], t=x.man?prof(x.man):null, pl=eirPlace(x.eircode), d=jaDays(x.since);
     return `<tr class="ja-row ${jaSel.has(x.id)?'sel':''}" style="--c:${K.c};--bg:${K.bg}" data-id="${x.id}" onmouseenter="jaHover('${x.id}',1)" onmouseleave="jaHover('${x.id}',0)">
       <td class="ja-ck"><input type="checkbox" ${jaSel.has(x.id)?'checked':''} onclick="jaToggle('${x.id}')"></td>
@@ -4430,7 +4462,8 @@ function jaListHtml(shown){
       <td>${t?`<div class="ja-man"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(firstName(t.full_name))}</div><div class="s-sub">${esc(dayLabel(x.booked))}</div>`:`<span class="s-sub">New · added ${esc(fmtWhen(x.since))}</span>`}</td>
       <td>${jaWhen(x)}</td>
       <td class="ja-note">${x.note?esc(x.note):'<span class="s-sub">—</span>'}</td>
-      <td class="ja-act"><button class="btn-primary" onclick="jaAllocate(['${x.id}'])">🗓 Allocate</button><div>${x.eircode?`<button class="btn-outline" title="Show on the map" onclick="jaShowPin('${x.id}')">📍</button>`:''}<button class="btn-outline" onclick="jaOpenItem('${x.id}')">Open</button></div></td></tr>`; }).join('')}</tbody></table>`; }
+      <td class="ja-onote">${jaONoteCell(x.id)}</td>
+      <td class="ja-act"><button class="btn-primary" onclick="jaAllocate(['${x.id}'])">🗓 Allocate</button><div>${x.eircode?`<button class="btn-outline" title="Show on the map" onclick="jaShowPin('${x.id}')">📍</button>`:''}<button class="btn-outline" onclick="jaOpenItem('${x.id}')">Open</button>${isAdmin&&!previewing?`<button class="btn-outline ja-undo" title="Change status — put it back as it was (Unfinished / Not home)" onclick="jaStatus('${x.id}')">↩</button>`:''}</div></td></tr>`; }).join('')}</tbody></table>`; }
 function jaToggle(id, fromPin){ jaSel.has(id)?jaSel.delete(id):jaSel.add(id);
   if(!jaSel.size) jaOnlySel=false; else if(fromPin) jaOnlySel=true;          // picking on the map → the list shows just the picked jobs
   if(fromPin || jaOnlySel || !jaSel.size){ $('ja-selbar').innerHTML=jaSelBar(); jaRefreshList(); jaPinStyle(id); return; }
@@ -4510,13 +4543,89 @@ function jaAllocRender(){
       <br>⏱ Day after this: about <b>${hrsLabel(already.reduce((a,j)=>a+(+j.est_minutes||60),0)+items.reduce((a,x)=>a+(+(x.j||x.nc).est_minutes||60),0))}</b> of work${already.reduce((a,j)=>a+(+j.est_minutes||60),0)+items.reduce((a,x)=>a+(+(x.j||x.nc).est_minutes||60),0)>480?' <span class="ja-warn">— more than a full day</span>':''}${items.some(x=>+(x.j||x.nc).crew>1)?` · <span class="ja-warn">${CREW_ICON[Math.max(...items.map(x=>+(x.j||x.nc).crew||1))]} ${Math.max(...items.map(x=>+(x.j||x.nc).crew||1))}-man job — make sure he has help that day</span>`:''}</div>`:''}
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" ${tid&&jaAlloc.day?'':'disabled'} onclick="jaDoAllocate()">🗓 Allocate${tid&&jaAlloc.day?` to ${esc(firstName(prof(tid).full_name))} · ${esc(dayLabel(jaAlloc.day))}`:''}</button></div>`);
 }
-async function jaTargetSite(tid, day){
-  if(noJobs(tid)) throw new Error(firstName(prof(tid).full_name)+' is set to No new jobs');
+async function jaTargetSite(tid, day, putBack){
+  if(noJobs(tid) && !putBack) throw new Error(firstName(prof(tid).full_name)+' is set to No new jobs');
   let t=sites.find(x=>x.serviceman_id===tid&&deptOf(x)==='calls'&&x.work_date===day); if(t) return t;
   const mon=mondayOf(parseYmd(day)), rows=[];
   for(let i=0;i<6;i++){ const d=ymd(addDays(mon,i)); if(!sites.some(x=>x.serviceman_id===tid&&deptOf(x)==='calls'&&x.work_date===d)) rows.push({serviceman_id:tid, department:'calls', work_date:d, name:dayLabel(d)}); }
   const { error }=await sb.from('sites').insert(rows); if(error) throw error; await loadData();
   t=sites.find(x=>x.serviceman_id===tid&&deptOf(x)==='calls'&&x.work_date===day); if(!t) throw new Error('Could not create the day'); return t; }
+// ↩ Change status (Office full access only): put a job back as it was — e.g. a call sent back to Job allocations, or allocated by mistake, back to 🔁 Unfinished / 🚪 Not home on its day
+let jaSt=null;
+async function jaStatus(id){ if(!isAdmin || previewing) return; if(jaMap) jaMap.closePopup();
+  const x=jaItems().find(y=>y.id===id); if(!x) return;
+  const src=x.j||x.nc, ph=[...new Set([src.ref_no,src.customer_phone,src.customer_phone2].map(phoneKey).filter(Boolean))], ek=eirKey(src.eircode);
+  let rows=[];
+  if(hasHist){ const qs=[]; if(x.kind==='booked') qs.push(sb.from('call_history').select(HIST_COLS).eq('source_job_id',x.id));
+    else { ph.forEach(p=>{ qs.push(sb.from('call_history').select(HIST_COLS).eq('phone_key',p)); }); if(ek) qs.push(sb.from('call_history').select(HIST_COLS).eq('eir_key',ek)); }
+    for(const r of await Promise.all(qs)) (r.data||[]).forEach(h=>{ if(!rows.some(z=>z.id===h.id)) rows.push(h); }); }
+  if(x.kind==='new') rows=rows.filter(h=>!jobs.some(j=>j.id===h.source_job_id));          // visits whose job was taken away (sent back)
+  rows.sort((a,b)=>a.work_date<b.work_date?1:-1);
+  const was=rows.find(h=>['rebook','not_home'].includes(h.outcome))||rows[0]||null;
+  const cur=x.j?{tid:x.j.serviceman_id, day:jobDay(x.j), o:jobOutcome(x.j), note:x.note}:null;
+  const pre=x.kind==='new'||x.kind==='booked' ? (was?{tid:was.serviceman_id, day:was.work_date, o:['rebook','not_home'].includes(was.outcome)?was.outcome:'rebook', note:String(was.note||'').replace(/^\d+ visits? — /,'')}:{tid:null, day:todayYmd(), o:'rebook', note:''}) : cur;
+  jaSt={id, kind:x.kind, hist:was&&(x.kind==='new'||x.kind==='booked')?was:null};
+  const K=JA_KIND[x.kind], men=profiles.filter(p=>p.role==='serviceman');
+  const lead=x.kind==='new' ? (was?`Before it was sent back to Job allocations it was <b>${was.outcome==='not_home'?'🚪 Not home':'🔁 Unfinished'}</b> on <b>${esc(dayLong(was.work_date))}</b> with <b>${esc(was.serviceman_name||firstName(prof(was.serviceman_id).full_name))}</b>.`:'No earlier visit found for this customer — pick the status, day and man.')
+    : x.kind==='booked' ? (was?`Before it was allocated it was <b>${was.outcome==='not_home'?'🚪 Not home':'🔁 Unfinished'}</b> on <b>${esc(dayLong(was.work_date))}</b> with <b>${esc(was.serviceman_name||firstName(prof(was.serviceman_id).full_name))}</b>. It comes off ${esc(dayLabel(jobDay(x.j)))} and goes back there.`:'No earlier visit found — pick where it goes back to.')
+    : `Now <b>${K.ico} ${K.short}</b> on ${esc(dayLong(cur.day))} with ${esc(firstName(prof(cur.tid).full_name))}.`;
+  openModal(`<h2>↩ Change status — ${esc(x.name)}</h2>
+    <div class="st-now">${jaPill(x.kind)} ${lead}</div>
+    <div class="field-group"><label>Put it back as</label><div class="st-opts">
+      <label><input type="radio" name="st-o" value="rebook" ${pre.o!=='not_home'?'checked':''}> 🔁 Unfinished (re-book)</label>
+      <label><input type="radio" name="st-o" value="not_home" ${pre.o==='not_home'?'checked':''}> 🚪 Customer not home</label></div></div>
+    <div class="st-row"><div class="field-group"><label>Day of that visit</label><input type="date" id="st-day" value="${esc(pre.day||'')}"></div>
+      <div class="field-group"><label>Service man</label><select id="st-man">${men.map(p=>`<option value="${p.id}" ${p.id===pre.tid?'selected':''}>${esc(p.full_name)}${noJobs(p.id)?' (no new jobs)':''}</option>`).join('')}</select></div></div>
+    <div class="field-group"><label>Site report <span class="optional">(the man's note)</span></label><textarea id="st-note" rows="2">${esc(pre.note||'')}</textarea></div>
+    <p class="st-hint">It goes back into 📋 Job allocations as ${'<b>'}Unfinished / Not home${'</b>'} with its sheet${x.kind==='new'?', details and notes':', mark-ups, photos and chat'}. ${x.kind==='new'?'The new call is removed. ':''}Nothing is sent to the man or the customer.</p>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="jaStatusSave()">↩ Put back</button></div>`);
+}
+async function jaMoveJobTo(j, tid, day){   // move a job onto a man's day (made if needed), files follow the man
+  const target=await jaTargetSite(tid, day, true), n=nextJobNo(target.id), rest=(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'').trim();
+  const upd={site_id:target.id, title:/^job\s*\d+/i.test(j.title||'')?`Job ${n}${rest?' – '+rest:''}`:j.title};
+  if(tid!==j.serviceman_id){ const oldPre=filePrefix('calls',j.serviceman_id)+'/', newPre=filePrefix('calls',tid)+'/';
+    const mv=async p=>{ if(!p||!p.startsWith(oldPre)) return p; const np=newPre+p.slice(oldPre.length); const r=await sb.storage.from(BUCKET).move(p,np); if(r.error) throw r.error; return np; };
+    upd.serviceman_id=tid; upd.pdf_path=await mv(j.pdf_path); upd.marked_path=await mv(j.marked_path); }
+  return upd; }
+async function jaMarkEvent(jobId, o, note, day){   // the Site report line, dated on the visit day
+  const body=(o==='rebook'?'🔁 Marked Re-book unfinished — put back — ':'🚪 Marked Customer not home — ')+(note||'—');
+  const at=new Date(`${day}T17:00:00`).toISOString();
+  let r=await sb.from('comments').insert({job_id:jobId, author_id:me.id, kind:'event', body, created_at:at});
+  if(r.error) await sb.from('comments').insert({job_id:jobId, author_id:me.id, kind:'event', body}); }
+async function jaStatusSave(){ if(!jaSt || !isAdmin) return;
+  const x=jaItems().find(y=>y.id===jaSt.id); if(!x) return closeModal();
+  const o=(document.querySelector('input[name=st-o]:checked')||{}).value||'rebook', day=$('st-day').value, tid=$('st-man').value, note=$('st-note').value.trim();
+  if(!day) return toast('Pick the day of that visit.'); if(parseYmd(day).getDay()===0) return toast('Sunday isn\'t a working day.');
+  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Putting back…';
+  const lbl=(o==='rebook'?'🔁 Unfinished':'🚪 Not home')+` on ${dayLabel(day)} (${firstName(prof(tid).full_name)})`;
+  try{
+    if(x.kind==='new'){
+      const c=x.nc, newId=uuid(), target=await jaTargetSite(tid, day, true), n=nextJobNo(target.id), dest=`${filePrefix('calls',tid)}/${newId}/original.pdf`;
+      if(c.pdf_path){ const f=await sb.storage.from(BUCKET).download(c.pdf_path); if(f.error) throw f.error; const u=await sb.storage.from(BUCKET).upload(dest, f.data, {contentType:'application/pdf'}); if(u.error) throw u.error; }
+      const parts=String(c.notes||'').split(/\n*From the chat \(/), ownNote=parts[0].trim()||null, chat=parts.length>1?'From the chat ('+parts.slice(1).join('From the chat ('):'';
+      const row={id:newId, site_id:target.id, serviceman_id:tid, department:'calls', title:`Job ${n}${c.title?' – '+c.title:''}`, ref_no:c.ref_no||c.customer_phone||null, notes:ownNote,
+        pdf_path:c.pdf_path?dest:null, pdf_bytes:c.pdf_bytes||0, customer_phone:c.customer_phone||null, customer_phone2:c.customer_phone2||null, customer_email:c.customer_email||null, eircode:c.eircode||null, avail:c.avail||null,
+        est_minutes:c.est_minutes||null, crew:c.crew||null, hist_skip:Array.isArray(c.hist_skip)?c.hist_skip:[], outcome:o, completed:false, completed_at:null, tech_unread:false, admin_unread:false, last_activity_at:new Date(`${day}T17:00:00`).toISOString(), created_by:me.id};
+      const ins=await sb.from('jobs').insert(row); if(ins.error){ if(c.pdf_path) await sb.storage.from(BUCKET).remove([dest]); throw ins.error; }
+      await jaMarkEvent(newId, o, note, day);
+      if(chat) await sb.from('comments').insert({job_id:newId, author_id:me.id, kind:'event', body:'💬 '+chat.trim()});
+      await sb.from('comments').insert({job_id:newId, author_id:me.id, kind:'event', body:`↩ Put back as ${lbl} by ${firstName(me.full_name)} (it had been sent back to Job allocations)`});
+      if(jaSt.hist){ const u=await sb.from('call_history').update({source_job_id:newId}).eq('id',jaSt.hist.id); if(u.error) await sb.from('call_history').delete().eq('id',jaSt.hist.id); }   // that visit IS this job again
+      if(hasONotes && officeNotes[c.id]){ await sb.from('office_notes').update({item_id:newId}).eq('item_id',c.id); officeNotes[newId]={...officeNotes[c.id], item_id:newId}; delete officeNotes[c.id]; }
+      await sb.from('new_calls').delete().eq('id',c.id); if(c.pdf_path) await sb.storage.from(BUCKET).remove([c.pdf_path]);
+    } else {
+      const j=x.j, moveIt=x.kind==='booked' || tid!==j.serviceman_id || day!==jobDay(j);
+      const upd=moveIt?await jaMoveJobTo(j, tid, day):{};
+      Object.assign(upd,{outcome:o, completed:false, completed_at:null});
+      const { error }=await sb.from('jobs').update(upd).eq('id',j.id); if(error) throw error;
+      if(x.kind==='booked' && jaSt.hist) await sb.from('call_history').delete().eq('id',jaSt.hist.id);   // the job is that visit again (saved again if it's re-allocated)
+      if(x.kind==='booked' || o!==x.kind || note!==(x.note||'')) await jaMarkEvent(j.id, o, note, day);
+      await sb.from('comments').insert({job_id:j.id, author_id:me.id, kind:'event', body:`↩ Put back as ${lbl} by ${firstName(me.full_name)}${x.kind==='booked'?' (allocation undone)':''}`});
+    }
+    closeModal(); jaSt=null; await loadData(); await loadNewCalls(); jaNotesFor=''; await jaLoadNotes(); renderAlloc();
+    toast(`↩ ${x.name} is back as ${lbl}`,5000);
+  }catch(e){ btn.disabled=false; btn.textContent='↩ Try again'; toast('Could not put it back: '+(e.message||e),7000); }
+}
 async function jaDoAllocate(){
   const {ids, tid, day}=jaAlloc;
   const noSheet=jaItems().filter(x=>ids.includes(x.id) && x.kind==='new' && !x.nc.pdf_path);
@@ -4535,6 +4644,7 @@ async function jaDoAllocate(){
           est_minutes:c.est_minutes||null, crew:c.crew||null, hist_skip:Array.isArray(c.hist_skip)?c.hist_skip:[], tech_unread:true, admin_unread:false, completed:false, last_activity_at:now};
         const ins=await sb.from('jobs').insert(row); if(ins.error) throw ins.error;
         await sb.from('new_calls').delete().eq('id',c.id); if(c.pdf_path) await sb.storage.from(BUCKET).remove([c.pdf_path]);
+        if(hasONotes && officeNotes[c.id]){ await sb.from('office_notes').update({item_id:newId}).eq('item_id',c.id); officeNotes[newId]={...officeNotes[c.id], item_id:newId}; delete officeNotes[c.id]; }
         await sb.from('comments').insert({job_id:newId, author_id:me.id, kind:'event', body:`🗓 Allocated from Job allocations to ${dayLong(day)}`});
       } else {
         const j=x.j, from=sites.find(s=>s.id===j.site_id)||{}, rest=(j.title||'').replace(/^job\s*\d+\s*/i,'');
