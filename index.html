@@ -188,6 +188,12 @@
     .tr-depts{grid-column:2 / -1;display:flex;gap:16px;font-size:13px;font-weight:600;color:var(--navy)}
     .tr-depts label{display:flex;align-items:center;gap:6px;cursor:pointer}
     .tr-depts.muted{opacity:.4}
+    .tr-stop{margin-left:auto;border:1.5px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+    .tr-stop.on{border-color:#fecaca;background:#fef2f2;color:#b91c1c}
+    .tr-depts.muted .tr-stop{opacity:1}
+    .nj-tag{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:999px;padding:1px 8px;vertical-align:middle}
+    .tech-card.nj{opacity:.75}
+    .nj-note{padding:14px;border:1.5px dashed #fecaca;background:#fef2f2;color:#b91c1c;border-radius:12px;font-weight:600;font-size:14px;text-align:center}
     @media (max-width:720px){ .dept-inner{padding:8px 12px;gap:8px} .dept-btn{font-size:14px;padding:10px 8px;gap:6px} .dept-btn .di{font-size:17px} }
     .page{max-width:1400px;margin:0 auto;padding:22px 20px calc(40px + var(--safe-b))}
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
@@ -198,6 +204,20 @@
     /* dashboard */
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 22px}
     .stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+    .stat-click{cursor:pointer;transition:border-color .15s,box-shadow .15s}.stat-click:hover{border-color:#fca5a5;box-shadow:0 2px 10px rgba(220,38,38,.12)}
+    .stat-go{font-size:15px;color:var(--slate);margin-left:2px}
+    .modal:has(.nw-wrap){max-width:900px}
+    .nw-sub{color:var(--slate);font-size:13px;margin:-8px 0 12px}
+    .nw-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+    .nw-t{width:100%;border-collapse:collapse;font-size:13.5px}
+    .nw-t th{text-align:left;background:#f8fafc;color:var(--slate);font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+    .nw-t td{padding:9px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .nw-t tr:last-child td{border-bottom:none}
+    .nw-t tbody tr{cursor:pointer}.nw-t tbody tr:hover td{background:#fff7f7}
+    .nw-man{display:flex;align-items:center;gap:6px;white-space:nowrap;font-weight:600}
+    .nw-job b{display:block}.nw-job small,.nw-when{color:var(--slate);font-size:12px;white-space:nowrap}
+    .nw-msg{max-width:300px;color:var(--navy)}.nw-msg i{color:var(--slate);font-style:normal;font-size:12px}
+    .nw-empty{padding:26px;text-align:center;color:var(--slate)}
     .stat .n{font-size:26px;font-weight:900;letter-spacing:-.5px}
     .stat .l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--slate)}
     .meter{height:6px;background:#e2e8f0;border-radius:4px;margin-top:8px;overflow:hidden}
@@ -1177,6 +1197,10 @@ function initials(n){return (n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2)
 function prof(id){return profiles.find(p=>p.id===id)||{full_name:'Unknown',colour:'#64748b'};}
 function inDept(p,d){return d==='calls'?p.on_calls!==false:p.on_sites!==false;}
 function techs(d=dept){return profiles.filter(p=>p.role==='serviceman'&&inDept(p,d));}
+// 🚫 No new jobs (👥 Manage team): he stays on the team with all his old work, but can't be given anything new
+function noJobs(id){const p=profiles.find(x=>x.id===id); return !!(p&&p.no_new_jobs===true);}
+function jobMen(d=dept){return techs(d).filter(p=>!noJobs(p.id));}
+function stopGuard(id){ if(!noJobs(id)) return false; toast(`🚫 ${firstName(prof(id).full_name||'This man')} is set to <b>No new jobs</b> — change it in 👥 Manage team.`,6000); return true; }
 function deptOf(x){return (x&&x.department)||'sites';}
 function dSites(d=dept){return sites.filter(s=>deptOf(s)===d);}
 function dJobs(d=dept){return jobs.filter(j=>deptOf(j)===d);}
@@ -1204,7 +1228,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-23-1100';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-23-1300';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1569,10 +1593,10 @@ function renderDashboardFor(jobs, sites, allJobs){
   const cards = team.map(t=>{
     const tj=jobs.filter(j=>j.serviceman_id===t.id);
     const nNew=tj.filter(j=>j.admin_unread).length;
-    return `<div class="tech-card" style="--c:${esc(t.colour)}" onclick="openPortal('${t.id}')">
+    return `<div class="tech-card ${noJobs(t.id)?'nj':''}" style="--c:${esc(t.colour)}" onclick="openPortal('${t.id}')">
       ${nNew?`<span class="new-pill">${nNew} new</span>`:''}
       <div class="row" style="flex-wrap:nowrap"><div class="avatar">${esc(initials(t.full_name))}</div>
-        <div style="min-width:0"><div class="name">${esc(t.full_name||'Unnamed')}<span class="oc-chip ${ocUnread(t.id)?'':'hidden'}" data-oc-tech="${t.id}">💬 ${ocUnread(t.id)}</span></div><div class="phone">${t.phone?esc(t.phone):'&nbsp;'}</div></div></div>
+        <div style="min-width:0"><div class="name">${esc(t.full_name||'Unnamed')}${noJobs(t.id)?'<span class="nj-tag">🚫 No new jobs</span>':''}<span class="oc-chip ${ocUnread(t.id)?'':'hidden'}" data-oc-tech="${t.id}">💬 ${ocUnread(t.id)}</span></div><div class="phone">${t.phone?esc(t.phone):'&nbsp;'}</div></div></div>
       <div class="tech-nums">
         ${dept==='calls'?`<div><b>${tj.length}</b><span>Jobs</span></div>`:`<div><b>${sites.filter(s=>s.serviceman_id===t.id).length}</b><span>${D.many}</span></div>`}
         <div><b>${tj.filter(j=>!j.completed).length}</b><span>Open</span></div>
@@ -1594,7 +1618,7 @@ function renderDashboardFor(jobs, sites, allJobs){
     <div class="stats">
       <div class="stat"><div class="n">${open}</div><div class="l">Open jobs</div></div>
       <div class="stat"><div class="n" style="color:var(--green)">${doneWeek}</div><div class="l">Completed this week</div></div>
-      <div class="stat"><div class="n" style="color:${unread?'var(--red)':'inherit'}">${unread}</div><div class="l">Jobs with news</div></div>
+      <div class="stat stat-click" role="button" tabindex="0" onclick="openNewsList()" title="Show the jobs with news"><div class="n" style="color:${unread?'var(--red)':'inherit'}">${unread}</div><div class="l">Jobs with news <span class="stat-go">›</span></div></div>
       <div class="stat"><div class="n" style="font-size:20px;padding-top:4px">${fmtBytes(bytes)}</div><div class="l">Storage used of 1 GB</div><div class="meter"><div style="width:${pct.toFixed(1)}%"></div></div></div>
     </div>
     ${waWarnHtml()}${folderBoxes(jobs)}
@@ -2018,7 +2042,7 @@ function addOrderSiteOpts(manId, keep){
   return opts.length ? opts.map(x=>`<option value="${x.id}" ${x.id===keep?'selected':''}>${esc(x.name)}</option>`).join('') : `<option value="">— no sites for this man yet —</option>`;
 }
 function openAddOrder(){ if(blockPreview()) return;
-  const men=techs('sites'); if(!men.length) return toast('Add a service man first.');
+  const men=jobMen('sites'); if(!men.length) return toast('Add a service man first.');
   pendingFiles=[];
   openModal(`<h2>➕ Add order</h2>
     <p style="color:var(--slate);margin:-4px 0 12px;font-size:14px">An order that came straight to you (e.g. from a site manager). It joins the Order requests list: mark it sent for approval, then approve it to send it to the man.</p>
@@ -2153,6 +2177,7 @@ async function approveRequest(id){
 }
 async function sendApproved(id){
   const r=orderReqs.find(x=>x.id===id); if(!r) return;
+  if(stopGuard(r.serviceman_id)) return;
   const site=sites.find(x=>x.id===$('ap-site').value), first=prof(r.serviceman_id).full_name.split(' ')[0];
   if(!site) return toast('Pick the site to send it to.');
   const asIs=!pendingFiles.length, btn=$('m-save');
@@ -2432,7 +2457,8 @@ function renderPortal(){
     html+=waDayBar(site);
     if(hasRoute && isOffice) html+=dayMapHtml(site);   // the route is for the office only
     html+=`<div class="slot-grid">${waGridHtml(list,num)}
-      ${isOffice&&(jobFilter==='all'||jobFilter==='open')?`<div class="slot-new" id="slot-new" role="button" tabindex="0" onclick="openSlotModal()">
+      ${isOffice&&(jobFilter==='all'||jobFilter==='open')&&noJobs(currentTechId)?`<div class="nj-note">🚫 ${esc(firstName(prof(currentTechId).full_name))} is set to No new jobs (👥 Manage team)</div>`:''}
+      ${isOffice&&(jobFilter==='all'||jobFilter==='open')&&!noJobs(currentTechId)?`<div class="slot-new" id="slot-new" role="button" tabindex="0" onclick="openSlotModal()">
         <span class="slot-no">JOB ${next}</span><span class="slot-plus">＋</span>
         <span class="slot-hint">Click to add job ${next}<br>or drag the PDF here</span></div>`:''}
       ${!list.length&&!(isOffice&&(jobFilter==='all'||jobFilter==='open'))&&!(jobFilter==='all'&&coverJobsFor(currentTechId,'calls').some(j=>{const x=siteOf(j);return x&&x.work_date===site.work_date;}))?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>${jobFilter==='all'?'No jobs for this day yet.':'No jobs with this status on this day.'}</div>`:''}
@@ -2864,7 +2890,7 @@ function openShareModal(o){ if(blockPreview()) return;
   const j=o.jobId?jobs.find(x=>x.id===o.jobId):null, s=o.siteId?sites.find(x=>x.id===o.siteId):(j?siteOf(j):null);
   const owner=j?j.serviceman_id:(s?s.serviceman_id:currentTechId), ow=prof(owner), d=j?deptOf(j):(s?deptOf(s):dept);
   const kind=o.kind; shareCtx={kind, owner, jobId:j&&j.id, siteId:s&&s.id, date:o.date||(s&&s.work_date)};
-  const men=profiles.filter(p=>p.role==='serviceman'&&p.id!==owner).sort((a,b)=>inDept(b,d)-inDept(a,d));
+  const men=profiles.filter(p=>p.role==='serviceman'&&p.id!==owner&&!noJobs(p.id)).sort((a,b)=>inDept(b,d)-inDept(a,d));
   const today=todayYmd(), sat=ymd(addDays(mondayOf(new Date()),5));
   let what='', when='';
   if(kind==='days'){
@@ -2901,7 +2927,7 @@ function shareSpan(){
   $('sh-pick').classList.toggle('hidden', v!=='pick');
 }
 async function saveShare(){ if(blockPreview()||!shareCtx) return;
-  const c=shareCtx, cover=$('sh-man').value, today=todayYmd();
+  const c=shareCtx, cover=$('sh-man').value, today=todayYmd(); if(stopGuard(cover)) return;
   let starts=today, ends=today;
   if(c.kind==='days'){
     const v=document.querySelector('input[name="sh-span"]:checked').value;
@@ -3018,7 +3044,7 @@ function attachSlotDrop(){
   z.addEventListener('drop',     e=>{ if(dragJobId || !hasFiles(e)) return; e.preventDefault(); depth=0; z.classList.remove('over'); openSlotModal(e.dataTransfer.files); });
 }
 // Click (or drop a PDF on) the next Job box → fill in job no. + customer, add the PDF, send
-function openSlotModal(fl){ if(blockPreview()) return;
+function openSlotModal(fl){ if(blockPreview()||stopGuard(currentTechId)) return;
   const n=nextJobNo(currentSiteId), t=prof(currentTechId), s=sites.find(x=>x.id===currentSiteId);
   pendingFiles=[];
   openModal(`<h2>Job ${n} → ${esc(firstName(t.full_name))} · ${s&&s.work_date?dayLong(s.work_date):esc(s?s.name:'')}</h2>
@@ -3773,7 +3799,7 @@ async function arcView(e){
 // 📅 book a repeat customer in: pick the man and day, the form opens filled in, earlier calls come with it
 let bkAutoArchive=false, bkPrefill=null;
 function bkBookIn(gi){
-  const g=window['__chg'+gi]||[], last=g[g.length-1]||{}, men=profiles.filter(p=>p.role==='serviceman' && p.on_calls!==false);
+  const g=window['__chg'+gi]||[], last=g[g.length-1]||{}, men=profiles.filter(p=>p.role==='serviceman' && p.on_calls!==false && !noJobs(p.id));
   bkPrefill={ref:last.phone_key||last.job_no||'', name:(g.filter(c=>c.name).pop()||{}).name||'', phone:last.phone_key||'', eir:(g.find(c=>c.eir_key)||{}).eir_key||''};
   openModal(`<div class="bk-m"><h2>📅 Book in ${esc(bkPrefill.name)}</h2><div class="sub">Pick the service man and the day. The job form opens filled in, and the earlier calls are brought in from this computer's backup.</div>
     <div class="field-group"><label>Service man</label><select id="bi-man">${men.map(p=>`<option value="${p.id}">${esc(p.full_name)}</option>`).join('')}</select></div>
@@ -3781,7 +3807,7 @@ function bkBookIn(gi){
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="bkBookGo()">Next →</button></div></div>`);
 }
 async function bkBookGo(){
-  const tid=$('bi-man').value, day=$('bi-day').value; if(!day) return toast('Pick the day.'); if(parseYmd(day).getDay()===0) return toast('Sunday isn\'t a working day.');
+  const tid=$('bi-man').value, day=$('bi-day').value; if(stopGuard(tid)) return; if(!day) return toast('Pick the day.'); if(parseYmd(day).getDay()===0) return toast('Sunday isn\'t a working day.');
   closeModal(); dept='calls'; renderDeptBar(); openPortal(tid); await jumpToDate(day);
   const s=sites.find(x=>x.serviceman_id===tid&&deptOf(x)==='calls'&&x.work_date===day); if(!s) return;
   currentSiteId=s.id; currentTechId=tid; openSlotModal();
@@ -4272,7 +4298,8 @@ let jaAlloc={ids:[], tid:null, day:null};
 function jaAllocate(ids){ if(blockPreview()) return; if(jaMap) jaMap.closePopup(); const items=jaItems().filter(x=>ids.includes(x.id)); if(!items.length) return;
   const one=items.length===1&&items[0].man; jaAlloc={ids:items.map(x=>x.id), tid:one?items[0].man:(jaAlloc.tid||null), day:null, month:null}; jaAllocRender(); }
 function jaAllocRender(){
-  const items=jaItems().filter(x=>jaAlloc.ids.includes(x.id)), men=techs('calls'), tid=jaAlloc.tid, mon=mondayOf(new Date()), today=todayYmd();
+  if(jaAlloc.tid&&noJobs(jaAlloc.tid)) jaAlloc.tid=null;
+  const items=jaItems().filter(x=>jaAlloc.ids.includes(x.id)), men=jobMen('calls'), tid=jaAlloc.tid, mon=mondayOf(new Date()), today=todayYmd();
   const dayJobs=(t,d)=>jobs.filter(j=>j.serviceman_id===t && deptOf(j)==='calls' && (sites.find(s=>s.id===j.site_id)||{}).work_date===d);
   const load=(t,v)=>{ const dj=dayJobs(t,v); return {n:dj.length, hrs:dj.reduce((a,j)=>a+(+j.est_minutes||60),0)}; };
   if(!jaAlloc.month){ const b=jaAlloc.day?parseYmd(jaAlloc.day):new Date(); jaAlloc.month=ymd(new Date(b.getFullYear(), b.getMonth(), 1)); }
@@ -4306,6 +4333,7 @@ function jaAllocRender(){
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" ${tid&&jaAlloc.day?'':'disabled'} onclick="jaDoAllocate()">🗓 Allocate${tid&&jaAlloc.day?` to ${esc(firstName(prof(tid).full_name))} · ${esc(dayLabel(jaAlloc.day))}`:''}</button></div>`);
 }
 async function jaTargetSite(tid, day){
+  if(noJobs(tid)) throw new Error(firstName(prof(tid).full_name)+' is set to No new jobs');
   let t=sites.find(x=>x.serviceman_id===tid&&deptOf(x)==='calls'&&x.work_date===day); if(t) return t;
   const mon=mondayOf(parseYmd(day)), rows=[];
   for(let i=0;i<6;i++){ const d=ymd(addDays(mon,i)); if(!sites.some(x=>x.serviceman_id===tid&&deptOf(x)==='calls'&&x.work_date===d)) rows.push({serviceman_id:tid, department:'calls', work_date:d, name:dayLabel(d)}); }
@@ -4782,7 +4810,7 @@ async function ensureWeeks(_retry, onlyTech){
     const mon=mondayOf(new Date()), fails=[]; let made=0;
     const have=new Set(sites.filter(x=>deptOf(x)==='calls'&&x.work_date).map(x=>x.serviceman_id+'|'+x.work_date));
     // one man at a time, so a problem with one never stops the others
-    for(const t of techs('calls').filter(t=>!onlyTech||t.id===onlyTech)){
+    for(const t of jobMen('calls').filter(t=>!onlyTech||t.id===onlyTech)){
       const rows=[];
       for(let w=-WEEKS_BACK; w<=WEEKS_AHEAD; w++) for(let i=0;i<6;i++){ const d=ymd(addDays(mon,w*7+i)); if(!have.has(t.id+'|'+d)) rows.push({serviceman_id:t.id, department:'calls', work_date:d, name:dayLabel(d)}); }
       if(!rows.length) continue;
@@ -4913,9 +4941,9 @@ function setWeek(i){
   const weeks=[...new Set(dSites().filter(s=>s.serviceman_id===currentTechId&&s.work_date).map(s=>ymd(mondayOf(parseYmd(s.work_date)))))].sort();
   if(i<0||i>=weeks.length) return; calWeek=weeks[i]; currentSiteId=null; calMonth=null; renderPortal();
 }
-function openWeekModal(){ if(blockPreview()) return;
+function openWeekModal(){ if(blockPreview()||stopGuard(currentTechId)) return;
   const thisMon=mondayOf(new Date()), nextMon=addDays(thisMon,7), t=prof(currentTechId);
-  const others=techs('calls').filter(x=>x.id!==currentTechId);
+  const others=jobMen('calls').filter(x=>x.id!==currentTechId);
   openModal(`<h2>📅 New 6-day week</h2>
     <p style="color:var(--slate);font-size:13px;margin:-8px 0 14px">Creates a tab for each day, <b>Monday to Saturday</b>, ready for you to upload that day's work sheet.<br><small>📅 The 3 previous weeks, this week and 7 weeks ahead are always set up automatically — use this only for weeks further out.<br>🧹 Four weeks later (on the Monday) each week is saved to the office / service department computer and then cleared from the server.</small></p>
     <div class="field-group"><label>Which week?</label>
@@ -4934,7 +4962,7 @@ async function createWeek(){
   let v=document.querySelector('input[name=wk]:checked').value;
   if(v==='pick'){ const d=$('m-wk-date').value; if(!d) return toast('Pick a date in the week you want.'); v=d; }
   const mon=mondayOf(parseYmd(v));
-  const who=(document.querySelector('input[name=who]:checked')||{}).value==='all' ? techs('calls').map(x=>x.id) : [currentTechId];
+  const who=(document.querySelector('input[name=who]:checked')||{}).value==='all' ? jobMen('calls').map(x=>x.id) : [currentTechId];
   const rows=[];
   for(const tid of who){
     for(let i=0;i<6;i++){
@@ -4972,6 +5000,26 @@ function openModal(html){ if(!$('modal-root').innerHTML.trim()) mdOff=null;   //
   $('modal-root').innerHTML=`<div class="modal-back" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="md-grip" title="Drag to move this box · double-click to put it back" onpointerdown="mdDrag(event)" ondblclick="mdReset()"><span></span></div>${html}</div></div>`;
   if(mdOff) mdPlace(mdOff.x, mdOff.y);
   const f=$('modal-root').querySelector('input,textarea'); if(f&&window.innerWidth>720) f.focus(); }
+// 🔴 Jobs with news — click the box on the dashboard; each job drops off once you've opened it
+let newsBack=false;
+async function openNewsList(){
+  const list=dJobs().filter(j=>j.admin_unread).sort((a,b)=>new Date(b.last_activity_at)-new Date(a.last_activity_at));
+  const last={};
+  if(list.length){ try{ const { data }=await sb.from('comments').select('job_id,body,kind,photo_path,author_id,created_at').in('job_id',list.map(j=>j.id)).order('created_at',{ascending:false}).limit(500);
+    (data||[]).forEach(c=>{ if(!last[c.job_id]) last[c.job_id]=c; }); }catch(e){ console.warn(e); } }
+  const rows=list.map(j=>{ const t=prof(j.serviceman_id), st=siteOf(j)||{}, c=last[j.id];
+    const msg=c?`${c.photo_path?'📷 ':''}${esc(String(c.body||'').trim().slice(0,140)||(c.photo_path?'Photo':''))} <i>— ${esc(firstName(prof(c.author_id).full_name)||'')}</i>`:'';
+    return `<tr onclick="newsOpen('${j.id}')"><td><span class="nw-man"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span>${esc(firstName(t.full_name))}</span></td>
+      <td class="nw-job"><b>${esc(j.title)}</b><small>${st.work_date?esc(dayLong(st.work_date)):esc(st.name||'')}</small></td>
+      <td>${outcomeTag(j)||(j.completed?'<span class="tag green">✅ Done</span>':'')}</td>
+      <td class="nw-msg">${msg}</td><td class="nw-when">${fmtWhen(j.last_activity_at)}</td></tr>`; }).join('');
+  openModal(`<h2>🔴 Jobs with news <span class="tag red">${list.length}</span></h2>
+    <p class="nw-sub">Newest first. Click a job to open it — it comes off this list once you've seen it.</p>
+    ${list.length?`<div class="nw-wrap"><table class="nw-t"><thead><tr><th>Service man</th><th>Job</th><th>Status</th><th>Latest</th><th>When</th></tr></thead><tbody>${rows}</tbody></table></div>`
+      :'<div class="nw-empty">✅ No news — you\'ve seen everything.</div>'}
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button></div>`);
+}
+function newsOpen(id){ const j=jobs.find(x=>x.id===id); newsBack=true; closeModal(); openJob(id); if(j) j.admin_unread=false; }
 function closeModal(){ if(window._confirmResolve){ const r=window._confirmResolve; window._confirmResolve=null; r(false); } $('modal-root').innerHTML=''; mdOff=null; }
 function mdPlace(x,y){ const m=document.querySelector('#modal-root .modal'); if(!m) return; m.style.transform=`translate(${x}px,${y}px)`; }
 function mdReset(){ mdOff=null; const m=document.querySelector('#modal-root .modal'); if(m) m.style.transform=''; }
@@ -5001,14 +5049,14 @@ function confirmBox({icon='⚠️', title, body, ok='Proceed', okClass='btn-prim
   });
 }
 
-function openSiteModal(siteId){ if(blockPreview()) return;
+function openSiteModal(siteId){ if(blockPreview()||(!siteId&&stopGuard(currentTechId))) return;
   const s=sites.find(x=>x.id===siteId)||{};
   const D=DEPT[dept];
   openModal(`<h2>${siteId?'Edit '+D.one:'New '+D.one+' for '+esc(firstName(prof(currentTechId).full_name))} <span class="tag ${dept==='calls'?'amber':'indigo'}">${D.label}</span></h2>
     <div class="field-group"><label>${D.one} name</label><input id="m-site-name" value="${esc(s.name)}" placeholder="${dept==='calls'?'e.g. Mrs Byrne, Lucan':'e.g. Herons Lock'}" /></div>
     <div class="field-group"><label>Address <span class="optional">(optional)</span></label><input id="m-site-addr" value="${esc(s.address)}" /></div>
     <div class="field-group"><label>Site contact <span class="optional">(optional)</span></label><input id="m-site-contact" value="${esc(s.contact)}" placeholder="e.g. Sean Phillips" /></div>
-    ${siteId?`<div class="field-group"><label>Service man</label><select id="m-site-tech">${techs(deptOf(s)).map(t=>`<option value="${t.id}" ${t.id===s.serviceman_id?'selected':''}>${esc(t.full_name)}</option>`).join('')}</select></div>`:''}
+    ${siteId?`<div class="field-group"><label>Service man</label><select id="m-site-tech">${techs(deptOf(s)).filter(t=>t.id===s.serviceman_id||!noJobs(t.id)).map(t=>`<option value="${t.id}" ${t.id===s.serviceman_id?'selected':''}>${esc(t.full_name)}</option>`).join('')}</select></div>`:''}
     <div class="modal-actions">
       ${siteId?`<button class="btn-danger" style="margin-right:auto" onclick="deleteSite('${siteId}')">Delete site</button>`:''}
       <button class="btn-outline" onclick="closeModal()">Cancel</button>
@@ -5023,6 +5071,7 @@ async function saveSite(siteId){
     const newTech=$('m-site-tech').value, old=sites.find(s=>s.id===siteId);
     if(newTech!==old.serviceman_id){
       if(jobs.some(j=>j.site_id===siteId)) { $('m-save').disabled=false; return toast('Move or delete this site\'s jobs before reassigning it.',4000); }
+      if(stopGuard(newTech)){ $('m-save').disabled=false; return; }
       row.serviceman_id=newTech;
     }
     res=await sb.from('sites').update(row).eq('id',siteId).select().single();
@@ -5045,7 +5094,7 @@ async function deleteSite(siteId){ if(blockPreview()) return;
 }
 
 let pendingFiles=[];
-function openUploadModal(){ if(blockPreview()) return;
+function openUploadModal(){ if(blockPreview()||stopGuard(currentTechId)) return;
   pendingFiles=[];
   const s=sites.find(x=>x.id===currentSiteId);
   openModal(`<h2>Upload job → ${esc(firstName(prof(currentTechId).full_name))} · ${s.work_date?dayLong(s.work_date):esc(s.name)}</h2>
@@ -5118,6 +5167,7 @@ async function buildUploadPdf(files){
 }
 // Upload a sheet as a new job for the current man + site/day
 async function doUpload({files, title, ref, note, contact, route}){
+  if(noJobs(currentTechId)) throw new Error(firstName(prof(currentTechId).full_name)+' is set to No new jobs');
   const id=uuid(), path=`${filePrefix(dept,currentTechId)}/${id}/original.pdf`;
   const bytes=await buildUploadPdf(files);
   const up=await sb.storage.from(BUCKET).upload(path, new Blob([bytes],{type:'application/pdf'}), {contentType:'application/pdf'});
@@ -5228,14 +5278,16 @@ function openTeamModal(){ if(blockPreview()) return;
         <option value="admin" ${p.role==='admin'?'selected':''}>Office (full access)</option></select>
       <div class="tr-depts ${p.role!=='serviceman'?'muted':''}">
         <label><input type="checkbox" class="tr-sites" ${p.on_sites!==false?'checked':''}> 🏗️ Sites</label>
-        <label><input type="checkbox" class="tr-calls" ${p.on_calls!==false?'checked':''}> 🏠 Private Calls</label></div></div>`).join('')}
+        <label><input type="checkbox" class="tr-calls" ${p.on_calls!==false?'checked':''}> 🏠 Private Calls</label>
+        ${p.role==='serviceman'&&'no_new_jobs' in p?`<button type="button" class="tr-stop ${p.no_new_jobs?'on':''}" onclick="this.classList.toggle('on');this.textContent=this.classList.contains('on')?'🚫 No new jobs':'✅ Taking new jobs'" title="On: he can't be given new jobs or days. His old jobs keep his name.">${p.no_new_jobs?'🚫 No new jobs':'✅ Taking new jobs'}</button>`:''}</div></div>`).join('')}
     <div class="help"><b>Adding a service man</b><br>
       1. In Supabase go to <b>Authentication → Users → Add user → Create new user</b>.<br>
       2. Email: <code>john@${LOGIN_DOMAIN}</code> (any username you like) · set a password · tick <b>Auto Confirm User</b>.<br>
       3. Come back here and refresh — he appears automatically. Give him his name and phone above.<br>
       He logs in with just <code>john</code> and the password.<br><br>
       <b>Service department login:</b> add a user the same way (e.g. <code>service@${LOGIN_DOMAIN}</code>), then set their type above to <b>Private Calls office</b>. They only ever see Private Calls.<br>
-      <b>Sites / Private Calls ticks</b> decide which side each man appears on. Tick both for men who work for both.<br><br>
+      <b>Sites / Private Calls ticks</b> decide which side each man appears on. Tick both for men who work for both.<br>
+      <b>🚫 No new jobs</b> (click <i>✅ Taking new jobs</i> to switch): for a man who has left. He can't be given new jobs, days or orders, but all his old jobs stay under his name. Click again to undo.<br><br>
       <b>Reset a password:</b> same Users screen → ⋯ next to him → <i>Change password</i> (or delete and re-add).</div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button><button class="btn-primary" id="m-save" onclick="saveTeam()">Save changes</button></div>`);
 }
@@ -5247,6 +5299,7 @@ async function saveTeam(){
     const row={colour:c.value, full_name:n.value.trim(), phone:ph.value.trim()||null, sort_order:i,
       on_sites:r.querySelector('.tr-sites').checked, on_calls:r.querySelector('.tr-calls').checked};
     const rs=r.querySelector('.tr-role'); if(!rs.disabled) row.role=rs.value;
+    const st=r.querySelector('.tr-stop'); if(st) row.no_new_jobs=st.classList.contains('on');
     const { error }=await sb.from('profiles').update(row).eq('id',r.dataset.id);
     if(error){ $('m-save').disabled=false; return toast('Error: '+error.message,5000); }
   }
@@ -5300,6 +5353,7 @@ function closeJob(fromPop){
   $('job-view').classList.add('hidden'); document.body.style.overflow='';
   if(!fromPop && history.state && history.state.job) history.back();
   scheduleReload();
+  if(newsBack){ newsBack=false; if(isOffice && dJobs().some(j=>j.admin_unread)) setTimeout(openNewsList,60); }   // back to the news list until it's empty
 }
 function setJvTab(t){
   $('jv-body').dataset.tab=t;
@@ -5776,7 +5830,7 @@ function openReschedule(id){ if(blockPreview()) return;
   const week=k=>[0,1,2,3,4,5].map(i=>chip(addDays(mon,7*k+i))).join('');
   openModal(`<h2>📅 Reschedule ${esc(j.title)}</h2>
     <p style="color:var(--slate);font-size:13px;margin:-8px 0 14px">Currently on <b>${dayLong(from.work_date)}</b> for <b>${esc(prof(j.serviceman_id).full_name)}</b>. The sheet, mark-ups, chat and photos all move with it.</p>
-    <div class="field-group"><label>Service man</label><select id="rs-tech">${techs('calls').map(t=>`<option value="${t.id}" ${t.id===j.serviceman_id?'selected':''}>${esc(t.full_name)}${t.id===j.serviceman_id?' (current)':''}</option>`).join('')}</select></div>
+    <div class="field-group"><label>Service man</label><select id="rs-tech">${techs('calls').filter(t=>t.id===j.serviceman_id||!noJobs(t.id)).map(t=>`<option value="${t.id}" ${t.id===j.serviceman_id?'selected':''}>${esc(t.full_name)}${t.id===j.serviceman_id?(noJobs(t.id)?' (current — 🚫 no new jobs, pick another man)':' (current)'):''}</option>`).join('')}</select></div>
     <div class="field-group"><label>This week</label><div class="rs-grid">${week(0)}</div></div>
     <div class="field-group"><label>Next week</label><div class="rs-grid">${week(1)}</div></div>
     <div class="field-group"><label>Or another date</label><input type="date" id="rs-date" onchange="document.querySelectorAll('input[name=rs]').forEach(r=>r.checked=false)"></div>
@@ -5820,6 +5874,7 @@ async function doReschedule(){
   const from=sites.find(x=>x.id===j.site_id)||{};
   const picked=document.querySelector('input[name=rs]:checked');
   const newTid=$('rs-tech').value, oldTid=j.serviceman_id, manChange=newTid!==oldTid;
+  if(stopGuard(newTid)) return;
   const day=picked?picked.value:($('rs-date').value||(manChange?from.work_date:''));
   if(!day) return toast('Pick the new day (or a different service man).');
   if(day===from.work_date && !manChange) return toast("That's the day and man it's already on.");
