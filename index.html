@@ -332,6 +332,17 @@
     .site-head{background:#fff;border:1px solid var(--border);border-left:5px solid var(--indigo);border-radius:12px;margin-top:10px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
     .site-name{font-size:18px;font-weight:800}
     .site-meta{color:var(--slate);font-size:13px}
+    .sd-where{margin-top:3px}.sd-where a{color:var(--indigo);font-weight:700;text-decoration:none}
+    .sd-ppl{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+    .sd-p{background:#f8fafc;border:1px solid var(--border);border-radius:999px;padding:3px 10px;color:var(--navy);font-size:12.5px;white-space:nowrap}
+    .sd-p i{color:var(--slate);font-style:normal}.sd-p a{color:var(--indigo);font-weight:600;text-decoration:none;margin-left:4px}
+    .sc-where{display:grid;grid-template-columns:150px 1fr;gap:10px}
+    .sc-row{display:grid;grid-template-columns:1fr 1fr 1fr 34px;gap:6px;margin-bottom:6px}
+    .sc-row input{padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;min-width:0;width:100%}
+    .sc-x{border:1.5px solid #fecaca;background:#fef2f2;color:#b91c1c;border-radius:8px;cursor:pointer;font-weight:700}
+    .sc-add{font-size:13px;padding:6px 12px}
+    .modal:has(#sc-list){max-width:620px}
+    @media (max-width:560px){ .sc-where{grid-template-columns:1fr} .sc-row{grid-template-columns:1fr 40px;grid-template-areas:"n x" "p p" "t t";padding-bottom:8px;border-bottom:1px dashed var(--border)} .sc-row .sc-name{grid-area:n} .sc-row .sc-pos{grid-area:p} .sc-row .sc-ph{grid-area:t} .sc-row .sc-x{grid-area:x} }
     .seg{display:inline-flex;background:#e2e8f0;border-radius:8px;padding:3px}
     .seg button{border:none;background:none;padding:6px 12px;border-radius:6px;font-weight:700;font-size:12px;color:var(--slate);cursor:pointer}
     .seg button.on{background:#fff;color:var(--navy);box-shadow:0 1px 2px rgba(0,0,0,.08)}
@@ -1228,7 +1239,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-23-1300';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-23-1500';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1465,6 +1476,9 @@ async function loadData(){
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
   profiles=pr.data; sites=si.data; jobs=jo.data;
+  if(isOffice){ try{ const r=await sb.from('staff_phones').select('id,phone'); hasPhones=!r.error;
+    if(!r.error){ const m=new Map((r.data||[]).map(x=>[x.id,x.phone])); profiles.forEach(p=>{ p.phone=m.get(p.id)||null; }); } }catch(e){ hasPhones=false; } }
+  else profiles.forEach(p=>{ p.phone=null; });   // a man never gets anyone's number
   { const r=await sb.from('order_requests').select('*').order('created_at',{ascending:false}).limit(300); orderReqs = r.error ? [] : (r.data||[]); }
   { const r=await sb.from('job_shares').select('*'); hasShares=!r.error; shares = r.error ? [] : (r.data||[]); }
   await loadHist();
@@ -2297,7 +2311,7 @@ async function renderSearch(){
   for(const j of list){
     const st=sites.find(x=>x.id===j.site_id)||{}, t=prof(j.serviceman_id);
     const fields=[['Job',j.title],['Docket',j.ref_no],[st.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1), st.work_date?dayLong(st.work_date)+' '+st.work_date.split('-').reverse().join('/'):st.name],
-      ['Address',st.address],['Contact',st.contact],['Man',t.full_name+' '+(t.phone||'')],
+      ['Address',[st.address,st.eircode].filter(Boolean).join(' ')],['Contact',siteContacts(st).map(c=>[c.name,c.position,c.phone].join(' ')).join(' ')],['Man',t.full_name+' '+(t.phone||'')],
       ['Phone',[j.customer_phone,j.customer_phone2].filter(Boolean).join(' ')],['Email',j.customer_email]];
     const hay=norm(fields.map(f=>f[1]).join(' '));
     const hayCompact=fields.map(f=>f[1]||'').join(' ').replace(/\s+/g,'').toLowerCase();
@@ -2437,9 +2451,9 @@ function renderPortal(){
   const stOf=j=> jobOutcome(j) || (j.completed?'done':'open');     // open · done · not_home · rebook
   const shown=sJobs.filter(j=>jobFilter==='all'||stOf(j)===jobFilter);
   const cnt=k=>sJobs.filter(j=>stOf(j)===k).length;
-  const meta=[site.address, site.contact?('Contact: '+site.contact):''].filter(Boolean).map(esc).join(' · ');
+  const meta=site.work_date?'':siteDetailsHtml(site);
   html+=`<div class="site-head">
-    <div style="flex:1;min-width:180px"><div class="site-name">${site.work_date?dayLong(site.work_date):esc(site.name)}</div>${meta?`<div class="site-meta">${meta}</div>`:''}</div>
+    <div style="flex:1;min-width:180px"><div class="site-name">${site.work_date?dayLong(site.work_date):esc(site.name)}</div>${meta}</div>
     <div class="seg seg-st">${[['all','All',sJobs.length],['open','Open',cnt('open')],['done','Done',cnt('done')],['not_home','Not home',cnt('not_home')],['rebook','Re-book',cnt('rebook')]]
       .filter(([k,,n])=>k==='all'||k==='open'||k==='done'||n).map(([k,l,n])=>`<button class="${jobFilter===k?'on':''} f-${k}" onclick="setFilter('${k}')">${l} (${n})</button>`).join('')}</div>
     ${isOffice&&site.work_date&&hasRoute?`<button class="btn-outline ${dayMapOn()?'cal-toggle on':''}" onclick="toggleDayMap()" title="Show / hide the day map">🗺 ${dayMapOn()?'Hide map':'Map'}</button>${sJobs.some(j=>isOpenJob(j)&&j.eircode)?`<button class="btn-outline" onclick="openDayRoute('${site.id}')" title="Open the day's open jobs in Google Maps">🧭 Navigate</button>`:''}`:''}
@@ -2483,6 +2497,15 @@ const geoCache=new Map();                 // 'D02 X285' → {lat,lng} | null (no
 const legCache=new Map(), lineCache=new Map();   // drive times between two spots · road lines
 const routeUndo={};                       // siteId → [job ids in the order before Best route was applied]
 
+// 📍 site details: Eircode + address, and any number of contacts {name, position, phone} (update-28)
+function siteContacts(st){ const c=Array.isArray(st&&st.contacts)?st.contacts.filter(x=>x&&(x.name||x.phone||x.position)):[]; return c.length?c:(st&&st.contact?[{name:st.contact}]:[]); }
+function telHref(p){ return 'tel:'+String(p||'').replace(/[^0-9+]/g,''); }
+function siteDetailsHtml(st){
+  const eir=st.eircode?normEir(st.eircode):'', cs=siteContacts(st);
+  const where=(st.address||eir)?`<div class="sd-where">📍 ${esc(st.address||'')}${st.address&&eir?' · ':''}${eir?`<a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(eir+', Ireland')}&travelmode=driving" target="_blank" rel="noopener" title="Directions">${esc(eir)}</a>`:''}</div>`:'';
+  const ppl=cs.length?`<div class="sd-ppl">${cs.map(c=>`<span class="sd-p">👤 <b>${esc(c.name||'')}</b>${c.position?` <i>${esc(c.position)}</i>`:''}${c.phone?` <a href="${telHref(c.phone)}">📞 ${esc(c.phone)}</a>`:''}</span>`).join('')}</div>`:'';
+  return where||ppl?`<div class="site-meta">${where}${ppl}</div>`:''; }
+function scRow(c={}){ return `<div class="sc-row"><input class="sc-name" placeholder="Name" value="${esc(c.name||'')}"><input class="sc-pos" placeholder="Position, e.g. Site manager" value="${esc(c.position||'')}"><input class="sc-ph" type="tel" placeholder="Phone" value="${esc(c.phone||'')}"><button type="button" class="sc-x" title="Remove this contact" onclick="this.closest('.sc-row').remove()">✕</button></div>`; }
 function normEir(s){ const t=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); return t.length===7 ? t.slice(0,3)+' '+t.slice(3) : String(s||'').toUpperCase().trim(); }
 function eirValid(s){ return /^[ACDEFHKNPRTVWXY](\d\d|6W) [0-9ACDEFHKNPRTVWXY]{4}$/.test(normEir(s)); }
 function hm2min(s){ const m=/^(\d{1,2}):(\d{2})/.exec(s||''); return m? (+m[1])*60+(+m[2]) : null; }
@@ -3494,6 +3517,7 @@ function importPathsFor(jobIds){ return callImports.filter(i=>jobIds.includes(i.
 // ══ 💾 Backups — each side (Office / Service) keeps an archive folder on its backup computer ══
 //  Private Calls › "<phone> - <name>" › "<date> · <n>th call · <man> · <result>"   ·   Sites › "<site>" › "<job>"
 //  index.json (what's in the folder) · index-previous.json (spare) · backup-log.txt · backup-info.json
+let hasPhones=true;   // 📞 men's numbers live in staff_phones — only the office / service department can read them (update-27)
 let hasBk=true, bkRows=[], bkJobs=[], bkDevs=[], bkBusy=false, bkIdx=null;
 const BK_DIR='bkDir';
 function bkAccount(){ const r=(realMe||me||{}).role; return r==='admin'?'office':r==='service_office'?'service':null; }
@@ -5054,8 +5078,11 @@ function openSiteModal(siteId){ if(blockPreview()||(!siteId&&stopGuard(currentTe
   const D=DEPT[dept];
   openModal(`<h2>${siteId?'Edit '+D.one:'New '+D.one+' for '+esc(firstName(prof(currentTechId).full_name))} <span class="tag ${dept==='calls'?'amber':'indigo'}">${D.label}</span></h2>
     <div class="field-group"><label>${D.one} name</label><input id="m-site-name" value="${esc(s.name)}" placeholder="${dept==='calls'?'e.g. Mrs Byrne, Lucan':'e.g. Herons Lock'}" /></div>
-    <div class="field-group"><label>Address <span class="optional">(optional)</span></label><input id="m-site-addr" value="${esc(s.address)}" /></div>
-    <div class="field-group"><label>Site contact <span class="optional">(optional)</span></label><input id="m-site-contact" value="${esc(s.contact)}" placeholder="e.g. Sean Phillips" /></div>
+    ${s.work_date?'':`<div class="sc-where"><div class="field-group"><label>Eircode <span class="optional">(optional)</span></label><input id="m-site-eir" value="${esc(s.eircode?normEir(s.eircode):'')}" placeholder="e.g. F42 K3P9" maxlength="8" autocomplete="off" /></div>
+    <div class="field-group"><label>Address <span class="optional">(optional)</span></label><input id="m-site-addr" value="${esc(s.address)}" /></div></div>
+    <div class="field-group"><label>Site contacts <span class="optional">(add as many as you need · ✕ removes one)</span></label>
+      <div id="sc-list">${(siteContacts(s).length?siteContacts(s):[{}]).map(scRow).join('')}</div>
+      <button type="button" class="btn-outline sc-add" onclick="$('sc-list').insertAdjacentHTML('beforeend',scRow());$('sc-list').lastElementChild.querySelector('input').focus()">＋ Add contact</button></div>`}
     ${siteId?`<div class="field-group"><label>Service man</label><select id="m-site-tech">${techs(deptOf(s)).filter(t=>t.id===s.serviceman_id||!noJobs(t.id)).map(t=>`<option value="${t.id}" ${t.id===s.serviceman_id?'selected':''}>${esc(t.full_name)}</option>`).join('')}</select></div>`:''}
     <div class="modal-actions">
       ${siteId?`<button class="btn-danger" style="margin-right:auto" onclick="deleteSite('${siteId}')">Delete site</button>`:''}
@@ -5064,7 +5091,13 @@ function openSiteModal(siteId){ if(blockPreview()||(!siteId&&stopGuard(currentTe
 }
 async function saveSite(siteId){
   const name=$('m-site-name').value.trim(); if(!name) return toast('Give it a name.');
-  const row={name, address:$('m-site-addr').value.trim()||null, contact:$('m-site-contact').value.trim()||null};
+  const row={name};
+  if($('m-site-addr')){
+    const eir=$('m-site-eir').value.trim(); if(eir && eirKey(eir).length!==7) return toast('That Eircode doesn\'t look right — 7 letters/numbers, e.g. F42 K3P9.');
+    const contacts=[...document.querySelectorAll('#sc-list .sc-row')].map(r=>({name:r.querySelector('.sc-name').value.trim(), position:r.querySelector('.sc-pos').value.trim(), phone:r.querySelector('.sc-ph').value.trim()})).filter(c=>c.name||c.position||c.phone);
+    if(contacts.some(c=>!c.name)) return toast('Give each contact a name (or ✕ remove the empty one).');
+    Object.assign(row,{address:$('m-site-addr').value.trim()||null, eircode:eir?normEir(eir):null, contacts, contact:contacts[0]?contacts[0].name:null});
+  }
   $('m-save').disabled=true;
   let res;
   if(siteId){
@@ -5079,7 +5112,7 @@ async function saveSite(siteId){
     row.serviceman_id=currentTechId; row.department=dept;
     res=await sb.from('sites').insert(row).select().single();
   }
-  if(res.error){ $('m-save').disabled=false; return toast('Error: '+res.error.message,5000); }
+  if(res.error){ $('m-save').disabled=false; return toast(/eircode|contacts/i.test(res.error.message)?'The database needs update-28 first (Supabase → SQL Editor).':'Error: '+res.error.message,6000); }
   closeModal(); currentSiteId=res.data.id; if(row.serviceman_id) currentTechId=row.serviceman_id;
   await loadData(); renderPortal(); toast('Site saved');
 }
@@ -5284,6 +5317,7 @@ function openTeamModal(){ if(blockPreview()) return;
       1. In Supabase go to <b>Authentication → Users → Add user → Create new user</b>.<br>
       2. Email: <code>john@${LOGIN_DOMAIN}</code> (any username you like) · set a password · tick <b>Auto Confirm User</b>.<br>
       3. Come back here and refresh — he appears automatically. Give him his name and phone above.<br>
+      📞 <b>Phone numbers</b> are office-only: the office and service department can see them; the men can't see anyone's (not even their own) and they're never on printouts or customer messages.<br>
       He logs in with just <code>john</code> and the password.<br><br>
       <b>Service department login:</b> add a user the same way (e.g. <code>service@${LOGIN_DOMAIN}</code>), then set their type above to <b>Private Calls office</b>. They only ever see Private Calls.<br>
       <b>Sites / Private Calls ticks</b> decide which side each man appears on. Tick both for men who work for both.<br>
@@ -5296,10 +5330,14 @@ async function saveTeam(){
   const rows=[...document.querySelectorAll('.team-row')];
   for(const [i,r] of rows.entries()){
     const c=r.querySelector('input[type=color]'), n=r.querySelector('input[type=text]'), ph=r.querySelector('input[type=tel]');
-    const row={colour:c.value, full_name:n.value.trim(), phone:ph.value.trim()||null, sort_order:i,
+    const row={colour:c.value, full_name:n.value.trim(), sort_order:i,
       on_sites:r.querySelector('.tr-sites').checked, on_calls:r.querySelector('.tr-calls').checked};
     const rs=r.querySelector('.tr-role'); if(!rs.disabled) row.role=rs.value;
     const st=r.querySelector('.tr-stop'); if(st) row.no_new_jobs=st.classList.contains('on');
+    const phone=ph.value.trim()||null;
+    if(hasPhones){ const q=phone ? await sb.from('staff_phones').upsert({id:r.dataset.id, phone, updated_at:new Date().toISOString()},{onConflict:'id'}) : await sb.from('staff_phones').delete().eq('id',r.dataset.id);
+      if(q.error){ $('m-save').disabled=false; return toast('Error: '+q.error.message,5000); } }
+    else row.phone=phone;
     const { error }=await sb.from('profiles').update(row).eq('id',r.dataset.id);
     if(error){ $('m-save').disabled=false; return toast('Error: '+error.message,5000); }
   }
@@ -5961,11 +5999,11 @@ async function printJob(id){
       <div class="p-head"><img src="sdwindows-logo.png" class="p-logo"><div><div class="p-title">${esc(j.title)}</div>
         <div class="p-sub">${D.label} · ${esc(where)} · ${esc(t.full_name)}</div></div></div>
       <table class="p-info">
-        <tr><td>Service man</td><td>${esc(t.full_name)}${t.phone?' · '+esc(t.phone):''}</td><td>Department</td><td>${D.label}</td></tr>
+        <tr><td>Service man</td><td>${esc(t.full_name)}</td><td>Department</td><td>${D.label}</td></tr>
         <tr><td>${site.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1)}</td><td>${esc(where)}</td><td>Docket / ref</td><td>${esc(j.ref_no||'—')}</td></tr>
         <tr><td>Sent</td><td>${fmtD(j.created_at)}</td><td>Status</td><td><b>${outcomeText(j)}</b>${j.completed?' '+fmtD(j.completed_at):''}</td></tr>
         ${j.customer_phone||j.customer_phone2||j.customer_email?`<tr><td>Customer phone</td><td>${esc([j.customer_phone,j.customer_phone2].filter(Boolean).join(' · ')||'—')}</td><td>Email</td><td>${esc(j.customer_email||'—')}</td></tr>`:''}
-        ${site.address||site.contact?`<tr><td>Address</td><td>${esc(site.address||'—')}</td><td>Contact</td><td>${esc(site.contact||'—')}</td></tr>`:''}
+        ${!site.work_date&&(site.address||site.eircode||siteContacts(site).length)?`<tr><td>Address</td><td>${esc([site.address,site.eircode?normEir(site.eircode):''].filter(Boolean).join(' · ')||'—')}</td><td>Contact${siteContacts(site).length>1?'s':''}</td><td>${siteContacts(site).map(c=>esc([c.name,c.position,c.phone].filter(Boolean).join(' · '))).join('<br>')||'—'}</td></tr>`:''}
       </table>
       ${await sigReportHtml(jid)}
       <h2 class="p-h">Sheet ${marks.length?'(with mark-ups)':''}</h2>
