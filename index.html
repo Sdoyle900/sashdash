@@ -218,6 +218,9 @@
     .nw-job b{display:block}.nw-job small,.nw-when{color:var(--slate);font-size:12px;white-space:nowrap}
     .nw-msg{max-width:300px;color:var(--navy)}.nw-msg i{color:var(--slate);font-style:normal;font-size:12px}
     .nw-empty{padding:26px;text-align:center;color:var(--slate)}
+    .dup-sec+.dup-sec{margin-top:8px;padding-top:8px;border-top:1px dashed #fcd34d}.dup-sec.soft{color:#1e3a8a}.dup-warn.soft{background:#eff6ff;border-color:#bfdbfe;color:#1e3a8a}.dup-warn .dup-sec.soft span,.dup-warn.soft span{color:#1e40af}
+    .dup-use{font-size:12px;padding:3px 9px;margin:3px 0 3px 6px}.dup-acts{margin:8px 0 4px}.dup-same{font-size:13px;padding:7px 12px}
+    .ja-again{margin-top:5px;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:8px;padding:4px 8px;font-size:12px;line-height:1.5}.ja-again button{font-size:11.5px;padding:2px 8px;margin-left:6px}
     .dup-warn{background:#fffbeb;border:1.5px solid #fcd34d;color:#92400e;border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.5;margin:10px 0}.dup-warn span{color:#a16207;font-size:12.5px}
     .hc-samenote{font-size:12px;color:#4338ca;background:#eef2ff;border-radius:999px;padding:3px 10px;margin-left:6px;white-space:nowrap}
     .hc-same{background:#eef2ff;border-radius:10px;padding:10px 12px;color:#3730a3;font-size:13.5px;margin:12px 0}
@@ -1252,7 +1255,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-23-2100';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-23-2200';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1478,13 +1481,14 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+(hasWa?WA_COLS:'')+(hasSig?',sig_path,sig_name,sig_at,sig_note':'')+(hasCrew?',est_minutes,crew':'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+(hasWa?WA_COLS:'')+(hasSig?',sig_path,sig_name,sig_at,sig_note':'')+(hasCrew?',est_minutes,crew':'')+(hasFollow?',followed_by':'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
   ]);
   if(jo.error && hasWa && /wa_/i.test(jo.error.message)){ hasWa=false; return loadData(); }   // database not updated yet (update-21)
   if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }
   if(jo.error && hasHist && /hist_skip/i.test(jo.error.message)){ hasHist=false; return loadData(); }
   if(jo.error && hasSig && /sig_/i.test(jo.error.message)){ hasSig=false; return loadData(); }
   if(jo.error && hasCrew && /est_minutes|crew/i.test(jo.error.message)){ hasCrew=false; return loadData(); }
+  if(jo.error && hasFollow && /followed_by/i.test(jo.error.message)){ hasFollow=false; return loadData(); }   // database not updated yet (update-33)
   if(jo.error && hasRoute && /eircode|avail/i.test(jo.error.message)){ hasRoute=false; return loadData(); }   // database not updated yet (update-15)   // database not updated yet (update-10)
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
@@ -3154,7 +3158,7 @@ function attachSlotDrop(){
   z.addEventListener('drop',     e=>{ if(dragJobId || !hasFiles(e)) return; e.preventDefault(); depth=0; z.classList.remove('over'); openSlotModal(e.dataTransfer.files); });
 }
 // Click (or drop a PDF on) the next Job box → fill in job no. + customer, add the PDF, send
-function openSlotModal(fl){ if(blockPreview()||stopGuard(currentTechId)) return;
+function openSlotModal(fl){ if(blockPreview()||stopGuard(currentTechId)) return; dupLink=[];
   const n=nextJobNo(currentSiteId), t=prof(currentTechId), s=sites.find(x=>x.id===currentSiteId);
   pendingFiles=[];
   openModal(`<h2>Job ${n} → ${esc(firstName(t.full_name))} · ${s&&s.work_date?dayLong(s.work_date):esc(s?s.name:'')}</h2>
@@ -3183,6 +3187,14 @@ function openSlotModal(fl){ if(blockPreview()||stopGuard(currentTechId)) return;
   setTimeout(()=>{ const r=$('m-ref'); if(r) r.focus(); },50);
 }
 // ⚠ before adding a job: is this customer already booked in (or waiting in Job allocations)?
+// 🔗 same call or same customer? phone AND Eircode the same = looks like the same call; phone only = same customer (e.g. a builder's other project)
+function sameCall(j, phones, eir){ const k=jobKeys(j), e=eirKey(eir); return !!e && !!k.eir && k.eir===e && phones.some(p=>p&&k.phones.includes(p)); }
+function waitingFor(phones, eir){ const strong=[], soft=[];
+  for(const j of jobs){ if(deptOf(j)!=='calls' || j.followed_by || !['not_home','rebook'].includes(jobOutcome(j))) continue;
+    const k=jobKeys(j); if(!phones.some(p=>p&&k.phones.includes(p))) continue; (sameCall(j,phones,eir)?strong:soft).push(j); }
+  return {strong, soft}; }
+function waitLine(j){ const K=JA_KIND[jobOutcome(j)], pl=eirPlace(j.eircode);
+  return `<b>${esc(custLabel(j))}</b> — ${K.ico} ${esc(K.short)} from ${esc(dayLabel(jobDay(j)))} (${esc(firstName(prof(j.serviceman_id).full_name))})${j.eircode?` · ${esc(normEir(j.eircode))}${pl?' '+esc(pl.town):''}`:' · no Eircode'}`; }
 function dupMatches(phones, skipNc){
   const ks=[...new Set(phones.map(phoneKey).filter(Boolean))]; if(!ks.length) return [];
   const today=todayYmd(), out=[];
@@ -3191,13 +3203,38 @@ function dupMatches(phones, skipNc){
   for(const c of (typeof newCalls!=='undefined'?newCalls:[])){ if(c.id===skipNc) continue;
     if([c.ref_no,c.customer_phone,c.customer_phone2].map(phoneKey).some(p=>p&&ks.includes(p))) out.push(`<b>${esc(c.title||c.customer_phone||'New call')}</b> — waiting in 📋 Job allocations (new call)`); }
   return out; }
-function dupGuard(btn, phones, skipNc){
+let dupLink=[];   // old waiting jobs to take off Job allocations once the new one is saved ("same job")
+function dupGuard(btn, phones, skipNc, eir, ctx){
   if(btn.dataset.dup==='1') return false;
-  const m=dupMatches(phones, skipNc); if(!m.length) return false;
-  btn.dataset.dup='1'; const was=btn.textContent; btn.dataset.was=was; btn.textContent='⚠ Add anyway'; btn.classList.add('btn-amber');
-  const box=document.createElement('div'); box.className='dup-warn'; box.innerHTML=`⚠️ <b>This customer is already booked in:</b><br>${m.join('<br>')}<br><span>Check it isn't the same job twice. Press <b>⚠ Add anyway</b> if it's a separate job.</span>`;
+  const ks=[...new Set(phones.map(phoneKey).filter(Boolean))];
+  const m=dupMatches(phones, skipNc), w=ks.length?waitingFor(ks, eir):{strong:[],soft:[]};
+  if(!m.length && !w.strong.length && !w.soft.length) return false;
+  btn.dataset.dup='1'; btn.dataset.was=btn.textContent; dupLink=[];
+  btn.textContent=w.strong.length?'Separate job — add anyway':m.length?'⚠ Add anyway':'Carry on — add the job'; if(w.strong.length||m.length) btn.classList.add('btn-amber');
+  let h='';
+  if(w.strong.length) h+=`<div class="dup-sec">⚠️ <b>Looks like the same call</b> — same phone and Eircode, still waiting in 📋 Job allocations:<br>${w.strong.map(j=>`${waitLine(j)} <button type="button" class="btn-outline dup-use" onclick="jaUseOld('${j.id}','${ctx}')">🗓 Use this job instead</button>`).join('<br>')}
+    <div class="dup-acts"><button type="button" class="btn-primary dup-same" onclick="dupSame('${w.strong.map(j=>j.id).join(',')}')">🔗 Same job — add this and take the old one off the list</button></div>
+    <span>🗓 <b>Use this job instead</b> keeps its sheet, notes and photos. 🔗 keeps both (the old one shows as the earlier call). <b>Separate job</b> leaves the old one waiting.</span></div>`;
+  if(m.length) h+=`<div class="dup-sec">⚠️ <b>This customer is already booked in:</b><br>${m.join('<br>')}<br><span>Check it isn't the same job twice.</span></div>`;
+  if(w.soft.length) h+=`<div class="dup-sec soft">ℹ️ <b>Same customer</b> — another job is waiting at a different address (could be another project):<br>${w.soft.map(waitLine).join('<br>')}<br><span>Nothing to do — it stays in Job allocations.</span></div>`;
+  const box=document.createElement('div'); box.className='dup-warn'+(!w.strong.length&&!m.length?' soft':''); box.innerHTML=h;
   const acts=btn.closest('.modal-actions'); acts.parentNode.insertBefore(box, acts); box.scrollIntoView({block:'nearest'});
   return true; }
+function dupSame(ids){ dupLink=ids.split(',').filter(Boolean); const b=$('m-save'); if(b){ b.dataset.dup='1'; b.click(); } }
+// mark old waiting jobs as booked again → they leave Job allocations (nothing is deleted)
+async function linkBookedAgain(oldIds, newId, label){ if(!oldIds.length) return;
+  if(!hasFollow){ toast('⚠️ Run update-33 in Supabase so the old job can come off Job allocations.',7000); return; }
+  for(const id of oldIds){ const { error }=await sb.from('jobs').update({followed_by:newId||id}).eq('id',id); if(error){ toast('Could not take the old job off the list: '+error.message,6000); continue; }
+    await sb.from('comments').insert({job_id:id, author_id:me.id, kind:'event', body:`🔗 Booked again${label?' as '+label:''} — taken off Job allocations`}); }
+}
+function jaUseOld(id, ctx){ const j=jobs.find(x=>x.id===id); if(!j) return;
+  if(ctx==='slot'){ const s=sites.find(x=>x.id===currentSiteId)||{}; closeModal(); pendingFiles=[]; jaAlloc={ids:[id], tid:currentTechId, day:s.work_date||null, month:null}; jaAllocRender(); return; }
+  closeModal(); jaAllocate([id]); }
+// 📋 Job allocations: a waiting job whose customer is already booked again (same phone AND Eircode, a later day)
+function jaLater(x){ if(!x.j || !['not_home','rebook'].includes(x.kind)) return null; const d=jobDay(x.j), k=jobKeys(x.j); if(!k.eir) return null;
+  return jobs.filter(o=>o.id!==x.j.id && deptOf(o)==='calls' && !o.followed_by && jobDay(o)>d && sameCall(o,k.phones,x.j.eircode)).sort((a,b)=>jobDay(a)<jobDay(b)?-1:1)[0]||null; }
+async function jaLink(oldId, newId){ if(blockPreview()) return; const o=jobs.find(x=>x.id===newId);
+  await linkBookedAgain([oldId], newId, o?`${(o.title||'').split(' – ')[0]} on ${dayLabel(jobDay(o))}`:''); await loadData(); jaRefreshList(); try{ jaPins(jaShown(jaItems())); }catch(e){} toast('✓ Taken off Job allocations — still in the customer\'s history'); }
 async function slotUpload(n, imp){ if(blockPreview()) return;
   const ref=$('m-ref').value.trim(), cust=$('m-cust').value.trim(), note=$('m-notes').value.trim();
   const contact={customer_phone:$('m-ph').value.trim()||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:$('m-email').value.trim()||null};
@@ -3206,11 +3243,12 @@ async function slotUpload(n, imp){ if(blockPreview()) return;
   if(!pendingFiles.length) return toast('Add the job sheet (PDF or photo) first.');
   const route=readAvail(); if(route===false) return;
   const waRow=waReadForm();
-  if(dupGuard($('m-save'), [ref, contact.customer_phone, contact.customer_phone2])) return;
+  if(dupGuard($('m-save'), [ref, contact.customer_phone, contact.customer_phone2], null, ($('m-eir')||{}).value||(route&&route.eircode)||'', 'slot')) return;
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Uploading…';
   try{
     n=nextJobNo(currentSiteId);   // stays in order even if another job was added meanwhile
     var newId=await doUpload({files:pendingFiles, title:`Job ${n}${cust?' – '+cust:''}`, ref, note, contact, route});
+    if(dupLink.length && newId){ const st=sites.find(x=>x.id===currentSiteId)||{}; await linkBookedAgain(dupLink, newId, `Job ${n} on ${st.work_date?dayLabel(st.work_date):''}`); dupLink=[]; }
     if(waRow && newId) await sb.from('jobs').update(waRow).eq('id',newId);
     pendingFiles=[]; closeModal(); toast(`Job ${n} sent to ${firstName(prof(currentTechId).full_name)} ✓`);
   }catch(e){ btn.disabled=false; btn.textContent='⬆ Try again'; return toast('Upload failed: '+(e.message||e),6000); }
@@ -4304,7 +4342,7 @@ function jaWhen(x){ return x.kind==='booked' ? `<span class="ja-wait soon">${jaU
 async function loadNewCalls(){ if(!hasNewCalls) return; const r=await sb.from('new_calls').select('*').order('created_at'); if(r.error){ hasNewCalls=false; newCalls=[]; return; } newCalls=r.data||[]; }
 function jaItems(){
   const out=[];
-  for(const j of dJobs('calls')){ const k=jobOutcome(j); if(k!=='not_home'&&k!=='rebook') continue;
+  for(const j of dJobs('calls')){ const k=jobOutcome(j); if(k!=='not_home'&&k!=='rebook') continue; if(j.followed_by) continue;   // 🔗 booked again — off the list
     const st=sites.find(x=>x.id===j.site_id)||{}, n=jaNotes[j.id]||{};
     out.push({kind:k, id:j.id, j, name:custName(j), title:j.title, phone:j.customer_phone||phoneKey(j.ref_no)||'', eircode:j.eircode||'', man:j.serviceman_id, booked:st.work_date||'', since:n.at||j.last_activity_at||j.created_at, note:n.note||''}); }
   const today=todayYmd();
@@ -4321,7 +4359,7 @@ const jaWait=iso=>{ const d=jaDays(iso); return d===0?'today':d===1?'since yeste
 function jaPill(k){ const K=JA_KIND[k]; return `<span class="ja-pill" style="--c:${K.c};--bg:${K.bg}">${K.ico} ${K.short}</span>`; }
 // the box on the Private Calls dashboard (replaces Customers not home + Re-book unfinished)
 function jaBox(list){
-  const nh=list.filter(j=>jobOutcome(j)==='not_home').length, rb=list.filter(j=>jobOutcome(j)==='rebook').length, nc=newCalls.length, today=todayYmd();
+  const nh=list.filter(j=>jobOutcome(j)==='not_home'&&!j.followed_by).length, rb=list.filter(j=>jobOutcome(j)==='rebook'&&!j.followed_by).length, nc=newCalls.length, today=todayYmd();
   const bk=list.filter(j=>!j.completed && !jobOutcome(j) && ((sites.find(s=>s.id===j.site_id)||{}).work_date||'')>today).length, all=nh+rb+nc+bk;
   return `<button class="folder-box ja-box ${all?'':'empty'}" onclick="openAlloc()">
     <span class="f-ico">📋</span><span class="f-txt"><b>Job allocations</b><small>${all?`<span class="ja-c" style="--c:${JA_KIND.not_home.c}">● ${nh} not home</span> <span class="ja-c" style="--c:${JA_KIND.rebook.c}">● ${rb} unfinished</span> <span class="ja-c" style="--c:${JA_KIND.booked.c}">● ${bk} booked in</span> <span class="ja-c" style="--c:${JA_KIND.new.c}">● ${nc} new call${nc===1?'':'s'}</span>`:'Nothing to allocate — click to add new calls'}</small></span>
@@ -4385,7 +4423,8 @@ function jaListHtml(shown){
   ${shown.map(x=>{ const K=JA_KIND[x.kind], t=x.man?prof(x.man):null, pl=eirPlace(x.eircode), d=jaDays(x.since);
     return `<tr class="ja-row ${jaSel.has(x.id)?'sel':''}" style="--c:${K.c};--bg:${K.bg}" data-id="${x.id}" onmouseenter="jaHover('${x.id}',1)" onmouseleave="jaHover('${x.id}',0)">
       <td class="ja-ck"><input type="checkbox" ${jaSel.has(x.id)?'checked':''} onclick="jaToggle('${x.id}')"></td>
-      <td><div class="ja-name">${esc(x.name)}</div><div class="ja-sub2">${jaPill(x.kind)} <span class="s-sub">${esc(x.phone||'no phone')}</span></div></td>
+      <td><div class="ja-name">${esc(x.name)}</div><div class="ja-sub2">${jaPill(x.kind)} <span class="s-sub">${esc(x.phone||'no phone')}</span></div>${(()=>{ const o=jaLater(x); if(!o) return '';
+        return `<div class="ja-again">📅 Booked again: <b>${esc(dayLabel(jobDay(o)))}</b> · ${esc(firstName(prof(o.serviceman_id).full_name))} (${esc((o.title||'').split(' – ')[0])}${custName(o)&&custName(o)!==x.name?' – '+esc(custName(o)):''})${isOffice&&!previewing?`<button class="btn-outline" onclick="jaLink('${x.id}','${o.id}')" title="Same phone and Eircode — take this one off the list (it stays in the history)">✓ Same job — take off list</button>`:''}</div>`; })()}</td>
       <td>${pl?`<b class="ja-town">${esc(pl.town)}${pl.exact?'':' area'}</b><div class="s-sub">Co. ${esc(pl.county)} · ${esc(normEir(x.eircode))}</div>`:'<span class="s-sub">⚠ No Eircode</span>'}</td>
       <td class="ja-size">${(x.j||x.nc).est_minutes?`<b>⏱ ${esc(estLabel((x.j||x.nc).est_minutes))}</b>`:'<span class="s-sub">⏱ not set</span>'}<div>${crewMini(x.j||x.nc)}</div></td>
       <td>${t?`<div class="ja-man"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(firstName(t.full_name))}</div><div class="s-sub">${esc(dayLabel(x.booked))}</div>`:`<span class="s-sub">New · added ${esc(fmtWhen(x.since))}</span>`}</td>
@@ -4509,14 +4548,14 @@ async function jaDoAllocate(){
       }
       await loadData(); done++;
     }
-    jaSel.clear(); closeModal(); await loadNewCalls(); jaNotesFor=''; await jaLoadNotes(); renderAlloc();
+    jaSel.clear(); closeModal(); await loadNewCalls(); jaNotesFor=''; await jaLoadNotes(); if(jaOpen) renderAlloc(); else rerenderCurrent();
     toast(`🗓 ${done} job${done===1?'':'s'} allocated to ${firstName(prof(tid).full_name)} · ${dayLong(day)} ✓`,5000);
   }catch(e){ btn.disabled=false; btn.textContent='🗓 Try again'; toast('Could not allocate: '+(e.message||e),6000); }
 }
 // ── ＋ Add new calls (no man or day yet) ──
 // ── 🆕 New call form — same as the Add job form, but no man or day yet ──
 let jaEditId=null;
-function jaAddCalls(editId){ if(blockPreview()) return;
+function jaAddCalls(editId){ if(blockPreview()) return; dupLink=[];
   const c=editId?(newCalls.find(x=>x.id===editId)||{}):{}; jaEditId=editId||null; pendingFiles=[];
   openModal(`<h2>${editId?'✎ New call':'🆕 Add a new call'} <span class="nc-sub">— goes to Job allocations, not given to a man or day yet</span></h2>
     <div class="slot-form">
@@ -4554,12 +4593,13 @@ async function jaSaveCall(editId, again){
   const row={title:cust||null, ref_no:ref||phoneKey(ph)||null, customer_phone:ph||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:email||null,
     eircode:route?route.eircode:null, avail:route?route.avail:null, est_minutes:route?route.est_minutes:null, crew:route?route.crew:null,
     notes:$('m-notes').value.trim()||null, hist_skip:[...formSkip]};
-  if(!editId && dupGuard($('m-save'), [ref, ph, row.customer_phone2], editId)) return;
+  if(!editId && dupGuard($('m-save'), [ref, ph, row.customer_phone2], editId, row.eircode||'', 'nc')) return;
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
   try{ const id=editId||uuid();
     if(pendingFiles.length){ const u=await jaPutFile(pendingFiles, id); row.pdf_path=u.path; row.pdf_bytes=u.bytes; }
     const r=editId ? await sb.from('new_calls').update(row).eq('id',id) : await sb.from('new_calls').insert({id, ...row, created_by:me.id});
     if(r.error) throw r.error;
+    if(dupLink.length){ await linkBookedAgain(dupLink, null, 'a new call'); dupLink=[]; await loadData(); }
   }catch(e){ btn.disabled=false; btn.textContent='✓ Save new call'; return toast('Not saved: '+(e.message||e)+(/column/i.test(e.message||'')?' — run update-25 in Supabase':''),7000); }
   pendingFiles=[]; await loadNewCalls(); if(row.eircode) eirTownLookup(row.eircode);
   const who=cust||ph||ref;
@@ -4597,7 +4637,7 @@ function jaCrewChips(all){ const base=all.filter(jaKindOk), n=c=>base.filter(x=>
   return `<span class="ja-men-f">${b(0,'Any men')}${b(1,'👷 1-man')}${b(2,'👷👷 2-man')}${b(3,'👷👷👷 3-man')}</span>`; }
 
 // ══ ✍️ Customer signature — when the service man ticks All done, the customer signs on his phone ══
-let hasSig=true, hasCrew=true;
+let hasSig=true, hasCrew=true, hasFollow=true;
 function sigCapture(j){
   return new Promise(res=>{
     const t=prof(j.serviceman_id), st=sites.find(x=>x.id===j.site_id)||{}, pl=(typeof eirPlace==='function'&&j.eircode)?eirPlace(j.eircode):null;
