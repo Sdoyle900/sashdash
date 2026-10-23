@@ -1280,7 +1280,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-24-1600';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-24-1700';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -4519,6 +4519,12 @@ async function jaLoadNotes(){
   if(key===jaNotesFor) return; jaNotesFor=key; jaNotes={}; if(!fl.length) return;
   const { data }=await sb.from('comments').select('job_id,body,created_at').in('job_id',fl.map(j=>j.id)).eq('kind','event').order('created_at');
   for(const c of (data||[])){ if(/^(🔁|🚪)/.test(c.body||'')){ const k=fl.find(j=>j.id===c.job_id); jaNotes[c.job_id]={note:c.body.split(' — ').slice(jobOutcome(k)==='rebook'?2:1).join(' — '), at:c.created_at}; } }
+  // no Re-book / Not home line in the job's own chat (e.g. its chat came back from the backup) → take the man's note from that visit's backup
+  const miss=fl.filter(j=>!jaNotes[j.id]);
+  if(miss.length){ try{ const { data:imps }=await sb.from('call_imports').select('job_id,work_date,convo').in('job_id',miss.map(j=>j.id));
+    for(const j of miss){ const mine=(imps||[]).filter(i=>i.job_id===j.id).sort((a,b)=>(a.work_date===jobDay(j))-(b.work_date===jobDay(j))||(a.work_date<b.work_date?-1:1));
+      for(const i of mine) for(const m of (i.convo||[])) if(m.kind==='event' && /^(🔁|🚪)/.test(m.body||'')){ const rb=/^🔁/.test(m.body);
+        jaNotes[j.id]={note:String(m.body).split(' — ').slice(rb?2:1).join(' — '), at:m.at||`${i.work_date}T17:00:00`}; } } }catch(e){ console.warn('site report from backup',e); } }
 }
 async function openAlloc(){ if(job){ dirty=false; closeJob(); } jaOpen=true; dept='calls'; renderDeptBar();
   $('view-portal').classList.add('hidden'); $('view-dashboard').classList.remove('hidden'); window.scrollTo(0,0);
