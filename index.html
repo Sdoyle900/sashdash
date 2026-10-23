@@ -1278,7 +1278,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-24-1300';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-24-1400';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -3417,12 +3417,17 @@ async function histSkip(jobId,key){
 }
 
 // ── the call tabs at the top of an open job ──
+function callTabs(j){ const p=pastCalls(j), keys=new Set(p.map(c=>c.key));
+  const bk=callImports.filter(i=>i.job_id===j.id && !keys.has(i.call_key)).map(i=>({key:'imp:'+i.id, src:'bk', date:i.work_date, man:i.serviceman_name, outcome:i.outcome, note:i.note||'', job_no:i.job_no, imp:i}));
+  return [...p, ...bk].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.src==='bk')-(b.src==='bk')); }
+let hcLabels=[];
+function hcLabel(i){ return hcLabels[i]||`${ordN(i+1)} call`; }
 function hcRender(){
   const bar=$('hc-tabs'); if(!bar) return;
-  hcCalls=job?pastCalls(job):[];
+  hcCalls=job?callTabs(job):[]; { let k=0; hcLabels=hcCalls.map(c=>c.src==='bk'?'📎 Backup':`${ordN(++k)} call`); }
   if(!hcCalls.length){ bar.classList.add('hidden'); hcSel='cur'; hcShowCur(); return; }
   bar.classList.remove('hidden');
-  bar.innerHTML=hcCalls.map((c,i)=>`<button class="hc-tab ${hcSel===i?'on':''}" onclick="hcPick(${i})"><span class="hc-dot ${OC_DOT[c.outcome]||'o'}"></span>${ordN(i+1)} call <small>${esc(niceDate(c.date))}</small></button>`).join('')
+  bar.innerHTML=hcCalls.map((c,i)=>`<button class="hc-tab ${hcSel===i?'on':''}" onclick="hcPick(${i})"><span class="hc-dot ${OC_DOT[c.outcome]||'o'}"></span>${hcLabel(i)} <small>${esc(niceDate(c.date))}</small></button>`).join('')
     +`<button class="hc-tab ${hcSel==='cur'?'on':''}" onclick="hcPick('cur')"><span class="hc-dot o"></span>Current call <small>${esc(niceDate(jobDay(job)))}</small></button>`;
 }
 function hcShowCur(){
@@ -3437,11 +3442,11 @@ function hcPick(i){
 }
 async function hcOpenCall(c, i){
   const v=$('hc-view'); $('job-view').classList.add('hc-old'); v.classList.remove('hidden');
-  const head=`<div class="hc-ro">🔒 <span><b>${ordN(i+1)} call · ${esc(shortDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>. Read-only — go to <b>Current call</b> to work on the job.</span>${isAdmin&&!previewing&&c.src!=='live'?`<button class="hc-del" onclick="histRemove('${job.id}','${c.key}')">🗑 Remove from history</button>`:''}</div>`;
+  const head=`<div class="hc-ro">🔒 <span><b>${hcLabel(i)} · ${esc(shortDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>. Read-only — go to <b>Current call</b> to work on the job.</span>${isAdmin&&!previewing&&c.src!=='live'&&c.src!=='bk'?`<button class="hc-del" onclick="histRemove('${job.id}','${c.key}')">🗑 Remove from history</button>`:''}</div>`;
   if(!c.imp && c.src==='hist' && c.srcJob && c.srcJob===job.id) c={...c, src:'live', job:jobs.find(x=>x.id===job.id)||job, upTo:c.date, same:true};   // an earlier visit of THIS job: show its sheet, mark-ups, photos + chat up to that day (read-only)
   if(!c.imp && c.src==='hist' && c.srcJob && c.srcJob!==job.id && jobs.some(x=>x.id===c.srcJob)) c={...c, src:'live', job:jobs.find(x=>x.id===c.srcJob)};   // that job is still in SashDash → show it, no backup needed
   if(!c.imp && c.src!=='live'){
-    v.innerHTML=head+`<div class="hc-ni"><div class="hc-card"><h3>${ocText(c.outcome).split(' ')[0]} ${ordN(i+1)} call · ${esc(shortDate(c.date))}</h3><div class="hc-cs">The full job hasn't been imported.</div>
+    v.innerHTML=head+`<div class="hc-ni"><div class="hc-card"><h3>${ocText(c.outcome).split(' ')[0]} ${hcLabel(i)} · ${esc(shortDate(c.date))}</h3><div class="hc-cs">The full job hasn't been imported.</div>
       <table><tr><td>Service man</td><td><b>${esc(c.man||'—')}</b></td></tr><tr><td>Result</td><td><b>${ocText(c.outcome)}</b></td></tr>${c.note?`<tr><td>Note</td><td>“${esc(c.note)}”</td></tr>`:''}<tr><td>Job number</td><td>${esc(c.job_no||'—')}</td></tr></table>
       ${isOffice&&!previewing?`<button class="btn-primary" onclick="openImport('${job.id}','${c.key}')">📥 Import this call from computer</button><div class="hc-cs" style="margin-top:10px">Look in <b>🗜 ${esc(zipNameFor(hcCalls[hcCalls.length-1].date))}</b> <button class="btn-outline" style="padding:3px 9px;font-size:12px;margin-left:4px" onclick="copyText('${esc(zipSearch(hcCalls[hcCalls.length-1].date))}',this)">Copy search</button></div>`:`<div class="hc-cs">The office can import it from the computer.</div>`}</div></div>`;
     return;
@@ -3461,7 +3466,7 @@ async function hcOpenCall(c, i){
       ${files.photos.length?`<button class="tb-btn" data-m="photos" onclick="hcMode='photos';hcFiles()">🖼 Photos (${files.photos.length})</button>`:''}
       ${c.same?`<span class="hc-samenote" title="The job carried on as the same job, so the sheet is the same one">Same job sheet${files.marked?' · mark-ups as they are now':''}</span>`:''}<span class="spacer"></span><button class="tb-btn zoom-ctl" onclick="hcZ(-1)">−</button><button class="tb-btn zoom-ctl" id="hc-zl" onclick="hcZ(0)">100%</button><button class="tb-btn zoom-ctl" onclick="hcZ(1)">+</button></div>
       <div class="pdf-scroll" id="hc-scroll"><div class="pdf-pages" id="hc-pages"><div class="loading">Loading sheet…</div></div></div></section>
-    <aside class="hc-chat"><div class="chat-head">💬 Conversation <span class="hc-cs">· ${ordN(i+1)} call</span></div><div class="chat-list" id="hc-list">${hcConvo(convo)}</div><div class="hc-lock">🔒 Old call — messages can't be added here.</div></aside></div>`;
+    <aside class="hc-chat"><div class="chat-head">💬 Conversation <span class="hc-cs">· ${hcLabel(i)}</span></div><div class="chat-list" id="hc-list">${hcConvo(convo)}</div><div class="hc-lock">🔒 Old call — messages can't be added here.</div></aside></div>`;
   v._files=files; hcFiles();
   v.querySelectorAll('img[data-path]').forEach(im=>loadChatPhoto(im,false));
 }
@@ -3525,30 +3530,25 @@ function openEditCalls(){ if(!isAdmin || previewing || !job) return;
   const row=(lbl, c, act)=>`<div class="ec-row"><div><b>${lbl}</b> · ${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}${c.note?`<div class="ec-note">“${esc(c.note)}”</div>`:''}${c.src==='live'&&c.job?'<div class="ec-note">a separate job in SashDash</div>':''}</div>${act}</div>`;
   const cur={date:st.work_date||jobDay(j), man:prof(j.serviceman_id).full_name, outcome:jobOutcome(j), note:''};
   openModal(`<h2>🗂 Edit calls — ${esc(custLabel(j))}</h2>
-    <p class="ec-p">Remove a call that shouldn't be here. The calls renumber themselves. Removing the <b>Current call</b> makes the last earlier call the current one again — the job goes back to that day and man with that result.</p>
-    ${lostImports(j).map(i=>`<div class="ec-lost">📥 <b>Imported from backup but not showing</b> — ${esc(niceDate(i.work_date))} · ${esc(firstName(i.serviceman_name||''))} · ${(i.photos||[]).length} photo${(i.photos||[]).length===1?'':'s'} · ${(i.convo||[]).filter(m=>m.kind!=='event').length} message${(i.convo||[]).filter(m=>m.kind!=='event').length===1?'':'s'}
-      <button class="btn-primary" onclick="ecMerge('${i.id}')">⤵ Put into this job's chat</button></div>`).join('')}
-    <div class="ec-list">${all.map((c,i)=>row(`${ordN(i+1)} call`, c, `${c.imp?`<button class="btn-outline" onclick="ecMerge('${c.imp.id}','${c.key}')" title="Move this call's imported chat and photos into the job's chat, then remove the tab">⤵ Move chat &amp; photos into the job</button>`:''}<button class="btn-outline red" onclick="ecRemove('${c.key}')">🗑 Remove</button>`)).join('')}
+    <p class="ec-p">Remove a call that shouldn't be here. The calls renumber themselves, and files imported from the backup are always kept (as a 📎 Backup tab). Removing the <b>Current call</b> makes the last earlier call the current one again — the job goes back to that day and man with that result.</p>
+    <div class="ec-list">${all.map((c,i)=>row(`${ordN(i+1)} call`, c, `<button class="btn-outline red" onclick="ecRemove('${c.key}')">🗑 Remove</button>`)).join('')}
       ${row('Current call', cur, all.length?`<button class="btn-outline red" onclick="ecRemoveCurrent()">🗑 Remove</button>`:'<span class="ec-note">only call — use 🗑 Delete job</span>')}</div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button></div>`); }
 async function ecRemove(key){ const j=jobs.find(x=>x.id===job.id); if(!j) return; const all=pastCalls(j), i=all.findIndex(c=>c.key===key), c=all[i]; if(!c) return;
-  const ok=await confirmBox({icon:'🗑', title:`Remove the ${ordN(i+1)} call?`, body:`<b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b><br>${c.src==='live'?'It\'s a separate job — that job is kept, it just stops showing as a call on this one.':'It\'s removed from this customer\'s call history.'} The other calls renumber.${c.imp?'<br><b>⚠ Its imported chat and photos are deleted too.</b> To keep them, press Cancel and use <b>⤵ Move chat &amp; photos into the job</b> first.':''}`, ok:'🗑 Remove', okClass:'btn-danger'}); if(!ok) return openEditCalls();
+  const ok=await confirmBox({icon:'🗑', title:`Remove the ${ordN(i+1)} call?`, body:`<b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b><br>${c.src==='live'?'It\'s a separate job — that job is kept, it just stops showing as a call on this one.':'It\'s removed from this customer\'s call history.'} The other calls renumber.${c.imp?'<br>📎 Its backup files (sheet, mark-ups, photos, chat) stay on the job as a <b>📎 Backup</b> tab.':''}`, ok:'🗑 Remove', okClass:'btn-danger'}); if(!ok) return openEditCalls();
   try{
     if(c.src==='live'){ const skip=[...new Set([...(j.hist_skip||[]),key])]; const { error }=await sb.from('jobs').update({hist_skip:skip}).eq('id',j.id); if(error) throw error; j.hist_skip=skip; job.hist_skip=skip; }
-    else {
-      const imps=callImports.filter(x=>x.call_key===key), paths=imps.flatMap(x=>[x.sheet_path,x.marked_path,...(x.photos||[])]).filter(Boolean);
-      if(paths.length){ const r=await sb.storage.from(BUCKET).remove(paths); if(r.error) throw r.error; }
-      if(imps.length){ const { error }=await sb.from('call_imports').delete().in('id',imps.map(x=>x.id)); if(error) throw error; }
+    else {   // backup files (call_imports) are kept — they show as a 📎 Backup tab
       if(c.src==='hist'){ const { error }=await sb.from('call_history').delete().eq('id',key); if(error) throw error; }
-      callHist=callHist.filter(h=>h.id!==key); callImports=callImports.filter(x=>x.call_key!==key); }
-    await sb.from('comments').insert({job_id:j.id, author_id:me.id, kind:'event', body:`🗂 ${ordN(i+1)} call (${niceDate(c.date)}, ${firstName(c.man||'')}) removed by ${firstName(me.full_name)}`});
+      callHist=callHist.filter(h=>h.id!==key); }
+    try{ await sb.from('comments').insert({job_id:j.id, author_id:me.id, kind:'event', body:`🗂 ${ordN(i+1)} call (${niceDate(c.date)}, ${firstName(c.man||'')}) removed by ${firstName(me.full_name)}`}); }catch(e){}
     hcSel='cur'; hcRender(); hcShowCur(); if(pdfDoc) renderPdf(); rerenderCurrent(); toast(`🗑 ${ordN(i+1)} call removed`); openEditCalls();
   }catch(e){ toast('Could not remove it: '+(e.message||e),7000); }
 }
 async function ecRemoveCurrent(){ const j=jobs.find(x=>x.id===job.id); if(!j) return; const all=pastCalls(j), c=all[all.length-1]; if(!c) return;
   const st=siteOf(j)||{};
   const ok=await confirmBox({icon:'🗑', title:'Remove the Current call?', ok:'🗑 Remove current call', okClass:'btn-danger',
-    body:`This visit (<b>${esc(niceDate(st.work_date||jobDay(j)))} · ${esc(firstName(prof(j.serviceman_id).full_name))}</b>) is removed and the <b>${ordN(all.length)} call</b> becomes the current call again:<br><b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>.${c.src==='live'?'<br>That call is its own job, so this job is deleted (sheet, mark-ups and chat).':'<br>The job goes back to that day and man with that result. Its sheet, mark-ups and chat stay with it.'}`}); if(!ok) return openEditCalls();
+    body:`This visit (<b>${esc(niceDate(st.work_date||jobDay(j)))} · ${esc(firstName(prof(j.serviceman_id).full_name))}</b>) is removed and the <b>${ordN(all.length)} call</b> becomes the current call again (any backup files stay on the job as a 📎 Backup tab):<br><b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>.${c.src==='live'?'<br>That call is its own job, so this job is deleted (sheet, mark-ups and chat).':'<br>The job goes back to that day and man with that result. Its sheet, mark-ups and chat stay with it.'}`}); if(!ok) return openEditCalls();
   try{
     if(c.src==='live'){   // the earlier call is a separate job → this job goes, that one is the current call again
       const paths=[j.pdf_path,j.marked_path, ...await chatPhotoPaths([j.id]), ...importPathsFor([j.id])].filter(Boolean);
@@ -3561,11 +3561,9 @@ async function ecRemoveCurrent(){ const j=jobs.find(x=>x.id===job.id); if(!j) re
     const toTid=profiles.some(p=>p.id===tid)?tid:j.serviceman_id, upd=(c.date===jobDay(j) && toTid===j.serviceman_id) ? {} : await jaMoveJobTo(j, toTid, c.date);
     Object.assign(upd,{outcome:c.outcome||null, completed:c.outcome==='done', completed_at:c.outcome==='done'?new Date(`${c.date}T17:00:00`).toISOString():null});
     const { error }=await sb.from('jobs').update(upd).eq('id',j.id); if(error) throw error;
-    if(c.imp) await mergeImportIntoJob(j, c.imp);                                // its imported chat + photos come into the job's chat
-    for(const li of lostImports(j)) if(li.work_date===c.date) await mergeImportIntoJob(j, li);
     if(c.src==='hist') await sb.from('call_history').delete().eq('id',c.key);   // that visit is the job again
     callHist=callHist.filter(h=>h.id!==c.key);
-    await sb.from('comments').insert({job_id:j.id, author_id:me.id, kind:'event', body:`🗂 Current call (${niceDate(st.work_date||jobDay(j))}) removed by ${firstName(me.full_name)} — back to the call on ${niceDate(c.date)}`});
+    try{ await sb.from('comments').insert({job_id:j.id, author_id:me.id, kind:'event', body:`🗂 Current call (${niceDate(st.work_date||jobDay(j))}) removed by ${firstName(me.full_name)} — back to the call on ${niceDate(c.date)}`}); }catch(e){}
     closeModal(); await loadData(); rerenderCurrent(); dirty=false; openJob(j.id);
     toast(`🗑 Current call removed — ${niceDate(c.date)} is the current call again`,6000);
   }catch(e){ toast('Could not remove it: '+(e.message||e),7000); }
@@ -3626,7 +3624,7 @@ async function impScan(entries){
   }
   const j=jobs.find(x=>x.id===impJobId), k=jobKeys(j);
   found.forEach(f=>{ f.parent=found.find(o=>o!==f && f.dir.startsWith(o.dir)); });
-  found.forEach(f=>{ f.match=keysMatch(k,[phoneKey(f.info.job_no),phoneKey(f.info.phone),phoneKey(f.info.phone2)],eirKey(f.info.eircode)); f.done=pastCalls(j).some(c=>c.imp&&c.imp.work_date===f.info.work_date); });
+  found.forEach(f=>{ f.match=keysMatch(k,[phoneKey(f.info.job_no),phoneKey(f.info.phone),phoneKey(f.info.phone2)],eirKey(f.info.eircode)); f.done=callImports.some(i=>i.job_id===j.id&&i.work_date===f.info.work_date); });
   found.forEach(f=>{ if(!f.match && f.parent && f.parent.match) f.match=true; });
   impFound=found.filter(f=>f.match).sort((a,b)=>a.info.work_date<b.info.work_date?-1:1);
   if(!impFound.length){ box.innerHTML=`<div class="imp-none">⚠️ No job for this customer in what you picked${found.length?` (${found.length} other job${found.length===1?'':'s'} found)`:''}. Check the job number and pick again.</div>`; $('imp-go').classList.add('hidden'); return; }
