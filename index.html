@@ -735,6 +735,7 @@
     .eir-town{font-size:12.5px;color:#475569;margin-top:5px;min-height:16px;font-weight:600}.eir-town.bad{color:#b45309}.eir-look{color:#94a3b8;font-weight:500}
     @media (max-width:1100px){ .ja-grid{grid-template-columns:1fr} .ja-mapwrap{position:relative;top:0} #ja-map{height:420px} .ja-listwrap{max-height:none} }
     .ja-box .f-n{background:#ff2fb3 !important;color:#fff !important;opacity:1 !important}
+    .ja-sorth{cursor:pointer;user-select:none}.ja-sorth span{color:#94a3b8;font-weight:600;margin-left:2px}.ja-sorth:hover,.ja-sorth.on{color:var(--indigo)}.ja-sorth.on span{color:var(--indigo)}
     .ja-table{font-size:13.5px}.ja-table th{white-space:nowrap}.ja-table td{padding:9px 8px}
     .ja-ck{width:28px}.ja-name{font-weight:700;color:#0f172a;white-space:nowrap}.ja-sub2{display:flex;gap:6px;align-items:center;margin-top:3px;white-space:nowrap}
     .ja-man{display:flex;align-items:center;gap:5px;white-space:nowrap}
@@ -1251,7 +1252,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-23-2000';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-23-2100';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -4373,9 +4374,14 @@ function jaFiltersHtml(all,cnt,counties){
     ${jaCrewChips(all)}<select class="ja-county" onchange="jaCounty=this.value;jaSel.clear();renderAlloc()"><option value="">All counties</option>${counties.map(c=>`<option ${c===jaCounty?'selected':''}>${esc(c)}</option>`).join('')}</select>
     <input class="ja-q" placeholder="🔍 Name, phone, town, Eircode…" value="${esc(jaQ)}" oninput="jaQ=this.value;clearTimeout(window.jaQT);window.jaQT=setTimeout(()=>{ jaRefreshList(); jaPins(jaShown(jaItems())); },200)"></div>`; }
 function jaSelBar(){ if(!jaSel.size) return ''; return `<div class="ja-sel"><b>${jaSel.size} selected${jaOnlySel?' <span class="ja-sel-note">— list shows these only, every pin stays on the map</span>':''}</b><button class="btn-outline" onclick="jaOnlySel=!jaOnlySel;$('ja-selbar').innerHTML=jaSelBar();jaRefreshList()">${jaOnlySel?'👁 Show all jobs':'☑ Show selected only'}</button><button class="btn-outline" onclick="jaSel.clear();jaOnlySel=false;renderAlloc()">Clear</button><button class="btn-primary" onclick="jaAllocate([...jaSel])">🗓 Allocate ${jaSel.size} job${jaSel.size===1?'':'s'} →</button></div>`; }
+// ⇅ click Waiting: longest wait first, click again: shortest first (booked-in jobs count as not waiting — soonest booking next)
+let jaSort=null;
+function jaWaitKey(x){ if(x.kind==='booked'){ const a=parseYmd(x.booked), b=new Date(); a.setHours(12,0,0,0); b.setHours(12,0,0,0); return -1-Math.round((a-b)/864e5); } return jaDays(x.since); }
+function jaSortWait(){ jaSort=jaSort==='desc'?'asc':'desc'; jaRefreshList(); }
 function jaListHtml(shown){
+  if(jaSort){ const dir=jaSort==='desc'?-1:1; shown=shown.map((x,i)=>[x,i]).sort((a,b)=>((jaWaitKey(a[0])-jaWaitKey(b[0]))*dir)||(a[0].since<b[0].since?-1:1)||(a[1]-b[1])).map(p=>p[0]); }
   if(!shown.length) return `<div class="empty"><div class="big">✅</div>Nothing here${jaKinds.size||jaCrews.size||jaCounty||jaQ?' for this filter':''}.</div>`;
-  return `<table class="s-table ja-table"><thead><tr><th></th><th>Customer</th><th>Town / county</th><th>Time / men</th><th>Man / day</th><th>Waiting</th><th>Note</th><th></th></tr></thead><tbody>
+  return `<table class="s-table ja-table"><thead><tr><th></th><th>Customer</th><th>Town / county</th><th>Time / men</th><th>Man / day</th><th class="ja-sorth ${jaSort?'on':''}" onclick="jaSortWait()" title="Click to sort by how long they've been waiting">Waiting <span>${jaSort==='desc'?'▼ longest':jaSort==='asc'?'▲ shortest':'⇅'}</span></th><th>Note</th><th></th></tr></thead><tbody>
   ${shown.map(x=>{ const K=JA_KIND[x.kind], t=x.man?prof(x.man):null, pl=eirPlace(x.eircode), d=jaDays(x.since);
     return `<tr class="ja-row ${jaSel.has(x.id)?'sel':''}" style="--c:${K.c};--bg:${K.bg}" data-id="${x.id}" onmouseenter="jaHover('${x.id}',1)" onmouseleave="jaHover('${x.id}',0)">
       <td class="ja-ck"><input type="checkbox" ${jaSel.has(x.id)?'checked':''} onclick="jaToggle('${x.id}')"></td>
@@ -4421,7 +4427,10 @@ function jaPopup(id){ const x=jaItems().find(y=>y.id===id); if(!x) return ''; co
     ${x.note?`<div class="ja-pop-n">“${esc(x.note)}”</div>`:''}
     <div class="ja-pop-b"><button class="btn-primary" onclick="jaAllocate(['${x.id}'])">🗓 Allocate</button><button class="btn-outline" onclick="jaToggle('${x.id}',1);jaMap.closePopup()">${jaSel.has(x.id)?'☑ Selected':'☐ Select'}</button><button class="btn-outline" onclick="jaOpenItem('${x.id}')">Open</button></div></div>`; }
 function jaHover(id,on,fromPin){ const r=document.querySelector(`.ja-row[data-id="${id}"]`); if(r) r.classList.toggle('hl',!!on);
-  const m=jaMarkers.get(id); if(m&&m._icon) m._icon.classList.toggle('hl',!!on); if(on&&fromPin&&r) r.scrollIntoView({block:'nearest'}); }
+  const m=jaMarkers.get(id); if(m&&m._icon) m._icon.classList.toggle('hl',!!on); if(on&&fromPin&&r) jaCenterRow(r); }
+function jaCenterRow(r){ let c=r.parentElement; while(c && c!==document.body){ const o=getComputedStyle(c).overflowY; if((o==='auto'||o==='scroll') && c.scrollHeight>c.clientHeight) break; c=c.parentElement; }
+  if(!c || c===document.body){ r.scrollIntoView({block:'center', behavior:'smooth'}); return; }
+  const cr=c.getBoundingClientRect(), rr=r.getBoundingClientRect(); c.scrollTo({top:c.scrollTop+(rr.top-cr.top)-(cr.height-rr.height)/2, behavior:'smooth'}); }
 function jaShowPin(id){ const m=jaMarkers.get(id); if(!m) return toast('That job has no Eircode on the map.'); jaFocus=id; jaMap.setView(m.getLatLng(),12); m.openPopup(); setTimeout(()=>{ jaFocus=null; },500); }
 // ── allocate: pick a man and a day ──
 let jaAlloc={ids:[], tid:null, day:null};
