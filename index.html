@@ -218,6 +218,9 @@
     .nw-job b{display:block}.nw-job small,.nw-when{color:var(--slate);font-size:12px;white-space:nowrap}
     .nw-msg{max-width:300px;color:var(--navy)}.nw-msg i{color:var(--slate);font-style:normal;font-size:12px}
     .nw-empty{padding:26px;text-align:center;color:var(--slate)}
+    .dup-warn{background:#fffbeb;border:1.5px solid #fcd34d;color:#92400e;border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.5;margin:10px 0}.dup-warn span{color:#a16207;font-size:12.5px}
+    .hc-samenote{font-size:12px;color:#4338ca;background:#eef2ff;border-radius:999px;padding:3px 10px;margin-left:6px;white-space:nowrap}
+    .hc-same{background:#eef2ff;border-radius:10px;padding:10px 12px;color:#3730a3;font-size:13.5px;margin:12px 0}
     .modal:has(.dh-t){max-width:820px}
     .dh-t tbody tr{cursor:default}.dh-t tbody tr:hover td{background:none}
     .dh-when{white-space:nowrap;color:var(--slate);font-size:12.5px}.dh-who{white-space:nowrap;font-weight:600}
@@ -1248,7 +1251,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-23-1800';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-23-2000';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -3178,6 +3181,22 @@ function openSlotModal(fl){ if(blockPreview()||stopGuard(currentTechId)) return;
   if(fl && fl.length) filesPicked(fl);
   setTimeout(()=>{ const r=$('m-ref'); if(r) r.focus(); },50);
 }
+// ⚠ before adding a job: is this customer already booked in (or waiting in Job allocations)?
+function dupMatches(phones, skipNc){
+  const ks=[...new Set(phones.map(phoneKey).filter(Boolean))]; if(!ks.length) return [];
+  const today=todayYmd(), out=[];
+  for(const j of jobs){ if(deptOf(j)!=='calls' || j.completed || jobOutcome(j)) continue; const d=jobDay(j); if(!d || d<today) continue;
+    if(jobKeys(j).phones.some(p=>ks.includes(p))) out.push(`<b>${esc(custLabel(j))}</b> — ${esc((j.title||'').split(' – ')[0])} on ${esc(dayLong(d))} (${esc(firstName(prof(j.serviceman_id).full_name))})`); }
+  for(const c of (typeof newCalls!=='undefined'?newCalls:[])){ if(c.id===skipNc) continue;
+    if([c.ref_no,c.customer_phone,c.customer_phone2].map(phoneKey).some(p=>p&&ks.includes(p))) out.push(`<b>${esc(c.title||c.customer_phone||'New call')}</b> — waiting in 📋 Job allocations (new call)`); }
+  return out; }
+function dupGuard(btn, phones, skipNc){
+  if(btn.dataset.dup==='1') return false;
+  const m=dupMatches(phones, skipNc); if(!m.length) return false;
+  btn.dataset.dup='1'; const was=btn.textContent; btn.dataset.was=was; btn.textContent='⚠ Add anyway'; btn.classList.add('btn-amber');
+  const box=document.createElement('div'); box.className='dup-warn'; box.innerHTML=`⚠️ <b>This customer is already booked in:</b><br>${m.join('<br>')}<br><span>Check it isn't the same job twice. Press <b>⚠ Add anyway</b> if it's a separate job.</span>`;
+  const acts=btn.closest('.modal-actions'); acts.parentNode.insertBefore(box, acts); box.scrollIntoView({block:'nearest'});
+  return true; }
 async function slotUpload(n, imp){ if(blockPreview()) return;
   const ref=$('m-ref').value.trim(), cust=$('m-cust').value.trim(), note=$('m-notes').value.trim();
   const contact={customer_phone:$('m-ph').value.trim()||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:$('m-email').value.trim()||null};
@@ -3186,6 +3205,7 @@ async function slotUpload(n, imp){ if(blockPreview()) return;
   if(!pendingFiles.length) return toast('Add the job sheet (PDF or photo) first.');
   const route=readAvail(); if(route===false) return;
   const waRow=waReadForm();
+  if(dupGuard($('m-save'), [ref, contact.customer_phone, contact.customer_phone2])) return;
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Uploading…';
   try{
     n=nextJobNo(currentSiteId);   // stays in order even if another job was added meanwhile
@@ -3254,7 +3274,7 @@ function pastCalls(j){
   const k=jobKeys(j); if(!k.phones.length && !k.eir) return [];
   const d=jobDay(j), skip=new Set(j.hist_skip||[]), out=[];
   for(const r of callHist){ if(skip.has(r.id) || r.work_date>d || (r.source_job_id===j.id && r.work_date===d)) continue;
-    if(keysMatch(k,[r.phone_key,r.phone2_key],r.eir_key)) out.push({key:r.id, src:'hist', date:r.work_date, man:r.serviceman_name, outcome:r.outcome, note:r.note||'', job_no:r.job_no, name:r.cust_name}); }
+    if(keysMatch(k,[r.phone_key,r.phone2_key],r.eir_key)) out.push({key:r.id, src:'hist', date:r.work_date, man:r.serviceman_name, outcome:r.outcome, note:r.note||'', job_no:r.job_no, name:r.cust_name, srcJob:r.source_job_id||null}); }
   for(const x of jobs){ if(x.id===j.id || deptOf(x)!=='calls' || skip.has(x.id)) continue; const xd=jobDay(x); if(xd>=d) continue;
     const xk=jobKeys(x); if(!keysMatch(k,xk.phones,xk.eir)) continue;
     out.push({key:x.id, src:'live', date:xd, man:prof(x.serviceman_id).full_name, outcome:jobOutcome(x), note:histNote(x), job_no:x.ref_no, name:custName(x), job:x}); }
@@ -3354,6 +3374,8 @@ function hcPick(i){
 async function hcOpenCall(c, i){
   const v=$('hc-view'); $('job-view').classList.add('hc-old'); v.classList.remove('hidden');
   const head=`<div class="hc-ro">🔒 <span><b>${ordN(i+1)} call · ${esc(shortDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>. Read-only — go to <b>Current call</b> to work on the job.</span>${isAdmin&&!previewing&&c.src!=='live'?`<button class="hc-del" onclick="histRemove('${job.id}','${c.key}')">🗑 Remove from history</button>`:''}</div>`;
+  if(!c.imp && c.src==='hist' && c.srcJob && c.srcJob===job.id) c={...c, src:'live', job:jobs.find(x=>x.id===job.id)||job, upTo:c.date, same:true};   // an earlier visit of THIS job: show its sheet, mark-ups, photos + chat up to that day (read-only)
+  if(!c.imp && c.src==='hist' && c.srcJob && c.srcJob!==job.id && jobs.some(x=>x.id===c.srcJob)) c={...c, src:'live', job:jobs.find(x=>x.id===c.srcJob)};   // that job is still in SashDash → show it, no backup needed
   if(!c.imp && c.src!=='live'){
     v.innerHTML=head+`<div class="hc-ni"><div class="hc-card"><h3>${ocText(c.outcome).split(' ')[0]} ${ordN(i+1)} call · ${esc(shortDate(c.date))}</h3><div class="hc-cs">The full job hasn't been imported.</div>
       <table><tr><td>Service man</td><td><b>${esc(c.man||'—')}</b></td></tr><tr><td>Result</td><td><b>${ocText(c.outcome)}</b></td></tr>${c.note?`<tr><td>Note</td><td>“${esc(c.note)}”</td></tr>`:''}<tr><td>Job number</td><td>${esc(c.job_no||'—')}</td></tr></table>
@@ -3363,7 +3385,8 @@ async function hcOpenCall(c, i){
   // the old call's files and conversation
   let files, convo;
   if(c.imp){ files={sheet:c.imp.sheet_path, marked:c.imp.marked_path, photos:c.imp.photos||[]}; convo=c.imp.convo||[]; }
-  else { const x=c.job, { data }=await sb.from('comments').select('*').eq('job_id',x.id).order('created_at');
+  else { const x=c.job; let { data }=await sb.from('comments').select('*').eq('job_id',x.id).order('created_at');
+    if(c.upTo){ const end=addDays(parseYmd(c.upTo),1).getTime(); data=(data||[]).filter(m=>new Date(m.created_at).getTime()<end); }
     files={sheet:x.pdf_path, marked:x.marked_path, photos:(data||[]).filter(m=>m.photo_path).map(m=>m.photo_path)};
     convo=(data||[]).map(m=>{ const a=prof(m.author_id); return {kind:m.kind==='event'?'event':'msg', who:a.full_name, role:roleLabel(a.role), at:m.created_at, body:m.body||'', photo:m.photo_path||null}; }); }
   if(hcSel!==i) return;
@@ -3372,7 +3395,7 @@ async function hcOpenCall(c, i){
       <button class="tb-btn ${hcMode==='sheet'?'on':''}" data-m="sheet" onclick="hcMode='sheet';hcFiles()">📄 Sheet</button>
       ${files.marked?`<button class="tb-btn ${hcMode==='marked'?'on':''}" data-m="marked" onclick="hcMode='marked';hcFiles()">✏️ Marked-up</button>`:''}
       ${files.photos.length?`<button class="tb-btn" data-m="photos" onclick="hcMode='photos';hcFiles()">🖼 Photos (${files.photos.length})</button>`:''}
-      <span class="spacer"></span><button class="tb-btn zoom-ctl" onclick="hcZ(-1)">−</button><button class="tb-btn zoom-ctl" id="hc-zl" onclick="hcZ(0)">100%</button><button class="tb-btn zoom-ctl" onclick="hcZ(1)">+</button></div>
+      ${c.same?`<span class="hc-samenote" title="The job carried on as the same job, so the sheet is the same one">Same job sheet${files.marked?' · mark-ups as they are now':''}</span>`:''}<span class="spacer"></span><button class="tb-btn zoom-ctl" onclick="hcZ(-1)">−</button><button class="tb-btn zoom-ctl" id="hc-zl" onclick="hcZ(0)">100%</button><button class="tb-btn zoom-ctl" onclick="hcZ(1)">+</button></div>
       <div class="pdf-scroll" id="hc-scroll"><div class="pdf-pages" id="hc-pages"><div class="loading">Loading sheet…</div></div></div></section>
     <aside class="hc-chat"><div class="chat-head">💬 Conversation <span class="hc-cs">· ${ordN(i+1)} call</span></div><div class="chat-list" id="hc-list">${hcConvo(convo)}</div><div class="hc-lock">🔒 Old call — messages can't be added here.</div></aside></div>`;
   v._files=files; hcFiles();
@@ -4522,6 +4545,7 @@ async function jaSaveCall(editId, again){
   const row={title:cust||null, ref_no:ref||phoneKey(ph)||null, customer_phone:ph||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:email||null,
     eircode:route?route.eircode:null, avail:route?route.avail:null, est_minutes:route?route.est_minutes:null, crew:route?route.crew:null,
     notes:$('m-notes').value.trim()||null, hist_skip:[...formSkip]};
+  if(!editId && dupGuard($('m-save'), [ref, ph, row.customer_phone2], editId)) return;
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
   try{ const id=editId||uuid();
     if(pendingFiles.length){ const u=await jaPutFile(pendingFiles, id); row.pdf_path=u.path; row.pdf_bytes=u.bytes; }
