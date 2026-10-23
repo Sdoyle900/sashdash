@@ -222,6 +222,9 @@
     .dup-use{font-size:12px;padding:3px 9px;margin:3px 0 3px 6px}.dup-acts{margin:8px 0 4px}.dup-same{font-size:13px;padding:7px 12px}
     .ja-again{margin-top:5px;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:8px;padding:4px 8px;font-size:12px;line-height:1.5}.ja-again button{font-size:11.5px;padding:2px 8px;margin-left:6px}
     .dup-warn{background:#fffbeb;border:1.5px solid #fcd34d;color:#92400e;border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.5;margin:10px 0}.dup-warn span{color:#a16207;font-size:12.5px}
+    .hc-x{margin-left:4px;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#94a3b8;opacity:.75}
+    .hc-x:hover{background:#ef4444;color:#fff;opacity:1}.hc-tab.on .hc-x{color:#64748b}.hc-tab.on .hc-x:hover{color:#fff}
+    .hc-rn{font:inherit;font-size:13px;font-weight:700;width:130px;padding:2px 6px;border:1.5px solid var(--indigo);border-radius:6px;color:#0f172a;background:#fff}
     .hc-samenote{font-size:12px;color:#4338ca;background:#eef2ff;border-radius:999px;padding:3px 10px;margin-left:6px;white-space:nowrap}
     .hc-same{background:#eef2ff;border-radius:10px;padding:10px 12px;color:#3730a3;font-size:13.5px;margin:12px 0}
     .modal:has(.dh-t){max-width:820px}
@@ -1136,7 +1139,6 @@
         <button onclick="printJob()">🖨 Print job, mark-ups &amp; chat</button>
         <button onclick="openReschedule()" id="mi-resched" class="admin-only">📅 Reschedule to another day</button>
         <button onclick="$('jv-menu').classList.add('hidden');openImport(job.id)" id="mi-import" class="admin-only">📥 Import an old call from computer</button>
-        <button onclick="$('jv-menu').classList.add('hidden');openEditCalls()" id="mi-calls" class="full-only">🗂 Edit calls</button>
         <button onclick="deleteJob()" class="red admin-only">🗑 Delete job &amp; file</button>
       </div>
     </div>
@@ -1278,7 +1280,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-24-1400';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-24-1600';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1526,6 +1528,7 @@ async function loadData(){
   { const r=await sb.from('job_shares').select('*'); hasShares=!r.error; shares = r.error ? [] : (r.data||[]); }
   await loadHist();
   try{ await eirTownsLoad(); }catch(e){}
+  try{ await loadTabMeta(); }catch(e){ hasTabMeta=false; }
   try{ if(isOffice) await loadNewCalls(); }catch(e){}
   try{ await ocLoadSummary(); }catch(e){ hasOc=false; }
   if(hasWa) await waLoadSettings();
@@ -3417,26 +3420,54 @@ async function histSkip(jobId,key){
 }
 
 // ── the call tabs at the top of an open job ──
+let tabMeta={}, hasTabMeta=true;
+async function loadTabMeta(){ if(!hasTabMeta) return; const r=await sb.from('tab_labels').select('key,label,hidden'); if(r.error){ hasTabMeta=false; return; } tabMeta={}; (r.data||[]).forEach(t=>tabMeta[t.key]=t); }
+function tabKey(c){ return c==='cur' ? 'job:'+job.id : c.src==='live' ? 'job:'+c.key : c.src==='bk' ? c.key : 'hist:'+c.key; }
 function callTabs(j){ const p=pastCalls(j), keys=new Set(p.map(c=>c.key));
-  const bk=callImports.filter(i=>i.job_id===j.id && !keys.has(i.call_key)).map(i=>({key:'imp:'+i.id, src:'bk', date:i.work_date, man:i.serviceman_name, outcome:i.outcome, note:i.note||'', job_no:i.job_no, imp:i}));
-  return [...p, ...bk].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.src==='bk')-(b.src==='bk')); }
+  const bk=callImports.filter(i=>i.job_id===j.id && !keys.has(i.call_key) && i.work_date!==jobDay(j)).map(i=>({key:'imp:'+i.id, src:'bk', date:i.work_date, man:i.serviceman_name, outcome:i.outcome, note:i.note||'', job_no:i.job_no, imp:i}));
+  return [...p, ...bk.filter(c=>!(tabMeta[c.key]||{}).hidden)].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.src==='bk')-(b.src==='bk')); }
 let hcLabels=[];
 function hcLabel(i){ return hcLabels[i]||`${ordN(i+1)} call`; }
 function hcRender(){
   const bar=$('hc-tabs'); if(!bar) return;
-  hcCalls=job?callTabs(job):[]; { let k=0; hcLabels=hcCalls.map(c=>c.src==='bk'?'📎 Backup':`${ordN(++k)} call`); }
+  hcCalls=job?callTabs(job):[]; { let k=0; hcLabels=hcCalls.map(c=>{ const d=c.src==='bk'?'📎 Backup':`${ordN(++k)} call`, t=(tabMeta[tabKey(c)]||{}).label; return t?esc(t):d; }); }
   if(!hcCalls.length){ bar.classList.add('hidden'); hcSel='cur'; hcShowCur(); return; }
   bar.classList.remove('hidden');
-  bar.innerHTML=hcCalls.map((c,i)=>`<button class="hc-tab ${hcSel===i?'on':''}" onclick="hcPick(${i})"><span class="hc-dot ${OC_DOT[c.outcome]||'o'}"></span>${hcLabel(i)} <small>${esc(niceDate(c.date))}</small></button>`).join('')
-    +`<button class="hc-tab ${hcSel==='cur'?'on':''}" onclick="hcPick('cur')"><span class="hc-dot o"></span>Current call <small>${esc(niceDate(jobDay(job)))}</small></button>`;
+  const can=isAdmin&&!previewing, curLbl=(tabMeta['job:'+job.id]||{}).label;
+  const x=i=>can?`<span class="hc-x" role="button" title="Remove this tab" onclick="event.stopPropagation();tabClose(${i==='cur'?"'cur'":i})">✕</span>`:'';
+  const nm=(i,t)=>`<span class="hc-nm" ${can?`ondblclick="event.stopPropagation();tabRename(${i==='cur'?"'cur'":i},this)" title="Double-click to rename"`:''}>${t}</span>`;
+  bar.innerHTML=hcCalls.map((c,i)=>`<button class="hc-tab ${hcSel===i?'on':''}" onclick="hcPick(${i})"><span class="hc-dot ${OC_DOT[c.outcome]||'o'}"></span>${nm(i,hcLabel(i))} <small>${esc(niceDate(c.date))}</small>${x(i)}</button>`).join('')
+    +`<button class="hc-tab ${hcSel==='cur'?'on':''}" onclick="hcPick('cur')"><span class="hc-dot o"></span>${nm('cur',curLbl?esc(curLbl):'Current call')} <small>${esc(niceDate(jobDay(job)))}</small>${x('cur')}</button>`;
 }
+// ✕ a tab (Office full access): an earlier call comes off the list; the Current call → the last earlier call becomes current; backup files are never deleted
+async function tabClose(i){ if(!isAdmin || previewing || !job) return;
+  if(i==='cur') return ecRemoveCurrent();
+  const c=hcCalls[i]; if(!c) return;
+  if(c.src==='bk'){ const ok=await confirmBox({icon:'📎', title:'Hide this backup tab?', ok:'Hide tab', body:'The tab is hidden. The backup files are <b>kept</b> (nothing is deleted).'}); if(!ok) return;
+    if(!hasTabMeta) return toast('Run update-41 in Supabase first.',6000);
+    const { error }=await sb.from('tab_labels').upsert({key:c.key, label:(tabMeta[c.key]||{}).label||null, hidden:true, updated_by:me.id, updated_at:new Date().toISOString()},{onConflict:'key'}); if(error) return toast('Could not hide it: '+error.message,6000);
+    tabMeta[c.key]={...(tabMeta[c.key]||{}), key:c.key, hidden:true}; hcSel='cur'; hcRender(); hcShowCur(); if(pdfDoc) renderPdf(); return toast('📎 Backup tab hidden — files kept'); }
+  return ecRemove(c.key); }
+// ✎ double-click a tab name to rename it (Enter saves, Esc cancels, empty = back to the usual name)
+function tabRename(i, el){ if(!isAdmin || previewing || !job) return;
+  if(!hasTabMeta) return toast('Run update-41 in Supabase so tabs can be renamed.',6000);
+  const key=i==='cur'?'job:'+job.id:tabKey(hcCalls[i]), old=(tabMeta[key]||{}).label||'';
+  const inp=document.createElement('input'); inp.className='hc-rn'; inp.value=old||el.textContent.trim(); inp.maxLength=40;
+  el.replaceWith(inp); inp.focus(); inp.select();
+  let done=false; const finish=async save=>{ if(done) return; done=true; const v=inp.value.trim();
+    if(save && v!==old){ const row={key, label:v||null, hidden:!!(tabMeta[key]||{}).hidden, updated_by:me.id, updated_at:new Date().toISOString()};
+      const { error }=await sb.from('tab_labels').upsert(row,{onConflict:'key'}); if(error) toast('Not saved: '+error.message,6000); else tabMeta[key]=row; }
+    hcRender(); };
+  inp.addEventListener('click',e=>e.stopPropagation());
+  inp.addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter'){ e.preventDefault(); finish(true); } if(e.key==='Escape') finish(false); });
+  inp.addEventListener('blur',()=>finish(true)); }
 function hcShowCur(){
   $('job-view').classList.remove('hc-old'); $('hc-view').classList.add('hidden'); $('hc-view').innerHTML=''; hcDoc=null;
 }
 function hcPick(i){
   if(i!=='cur' && dirty){ toast('Save or undo your mark-up first.'); return; }
   commitTextEditor(); if(i!=='cur') setMarking(false);
-  hcSel=i; hcRender();
+  hcSel=i; { const bs=[...document.querySelectorAll('#hc-tabs .hc-tab')]; if(bs.length===hcCalls.length+1) bs.forEach((b,k)=>b.classList.toggle('on', k===(i==='cur'?hcCalls.length:i))); else hcRender(); }
   if(i==='cur'){ hcShowCur(); if(pdfDoc) renderPdf(); return; }
   hcOpenCall(hcCalls[i], i);
 }
@@ -3535,20 +3566,20 @@ function openEditCalls(){ if(!isAdmin || previewing || !job) return;
       ${row('Current call', cur, all.length?`<button class="btn-outline red" onclick="ecRemoveCurrent()">🗑 Remove</button>`:'<span class="ec-note">only call — use 🗑 Delete job</span>')}</div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button></div>`); }
 async function ecRemove(key){ const j=jobs.find(x=>x.id===job.id); if(!j) return; const all=pastCalls(j), i=all.findIndex(c=>c.key===key), c=all[i]; if(!c) return;
-  const ok=await confirmBox({icon:'🗑', title:`Remove the ${ordN(i+1)} call?`, body:`<b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b><br>${c.src==='live'?'It\'s a separate job — that job is kept, it just stops showing as a call on this one.':'It\'s removed from this customer\'s call history.'} The other calls renumber.${c.imp?'<br>📎 Its backup files (sheet, mark-ups, photos, chat) stay on the job as a <b>📎 Backup</b> tab.':''}`, ok:'🗑 Remove', okClass:'btn-danger'}); if(!ok) return openEditCalls();
+  const ok=await confirmBox({icon:'🗑', title:`Remove the ${ordN(i+1)} call?`, body:`<b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b><br>${c.src==='live'?'It\'s a separate job — that job is kept, it just stops showing as a call on this one.':'It\'s removed from this customer\'s call history.'} The other calls renumber.${c.imp?'<br>📎 Its backup files (sheet, mark-ups, photos, chat) stay on the job as a <b>📎 Backup</b> tab.':''}`, ok:'🗑 Remove', okClass:'btn-danger'}); if(!ok) return;
   try{
     if(c.src==='live'){ const skip=[...new Set([...(j.hist_skip||[]),key])]; const { error }=await sb.from('jobs').update({hist_skip:skip}).eq('id',j.id); if(error) throw error; j.hist_skip=skip; job.hist_skip=skip; }
     else {   // backup files (call_imports) are kept — they show as a 📎 Backup tab
       if(c.src==='hist'){ const { error }=await sb.from('call_history').delete().eq('id',key); if(error) throw error; }
       callHist=callHist.filter(h=>h.id!==key); }
     try{ await sb.from('comments').insert({job_id:j.id, author_id:me.id, kind:'event', body:`🗂 ${ordN(i+1)} call (${niceDate(c.date)}, ${firstName(c.man||'')}) removed by ${firstName(me.full_name)}`}); }catch(e){}
-    hcSel='cur'; hcRender(); hcShowCur(); if(pdfDoc) renderPdf(); rerenderCurrent(); toast(`🗑 ${ordN(i+1)} call removed`); openEditCalls();
+    hcSel='cur'; hcRender(); hcShowCur(); if(pdfDoc) renderPdf(); rerenderCurrent(); toast(`🗑 ${ordN(i+1)} call removed`);
   }catch(e){ toast('Could not remove it: '+(e.message||e),7000); }
 }
 async function ecRemoveCurrent(){ const j=jobs.find(x=>x.id===job.id); if(!j) return; const all=pastCalls(j), c=all[all.length-1]; if(!c) return;
   const st=siteOf(j)||{};
   const ok=await confirmBox({icon:'🗑', title:'Remove the Current call?', ok:'🗑 Remove current call', okClass:'btn-danger',
-    body:`This visit (<b>${esc(niceDate(st.work_date||jobDay(j)))} · ${esc(firstName(prof(j.serviceman_id).full_name))}</b>) is removed and the <b>${ordN(all.length)} call</b> becomes the current call again (any backup files stay on the job as a 📎 Backup tab):<br><b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>.${c.src==='live'?'<br>That call is its own job, so this job is deleted (sheet, mark-ups and chat).':'<br>The job goes back to that day and man with that result. Its sheet, mark-ups and chat stay with it.'}`}); if(!ok) return openEditCalls();
+    body:`This visit (<b>${esc(niceDate(st.work_date||jobDay(j)))} · ${esc(firstName(prof(j.serviceman_id).full_name))}</b>) is removed and the <b>${ordN(all.length)} call</b> becomes the current call again (any backup files stay on the job as a 📎 Backup tab):<br><b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b>.${c.src==='live'?'<br>That call is its own job, so this job is deleted (sheet, mark-ups and chat).':'<br>The job goes back to that day and man with that result. Its sheet, mark-ups and chat stay with it.'}`}); if(!ok) return;
   try{
     if(c.src==='live'){   // the earlier call is a separate job → this job goes, that one is the current call again
       const paths=[j.pdf_path,j.marked_path, ...await chatPhotoPaths([j.id]), ...importPathsFor([j.id])].filter(Boolean);
@@ -6137,25 +6168,36 @@ async function saveMarkup(){ if(blockPreview()) return;
 
 // ── Conversation ──────────────────────────────────────────────────
 let shownComments=new Set(), shownMsgs=0;
+// 📎 the backup of this same visit: its chat + photos show in the Current call's chat (read-only, nothing copied, nothing deleted)
+function curImports(j){ return j?callImports.filter(i=>i.job_id===j.id && i.work_date===jobDay(j)):[]; }
+function backupMsgs(j){ const out=[], seen=new Set(); let n=0;
+  for(const imp of curImports(j)){ const used=new Set();
+    for(const m of (imp.convo||[])){ const k=(m.at||'')+'|'+(m.body||'')+'|'+(m.photo?m.photo.split('/').pop():''); if(seen.has(k)) { if(m.photo) used.add(m.photo); continue; } seen.add(k); if(m.photo) used.add(m.photo);
+      const p=profiles.find(x=>x.full_name===m.who);
+      out.push({id:'bk:'+(n++), _bk:true, _who:m.who||'', kind:m.kind==='event'?'event':'message', author_id:p?p.id:null, body:m.body||'', photo_path:m.photo||null, created_at:m.at||`${imp.work_date}T12:00:00`}); }
+    for(const ph of (imp.photos||[])){ const k='ph|'+ph.split('/').pop(); if(used.has(ph)||seen.has(k)) continue; seen.add(k);
+      out.push({id:'bk:'+(n++), _bk:true, _who:imp.serviceman_name||'', kind:'message', author_id:null, body:'', photo_path:ph, created_at:`${imp.work_date}T16:00:00`}); } }
+  return out; }
 async function loadComments(){
   const id=job.id;
   const { data, error }=await sb.from('comments').select('*').eq('job_id',id).order('created_at');
   if(!job||job.id!==id) return;
   shownComments=new Set(); shownMsgs=0; $('chat-count').textContent=''; $('chat-list').innerHTML='';
   if(error){ $('chat-list').innerHTML=`<div class="loading">${esc(error.message)}</div>`; return; }
-  if(!data.length) $('chat-list').innerHTML='<div class="loading" id="chat-empty">No messages yet. Ask a question or leave an update about this job.</div>';
-  data.forEach(c=>appendComment(c,false));
+  const all=[...data, ...backupMsgs(job)].sort((a,b)=>String(a.created_at)<String(b.created_at)?-1:1);
+  if(!all.length) $('chat-list').innerHTML='<div class="loading" id="chat-empty">No messages yet. Ask a question or leave an update about this job.</div>';
+  all.forEach(c=>appendComment(c,false));
   const l=$('chat-list'); l.scrollTop=l.scrollHeight;
 }
 function appendComment(c, scroll){
   if(shownComments.has(c.id)) return; shownComments.add(c.id);
   const em=$('chat-empty'); if(em) em.remove();
   const el=document.createElement('div');
-  if(c.kind==='event'){ el.className='evt'; el.textContent=`${firstName(prof(c.author_id).full_name)} · ${c.body} · ${fmtWhen(c.created_at)}`; }
-  else { const mine=c.author_id===me.id, a=prof(c.author_id);
+  if(c.kind==='event'){ el.className='evt'; el.textContent=`${c._bk?firstName(c._who):firstName(prof(c.author_id).full_name)} · ${c.body} · ${fmtWhen(c.created_at)}${c._bk?' · 📎 backup':''}`; }
+  else { const mine=!c._bk && c.author_id===me.id, a=c._bk?{full_name:c._who||'From the backup', role:(prof(c.author_id)||{}).role}:prof(c.author_id);
     el.className='msg'+(mine?' me':'');
     const photo=c.photo_path?`<div class="photo-wrap"><img class="chat-photo" data-path="${esc(c.photo_path)}" alt="Photo" onclick="openLightbox(this)"><span class="ph-load">📷</span></div>`:'';
-    el.innerHTML=`${mine?'':`<div class="who">${esc(a.full_name)}${roleLabel(a.role)?' · '+roleLabel(a.role):''}</div>`}<div class="bub ${c.photo_path?'has-photo':''}">${photo}${c.body?`<div class="cap">${esc(c.body)}</div>`:''}</div><div class="when">${fmtWhen(c.created_at)}</div>`;
+    el.innerHTML=`${mine?'':`<div class="who">${esc(a.full_name)}${roleLabel(a.role)?' · '+roleLabel(a.role):''}</div>`}<div class="bub ${c.photo_path?'has-photo':''}">${photo}${c.body?`<div class="cap">${esc(c.body)}</div>`:''}</div><div class="when">${fmtWhen(c.created_at)}${c._bk?' · 📎 from the backup':''}</div>`;
     if(c.photo_path) loadChatPhoto(el.querySelector('img'), scroll); }
   const l=$('chat-list'); l.appendChild(el);
   if(c.kind!=='event') shownMsgs++;
