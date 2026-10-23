@@ -227,6 +227,8 @@
     .meter{height:6px;background:#e2e8f0;border-radius:4px;margin-top:8px;overflow:hidden}
     .meter > div{height:100%;background:var(--indigo);border-radius:4px}
     .section-h{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--slate);margin:4px 0 10px}
+    .tg-hint{font-weight:500;text-transform:none;letter-spacing:0;color:#94a3b8;font-size:12px;margin-left:10px}.tg-hint a{color:var(--indigo)}
+    .tech-card.tg-dragging{opacity:.4}.tech-card.tg-before{box-shadow:-4px 0 0 0 var(--indigo)}.tech-card.tg-after{box-shadow:4px 0 0 0 var(--indigo)}
     .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:26px}
     .tech-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;position:relative;transition:transform .12s,box-shadow .12s;border-top:4px solid var(--c,#4f46e5)}
     .tech-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,23,42,.08)}
@@ -1211,7 +1213,10 @@ function fmtBytes(b){if(!b)return '0 MB';if(b<1024*1024)return (b/1024).toFixed(
 function initials(n){return (n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();}
 function prof(id){return profiles.find(p=>p.id===id)||{full_name:'Unknown',colour:'#64748b'};}
 function inDept(p,d){return d==='calls'?p.on_calls!==false:p.on_sites!==false;}
-function techs(d=dept){return profiles.filter(p=>p.role==='serviceman'&&inDept(p,d));}
+// 👥 each office login keeps its own team order (drag the cards on the dashboard) — update-30
+let myTeamOrder=[], hasPrefs=true;
+function teamRank(id){ const i=myTeamOrder.indexOf(id); return i<0?1e6:i; }
+function techs(d=dept){ const t=profiles.filter(p=>p.role==='serviceman'&&inDept(p,d)); return isOffice&&myTeamOrder.length ? t.map((p,i)=>[p,i]).sort((a,b)=>(teamRank(a[0].id)-teamRank(b[0].id))||(a[1]-b[1])).map(x=>x[0]) : t; }
 // 🚫 No new jobs (👥 Manage team): he stays on the team with all his old work, but can't be given anything new
 function noJobs(id){const p=profiles.find(x=>x.id===id); return !!(p&&p.no_new_jobs===true);}
 function jobMen(d=dept){return techs(d).filter(p=>!noJobs(p.id));}
@@ -1243,7 +1248,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-23-1700';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-23-1800';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1480,6 +1485,8 @@ async function loadData(){
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
   profiles=pr.data; sites=si.data; jobs=jo.data;
+  if(isOffice && hasPrefs){ try{ const r=await sb.from('user_prefs').select('team_order').eq('user_id',me.id).maybeSingle(); if(r.error) hasPrefs=false; else myTeamOrder=Array.isArray(r.data&&r.data.team_order)?r.data.team_order:[]; }catch(e){ hasPrefs=false; } }
+  else if(!isOffice) myTeamOrder=[];
   if(isOffice){ try{ const r=await sb.from('staff_phones').select('id,phone'); hasPhones=!r.error;
     if(!r.error){ const m=new Map((r.data||[]).map(x=>[x.id,x.phone])); profiles.forEach(p=>{ p.phone=m.get(p.id)||null; }); } }catch(e){ hasPhones=false; } }
   else profiles.forEach(p=>{ p.phone=null; });   // a man never gets anyone's number
@@ -1596,6 +1603,7 @@ function _renderDashboard(){
   autoSyncOrders();
   const allJobs=jobs, jobs_=dJobs(), sites_=dSites();
   const r=renderDashboardFor(jobs_, sites_, allJobs);
+  setTimeout(attachTeamDrag,0);
   if(openFolder && $('folder-panel')) setTimeout(renderFolderPanel,0);   // an open box is filled in again after every refresh
   return r;
 }
@@ -1611,7 +1619,7 @@ function renderDashboardFor(jobs, sites, allJobs){
   const cards = team.map(t=>{
     const tj=jobs.filter(j=>j.serviceman_id===t.id);
     const nNew=tj.filter(j=>j.admin_unread).length;
-    return `<div class="tech-card ${noJobs(t.id)?'nj':''}" style="--c:${esc(t.colour)}" onclick="openPortal('${t.id}')">
+    return `<div class="tech-card ${noJobs(t.id)?'nj':''}" data-tid="${t.id}" style="--c:${esc(t.colour)}" onclick="openPortal('${t.id}')">
       ${nNew?`<span class="new-pill">${nNew} new</span>`:''}
       <div class="row" style="flex-wrap:nowrap"><div class="avatar">${esc(initials(t.full_name))}</div>
         <div style="min-width:0"><div class="name">${esc(t.full_name||'Unnamed')}${noJobs(t.id)?'<span class="nj-tag">🚫 No new jobs</span>':''}<span class="oc-chip ${ocUnread(t.id)?'':'hidden'}" data-oc-tech="${t.id}">💬 ${ocUnread(t.id)}</span></div><div class="phone">${t.phone?esc(t.phone):'&nbsp;'}</div></div></div>
@@ -1640,11 +1648,40 @@ function renderDashboardFor(jobs, sites, allJobs){
       <div class="stat"><div class="n" style="font-size:20px;padding-top:4px">${fmtBytes(bytes)}</div><div class="l">Storage used of 1 GB</div><div class="meter"><div style="width:${pct.toFixed(1)}%"></div></div></div>
     </div>
     ${waWarnHtml()}${folderBoxes(jobs)}
-    <div class="section-h">Team</div>
-    ${team.length?`<div class="team-grid">${cards}</div>`:`<div class="empty" style="margin-bottom:24px"><div class="big">👷</div>No men in ${D.label} yet.${isAdmin?' Click <b>Manage team</b> to add them.':' Ask the office to add them.'}</div>`}
+    <div class="section-h">Team${team.length>1&&!previewing?`<span class="tg-hint">✥ drag the cards to put the men you use most first${myTeamOrder.length?` · <a href="#" onclick="event.preventDefault();resetTeamOrder()">reset</a>`:''}</span>`:''}</div>
+    ${team.length?`<div class="team-grid" id="team-grid">${cards}</div>`:`<div class="empty" style="margin-bottom:24px"><div class="big">👷</div>No men in ${D.label} yet.${isAdmin?' Click <b>Manage team</b> to add them.':' Ask the office to add them.'}</div>`}
     <div class="section-h">Latest activity</div>
     ${recent.length?`<div class="activity">${act}</div>`:`<div class="empty">Nothing yet — upload a job to get started.</div>`}`;
 }
+
+// ✥ drag a team card to a new place — saved for this login only
+let teamDragId=null, teamDragged=false;
+function attachTeamDrag(){
+  const g=$('team-grid'); if(!g || previewing || !isOffice) return;
+  const cards=[...g.querySelectorAll('.tech-card[data-tid]')]; if(cards.length<2) return;
+  const clear=()=>cards.forEach(c=>c.classList.remove('tg-before','tg-after','tg-dragging'));
+  cards.forEach(c=>{ c.setAttribute('draggable','true');
+    c.addEventListener('dragstart',e=>{ teamDragId=c.dataset.tid; teamDragged=true; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/sashdash-man',teamDragId); setTimeout(()=>c.classList.add('tg-dragging'),0); });
+    c.addEventListener('dragend',()=>{ teamDragId=null; clear(); setTimeout(()=>teamDragged=false,50); });
+    c.addEventListener('dragover',e=>{ if(!teamDragId||c.dataset.tid===teamDragId) return; e.preventDefault(); const r=c.getBoundingClientRect(), after=e.clientX>r.left+r.width/2;
+      cards.forEach(x=>{ if(x!==c) x.classList.remove('tg-before','tg-after'); }); c.classList.toggle('tg-after',after); c.classList.toggle('tg-before',!after); });
+    c.addEventListener('dragleave',()=>c.classList.remove('tg-before','tg-after'));
+    c.addEventListener('drop',e=>{ if(!teamDragId) return; e.preventDefault(); const after=c.classList.contains('tg-after'), moved=teamDragId, target=c.dataset.tid; clear(); teamDragId=null;
+      if(moved===target) return; const ids=cards.map(x=>x.dataset.tid).filter(id=>id!==moved); let at=ids.indexOf(target); if(after) at++; ids.splice(at,0,moved); saveTeamOrder(ids); });
+    c.addEventListener('click',e=>{ if(teamDragged){ e.stopImmediatePropagation(); e.preventDefault(); } },true);
+  });
+}
+async function saveTeamOrder(ids){
+  // keep men from the other department where they were, so each side's order survives
+  const rest=myTeamOrder.filter(id=>!ids.includes(id)), all=[...ids, ...rest, ...profiles.filter(p=>p.role==='serviceman'&&!ids.includes(p.id)&&!rest.includes(p.id)).map(p=>p.id)];
+  const old=myTeamOrder; myTeamOrder=all; rerenderCurrent();
+  if(!hasPrefs) return toast('Saved on this screen only — run update-30 in Supabase to keep it.',6000);
+  const { error }=await sb.from('user_prefs').upsert({user_id:me.id, team_order:all, updated_at:new Date().toISOString()},{onConflict:'user_id'});
+  if(error){ myTeamOrder=old; rerenderCurrent(); toast('Could not save the order: '+error.message,6000); } else toast('✥ Team order saved for you');
+}
+async function resetTeamOrder(){ const old=myTeamOrder; myTeamOrder=[]; rerenderCurrent();
+  if(hasPrefs){ const { error }=await sb.from('user_prefs').upsert({user_id:me.id, team_order:[], updated_at:new Date().toISOString()},{onConflict:'user_id'}); if(error){ myTeamOrder=old; rerenderCurrent(); return toast('Error: '+error.message,5000); } }
+  toast('Team back to the usual order'); }
 
 // ── Folders: Customers not home / Re-book unfinished (Private Calls) ──
 let openFolder=null;
