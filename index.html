@@ -196,7 +196,6 @@
     .nj-note{padding:14px;border:1.5px dashed #fecaca;background:#fef2f2;color:#b91c1c;border-radius:12px;font-weight:600;font-size:14px;text-align:center}
     @media (max-width:720px){ .dept-inner{padding:8px 12px;gap:8px} .dept-btn{font-size:14px;padding:10px 8px;gap:6px} .dept-btn .di{font-size:17px} }
     .page{max-width:1400px;margin:0 auto;padding:22px 20px calc(40px + var(--safe-b))}
-    body.ja-wide #view-dashboard{max-width:none;padding-left:24px;padding-right:24px}   /* 📋 Job allocations uses the whole screen */
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
     .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -846,7 +845,7 @@
     .p-sig{margin:18px 0;border:2px solid #16a34a;border-radius:10px;padding:10px 14px;page-break-inside:avoid}.p-sig.no{border-color:#f59e0b}
     .p-sig-box{border-bottom:2px solid #94a3b8;height:150px;display:flex;align-items:flex-end;margin:6px 0 10px}.p-sig-box img{max-height:150px;max-width:100%}
     .crew-b{white-space:nowrap;flex:none}
-    .ja-grid.ja-sgrid{grid-template-columns:minmax(0,1fr) 16px var(--ja-mapw,30%) !important;gap:0 !important}
+    .ja-grid.ja-sgrid{grid-template-columns:minmax(360px,1fr) 16px min(var(--ja-mapw,30%), calc(100% - 376px)) !important;gap:0 !important}
     .ja-table td:nth-child(2){max-width:170px}.ja-table td:nth-child(2) .ja-sub2{flex-wrap:wrap;white-space:normal}.ja-table td:nth-child(2) .ja-sub2 .s-sub{white-space:nowrap}
     @media (max-width:1400px){ .ja-table{font-size:12.5px} .ja-table td{padding:8px 4px !important} .ja-onote{min-width:108px;width:112px;max-width:112px} }
     .ja-split{align-self:stretch;cursor:col-resize;display:flex;align-items:center;justify-content:center;touch-action:none;min-height:420px}
@@ -1311,7 +1310,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-24-1800';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-24-1900';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
