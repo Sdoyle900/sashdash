@@ -1090,6 +1090,117 @@
     .wa-eta{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0}
     .wa-eta b{font-size:22px;min-width:90px;text-align:center}
     .wa-eta button{padding:8px 12px}
+
+.mat{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:6px}
+.mat-b{display:inline-flex;align-items:center;gap:6px;font:600 12.5px Inter,sans-serif;padding:5px 9px 5px 6px;border-radius:9px;border:1.5px solid #cbd5e1;background:#fff;color:#334155;cursor:pointer;white-space:nowrap}
+.mat-b:disabled{cursor:default}
+.mat-b .mb-box{width:17px;height:17px;border-radius:5px;border:2px solid #94a3b8;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;flex:none}
+.mat-b.ready.on{background:#dcfce7;border-color:#16a34a;color:#14532d}.mat-b.ready.on .mb-box{background:#16a34a;border-color:#16a34a}
+.mat-b.due.on{background:#fef3c7;border-color:#d97706;color:#78350f}.mat-b.due.on .mb-box{background:#d97706;border-color:#d97706}
+.mat-b:not(.on):not(:disabled):hover{border-color:#64748b;background:#f8fafc}
+.mat-b input[type=date]{font:600 12px Inter,sans-serif;border:1px solid #f59e0b;border-radius:6px;padding:1px 4px;background:#fff}
+.mat-note{flex-basis:100%;font-size:12px;font-weight:600;border-radius:7px;padding:3px 7px}
+.mat-note.no{color:#475569;background:#f1f5f9}.mat-note.late{color:#9a3412;background:#ffedd5}.mat-note.bad{color:#b91c1c;background:#fee2e2}
+.mat-what{flex-basis:100%;font-size:12px;color:#78350f}.mat-by{flex-basis:100%;font-size:11px;color:#64748b}
+.mat.cmp .mat-b{font-size:11.5px;padding:3px 7px 3px 4px}.mat.cmp .mb-box{width:15px;height:15px}
+.ja-mat{min-width:150px;max-width:180px}.ja-mat .mat{flex-direction:column;align-items:stretch;margin-top:0}.ja-mat .mat-b{white-space:nowrap;text-align:left}.ja-mat .mb-date{display:block}.ja-mat .mb-date i{display:none}.ja-mat .mat-what,.ja-mat .mat-note{font-size:11.5px}
+.slot .mat{justify-content:center;margin:2px 0 4px}
+.mat-badge{font:700 12px Inter,sans-serif;border-radius:999px;padding:3px 10px;display:inline-block}
+.mat-badge.ready{background:#dcfce7;color:#14532d;border:1.5px solid #16a34a}.mat-badge.due{background:#fef3c7;color:#78350f;border:1.5px solid #d97706}.mat-badge.none{background:#f1f5f9;color:#475569;border:1.5px solid #cbd5e1}
+#jv-mat{margin-top:6px}#jv-mat .mat-b:not(.on){background:#1e293b;color:#e2e8f0;border-color:#475569}#jv-mat .mat-b:not(.on) .mb-box{border-color:#94a3b8}#jv-mat .mat{margin-top:0}
+#jv-mat .mat-note.no{background:#334155;color:#cbd5e1}#jv-mat .mat-badge small{font-weight:500;opacity:.8}
+.mat-chips{display:inline-flex;align-items:center;gap:6px;margin-left:4px}.mat-chips>span{font:700 12px Inter,sans-serif;color:#475569}
+.ja-al-it{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.ja-al-it .mat{margin-top:0}
+.mat-al-warn{background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;border-radius:10px;padding:9px 12px;font-size:13px;margin:8px 0;line-height:1.5}
+.mat-al-ok{background:#f0fdf4;border:1.5px solid #86efac;color:#14532d;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;margin:8px 0}
+.jc-d.matno{background:repeating-linear-gradient(135deg,#fff7ed,#fff7ed 5px,#fed7aa 5px,#fed7aa 9px)!important}
+.jc-key .k.matno{background:repeating-linear-gradient(135deg,#fff7ed,#fff7ed 3px,#fdba74 3px,#fdba74 6px)}
+.mat-rb{background:#fef3c7;border:1.5px solid #f59e0b;color:#78350f;border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:10px;text-align:left}
+.mat-q{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.mat-set{background:#f0fdf4;border-color:#86efac}
+.ja-al-it{padding:2px 0}
+
+.pl-sub{color:var(--slate);font-size:13.5px;margin:-6px 0 12px;line-height:1.5}
+.pl-chips{display:flex;gap:6px;flex-wrap:wrap}.pl-chip{border:1.5px solid var(--border);border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:700;color:#475569;background:#fff}
+.pl-chip.on{background:#eef2ff;border-color:#a5b4fc;color:#3730a3}.pl-chip.d{min-width:44px;text-align:center}
+.modal:has(.pl-set),.modal:has(.pl-men){max-width:760px}
+.pl-set{border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px}.pl-set.off{background:#f8fafc;opacity:.8}
+.pl-set-h{display:flex;gap:8px;align-items:center}.pl-tg{margin-left:auto;font-size:13px;font-weight:700;display:flex;gap:6px;align-items:center;color:#334155}
+.pl-set-r{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}.pl-set-r>span:first-child{width:46px;font-size:12px;font-weight:700;color:var(--slate);text-transform:uppercase}
+.pl-lbl{font-size:12px;color:var(--slate);margin-left:8px}.pl-in{border:1.5px solid var(--border);border-radius:8px;padding:3px 9px;font-size:13px;font-weight:600;background:#fff}
+.pl-men{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pl-man{display:flex;gap:7px;align-items:center;border:1.5px solid #c7d2fe;background:#eef2ff;border-radius:10px;padding:8px 10px;font-size:14px}
+.pl-man small{display:block;color:var(--slate);font-size:11.5px;margin-left:auto;text-align:right}
+.pl-rules{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.7;color:#334155;margin-top:6px}
+.pl-done{display:flex;flex-direction:column;gap:8px;margin:4px 0 12px}.pl-done-r{display:flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:14px}.pl-done-r button{margin-left:auto}
+.pl-banner{background:#f5f3ff;border:1.5px dashed #a78bfa;border-radius:12px;padding:10px 14px;color:#4c1d95;font-size:13.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.pl-banner button{margin-left:auto}
+.pl-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}
+.pl-day{border:1.5px dashed #c4b5fd;background:#fff;border-radius:12px;padding:9px 10px;text-align:left;cursor:pointer;font:inherit;display:flex;flex-direction:column;gap:1px}
+.pl-day b{font-size:15px;color:#0f172a}.pl-day small{color:var(--slate);font-size:12px}.pl-day span{font-size:12px;font-weight:700;color:#6d28d9;margin-top:4px}
+.pl-day.on{background:#7c3aed;border-style:solid;border-color:#7c3aed}.pl-day.on b,.pl-day.on small,.pl-day.on span{color:#fff}
+.pl-day.off{opacity:.5;border-style:solid;border-color:var(--border)}.pl-day.off span{color:var(--slate)}.pl-day.over:not(.on){border-color:#f59e0b}.pl-day.over:not(.on) span{color:#b45309}.pl-day.on.over span::after{content:' ⚠'}
+.pl-day.sent:not(.on){border:1.5px solid #86efac;background:#f0fdf4}.pl-day.sent span{color:#15803d}
+.pl-head{border-left-color:#7c3aed !important;border-style:dashed;border-color:#c4b5fd}
+.pl-notice{background:#fffbeb;border:1.5px solid #fcd34d;color:#92400e;border-radius:10px;padding:9px 12px;font-size:13.5px;margin:10px 0}
+.pl-tot{display:flex;gap:18px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin:10px 0;flex-wrap:wrap;position:relative}
+.pl-tot div{display:flex;flex-direction:column}.pl-tot b{font-size:16px;color:#0f172a}.pl-tot span{font-size:11.5px;color:var(--slate);text-transform:uppercase;font-weight:700}
+.pl-tot.over{border-color:#f59e0b;background:#fffbeb}.pl-tot.over div:nth-last-child(2) span{color:#b45309}
+.pl-bar{flex:1;min-width:120px;height:8px;background:#ede9fe;border-radius:999px;overflow:hidden}.pl-bar i{display:block;height:100%;background:#7c3aed}.pl-tot.over .pl-bar i{background:#f59e0b}
+.pl-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,1fr);gap:14px;align-items:start}
+.pl-cards{display:flex;flex-direction:column;gap:8px}
+.pl-card{display:flex;gap:12px;background:#fff;border:1.5px dashed #c4b5fd;border-left:5px solid var(--c);border-radius:12px;padding:10px 12px;position:relative}
+.pl-card.live{border-style:solid;border-color:var(--border);border-left-color:#0f172a;background:#f8fafc}
+.pl-no{width:30px;height:30px;border-radius:9px;background:#7c3aed;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}.pl-card.live .pl-no{background:#0f172a}
+.pl-main{flex:1;min-width:0}.pl-nm{font-weight:800;font-size:15px;color:#0f172a;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pl-sub2{font-size:12.5px;color:#475569;margin-top:3px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pl-wait{font-weight:700;color:#475569}.pl-wait.old{color:#b91c1c}
+.pl-rep{font-size:12.5px;background:#f8fafc;border-radius:7px;padding:4px 8px;margin-top:5px;color:#334155}
+.pl-why{font-size:12px;color:#6d28d9;margin-top:5px;font-weight:600}
+.pl-act{display:flex;flex-direction:column;gap:5px;align-items:flex-end}.pl-act .btn-outline{font-size:12px;padding:4px 9px}.pl-act .red{color:#b91c1c;border-color:#fecaca}
+.pl-grip{color:#a78bfa;font-size:18px;cursor:grab;margin-top:auto}
+.pl-menu{position:absolute;right:12px;top:44px;z-index:30;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 30px rgba(15,23,42,.18);padding:6px;min-width:250px}
+.pl-menu-h{font-size:12px;font-weight:700;color:var(--slate);padding:6px 8px}.pl-menu button{display:flex;justify-content:space-between;width:100%;border:none;background:none;padding:8px 10px;border-radius:8px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-align:left}
+.pl-menu button:hover{background:#f5f3ff}.pl-menu button span{color:var(--slate);font-weight:500;font-size:12px}
+.pl-sug{margin-top:12px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 12px}.pl-sug-h{font-weight:800;font-size:13.5px;margin-bottom:6px;color:#334155}
+.pl-sug-r{display:flex;gap:6px;align-items:center;padding:6px 0;border-top:1px solid #f1f5f9;font-size:13px;flex-wrap:wrap}.pl-sug-r span{color:var(--slate);font-size:12.5px}.pl-sug-r button{margin-left:auto;font-size:12px;padding:3px 10px}
+.pl-mapw{position:sticky;top:120px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#fff}#pl-map{height:520px}
+.pl-pin{width:26px;height:26px;border-radius:50%;background:var(--c);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.pl-home{width:26px;height:26px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.pl-send{display:flex;flex-direction:column;gap:4px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13.5px;margin-bottom:10px}.pl-warn{color:#b45309;font-weight:700}
+.ja-plan{display:inline-block;margin-top:4px;font-size:11.5px;font-weight:700;color:#6d28d9;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:999px;padding:1px 8px}
+.pl-cardtag{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#6d28d9;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:999px;padding:1px 8px;vertical-align:middle}
+.ja-al-plan{background:#f5f3ff;border:1.5px solid #c4b5fd;color:#5b21b6;border-radius:10px;padding:8px 12px;font-size:13px;margin:-4px 0 12px}
+@media (max-width:900px){ .pl-grid{grid-template-columns:1fr} .pl-strip{grid-template-columns:repeat(3,1fr)} .pl-mapw{position:relative;top:0} #pl-map{height:320px} }
+
+.pl-left{display:flex;flex-direction:column;gap:8px;align-items:center}
+.pl-ok{width:30px;height:30px;border-radius:50%;border:2px solid #cbd5e1;background:#fff;color:#cbd5e1;font-weight:900;font-size:15px;cursor:pointer}
+.pl-ok:hover{border-color:#22c55e;color:#22c55e}.pl-ok.on{background:#16a34a;border-color:#16a34a;color:#fff}
+.pl-card.ok{border-color:#86efac;border-style:solid;background:#f7fef9}
+.pl-notes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}.pl-notes .pl-rep{margin:0}
+.pl-on b,.pl-rep b{color:#334155;font-size:12px}.pl-on{font-size:12.5px}.pl-on .ja-on{margin-top:3px;min-height:34px}
+.pl-addnext{width:100%;margin-top:8px;border:2px dashed #a78bfa;background:#faf5ff;color:#6d28d9;border-radius:12px;padding:12px 14px;font:inherit;font-weight:800;font-size:14.5px;cursor:pointer;text-align:left}
+.pl-addnext span{font-weight:500;font-size:12.5px;color:#7c3aed}.pl-addnext:hover{background:#f3e8ff}
+.pl-dayok.on{background:#16a34a;border-color:#16a34a;color:#fff}
+.pl-day.okd:not(.on){border:1.5px solid #86efac;background:#f7fef9}.pl-day.okd span{color:#15803d}.pl-day.on.okd span{color:#fff}
+.pl-card.dragging{opacity:.4}.pl-card.drop-before{box-shadow:0 -4px 0 0 #7c3aed}.pl-card.drop-after{box-shadow:0 4px 0 0 #7c3aed}
+.pl-notick{background:#fffbeb;border:1px solid #fcd34d;color:#92400e;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:10px}
+
+.slot-new.slot-prop{border-color:#a78bfa;background:#faf5ff}.slot-new.slot-prop .slot-no{background:#7c3aed}.slot-new.slot-prop .slot-hint{color:#6d28d9}.slot-new.slot-prop .slot-plus{font-size:30px}
+.modal:has(.pj-list){max-width:820px}.pj-filt{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:12.5px;color:var(--slate);font-weight:700}.pj-filt .pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}
+.pj-list{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto}
+.pj-row{display:flex;gap:10px;border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:#fff}.pj-row.best{border:2px solid #a78bfa;background:#faf5ff}
+.pj-main{flex:1;min-width:0}.pj-nm{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:15px}.pj-best{background:#7c3aed;color:#fff;border-radius:999px;padding:1px 9px;font-size:11.5px;font-weight:800}
+.pj-sub{font-size:12.5px;color:#475569;margin-top:3px}.pj-old{color:#b91c1c}.pj-inplan{color:#6d28d9;font-weight:700}
+.pj-notes{display:flex;flex-direction:column;gap:2px;font-size:12.5px;background:#f8fafc;border-radius:8px;padding:5px 8px;margin-top:5px;color:#334155}
+.pj-act{display:flex;flex-direction:column;gap:6px;align-items:stretch;justify-content:center}.pj-act .btn-primary{white-space:nowrap}
+.slot.slot-cancel{border:2px dashed #fda4af;background:#fff1f2;cursor:default;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;padding:46px 14px 14px}
+.slot-cancel .sc-ico{font-size:30px}.slot-cancel .slot-title{color:#9f1239}.slot-cancel .sc-t{font-weight:800;color:#be123c;font-size:13.5px}
+.slot-cancel .sc-m{font-size:12.5px;color:#7f1d1d;background:#fff;border:1px solid #fecdd3;border-radius:8px;padding:6px 8px}.slot-cancel .sc-b{font-size:12px;font-weight:700;color:#9f1239}
+.ja-prio{display:inline-block;font-size:11px;font-weight:800;color:#92400e;background:#fef3c7;border:1px solid #fcd34d;border-radius:999px;padding:1px 8px;margin-left:4px}
+.pl-wk{display:flex;align-items:center;gap:10px;margin:0 0 8px}.pl-wk b{font-size:15px;color:#4c1d95}
+.slot.slot-cancel{cursor:pointer}.slot.slot-cancel:hover{border-color:#be123c}
+.pl-set input.pl-in{font:inherit;font-size:13px;font-weight:600}
+label.pl-man{text-transform:none;letter-spacing:normal;font-size:14px;color:#0f172a;font-weight:500;cursor:pointer}label.pl-man b{font-weight:800}label.pl-man small{text-transform:none;letter-spacing:normal;font-weight:500}
+button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}button.pl-chip:disabled{opacity:.4;cursor:default}
+
 </style>
 </head>
 <body>
@@ -1310,7 +1421,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-24-1900';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-24-2100';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1537,7 +1648,7 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+(hasWa?WA_COLS:'')+(hasSig?',sig_path,sig_name,sig_at,sig_note':'')+(hasCrew?',est_minutes,crew':'')+(hasFollow?',followed_by':'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+(hasWa?WA_COLS:'')+(hasSig?',sig_path,sig_name,sig_at,sig_note':'')+(hasCrew?',est_minutes,crew':'')+(hasFollow?',followed_by':'')+(hasMat?MAT_COLS:'')+(hasWait?',wait_since,cancel_at':'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
   ]);
   if(jo.error && hasWa && /wa_/i.test(jo.error.message)){ hasWa=false; return loadData(); }   // database not updated yet (update-21)
   if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }
@@ -1545,6 +1656,8 @@ async function loadData(){
   if(jo.error && hasSig && /sig_/i.test(jo.error.message)){ hasSig=false; return loadData(); }
   if(jo.error && hasCrew && /est_minutes|crew/i.test(jo.error.message)){ hasCrew=false; return loadData(); }
   if(jo.error && hasFollow && /followed_by/i.test(jo.error.message)){ hasFollow=false; return loadData(); }   // database not updated yet (update-33)
+  if(jo.error && hasMat && /mat_/i.test(jo.error.message)){ hasMat=false; return loadData(); }   // database not updated yet (update-44)
+  if(jo.error && hasWait && /wait_since|cancel_at/i.test(jo.error.message)){ hasWait=false; return loadData(); }   // database not updated yet (update-45)
   if(jo.error && hasRoute && /eircode|avail/i.test(jo.error.message)){ hasRoute=false; return loadData(); }   // database not updated yet (update-15)   // database not updated yet (update-10)
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
@@ -1687,7 +1800,7 @@ function renderDashboardFor(jobs, sites, allJobs){
     return `<div class="tech-card ${noJobs(t.id)?'nj':''}" data-tid="${t.id}" style="--c:${esc(t.colour)}" onclick="openPortal('${t.id}')">
       ${nNew?`<span class="new-pill">${nNew} new</span>`:''}
       <div class="row" style="flex-wrap:nowrap"><div class="avatar">${esc(initials(t.full_name))}</div>
-        <div style="min-width:0"><div class="name">${esc(t.full_name||'Unnamed')}${noJobs(t.id)?'<span class="nj-tag">🚫 No new jobs</span>':''}${dept==='calls'&&!noJobs(t.id)&&unmarkedJobs(t.id).length?`<span class="um-tag" title="Jobs on earlier days with no result — he can't open today's jobs until they're marked">🔒 ${unmarkedJobs(t.id).length} not marked</span>`:''}<span class="oc-chip ${ocUnread(t.id)?'':'hidden'}" data-oc-tech="${t.id}">💬 ${ocUnread(t.id)}</span></div><div class="phone">${t.phone?esc(t.phone):'&nbsp;'}</div></div></div>
+        <div style="min-width:0"><div class="name">${esc(t.full_name||'Unnamed')}${noJobs(t.id)?'<span class="nj-tag">🚫 No new jobs</span>':''}${plOn()&&planItems.some(p=>p.tid===t.id)?`<span class="pl-cardtag">🧩 ${new Set(planItems.filter(p=>p.tid===t.id).map(p=>p.day)).size} days proposed</span>`:''}${dept==='calls'&&!noJobs(t.id)&&unmarkedJobs(t.id).length?`<span class="um-tag" title="Jobs on earlier days with no result — he can't open today's jobs until they're marked">🔒 ${unmarkedJobs(t.id).length} not marked</span>`:''}<span class="oc-chip ${ocUnread(t.id)?'':'hidden'}" data-oc-tech="${t.id}">💬 ${ocUnread(t.id)}</span></div><div class="phone">${t.phone?esc(t.phone):'&nbsp;'}</div></div></div>
       <div class="tech-nums">
         ${dept==='calls'?`<div><b>${tj.length}</b><span>Jobs</span></div>`:`<div><b>${sites.filter(s=>s.serviceman_id===t.id).length}</b><span>${D.many}</span></div>`}
         <div><b>${tj.filter(j=>!j.completed).length}</b><span>Open</span></div>
@@ -1704,7 +1817,7 @@ function renderDashboardFor(jobs, sites, allJobs){
   ensureSearchBar();
   $('dash-head').innerHTML = `
     <div class="row"><div><div class="page-title">${D.icon} ${D.label} team</div><div class="page-sub">Tap a man to open his ${D.label} portal and upload jobs.</div></div>
-      <span class="spacer"></span>${dept==='calls'&&isOffice?'<button class="btn-outline" onclick="openCustHistory()">🕘 Customer history</button>':''}${isOffice&&hasBk&&bkAccount()&&!previewing?backupControl():(dept==='calls'&&isOffice?downloadWeekControl():'')}${isAdmin?'<button class="btn-outline" onclick="openTeamModal()">👥 Manage team</button>':''}</div>`;
+      <span class="spacer"></span>${dept==='calls'&&isOffice?'<button class="btn-outline" onclick="openCustHistory()">🕘 Customer history</button>':''}${isOffice&&hasBk&&bkAccount()&&!previewing?backupControl():(dept==='calls'&&isOffice?downloadWeekControl():'')}${plOn()&&!previewing?'<button class="btn-outline" onclick="plSettings()">🧩 Planner settings</button>':''}${isAdmin?'<button class="btn-outline" onclick="openTeamModal()">👥 Manage team</button>':''}</div>`;
   $('dash-body').innerHTML = `
     <div class="stats">
       <div class="stat"><div class="n">${open}</div><div class="l">Open jobs</div></div>
@@ -2524,6 +2637,8 @@ function renderPortal(){
   }
 
   if(hasOc){ html+=ocTabs(currentTechId);
+    if(ocView==='plan' && plOn()){ html+=plPanel(currentTechId); $('view-portal').innerHTML=html; setTimeout(()=>{ plMapDraw(currentTechId); plAttachDrag(currentTechId); document.querySelectorAll('.pl-card .ja-on').forEach(autoGrow); },0); return; }
+    if(ocView==='plan') ocView='jobs';
     if(ocView==='chat'){ ocWasFocused=!!(document.activeElement&&document.activeElement.id==='oc-input'); html+=ocPanel(currentTechId); $('view-portal').innerHTML=html; ocAfterRender(); if(!ocLoaded.has(currentTechId)) ocOpen(currentTechId); return; } }
   if(dept==='calls'){
     const wi=weeks.indexOf(calWeek);
@@ -2583,6 +2698,9 @@ function renderPortal(){
       ${isOffice&&(jobFilter==='all'||jobFilter==='open')&&!noJobs(currentTechId)?`<div class="slot-new" id="slot-new" role="button" tabindex="0" onclick="openSlotModal()">
         <span class="slot-no">JOB ${next}</span><span class="slot-plus">＋</span>
         <span class="slot-hint">Click to add job ${next}<br>or drag the PDF here</span></div>`:''}
+      ${plOn()&&!previewing&&(jobFilter==='all'||jobFilter==='open')&&!noJobs(currentTechId)&&site.work_date>=todayYmd()?`<div class="slot-new slot-prop" role="button" tabindex="0" onclick="plProposeJobBox('${currentTechId}','${site.work_date}')">
+        <span class="slot-no">JOB ${next}</span><span class="slot-plus">🧩</span>
+        <span class="slot-hint"><b>Propose job</b><br>pick from waiting jobs<br>close to this day</span></div>`:''}
       ${!list.length&&!(isOffice&&(jobFilter==='all'||jobFilter==='open'))&&!(jobFilter==='all'&&coverJobsFor(currentTechId,'calls').some(j=>{const x=siteOf(j);return x&&x.work_date===site.work_date;}))?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>${jobFilter==='all'?'No jobs for this day yet.':'No jobs with this status on this day.'}</div>`:''}
     </div>`;
     if(jobFilter==='all') html+=coverDayHtml(currentTechId, site.work_date);
@@ -3216,7 +3334,7 @@ function attachSlotDrop(){
   z.addEventListener('drop',     e=>{ if(dragJobId || !hasFiles(e)) return; e.preventDefault(); depth=0; z.classList.remove('over'); openSlotModal(e.dataTransfer.files); });
 }
 // Click (or drop a PDF on) the next Job box → fill in job no. + customer, add the PDF, send
-function openSlotModal(fl){ if(blockPreview()||stopGuard(currentTechId)) return; dupLink=[];
+function openSlotModal(fl){ if(blockPreview()||stopGuard(currentTechId)) return; dupLink=[]; matForm={};
   const n=nextJobNo(currentSiteId), t=prof(currentTechId), s=sites.find(x=>x.id===currentSiteId);
   pendingFiles=[];
   openModal(`<h2>Job ${n} → ${esc(firstName(t.full_name))} · ${s&&s.work_date?dayLong(s.work_date):esc(s?s.name:'')}</h2>
@@ -3237,6 +3355,7 @@ function openSlotModal(fl){ if(blockPreview()||stopGuard(currentTechId)) return;
     </label>
     <input type="file" id="m-file" accept="application/pdf,image/*" multiple style="display:none" onchange="filesPicked(this.files);this.value=''">
     <div class="file-list" id="m-files"></div>
+    ${dept==='calls'?matFormHtml():''}
     <div class="field-group"><label>Note to ${esc(firstName(t.full_name))} <span class="optional">(optional — starts the conversation)</span></label><textarea id="m-notes" rows="2"></textarea></div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-outline hidden" id="m-save2" onclick="slotUpload(${n},true)">📥 Send &amp; import old jobs</button><button class="btn-primary" id="m-save" onclick="slotUpload(${n})">⬆ Send job ${n} to ${esc(firstName(t.full_name))}</button></div>`);
   formSkip=new Set(); ['m-ref','m-ph','m-ph2','m-eir'].forEach(id=>{ const e=$(id); if(e) e.addEventListener('input',histFormCheck); });
@@ -4304,7 +4423,7 @@ async function ocMarkRead(techId){
   await sb.from('office_chat_reads').upsert({user_id:realMe.id, tech_id:techId, read_at:at},{onConflict:'user_id,tech_id'});
 }
 function ocTabs(techId){ if(!hasOc) return ''; const n=ocUnread(techId), t=prof(techId);
-  return `<div class="oc-tabs"><button class="${ocView==='jobs'?'on':''}" onclick="ocSetView('jobs')">📅 Jobs</button><button class="${ocView==='chat'?'on':''}" onclick="ocSetView('chat')">💬 Office chat${n?`<span class="oc-n">${n}</span>`:''}</button>
+  return `<div class="oc-tabs"><button class="${ocView==='jobs'?'on':''}" onclick="ocSetView('jobs')">📅 Jobs</button>${plOn()?`<button class="${ocView==='plan'?'on':''}" onclick="ocSetView('plan')">🧩 Proposed${planItems.filter(p=>p.tid===techId).length?`<span class="oc-n" style="background:#7c3aed">${new Set(planItems.filter(p=>p.tid===techId).map(p=>p.day)).size}</span>`:''}</button>`:''}<button class="${ocView==='chat'?'on':''}" onclick="ocSetView('chat')">💬 Office chat${n?`<span class="oc-n">${n}</span>`:''}</button>
     ${ocView==='chat'?`<span class="oc-with">${isOffice?`Direct with <b>${esc(firstName(t.full_name))}</b> — seen by the office and the service department`:'Direct with the office and the service department'}</span>`:''}</div>`; }
 function ocSetView(v){ ocView=v; if(job){ closeJob(); } renderPortal(); window.scrollTo(0,0); if(v==='chat') ocOpen(currentTechId); }
 function ocDay(iso){ const d=new Date(iso), t=new Date(); const same=(a,b)=>a.toDateString()===b.toDateString();
@@ -4341,7 +4460,7 @@ async function ocOpen(techId){ await ocLoadThread(techId); if(ocView!=='chat'||c
 function ocAfterRender(){ if(ocView!=='chat') return; const ta=$('oc-input'); if(ta){ autoGrow(ta); if(ocWasFocused){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } } ocScroll(); }
 let ocWasFocused=false;
 function ocBadges(){ document.querySelectorAll('[data-oc-tech]').forEach(el=>{ const n=ocUnread(el.dataset.ocTech); el.textContent=n?('💬 '+n):''; el.classList.toggle('hidden',!n); });
-  const tab=document.querySelector('.oc-tabs button:nth-child(2)'); if(tab && currentTechId){ const n=ocUnread(currentTechId); tab.innerHTML='💬 Office chat'+(n?`<span class="oc-n">${n}</span>`:''); } }
+  const tab=document.querySelector(".oc-tabs button[onclick*=\"'chat'\"]"); if(tab && currentTechId){ const n=ocUnread(currentTechId); tab.innerHTML='💬 Office chat'+(n?`<span class="oc-n">${n}</span>`:''); } }
 async function ocSend(){ if(blockPreview() || ocSending) return; const ta=$('oc-input'), body=(ta&&ta.value||'').trim(), techId=currentTechId; if(!body||!techId) return;
   ocSending=true; ta.value=''; ocDraft[techId]=''; autoGrow(ta);
   const { data, error }=await sb.from('office_chat').insert({tech_id:techId, author_id:realMe.id, body}).select().single(); ocSending=false;
@@ -4502,9 +4621,9 @@ function jaWhen(x){ return x.kind==='booked' ? `<span class="ja-wait soon">${jaU
 async function loadNewCalls(){ if(!hasNewCalls) return; const r=await sb.from('new_calls').select('*').order('created_at'); if(r.error){ hasNewCalls=false; newCalls=[]; return; } newCalls=r.data||[]; }
 function jaItems(){
   const out=[];
-  for(const j of dJobs('calls')){ const k=jobOutcome(j); if(k!=='not_home'&&k!=='rebook') continue; if(j.followed_by) continue;   // 🔗 booked again — off the list
+  for(const j of dJobs('calls')){ const k=jobOutcome(j); if(k!=='not_home'&&k!=='rebook'&&k!=='cancelled') continue; if(j.followed_by) continue;   // 🔗 booked again — off the list
     const st=sites.find(x=>x.id===j.site_id)||{}, n=jaNotes[j.id]||{};
-    out.push({kind:k, id:j.id, j, name:custName(j), title:j.title, phone:j.customer_phone||phoneKey(j.ref_no)||'', eircode:j.eircode||'', man:j.serviceman_id, booked:st.work_date||'', since:n.at||j.last_activity_at||j.created_at, note:n.note||''}); }
+    out.push({kind:k, id:j.id, j, name:custName(j), title:j.title, phone:j.customer_phone||phoneKey(j.ref_no)||'', eircode:j.eircode||'', man:j.serviceman_id, booked:st.work_date||'', since:k==='cancelled'?(j.wait_since||j.created_at):(n.at||j.last_activity_at||j.created_at), note:k==='cancelled'?`💬 “${cantMsg(j)}”${st.work_date?' · was '+dayLabel(st.work_date):''}`:(n.note||'')}); }
   const today=todayYmd();
   for(const j of dJobs('calls')){ if(j.completed || jobOutcome(j)) continue; const st=sites.find(x=>x.id===j.site_id)||{}; if(!st.work_date || st.work_date<=today) continue;   // leaves the list on its day
     out.push({kind:'booked', id:j.id, j, name:custName(j), title:j.title, phone:j.customer_phone||phoneKey(j.ref_no)||'', eircode:j.eircode||'', man:j.serviceman_id, booked:st.work_date, since:j.created_at, note:j.notes||''}); }
@@ -4512,17 +4631,17 @@ function jaItems(){
   return out.sort((a,b)=>a.since<b.since?-1:1);    // oldest first
 }
 function jaShown(all){ const q=norm(jaQ);
-  return all.filter(x=>jaKindOk(x) && (!jaCounty || (eirPlace(x.eircode)||{}).county===jaCounty) && jaCrewOk(x)
+  return all.filter(x=>jaKindOk(x) && jaMatOk(x) && (!jaCounty || (eirPlace(x.eircode)||{}).county===jaCounty) && jaCrewOk(x)
     && (!q || norm([x.title,x.phone,x.eircode,eirPlaceText(x.eircode,true),x.note,(officeNotes[x.id]||{}).body,x.man?prof(x.man).full_name:''].join(' ')).includes(q))); }
 const jaDays=iso=>{ const a=new Date(iso), b=new Date(); a.setHours(12,0,0,0); b.setHours(12,0,0,0); return Math.max(0,Math.round((b-a)/864e5)); };
 const jaWait=iso=>{ const d=jaDays(iso); return d===0?'today':d===1?'since yesterday':`${d} days`; };
 function jaPill(k){ const K=JA_KIND[k]; return `<span class="ja-pill" style="--c:${K.c};--bg:${K.bg}">${K.ico} ${K.short}</span>`; }
 // the box on the Private Calls dashboard (replaces Customers not home + Re-book unfinished)
 function jaBox(list){
-  const nh=list.filter(j=>jobOutcome(j)==='not_home'&&!j.followed_by).length, rb=list.filter(j=>jobOutcome(j)==='rebook'&&!j.followed_by).length, nc=newCalls.length, today=todayYmd();
-  const bk=list.filter(j=>!j.completed && !jobOutcome(j) && ((sites.find(s=>s.id===j.site_id)||{}).work_date||'')>today).length, all=nh+rb+nc+bk;
+  const cx=list.filter(j=>jobOutcome(j)==='cancelled'&&!j.followed_by).length, nh=list.filter(j=>jobOutcome(j)==='not_home'&&!j.followed_by).length, rb=list.filter(j=>jobOutcome(j)==='rebook'&&!j.followed_by).length, nc=newCalls.length, today=todayYmd();
+  const bk=list.filter(j=>!j.completed && !jobOutcome(j) && ((sites.find(s=>s.id===j.site_id)||{}).work_date||'')>today).length, all=cx+nh+rb+nc+bk;
   return `<button class="folder-box ja-box ${all?'':'empty'}" onclick="openAlloc()">
-    <span class="f-ico">📋</span><span class="f-txt"><b>Job allocations</b><small>${all?`<span class="ja-c" style="--c:${JA_KIND.not_home.c}">● ${nh} not home</span> <span class="ja-c" style="--c:${JA_KIND.rebook.c}">● ${rb} unfinished</span> <span class="ja-c" style="--c:${JA_KIND.booked.c}">● ${bk} booked in</span> <span class="ja-c" style="--c:${JA_KIND.new.c}">● ${nc} new call${nc===1?'':'s'}</span>`:'Nothing to allocate — click to add new calls'}</small></span>
+    <span class="f-ico">📋</span><span class="f-txt"><b>Job allocations</b><small>${all?`${cx?`<span class="ja-c" style="--c:${JA_KIND.cancelled.c}">● ${cx} cancelled</span> `:''}<span class="ja-c" style="--c:${JA_KIND.not_home.c}">● ${nh} not home</span> <span class="ja-c" style="--c:${JA_KIND.rebook.c}">● ${rb} unfinished</span> <span class="ja-c" style="--c:${JA_KIND.booked.c}">● ${bk} booked in</span> <span class="ja-c" style="--c:${JA_KIND.new.c}">● ${nc} new call${nc===1?'':'s'}</span>${matDash()}`:'Nothing to allocate — click to add new calls'}</small></span>
     <span class="f-n">${all}</span><span class="f-arrow">›</span></button>`; }
 // 📝 Office notes — typed straight into the Job allocations list; office + service department only (update-34)
 let officeNotes={}, hasONotes=true; const onoteT={};
@@ -4548,7 +4667,7 @@ async function jaLoadNotes(){
   const fl=dJobs('calls').filter(j=>['not_home','rebook'].includes(jobOutcome(j))), key=fl.map(j=>j.id+j.last_activity_at).join();
   if(key===jaNotesFor) return; jaNotesFor=key; jaNotes={}; if(!fl.length) return;
   const { data }=await sb.from('comments').select('job_id,body,created_at').in('job_id',fl.map(j=>j.id)).eq('kind','event').order('created_at');
-  for(const c of (data||[])){ if(/^(🔁|🚪)/.test(c.body||'')){ const k=fl.find(j=>j.id===c.job_id); jaNotes[c.job_id]={note:c.body.split(' — ').slice(jobOutcome(k)==='rebook'?2:1).join(' — '), at:c.created_at}; } }
+  for(const c of (data||[])){ if(/^(🔁|🚪)/.test(c.body||'')){ const k=fl.find(j=>j.id===c.job_id); jaNotes[c.job_id]={note:c.body.replace(/\n📦 Material ready taken off[\s\S]*$/,'').split(' — ').slice(jobOutcome(k)==='rebook'?2:1).join(' — '), at:c.created_at}; } }
   // no Re-book / Not home line in the job's own chat (e.g. its chat came back from the backup) → take the man's note from that visit's backup
   const miss=fl.filter(j=>!jaNotes[j.id]);
   if(miss.length){ try{ const { data:imps }=await sb.from('call_imports').select('job_id,work_date,convo').in('job_id',miss.map(j=>j.id));
@@ -4575,7 +4694,7 @@ function _renderAlloc(){
   v.innerHTML=`<div id="ja-page">
     <div class="row ja-top"><button class="btn-outline" onclick="closeAlloc()">‹ Private Calls</button>
       <div style="flex:1;min-width:220px"><div class="page-title">📋 Job allocations</div><div class="page-sub">Everything waiting for a service man and a day — <b>oldest first</b>. Tick jobs (or click a pin) and allocate them.</div></div>
-      <button class="btn-outline ja-bulk" onclick="jaBulkAdd()">📥 Pile of sheets</button><button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new call</button></div>
+      ${plOn()&&!previewing?'<button class="btn-primary" style="background:#7c3aed;border-color:#7c3aed" onclick="plProposeBox()">✨ Propose days</button>':''}<button class="btn-outline ja-bulk" onclick="jaBulkAdd()">📥 Pile of sheets</button><button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new call</button></div>
     <div id="ja-filters">${jaFiltersHtml(all,cnt,counties)}</div>
     <div id="ja-selbar">${jaSelBar()}</div>
     <div class="ja-grid ja-sgrid" id="ja-grid" style="${jaMapW()?'--ja-mapw:'+jaMapW()+'px':''}"><div class="ja-listwrap" id="ja-list">${listHtml}</div>
@@ -4595,8 +4714,8 @@ function jaSplitStart(e){ const g=$('ja-grid'), sp=$('ja-split'); if(!g) return;
 function jaSplitReset(){ const g=$('ja-grid'); if(g) g.style.removeProperty('--ja-mapw'); try{ localStorage.removeItem('jaMapW'); }catch(e){} setTimeout(()=>{ if(jaMap) jaMap.invalidateSize(); },50); }
 function jaFiltersHtml(all,cnt,counties){
   const chip=(k,l,n,c)=>`<button class="ja-chip ${k==='all'?(jaKinds.size?'':'on'):(jaKinds.has(k)?'on':'')}" style="--c:${c}" onclick="jaToggleKind('${k}')" title="${k==='all'?'Show every type':'Click to switch on / off'}">${k!=='all'&&jaKinds.has(k)?'✓ ':''}${l} <b>${n}</b></button>`;
-  return `<div class="ja-filters">${chip('all','All',all.length,'#0f172a')}${chip('not_home','🚪 Not home',cnt('not_home'),JA_KIND.not_home.c)}${chip('rebook','🔁 Unfinished',cnt('rebook'),JA_KIND.rebook.c)}${chip('booked','📅 Booked in',cnt('booked'),JA_KIND.booked.c)}${chip('new','🆕 New calls',cnt('new'),JA_KIND.new.c)}
-    ${jaCrewChips(all)}<select class="ja-county" onchange="jaCounty=this.value;jaSel.clear();renderAlloc()"><option value="">All counties</option>${counties.map(c=>`<option ${c===jaCounty?'selected':''}>${esc(c)}</option>`).join('')}</select>
+  return `<div class="ja-filters">${chip('all','All',all.length,'#0f172a')}${cnt('cancelled')?chip('cancelled','🔴 Cancelled',cnt('cancelled'),JA_KIND.cancelled.c):''}${chip('not_home','🚪 Not home',cnt('not_home'),JA_KIND.not_home.c)}${chip('rebook','🔁 Unfinished',cnt('rebook'),JA_KIND.rebook.c)}${chip('booked','📅 Booked in',cnt('booked'),JA_KIND.booked.c)}${chip('new','🆕 New calls',cnt('new'),JA_KIND.new.c)}
+    ${jaCrewChips(all)}${matChips(all)}<select class="ja-county" onchange="jaCounty=this.value;jaSel.clear();renderAlloc()"><option value="">All counties</option>${counties.map(c=>`<option ${c===jaCounty?'selected':''}>${esc(c)}</option>`).join('')}</select>
     <input class="ja-q" placeholder="🔍 Name, phone, town, Eircode…" value="${esc(jaQ)}" oninput="jaQ=this.value;clearTimeout(window.jaQT);window.jaQT=setTimeout(()=>{ jaRefreshList(); jaPins(jaShown(jaItems())); },200)"></div>`; }
 function jaSelBar(){ if(!jaSel.size) return ''; return `<div class="ja-sel"><b>${jaSel.size} selected${jaOnlySel?' <span class="ja-sel-note">— list shows these only, every pin stays on the map</span>':''}</b><button class="btn-outline" onclick="jaOnlySel=!jaOnlySel;$('ja-selbar').innerHTML=jaSelBar();jaRefreshList()">${jaOnlySel?'👁 Show all jobs':'☑ Show selected only'}</button><button class="btn-outline" onclick="jaSel.clear();jaOnlySel=false;renderAlloc()">Clear</button><button class="btn-primary" onclick="jaAllocate([...jaSel])">🗓 Allocate ${jaSel.size} job${jaSel.size===1?'':'s'} →</button></div>`; }
 // ⇅ click Waiting: longest wait first, click again: shortest first (booked-in jobs count as not waiting — soonest booking next)
@@ -4606,15 +4725,16 @@ function jaSortWait(){ jaSort=jaSort==='desc'?'asc':'desc'; jaRefreshList(); }
 function jaListHtml(shown){
   if(jaSort){ const dir=jaSort==='desc'?-1:1; shown=shown.map((x,i)=>[x,i]).sort((a,b)=>((jaWaitKey(a[0])-jaWaitKey(b[0]))*dir)||(a[0].since<b[0].since?-1:1)||(a[1]-b[1])).map(p=>p[0]); }
   if(!shown.length) return `<div class="empty"><div class="big">✅</div>Nothing here${jaKinds.size||jaCrews.size||jaCounty||jaQ?' for this filter':''}.</div>`;
-  return `<table class="s-table ja-table"><thead><tr><th></th><th>Customer</th><th>Town / county</th><th>Time / men</th><th>Man / day</th><th class="ja-sorth ${jaSort?'on':''}" onclick="jaSortWait()" title="Click to sort by how long they've been waiting">Waiting <span>${jaSort==='desc'?'▼ longest':jaSort==='asc'?'▲ shortest':'⇅'}</span></th><th>Site report</th><th>Office notes</th><th></th></tr></thead><tbody>
+  return `<table class="s-table ja-table"><thead><tr><th></th><th>Customer</th><th>Town / county</th><th>Time / men</th><th>Man / day</th>${hasMat?'<th>📦 Material</th>':''}<th class="ja-sorth ${jaSort?'on':''}" onclick="jaSortWait()" title="Click to sort by how long they've been waiting">Waiting <span>${jaSort==='desc'?'▼ longest':jaSort==='asc'?'▲ shortest':'⇅'}</span></th><th>Site report</th><th>Office notes</th><th></th></tr></thead><tbody>
   ${shown.map(x=>{ const K=JA_KIND[x.kind], t=x.man?prof(x.man):null, pl=eirPlace(x.eircode), d=jaDays(x.since);
     return `<tr class="ja-row ${jaSel.has(x.id)?'sel':''}" style="--c:${K.c};--bg:${K.bg}" data-id="${x.id}" onmouseenter="jaHover('${x.id}',1)" onmouseleave="jaHover('${x.id}',0)">
       <td class="ja-ck"><input type="checkbox" ${jaSel.has(x.id)?'checked':''} onclick="jaToggle('${x.id}')"></td>
-      <td><div class="ja-name">${esc(x.name)}</div><div class="ja-sub2">${jaPill(x.kind)} <span class="s-sub">${esc(x.phone||'no phone')}</span></div>${(()=>{ const o=jaLater(x); if(!o) return '';
+      <td><div class="ja-name">${esc(x.name)}</div><div class="ja-sub2">${jaPill(x.kind)} <span class="s-sub">${esc(x.phone||'no phone')}</span>${x.kind==='cancelled'?'<span class="ja-prio" title="Cancelled by the customer — the planner puts it in first">⭐ Priority</span>':''}</div>${(()=>{ const p=plOn()&&planItems.find(q=>q.id===x.id); return p?`<span class="ja-plan" title="In a proposed day — open the man's 🧩 Proposed tab">🧩 Proposed · ${esc(dayLabel(p.day))} · ${esc(firstName(prof(p.tid).full_name))}</span>`:''; })()}${(()=>{ const o=jaLater(x); if(!o) return '';
         return `<div class="ja-again">📅 Booked again: <b>${esc(dayLabel(jobDay(o)))}</b> · ${esc(firstName(prof(o.serviceman_id).full_name))} (${esc((o.title||'').split(' – ')[0])}${custName(o)&&custName(o)!==x.name?' – '+esc(custName(o)):''})${isOffice&&!previewing?`<button class="btn-outline" onclick="jaLink('${x.id}','${o.id}')" title="Same phone and Eircode — take this one off the list (it stays in the history)">✓ Same job — take off list</button>`:''}</div>`; })()}</td>
       <td>${pl?`<b class="ja-town">${esc(pl.town)}${pl.exact?'':' area'}</b><div class="s-sub">Co. ${esc(pl.county)} · ${esc(normEir(x.eircode))}</div>`:'<span class="s-sub">⚠ No Eircode</span>'}</td>
       <td class="ja-size">${(x.j||x.nc).est_minutes?`<b>⏱ ${esc(estLabel((x.j||x.nc).est_minutes))}</b>`:'<span class="s-sub">⏱ not set</span>'}<div>${crewMini(x.j||x.nc)}</div></td>
       <td>${t?`<div class="ja-man"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(firstName(t.full_name))}</div><div class="s-sub">${esc(dayLabel(x.booked))}</div>`:`<span class="s-sub">New · added ${esc(fmtWhen(x.since))}</span>`}</td>
+      ${hasMat?`<td class="ja-mat">${matBoxes(x.id)}</td>`:''}
       <td>${jaWhen(x)}</td>
       <td class="ja-note">${x.note?esc(x.note):'<span class="s-sub">—</span>'}</td>
       <td class="ja-onote">${jaONoteCell(x.id)}</td>
@@ -4676,7 +4796,7 @@ function jaAllocRender(){
     const v=ymd(d), out=d.getMonth()!==m0.getMonth(), past=v<today;
     if(past){ cells+=`<div class="jc-d past ${out?'out':''}"><b>${d.getDate()}</b></div>`; continue; }
     const L=tid?load(tid,v):null, cls=!L?'':L.n===0?'free':(L.n>=6||L.hrs>=480)?'full':L.n>=4?'busy':'';
-    cells+=`<button class="jc-d ${cls} ${out?'out':''} ${jaAlloc.day===v?'on':''} ${v===today?'today':''}" onclick="jaAlloc.day='${v}';jaAllocRender()" title="${esc(dayLong(v))}">
+    cells+=`<button class="jc-d ${cls} ${matDayNo(items,v)?'matno':''} ${out?'out':''} ${jaAlloc.day===v?'on':''} ${v===today?'today':''}" onclick="jaAlloc.day='${v}';jaAllocRender()" title="${esc(dayLong(v))}">
       <b>${d.getDate()}</b>${L?`<small>${L.n?`${L.n} job${L.n===1?'':'s'}<br>${hrsLabel(L.hrs)}`:'free'}</small>`:''}</button>`;
   }
   const mv=k=>ymd(new Date(m0.getFullYear(), m0.getMonth()+k, 1));
@@ -4685,13 +4805,15 @@ function jaAllocRender(){
       <button class="btn-outline jc-today" onclick="jaAlloc.month=null;jaAllocRender()">This month</button></div>
     ${tid?'':'<div class="jc-hint">👆 Pick a service man to see how busy each day is</div>'}
     <div class="jc-grid">${['Mon','Tue','Wed','Thu','Fri','Sat'].map(x=>`<span class="jc-w">${x}</span>`).join('')}${cells}</div>
-    <div class="jc-key"><span class="k free"></span>free <span class="k"></span>1–3 jobs <span class="k busy"></span>4–5 <span class="k full"></span>6+ or a full day</div></div>`;
+    <div class="jc-key"><span class="k free"></span>free <span class="k"></span>1–3 jobs <span class="k busy"></span>4–5 <span class="k full"></span>6+ or a full day${items.some(x=>matOf(x.id).due&&!matOf(x.id).ready)&&hasMat?' <span class="k matno"></span>📦 before the material is ready':''}</div></div>`;
   // the chosen day for every man — tap one to switch
   const dayMen=jaAlloc.day?`<div class="jc-men"><span>📅 ${esc(dayLong(jaAlloc.day))}:</span>${men.map(t=>{ const L=load(t.id,jaAlloc.day); return `<button class="jc-m ${t.id===tid?'on':''}" onclick="jaAlloc.tid='${t.id}';jaAllocRender()"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span>${esc(firstName(t.full_name))} <small>${L.n?`${L.n} · ${hrsLabel(L.hrs)}`:'free'}</small></button>`; }).join('')}</div>`:'';
   const already=tid&&jaAlloc.day?dayJobs(tid,jaAlloc.day):[];
   const towns=already.map(j=>{ const p=eirPlace(j.eircode); return p?p.town:null; }).filter(Boolean);
   openModal(`<h2>🗓 Allocate ${items.length===1?esc(items[0].name):items.length+' jobs'}</h2>
-    <div class="ja-al-list">${items.map(x=>{ const p=eirPlace(x.eircode); return `<div>${jaPill(x.kind)} <b>${esc(x.name)}</b> <span class="s-sub">${p?esc(p.town+(p.exact?'':' area')+', Co. '+p.county):'no Eircode'} · ${x.kind==='booked'?'now on '+esc(firstName(prof(x.man).full_name))+' · '+esc(dayLabel(x.booked)):'waiting '+jaWait(x.since)}</span></div>`; }).join('')}</div>
+    <div class="ja-al-list">${items.map(x=>{ const p=eirPlace(x.eircode); return `<div class="ja-al-it"><div>${jaPill(x.kind)} <b>${esc(x.name)}</b> <span class="s-sub">${p?esc(p.town+(p.exact?'':' area')+', Co. '+p.county):'no Eircode'} · ${x.kind==='booked'?'now on '+esc(firstName(prof(x.man).full_name))+' · '+esc(dayLabel(x.booked)):'waiting '+jaWait(x.since)}</span></div>${matBoxes(x.id,{compact:true, day:jaAlloc.day})}</div>`; }).join('')}</div>
+    ${matAllocWarn(items)}
+    ${(()=>{ const ps=plOn()?items.map(x=>planItems.find(q=>q.id===x.id)).filter(Boolean):[]; return ps.length&&!jaAlloc.keepOrder?`<div class="ja-al-plan">🧩 ${ps.map(p=>`<b>${esc(p.name)}</b> is in ${esc(firstName(prof(p.tid).full_name))}'s proposed ${esc(dayLabel(p.day))}`).join('<br>')} — allocating it here takes it off the proposal, so it's never booked twice.</div>`:''; })()}
     <div class="field-group"><label>Service man</label><div class="ja-men">${men.map(t=>`<button class="team-chip ${t.id===tid?'active':''}" onclick="jaAlloc.tid='${t.id}';jaAllocRender()"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span>${esc(firstName(t.full_name))}</button>`).join('')}</div></div>
     <div class="field-group"><label>Day</label>${cal}${dayMen}</div>
     ${tid&&jaAlloc.day?`<div class="ja-al-day">📅 <b>${esc(firstName(prof(tid).full_name))} · ${esc(dayLong(jaAlloc.day))}</b> already has <b>${already.length} job${already.length===1?'':'s'}</b>${towns.length?` — ${esc([...new Set(towns)].join(', '))}`:''}. ${items.length===1?'This one':'These'} will be Job ${already.length+1}${items.length>1?`–${already.length+items.length}`:''}.
@@ -4760,7 +4882,7 @@ async function jaStatusSave(){ if(!jaSt || !isAdmin) return;
       const parts=String(c.notes||'').split(/\n*From the chat \(/), ownNote=parts[0].trim()||null, chat=parts.length>1?'From the chat ('+parts.slice(1).join('From the chat ('):'';
       const row={id:newId, site_id:target.id, serviceman_id:tid, department:'calls', title:`Job ${n}${c.title?' – '+c.title:''}`, ref_no:c.ref_no||c.customer_phone||null, notes:ownNote,
         pdf_path:c.pdf_path?dest:null, pdf_bytes:c.pdf_bytes||0, customer_phone:c.customer_phone||null, customer_phone2:c.customer_phone2||null, customer_email:c.customer_email||null, eircode:c.eircode||null, avail:c.avail||null,
-        est_minutes:c.est_minutes||null, crew:c.crew||null, hist_skip:Array.isArray(c.hist_skip)?c.hist_skip:[], outcome:o, completed:false, completed_at:null, tech_unread:false, admin_unread:false, last_activity_at:new Date(`${day}T17:00:00`).toISOString(), created_by:me.id};
+        ...matCopy(c), est_minutes:c.est_minutes||null, crew:c.crew||null, hist_skip:Array.isArray(c.hist_skip)?c.hist_skip:[], outcome:o, completed:false, completed_at:null, tech_unread:false, admin_unread:false, last_activity_at:new Date(`${day}T17:00:00`).toISOString(), created_by:me.id};
       const ins=await sb.from('jobs').insert(row); if(ins.error){ if(c.pdf_path) await sb.storage.from(BUCKET).remove([dest]); throw ins.error; }
       await jaMarkEvent(newId, o, note, day);
       if(chat) await sb.from('comments').insert({job_id:newId, author_id:me.id, kind:'event', body:'💬 '+chat.trim()});
@@ -4781,13 +4903,14 @@ async function jaStatusSave(){ if(!jaSt || !isAdmin) return;
     toast(`↩ ${x.name} is back as ${lbl}`,5000);
   }catch(e){ btn.disabled=false; btn.textContent='↩ Try again'; toast('Could not put it back: '+(e.message||e),7000); }
 }
-async function jaDoAllocate(){
+async function jaDoAllocate(){ return jaDoAllocate2(); }
+async function jaDoAllocate2(){
   const {ids, tid, day}=jaAlloc;
   const noSheet=jaItems().filter(x=>ids.includes(x.id) && x.kind==='new' && !x.nc.pdf_path);
-  if(noSheet.length) return toast(`Add the job sheet first: ${noSheet.map(x=>x.name).join(', ')} (click Open on ${noSheet.length===1?'it':'them'})`,7000);
-  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Allocating…';
+  if(noSheet.length){ toast(`Add the job sheet first: ${noSheet.map(x=>x.name).join(', ')} (click Open on ${noSheet.length===1?'it':'them'})`,7000); return false; }
+  const btn=$('m-save')||document.createElement('button'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Allocating…';
   try{
-    const items=jaItems().filter(x=>ids.includes(x.id)); let done=0;
+    const items=jaItems().filter(x=>ids.includes(x.id)); if(jaAlloc.keepOrder) items.sort((a,b)=>ids.indexOf(a.id)-ids.indexOf(b.id)); let done=0;
     for(const x of items){
       const target=await jaTargetSite(tid, day), n=nextJobNo(target.id), now=new Date().toISOString();
       if(x.kind==='new'){
@@ -4796,7 +4919,7 @@ async function jaDoAllocate(){
           const u=await sb.storage.from(BUCKET).upload(dest, f.data, {contentType:'application/pdf'}); if(u.error) throw u.error; }
         const row={id:newId, site_id:target.id, serviceman_id:tid, department:'calls', title:`Job ${n}${c.title?' – '+c.title:''}`, ref_no:c.ref_no||c.customer_phone||null, notes:c.notes||null,
           pdf_path:c.pdf_path?dest:null, pdf_bytes:c.pdf_bytes||0, customer_phone:c.customer_phone||null, customer_phone2:c.customer_phone2||null, customer_email:c.customer_email||null, eircode:c.eircode||null, avail:c.avail||null,
-          est_minutes:c.est_minutes||null, crew:c.crew||null, hist_skip:Array.isArray(c.hist_skip)?c.hist_skip:[], tech_unread:true, admin_unread:false, completed:false, last_activity_at:now};
+          est_minutes:c.est_minutes||null, crew:c.crew||null, hist_skip:Array.isArray(c.hist_skip)?c.hist_skip:[], tech_unread:true, admin_unread:false, completed:false, last_activity_at:now, ...matCopy(c), ...(hasWait?{wait_since:c.created_at||now}:{})};
         const ins=await sb.from('jobs').insert(row); if(ins.error) throw ins.error;
         await sb.from('new_calls').delete().eq('id',c.id); if(c.pdf_path) await sb.storage.from(BUCKET).remove([c.pdf_path]);
         if(hasONotes && officeNotes[c.id]){ await sb.from('office_notes').update({item_id:newId}).eq('item_id',c.id); officeNotes[newId]={...officeNotes[c.id], item_id:newId}; delete officeNotes[c.id]; }
@@ -4804,6 +4927,7 @@ async function jaDoAllocate(){
       } else {
         const j=x.j, from=sites.find(s=>s.id===j.site_id)||{}, rest=(j.title||'').replace(/^job\s*\d+\s*/i,'');
         const upd={site_id:target.id, title:/^job\s*\d+/i.test(j.title||'')?`Job ${n}${rest?' '+rest:''}`:j.title, tech_unread:true, last_activity_at:now, outcome:null, completed:false, completed_at:null};
+        if(hasWait && x.kind!=='booked') upd.wait_since=x.kind==='cancelled'?(j.wait_since||j.created_at):(x.since||now);
         if(['rebook','not_home'].includes(jobOutcome(j))) await saveHistRows([histRow(j)]);
         if(tid!==j.serviceman_id){ const oldPre=filePrefix('calls',j.serviceman_id)+'/', newPre=filePrefix('calls',tid)+'/';
           const mv=async p=>{ if(!p||!p.startsWith(oldPre)) return p; const np=newPre+p.slice(oldPre.length); const r=await sb.storage.from(BUCKET).move(p,np); if(r.error) throw r.error; return np; };
@@ -4814,14 +4938,14 @@ async function jaDoAllocate(){
       await loadData(); done++;
     }
     jaSel.clear(); closeModal(); await loadNewCalls(); jaNotesFor=''; await jaLoadNotes(); if(jaOpen) renderAlloc(); else rerenderCurrent();
-    toast(`🗓 ${done} job${done===1?'':'s'} allocated to ${firstName(prof(tid).full_name)} · ${dayLong(day)} ✓`,5000);
-  }catch(e){ btn.disabled=false; btn.textContent='🗓 Try again'; toast('Could not allocate: '+(e.message||e),6000); }
+    toast(`🗓 ${done} job${done===1?'':'s'} allocated to ${firstName(prof(tid).full_name)} · ${dayLong(day)} ✓`,5000); return true;
+  }catch(e){ btn.disabled=false; btn.textContent='🗓 Try again'; toast('Could not allocate: '+(e.message||e),6000); return false; }
 }
 // ── ＋ Add new calls (no man or day yet) ──
 // ── 🆕 New call form — same as the Add job form, but no man or day yet ──
 let jaEditId=null;
 function jaAddCalls(editId){ if(blockPreview()) return; dupLink=[];
-  const c=editId?(newCalls.find(x=>x.id===editId)||{}):{}; jaEditId=editId||null; pendingFiles=[];
+  const c=editId?(newCalls.find(x=>x.id===editId)||{}):{}; jaEditId=editId||null; pendingFiles=[]; matForm=c.mat_ready?{ready:true}:c.mat_due?{due:c.mat_due}:{};
   openModal(`<h2>${editId?'✎ New call':'🆕 Add a new call'} <span class="nc-sub">— goes to Job allocations, not given to a man or day yet</span></h2>
     <div class="slot-form">
       <div class="field-group"><label>Job number</label><input id="m-ref" placeholder="e.g. 4521" autocomplete="off" value="${esc(c.ref_no||'')}"></div>
@@ -4840,6 +4964,7 @@ function jaAddCalls(editId){ if(blockPreview()) return; dupLink=[];
     </label>
     <input type="file" id="m-file" accept="application/pdf,image/*" multiple style="display:none" onchange="filesPicked(this.files);this.value=''">
     <div class="file-list" id="m-files"></div>
+    ${matFormHtml()}
     <div class="field-group"><label>Note <span class="optional">(what's the call about — goes to the man when it's allocated)</span></label><textarea id="m-notes" rows="2">${esc(c.notes||'')}</textarea></div>
     <div class="modal-actions">${editId?`<button class="btn-danger" onclick="jaDeleteCall('${editId}')">🗑 Delete</button>`:''}<button class="btn-outline" onclick="closeModal()">Cancel</button>${editId?'':`<button class="btn-outline" id="m-save2" onclick="jaSaveCall(null,true)">＋ Save &amp; add another</button>`}<button class="btn-primary ja-add" id="m-save" onclick="jaSaveCall(${editId?`'${editId}'`:'null'})">✓ Save new call</button></div>`);
   formSkip=new Set(Array.isArray(c.hist_skip)?c.hist_skip:[]);
@@ -4858,6 +4983,8 @@ async function jaSaveCall(editId, again){
   const row={title:cust||null, ref_no:ref||phoneKey(ph)||null, customer_phone:ph||null, customer_phone2:$('m-ph2').value.trim()||null, customer_email:email||null,
     eircode:route?route.eircode:null, avail:route?route.avail:null, est_minutes:route?route.est_minutes:null, crew:route?route.crew:null,
     notes:$('m-notes').value.trim()||null, hist_skip:[...formSkip]};
+  if(hasMat){ const c0=editId?(newCalls.find(x=>x.id===editId)||{}):{}, was=c0.mat_ready?'r':c0.mat_due||'', now=matForm.ready?'r':matForm.due||'';
+    if(!editId) Object.assign(row, matFormRow()); else if(was!==now) Object.assign(row, {mat_ready:!!matForm.ready, mat_due:matForm.ready?null:(matForm.due||null), mat_what:(matForm.ready||matForm.due)?(c0.mat_what||null):null, mat_by:me.id, mat_at:new Date().toISOString()}); }
   if(!editId && dupGuard($('m-save'), [ref, ph, row.customer_phone2], editId, row.eircode||'', 'nc')) return;
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
   try{ const id=editId||uuid();
@@ -4902,7 +5029,7 @@ function jaCrewChips(all){ const base=all.filter(jaKindOk), n=c=>base.filter(x=>
   return `<span class="ja-men-f">${b(0,'Any men')}${b(1,'👷 1-man')}${b(2,'👷👷 2-man')}${b(3,'👷👷👷 3-man')}</span>`; }
 
 // ══ ✍️ Customer signature — when the service man ticks All done, the customer signs on his phone ══
-let hasSig=true, hasCrew=true, hasFollow=true;
+let hasSig=true, hasCrew=true, hasFollow=true, hasWait=true;
 function sigCapture(j){
   return new Promise(res=>{
     const t=prof(j.serviceman_id), st=sites.find(x=>x.id===j.site_id)||{}, pl=(typeof eirPlace==='function'&&j.eircode)?eirPlace(j.eircode):null;
@@ -5633,7 +5760,9 @@ async function doUpload({files, title, ref, note, contact, route}){
   if(hasC && hasContact) Object.assign(row, contact);
   if(route && hasRoute && (route.eircode||route.avail||route.est_minutes||route.crew)) Object.assign(row, route);
   if(hasHist && dept==='calls' && formSkip.size) row.hist_skip=[...formSkip];
+  if(dept==='calls') Object.assign(row, matFormRow());
   let ins=await sb.from('jobs').insert(row);
+  if(ins.error && /mat_/i.test(ins.error.message)){ hasMat=false; ['mat_ready','mat_due','mat_by','mat_at'].forEach(k=>delete row[k]); ins=await sb.from('jobs').insert(row); }
   if(ins.error && /hist_skip/i.test(ins.error.message)){ delete row.hist_skip; ins=await sb.from('jobs').insert(row); }
   if(ins.error && /eircode|avail/i.test(ins.error.message)){ hasRoute=false; delete row.eircode; delete row.avail; ins=await sb.from('jobs').insert(row); setTimeout(()=>toast('⚠️ Eircode not saved — run update-15 in Supabase',8000),1200); }
   if(ins.error && /customer_/i.test(ins.error.message)){ hasContact=false; ['customer_phone','customer_phone2','customer_email'].forEach(k=>delete row[k]); ins=await sb.from('jobs').insert(row); }
@@ -6341,7 +6470,7 @@ async function sendBackToAlloc(id){ if(blockPreview()) return;
     const chatNote=texts.map(c=>`${firstName(prof(c.author_id).full_name)||'?'}: ${c.body.trim()}`).join('\n');
     const notes=[j.notes, chatNote?`From the chat (${firstName(man.full_name)}'s ${st.work_date?dayLabel(st.work_date):'day'}):\n${chatNote}`:''].filter(Boolean).join('\n\n')||null;
     const row={id:newId, title:name||null, ref_no:j.ref_no||null, customer_phone:j.customer_phone||null, customer_phone2:j.customer_phone2||null, customer_email:j.customer_email||null,
-      eircode:j.eircode||null, avail:j.avail||null, est_minutes:j.est_minutes||null, crew:j.crew||null, notes, hist_skip:Array.isArray(j.hist_skip)?j.hist_skip:[], pdf_path, pdf_bytes, created_by:me.id};
+      eircode:j.eircode||null, avail:j.avail||null, est_minutes:j.est_minutes||null, crew:j.crew||null, notes, hist_skip:Array.isArray(j.hist_skip)?j.hist_skip:[], pdf_path, pdf_bytes, created_by:me.id, ...matCopy(j)};
     const ins=await sb.from('new_calls').insert(row); if(ins.error){ if(pdf_path) await sb.storage.from(BUCKET).remove([pdf_path]); throw ins.error; }
     if(['rebook','not_home'].includes(jobOutcome(j))) await saveHistRows([histRow(j)]);   // a visit that happened still counts as a call
     const paths=[j.pdf_path,j.marked_path, ...await chatPhotoPaths([j.id]), ...importPathsFor([j.id])].filter(Boolean);
@@ -6931,6 +7060,365 @@ async function waLogPanel(el){
         <td class="fp-act">${j&&m.direction==='in'&&w.ic==='💬'?`<button class="btn-primary" onclick="waLogOpen('${j.id}',true)">💬 Reply</button>`:''}${j?`<button class="btn-outline" onclick="waLogOpen('${j.id}',false)">Open</button>`:''}</td></tr>`; }).join('')}
     </tbody></table></div>`:`<div class="empty" style="margin:0">No WhatsApp messages ${waLogF.range==='today'?'today':waLogF.range==='week'?'in the last 7 days':'in the last 30 days'}${waLogF.who!=='all'||q?' that match':''}.</div>`}`; }
 function waLogOpen(id, wa){ if(!jobs.find(x=>x.id===id)) return toast('That job is no longer in SashDash.'); goToJob(id); setTimeout(()=>{ setJvTab('chat'); waSetView('wa'); if(wa){ setTimeout(()=>{ const t=$('wa-input'); if(t) t.focus(); },600); } },500); }
+
+// ══ 📦 Material ready / ⏳ Will be ready — Private Calls (update-44) ══
+// Two boxes on every Private Calls job and new call. Office + service department tick them; the men see a badge.
+// 🔁 Re-book unfinished takes the tick off (done in the database). Not home / a customer cancelling keep it.
+let hasMat=true;
+const MAT_COLS=',mat_ready,mat_due,mat_what,mat_by,mat_at,mat_cleared_at';
+function matSrc(id){ return jobs.find(j=>j.id===id) || newCalls.find(c=>c.id===id) || null; }
+function matOf(id){ const s=matSrc(id)||{}; return {ready:!!s.mat_ready, due:s.mat_due||null, what:s.mat_what||'', by:s.mat_by||null, at:s.mat_at||null, off:!!(s.mat_cleared_at && !s.mat_ready && !s.mat_due)}; }
+function matState(id){ const m=matOf(id); return m.ready?'ready':m.due?(m.due<=todayYmd()?'late':'due'):'none'; }
+function matOkFor(id,day){ const m=matOf(id); return !!(m.ready || (m.due && day && m.due<=day)); }
+const matOn=x=>hasMat && x && deptOf(x)==='calls';
+const matCanEdit=()=>isOffice && !previewing;
+function matWho(m){ return m.at?`${esc(firstName((prof(m.by)||{}).full_name||'Office'))} · ${esc(new Date(m.at).toLocaleDateString('en-IE',{day:'numeric',month:'short'}))}`:''; }
+function matBoxes(id,o={}){ if(!hasMat) return ''; const m=matOf(id), st=matState(id), ed=matCanEdit()&&!o.ro, day=o.day;
+  const late=day&&m.due&&!m.ready&&m.due>day;
+  const b=(k,on,lbl,fn)=>`<button type="button" class="mat-b ${k} ${on?'on':''}" ${ed?`onclick="event.stopPropagation();${fn}('${id}')"`:'disabled'} title="${k==='ready'?'All the material is in (or nothing is needed)':'Material is on order — pick the day it will be ready'}"><span class="mb-box">${on?'✓':''}</span><span class="mb-l">${lbl}</span></button>`;
+  return `<div class="mat ${st} ${o.compact?'cmp':''} ${late?'bad':''}" onclick="event.stopPropagation()">
+    ${b('ready',m.ready,'📦 Material ready','matTick')}
+    ${b('due',!m.ready&&!!m.due,`⏳ Will be ready${!m.ready&&m.due?`<b class="mb-date"><i>: </i>${esc(dayLabel(m.due))}</b>`:''}`,'matDue')}
+    ${st==='none'?`<div class="mat-note no">❓ Material not confirmed${m.off?' — <i>taken off, re-booked</i>':''}</div>`:''}
+    ${st==='late'?`<div class="mat-note late">⏰ Due ${m.due===todayYmd()?'today':'since '+esc(dayLabel(m.due))} — tick <b>Material ready</b> when it's in</div>`:''}
+    ${late?`<div class="mat-note bad">⚠ Not ready until ${esc(dayLabel(m.due))} — too early for this day</div>`:''}
+    ${m.what&&!o.compact?`<div class="mat-what">🧾 ${esc(m.what)}</div>`:''}
+    ${!o.compact&&m.at&&st!=='none'?`<div class="mat-by">${matWho(m)}</div>`:''}</div>`; }
+// the man's read-only badge
+function matBadge(id){ if(!hasMat) return ''; const m=matOf(id), st=matState(id);
+  return st==='ready'?`<div class="mat-badge ready">📦 Material ready</div>`:st==='none'?`<div class="mat-badge none">❓ Material not confirmed</div>`:`<div class="mat-badge due">⏳ Material due ${esc(dayLabel(m.due))}</div>`; }
+function matRefresh(){ try{ if(!$('job-view').classList.contains('hidden')) matJv(); }catch(e){}
+  if(document.querySelector('.ja-al-list')) jaAllocRender(); else rerenderCurrent(); }
+async function matSave(id, patch, msg){ if(blockPreview()) return; const s=matSrc(id); if(!s) return;
+  const tbl=jobs.includes(s)?'jobs':'new_calls', now=new Date().toISOString();
+  const r=await sb.from(tbl).update({...patch, mat_by:me.id, mat_at:now}).eq('id',id);
+  if(r.error) return toast('Not saved: '+r.error.message+(/mat_/i.test(r.error.message)?' — run update-44 in Supabase':''),7000);
+  Object.assign(s, patch, {mat_by:me.id, mat_at:now}); if(patch.mat_ready||patch.mat_due) s.mat_cleared_at=null;
+  toast(msg,3000); matRefresh(); }
+function matTick(id){ const m=matOf(id);
+  if(m.ready) matSave(id, {mat_ready:false, mat_due:null, mat_what:null}, '📦 Material ready taken off');
+  else matSave(id, {mat_ready:true, mat_due:null, mat_what:m.what||null}, '📦 Material ready ✓'); }
+let matDueKeepAlloc=null;
+function matDue(id){ const m=matOf(id); if(!m.ready&&m.due) return matSave(id, {mat_due:null, mat_what:null}, '⏳ Date taken off');
+  matDueKeepAlloc=document.querySelector('.ja-al-list')?{...jaAlloc}:null;      // the Allocate box comes back after the date is saved
+  const q=[['Tomorrow',1],['In 3 days',3],['Next Monday',(8-new Date().getDay())%7||7],['In 2 weeks',14]];
+  openModal(`<h2>⏳ When will the material be ready?</h2><p class="pl-sub">The job can still be booked — the Allocate box warns about any day <b>before</b> this date.</p>
+    <div class="field-group"><label>Ready on</label><input type="date" id="mat-d" min="${todayYmd()}" value="${esc(m.due||ymd(addDays(new Date(),3)))}"><div class="mat-q">${q.map(([l,n])=>`<button type="button" class="pl-chip" onclick="$('mat-d').value='${ymd(addDays(new Date(),n))}'">${l}</button>`).join('')}</div></div>
+    <div class="field-group"><label>What's on order <span class="optional">(optional)</span></label><input id="mat-w" maxlength="200" placeholder="e.g. 2 hinges + sealed unit 900 x 1200" value="${esc(m.what||'')}"></div>
+    <div class="modal-actions"><button class="btn-outline" onclick="matDueCancel()">Cancel</button><button class="btn-primary" id="mat-ok" onclick="matDueSave('${id}')">⏳ Save date</button></div>`); }
+function matDueBack(){ if(matDueKeepAlloc){ jaAlloc=matDueKeepAlloc; matDueKeepAlloc=null; jaAllocRender(); return true; } return false; }
+function matDueCancel(){ closeModal(); matDueBack(); }
+async function matDueSave(id){ const d=$('mat-d').value, w=$('mat-w').value.trim(); if(!d) return toast('Pick the day the material will be ready.');
+  closeModal(); const back=!!matDueKeepAlloc; await matSave(id, {mat_ready:false, mat_due:d, mat_what:w||null}, `⏳ Material will be ready ${dayLabel(d)}`); if(back) matDueBack(); }
+// job header
+function matJv(){ let el=$('jv-mat'); if(!el){ el=document.createElement('div'); el.id='jv-mat'; const cc=$('jv-cc'); if(!cc) return; cc.after(el); }
+  const j=job&&(jobs.find(x=>x.id===job.id)||job); if(!matOn(j)){ el.innerHTML=''; return; }
+  el.innerHTML=isOffice?matBoxes(j.id,{compact:true, day:jobDay(j)}):matBadge(j.id).replace(/<\/div>$/,`${matOf(j.id).at&&matState(j.id)!=='none'?` <small>· ${matWho(matOf(j.id))}</small>`:''}</div>`); }
+// forms (Add job on a day / Add new call)
+let matForm={};
+function matFormHtml(){ if(!hasMat) return ''; return `<div class="field-group mat-fg"><label>📦 Material for this job</label><div class="mat">
+  <button type="button" class="mat-b ready ${matForm.ready?'on':''}" onclick="matForm=matForm.ready?{}:{ready:true};matFormRedraw()"><span class="mb-box">${matForm.ready?'✓':''}</span>📦 Material ready <small>(or nothing needed)</small></button>
+  <button type="button" class="mat-b due ${matForm.due?'on':''}" onclick="if(event.target.tagName!=='INPUT'){ matForm=matForm.due?{}:{due:'${ymd(addDays(new Date(),3))}'}; matFormRedraw(); }"><span class="mb-box">${matForm.due?'✓':''}</span>⏳ Will be ready${matForm.due?`: <input type="date" id="mat-fd" min="${todayYmd()}" value="${matForm.due}" onchange="matForm.due=this.value">`:''}</button>
+  ${!matForm.ready&&!matForm.due?'<div class="mat-note no">❓ Leave both empty if you don\'t know yet — it shows as <b>Material not confirmed</b></div>':''}</div></div>`; }
+function matFormRedraw(){ const f=document.querySelector('.mat-fg'); if(f) f.outerHTML=matFormHtml(); }
+function matFormRow(){ if(!hasMat) return {}; if(matForm.ready) return {mat_ready:true, mat_due:null, mat_by:me.id, mat_at:new Date().toISOString()};
+  if(matForm.due) return {mat_ready:false, mat_due:matForm.due, mat_by:me.id, mat_at:new Date().toISOString()}; return {}; }
+const matCopy=s=>hasMat&&s?{mat_ready:!!s.mat_ready, mat_due:s.mat_due||null, mat_what:s.mat_what||null, mat_by:s.mat_by||null, mat_at:s.mat_at||null, mat_cleared_at:s.mat_cleared_at||null}:{};
+// 📋 Job allocations: filter
+let jaMat='';
+function matChips(all){ if(!hasMat) return ''; const n=k=>all.filter(x=>matState(x.id)===k||(k==='due'&&matState(x.id)==='late')).length;
+  const c=(k,l,col)=>`<button class="ja-chip ${jaMat===k?'on':''}" style="--c:${col}" onclick="jaMat=jaMat==='${k}'?'':'${k}';jaSel.clear();renderAlloc()" title="Click to switch on / off">${jaMat===k?'✓ ':''}${l} <b>${n(k)}</b></button>`;
+  return `<div class="mat-chips"><span>📦 Material</span>${c('ready','✅ Ready','#15803d')}${c('due','⏳ Coming','#b45309')}${c('none','❓ Not confirmed','#64748b')}</div>`; }
+const jaMatOk=x=>!jaMat || matState(x.id)===jaMat || (jaMat==='due'&&matState(x.id)==='late');
+function matAllocWarn(items){ if(!hasMat||!items.length) return ''; const day=jaAlloc.day;
+  const bad=items.filter(x=>matState(x.id)==='none'), late=day?items.filter(x=>{ const m=matOf(x.id); return m.due&&!m.ready&&m.due>day; }):[];
+  if(bad.length||late.length) return `<div class="mat-al-warn">${late.map(x=>`⚠ <b>${esc(x.name)}</b> — material won't be ready until <b>${esc(dayLong(matOf(x.id).due))}</b>. Pick that day or later (days before it are shaded).`).join('<br>')}${late.length&&bad.length?'<br>':''}${bad.map(x=>`❓ <b>${esc(x.name)}</b> — material not confirmed. Check it's in before booking.`).join('<br>')}<div class="s-sub">You can still allocate — this is a warning only.</div></div>`;
+  return `<div class="mat-al-ok">📦 Material is ready${day&&items.some(x=>matOf(x.id).due&&!matOf(x.id).ready)?' by this day':''} for ${items.length===1?'this job':'all '+items.length+' jobs'} ✓</div>`; }
+const matDayNo=(items,v)=>hasMat&&items.some(x=>{ const m=matOf(x.id); return m.due&&!m.ready&&v<m.due; });
+function matDash(){ if(!hasMat) return ''; const it=jaItems(), r=it.filter(x=>matState(x.id)==='ready').length, d=it.filter(x=>['due','late'].includes(matState(x.id))).length;
+  return `<br><span class="ja-c" style="--c:#15803d">📦 ${r} material ready</span> <span class="ja-c" style="--c:#b45309">⏳ ${d} coming</span> <span class="ja-c" style="--c:#64748b">❓ ${it.length-r-d} not confirmed</span>`; }
+
+// on the day cards: office ticks the boxes, the man sees a badge
+const _slotCardMat=slotCard; slotCard=function(j,n){ const h=_slotCardMat(j,n); if(!matOn(j)) return h;
+  const box=isOffice?matBoxes(j.id,{compact:true, day:jobDay(j)}):matBadge(j.id), k=isOffice?h.lastIndexOf('<div class="slot-actions">'):-1, at=k>=0?k:h.lastIndexOf('</div>');
+  return h.slice(0,at)+box+h.slice(at); };
+const _ujhMat=updateJobHeader; updateJobHeader=function(){ const r=_ujhMat.apply(this,arguments); try{ matJv(); }catch(e){} return r; };
+const _openJobMat=openJob; openJob=async function(){ const r=await _openJobMat.apply(this,arguments); try{ matJv(); }catch(e){ console.warn(e); } return r; };
+// 🔁 Re-book: tell the man the tick comes off and ask what's needed
+const _ocNoteMat=outcomeNoteBox; outcomeNoteBox=function(o){ const p=_ocNoteMat(o);
+  try{ if(o==='rebook' && matOn(job)){ const m=matOf(job.id), fg=$('oc-note').closest('.field-group');
+    if(m.ready||m.due) fg.insertAdjacentHTML('beforebegin',`<div class="mat-rb">📦 This takes off the <b>Material ready</b> tick — the office ticks it again when the extra material is in. Say what's needed below.</div>`);
+    $('oc-note').placeholder='e.g. need 2 more hinges + 1 sealed unit 900 x 1200'; fg.querySelector('label').innerHTML='What material is needed? <span class="optional">(goes to the office)</span>'; } }catch(e){ console.warn(e); }
+  return p; };
+const _setOutMat=setOutcome; setOutcome=async function(o){ const id=job&&job.id, j0=jobs.find(x=>x.id===id), had=hasMat&&j0&&(j0.mat_ready||j0.mat_due), was=j0&&jobOutcome(j0);
+  const r=await _setOutMat.apply(this,arguments); const j=jobs.find(x=>x.id===id);
+  if(had && j && job && job.id===id && job.outcome==='rebook' && was!=='rebook'){ Object.assign(j,{mat_ready:false, mat_due:null, mat_what:null, mat_cleared_at:new Date().toISOString()}); try{ matJv(); }catch(e){} toast('🔁 Re-booked — 📦 Material ready taken off',5000); }
+  return r; };
+// ══ 🧩 PROPOSED DAYS — the office plans days from Job allocations before anything goes live (update-45) ══
+let plMatOnly=true; let planCfg={}, planItems=[], planSel={}, planNotices=[], planSent={}, planMap=null, planDayOk={}, hasPlan=true, planWeek=null;
+const PL_DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function plCfg(tid){ const c=planCfg[tid]||{}; return {calls:!!c.calls, counties:Array.isArray(c.counties)?c.counties:[], days:Array.isArray(c.days)?c.days:[1,2,3,4,5], hours:+c.hours||8, start:c.start||'08:30', home:c.home||(routeCfg&&routeCfg.depot_eircode)||''}; }
+function plPos(e){ return e?geoCache.get(normEir(e))||null:null; }
+function plKm(a,b){ return a&&b?haversine(a,b)/1000:999; }
+function plDrive(km){ return Math.round(km*1.35+4); }     // rough minutes on Irish roads
+function plEst(x){ return +((x.j||x.nc||{}).est_minutes)||60; }
+function plPool(){ return jaItems().filter(x=>['not_home','rebook','new','cancelled'].includes(x.kind)); }
+function plItemsFor(tid,day){ return planItems.filter(p=>p.tid===tid&&p.day===day).sort((a,b)=>a.pos-b.pos); }
+function plLive(tid,day){ return jobs.filter(j=>j.serviceman_id===tid&&deptOf(j)==='calls'&&jobOutcome(j)!=='cancelled'&&(siteOf(j)||{}).work_date===day).sort((a,b)=>(jobNo(a)||99)-(jobNo(b)||99)); }
+function plWeekDays(){ const mon=planWeek?parseYmd(planWeek):addDays(mondayOf(new Date()),7); return [0,1,2,3,4,5].map(i=>ymd(addDays(mon,i))); }
+function plWeekGo(k){ planWeek=ymd(addDays(parseYmd(plWeekDays()[0]),7*k)); if(ymd(addDays(parseYmd(planWeek),5))<todayYmd()) planWeek=ymd(mondayOf(new Date())); renderPortal(); }
+// a job is only ever in one place: anything booked live (or gone) drops out of the proposals
+function plPrune(){ const pool=new Map(plPool().map(x=>[x.id,x]));
+  for(const p of [...planItems]){ if(pool.has(p.id)) continue; const j=jobs.find(x=>x.id===p.id), st=j?siteOf(j):null;
+    planNotices.push({tid:p.tid, day:p.day, name:p.name, txt:j&&st?`was booked in live on ${dayLabel(st.work_date)} with ${firstName(prof(j.serviceman_id).full_name)}`:'was booked in or removed', at:new Date()});
+    planItems=planItems.filter(q=>q!==p); }
+  for(const tid of new Set(planItems.map(p=>p.tid))) for(const d of new Set(planItems.filter(p=>p.tid===tid).map(p=>p.day))) plItemsFor(tid,d).forEach((p,i)=>p.pos=i); }
+function plStats(tid,day){ const cfg=plCfg(tid), it=plItemsFor(tid,day), pool=new Map(plPool().map(x=>[x.id,x])), live=plLive(tid,day);
+  let at=plPos(cfg.home), drive=0, work=0; for(const p of it){ const x=pool.get(p.id); const q=plPos(x&&x.eircode); const km=plKm(at,q); drive+=plDrive(km); work+=x?plEst(x):60; at=q; }
+  if(it.length) drive+=plDrive(plKm(at,plPos(cfg.home)));
+  const liveMin=live.reduce((a,j)=>a+(+j.est_minutes||60),0), total=work+drive+liveMin, cap=cfg.hours*60;
+  const [h,m]=cfg.start.split(':').map(Number), fin=new Date(2026,0,1,h,m+total);
+  return {n:it.length, work, drive, live:live.length, liveMin, total, cap, over:total>cap, finish:fin.toTimeString().slice(0,5)}; }
+// ✨ the proposal: longest waiting first, then the nearest jobs around it, until the day is full
+function plPropose(tids, days, maxKm){ maxKm=maxKm||30; const used=new Set(planItems.map(p=>p.id)); let placed=0;
+  for(const day of days){ const dow=parseYmd(day).getDay();
+    for(const tid of tids){ const cfg=plCfg(tid); if(!cfg.calls||!cfg.days.includes(dow)||noJobs(tid)) continue; if(plItemsFor(tid,day).length) continue;
+      const cand=plPool().filter(x=>!used.has(x.id) && x.eircode && plPos(x.eircode) && cfg.counties.includes((eirPlace(x.eircode)||{}).county) && (x.kind!=='new'||x.nc.pdf_path) && (!plMatOnly || matOkFor(x.id,day)))
+        .sort((a,b)=>((b.kind==='cancelled')-(a.kind==='cancelled'))||jaDays(b.since)-jaDays(a.since));
+      if(!cand.length) continue;
+      const cap=cfg.hours*60-plLive(tid,day).reduce((a,j)=>a+(+j.est_minutes||60),0), home=plPos(cfg.home);
+      const seed=cand[0], pick=[seed]; let mins=plEst(seed)+plDrive(plKm(home,plPos(seed.eircode)));
+      while(true){ const last=pick[pick.length-1], lp=plPos(last.eircode);
+        const nxt=cand.filter(x=>!pick.includes(x)).map(x=>({x, km:Math.min(...pick.map(p=>plKm(plPos(p.eircode),plPos(x.eircode))))})).filter(o=>o.km<=maxKm).sort((a,b)=>a.km-b.km||jaDays(b.x.since)-jaDays(a.x.since))[0];
+        if(!nxt) break; const add=plEst(nxt.x)+plDrive(plKm(lp,plPos(nxt.x.eircode))); if(mins+add+plDrive(plKm(plPos(nxt.x.eircode),home))>cap) break; mins+=add; pick.push(nxt.x); }
+      // drive order: nearest-next from home
+      const ord=[seed]; let at=plPos(seed.eircode), rest=pick.filter(x=>x!==seed); while(rest.length){ rest.sort((a,b)=>plKm(at,plPos(a.eircode))-plKm(at,plPos(b.eircode))); const n=rest.shift(); ord.push(n); at=plPos(n.eircode); }
+      ord.forEach((x,i)=>{ const prev=i?ord[i-1]:null; used.add(x.id); placed++;
+        planItems.push({id:x.id, tid, day, pos:i, name:x.name, why:x===seed?(x.kind==='cancelled'?`⭐ Priority — cancelled by the customer · waiting ${jaDays(x.since)} days`:`⭐ Longest waiting in ${firstName(prof(tid).full_name)}'s areas — ${jaDays(x.since)} days`):`📍 ${Math.max(1,Math.round(plKm(plPos((prev||seed).eircode),plPos(x.eircode))))} km from ${prev?esc(prev.name):esc(seed.name)} · waiting ${jaDays(x.since)} days`}); }); } }
+  return placed; }
+
+// ── 🧩 Planner settings (who does Private Calls, which areas, which days) ──
+const PL_COUNTIES=['Antrim','Armagh','Carlow','Cavan','Clare','Cork','Derry','Donegal','Down','Dublin','Fermanagh','Galway','Kerry','Kildare','Kilkenny','Laois','Leitrim','Limerick','Longford','Louth','Mayo','Meath','Monaghan','Offaly','Roscommon','Sligo','Tipperary','Tyrone','Waterford','Westmeath','Wexford','Wicklow'];
+let plSetDraft=null;
+function plSettings(){ if(!hasPlan) return toast('Run update-45 in Supabase first.',6000); const men=profiles.filter(p=>p.role==='serviceman');
+  if(!plSetDraft){ plSetDraft={matOnly:plMatOnly, men:{}}; men.forEach(p=>plSetDraft.men[p.id]=JSON.parse(JSON.stringify(plCfg(p.id)))); }
+  const D=plSetDraft;
+  openModal(`<h2>🧩 Planner settings</h2><p class="pl-sub">Who the planner proposes days for, the areas each man covers and the days he works. Only the office sees this.</p>
+    ${men.map(p=>{ const c=D.men[p.id]; return `<div class="pl-set ${c.calls?'':'off'}"><div class="pl-set-h"><span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span><b>${esc(p.full_name)}</b>
+      <label class="pl-tg"><input type="checkbox" ${c.calls?'checked':''} onchange="plSetDraft.men['${p.id}'].calls=this.checked;plSettings()"> Does Private Calls jobs</label>${noJobs(p.id)?'<span class="nj-tag">🚫 No new jobs</span>':''}</div>
+      ${c.calls?`<div class="pl-set-r"><span>Areas</span><div class="pl-chips">${PL_COUNTIES.map(k=>`<button type="button" class="pl-chip ${c.counties.includes(k)?'on':''}" onclick="plSetTog('${p.id}','counties','${k}')">${k}</button>`).join('')}</div></div>
+      <div class="pl-set-r"><span>Days</span><div class="pl-chips">${[1,2,3,4,5,6].map(d=>`<button type="button" class="pl-chip d ${c.days.includes(d)?'on':''}" onclick="plSetTog('${p.id}','days',${d})">${PL_DOW[d]}</button>`).join('')}</div>
+        <span class="pl-lbl">Day</span><input class="pl-in" type="number" min="2" max="12" step="0.5" style="width:62px" value="${c.hours}" onchange="plSetDraft.men['${p.id}'].hours=+this.value||8"> hrs
+        <span class="pl-lbl">Starts</span><input class="pl-in" type="time" value="${esc(c.start)}" onchange="plSetDraft.men['${p.id}'].start=this.value||'08:30'">
+        <span class="pl-lbl">from</span><input class="pl-in" style="width:96px;text-transform:uppercase" placeholder="Eircode" value="${esc(c.home)}" onchange="plSetDraft.men['${p.id}'].home=normEir(this.value);eirTownLookup&&eirTownLookup(normEir(this.value))"> <span class="s-sub">${esc((eirPlace(c.home)||{}).town||'')}</span></div>`:''}</div>`; }).join('')}
+    <div class="pl-set mat-set"><label class="pl-tg" style="margin-left:0"><input type="checkbox" ${D.matOnly?'checked':''} onchange="plSetDraft.matOnly=this.checked"> 📦 <b>Only propose jobs whose material is ready</b> — or will be ready by that day</label>
+      <div class="s-sub">Jobs with ❓ material not confirmed, or ⏳ due after the day, are left in Job allocations and counted in the summary. 🧩 Propose job shows them only if you press "Show all".</div></div>
+    <div class="modal-actions"><button class="btn-outline" onclick="plSetDraft=null;closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="plSetSave()">✓ Save</button></div>`); }
+function plSetTog(tid,k,v){ const a=plSetDraft.men[tid][k], i=a.indexOf(v); if(i>=0) a.splice(i,1); else a.push(v); if(k==='days') a.sort(); plSettings(); }
+async function plSetSave(){ const D=plSetDraft; if(!D) return; const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
+  const rows=[{id:'global', data:{matOnly:!!D.matOnly}, updated_by:me.id, updated_at:new Date().toISOString()}, ...Object.entries(D.men).map(([id,c])=>({id, data:c, updated_by:me.id, updated_at:new Date().toISOString()}))];
+  const r=await sb.from('plan_settings').upsert(rows,{onConflict:'id'}); if(r.error){ btn.disabled=false; btn.textContent='✓ Save'; return toast('Not saved: '+r.error.message,7000); }
+  Object.entries(D.men).forEach(([id,c])=>planCfg[id]=c); plMatOnly=!!D.matOnly; plSetDraft=null; closeModal(); toast('🧩 Planner settings saved ✓'); rerenderCurrent(); }
+
+// ── ✨ Propose days (from Job allocations) ──
+let plBox=null;
+function plProposeBox(){ if(!hasPlan) return toast('Run update-45 in Supabase first.',6000);
+  const men=profiles.filter(p=>p.role==='serviceman'&&plCfg(p.id).calls&&!noJobs(p.id)), mon0=mondayOf(new Date());
+  if(!plBox) plBox={week:ymd(addDays(mon0,7)), days:null, men:new Set(men.map(p=>p.id))};
+  const days=[0,1,2,3,4,5].map(i=>ymd(addDays(parseYmd(plBox.week),i))); if(!plBox.days) plBox.days=new Set(days.filter(d=>parseYmd(d).getDay()<6&&d>todayYmd()));
+  const wk=[0,1,2].map(k=>ymd(addDays(mon0,7*k))), wl=['This week','Next week','Week after'];
+  if(!men.length) return openModal(`<h2>✨ Propose days</h2><p class="pl-sub">No service man is set up for the planner yet. Open <b>🧩 Planner settings</b> and tick <b>Does Private Calls jobs</b>, then pick his areas and days.</p><div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button><button class="btn-primary" onclick="plSettings()">🧩 Planner settings</button></div>`);
+  openModal(`<h2>✨ Propose days</h2><p class="pl-sub">SashDash fills each day from <b>Job allocations</b> (${plPool().length} waiting). Nothing is sent to the men or customers — you check each day first.</p>
+    <div class="field-group"><label>Week</label><div class="pl-chips">${wk.map((w,i)=>`<button type="button" class="pl-chip ${plBox.week===w?'on':''}" onclick="plBox.week='${w}';plBox.days=null;plProposeBox()">${wl[i]} · ${esc(niceDate(w))}</button>`).join('')}</div></div>
+    <div class="field-group"><label>Days</label><div class="pl-chips">${days.map(d=>`<button type="button" class="pl-chip d ${plBox.days.has(d)?'on':''}" ${d<=todayYmd()?'disabled':''} onclick="plBox.days.has('${d}')?plBox.days.delete('${d}'):plBox.days.add('${d}');plProposeBox()">${esc(dayLabel(d))}</button>`).join('')}</div></div>
+    <div class="field-group"><label>Service men</label><div class="pl-men">${men.map(p=>{ const c=plCfg(p.id), on=plBox.men.has(p.id); return `<label class="pl-man ${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="this.checked?plBox.men.add('${p.id}'):plBox.men.delete('${p.id}')"> <span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span> <b>${esc(firstName(p.full_name))}</b><small>${esc(c.counties.join(', ')||'no areas set')} · ${c.hours} hrs</small></label>`; }).join('')}</div></div>
+    <div class="pl-rules"><b>How each day is filled</b>
+      <div>⭐ Starts with the <b>longest waiting</b> job in that man's areas (🔴 cancelled by the customer first)</div><div>📍 Adds the <b>nearest</b> waiting jobs to it (within 30 km)</div>
+      <div>⏱ Until the day is full — job times + driving, from his start Eircode, plus anything already live that day</div><div>🔁 Never puts a job in two places · skips jobs with no Eircode or no sheet${plMatOnly?' · 📦 only jobs with material ready by that day':''} · days that already have a proposal are left alone</div></div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="pl-go" onclick="plGo()">✨ Make proposals</button></div>`); }
+function plGo(){ const men=[...plBox.men].filter(id=>plCfg(id).calls&&!noJobs(id)), days=[...plBox.days].sort();
+  if(!men.length||!days.length) return toast('Pick at least one day and one man.');
+  planWeek=plBox.week; const before=plPool().length, n=plPropose(men, days), left=plPool().filter(x=>!planItems.some(p=>p.id===x.id)); plBox=null; plSyncSoon();
+  const per=men.map(t=>({t, d:new Set(planItems.filter(p=>p.tid===t&&days.includes(p.day)).map(p=>p.day)).size, n:planItems.filter(p=>p.tid===t&&days.includes(p.day)).length})).filter(o=>o.n);
+  openModal(`<h2>✨ Proposals ready</h2><div class="pl-done">${per.map(o=>`<div class="pl-done-r"><span class="avatar sm" style="--c:${esc(prof(o.t).colour)}">${esc(initials(prof(o.t).full_name))}</span><b>${esc(firstName(prof(o.t).full_name))}</b> ${o.d} day${o.d===1?'':'s'} · ${o.n} jobs<button class="btn-outline" onclick="closeModal();plOpen('${o.t}')">🧩 Check →</button></div>`).join('')||'<div class="empty">No jobs could be placed.</div>'}</div>
+    <p class="pl-sub"><b>${n}</b> of ${before} waiting jobs proposed. <b>${left.length}</b> left in Job allocations — ${left.filter(x=>!x.eircode).length} with no Eircode, <b>${plMatOnly?left.filter(x=>x.eircode&&!days.some(d=>matOkFor(x.id,d))).length:0} waiting on material</b> (📦 not ready on these days), the rest outside the men's areas or no room on these days.</p>
+    <div class="modal-actions"><button class="btn-primary" onclick="closeModal();renderAlloc()">OK</button></div>`); }
+function plOpen(tid){ jaOpen=false; document.body.classList.remove('ja-wide'); dept='calls'; ocView='plan'; openPortal(tid); }
+
+// ── the man's 🧩 Proposed page ──
+function plPanel(tid){ plPrune(); const days=plWeekDays(), cfg=plCfg(tid), t=prof(tid);
+  if(!planSel[tid] || !days.includes(planSel[tid])) planSel[tid]=days.find(d=>plItemsFor(tid,d).length)||days[0];
+  const day=planSel[tid], st=plStats(tid,day), it=plItemsFor(tid,day), pool=new Map(plPool().map(x=>[x.id,x])), sent=planSent[tid+day];
+  const strip=days.map(d=>{ const s=plStats(tid,d), dow=parseYmd(d).getDay(), works=cfg.days.includes(dow), ps=planSent[tid+d];
+    return `<button class="pl-day ${d===day?'on':''} ${planDayOk[tid+d]&&!ps?'okd':''} ${works?'':'off'} ${s.over?'over':''} ${ps?'sent':''}" onclick="planSel['${tid}']='${d}';renderPortal()"><b>${PL_DOW[dow]}</b><small>${esc(niceDate(d).replace(/ 2026$/,''))}</small>
+      <span>${ps?'✓ sent to live':!works?'not working':s.n?`${planDayOk[tid+d]?'✓':'🧩'} ${s.n} job${s.n===1?'':'s'} · ${hrsLabel(s.total)}`:s.live?`📅 ${s.live} live`:'—'}</span></button>`; }).join('');
+  const notes=planNotices.filter(n=>n.tid===tid&&n.day===day);
+  const cards=it.map((p,i)=>{ const x=pool.get(p.id); if(!x) return ''; const K=JA_KIND[x.kind], pl=eirPlace(x.eircode), src=x.j||x.nc;
+    return `<div class="pl-card ${p.ok?'ok':''}" style="--c:${K.c}" data-id="${p.id}" draggable="true"><div class="pl-left"><div class="pl-no">${st.live+i+1}</div><button class="pl-ok ${p.ok?'on':''}" title="Tick when you're happy with this job here" onclick="plTick('${p.id}')">✓</button></div>
+      <div class="pl-main"><div class="pl-nm">${esc(x.name)} ${jaPill(x.kind)}</div>
+        <div class="pl-sub2">📍 <b>${esc(pl?pl.town:'')}</b>${pl?' · Co. '+esc(pl.county):''} · ${esc(normEir(x.eircode))} · 📞 ${esc(x.phone)}</div>
+        <div class="pl-sub2">⏱ ${esc(estLabel(plEst(x))||'1 hr')} ${crewMini(src)} <span class="pl-wait ${jaDays(x.since)>=7?'old':''}">⌛ waiting ${jaDays(x.since)} days</span></div>${matBoxes(p.id,{compact:true, day})}
+        <div class="pl-notes"><div class="pl-rep"><b>Site report:</b> ${x.note?esc(x.note):'—'}</div><div class="pl-on"><b>Office notes:</b>${jaONoteCell(p.id)}</div></div><div class="pl-why">${p.why}</div></div>
+      <div class="pl-act"><button class="btn-outline" title="Open the job sheet" onclick="plSheet('${p.id}')">📄 Sheet</button><button class="btn-outline" title="Move to another day" onclick="plMoveMenu('${p.id}',this)">📅 Move ▾</button><button class="btn-outline red" title="Take off this day — back to Job allocations" onclick="plRemove('${p.id}')">✕</button><span class="pl-grip" title="Drag to change the order">⠿</span></div></div>`; }).join('');
+  const sug=plSuggest(tid,day);
+  return `<div class="pl-banner">🧩 <b>Proposed days</b> — only the office sees these. Nothing goes to ${esc(firstName(t.full_name))} or the customers until you press <b>Send to live</b>.
+      <button class="btn-outline" onclick="plSettings()">⚙ Areas &amp; days</button></div>
+    <div class="pl-wk"><button class="wk-nav" onclick="plWeekGo(-1)" aria-label="Previous week">‹</button><b>Week of ${esc(niceDate(days[0]))}</b><button class="wk-nav" onclick="plWeekGo(1)" aria-label="Next week">›</button></div>
+    <div class="pl-strip">${strip}</div>
+    <div class="site-head pl-head"><div style="flex:1;min-width:200px"><div class="site-name">🧩 Proposed · ${esc(dayLong(day))}</div>
+      <div class="site-meta">${esc(cfg.counties.join(' · '))} · starts ${cfg.start} from ${esc((eirPlace(cfg.home)||{}).town||cfg.home)}</div></div>
+      ${sent?'<span class="tag green">✓ Sent to live</span>':`<button class="btn-outline" onclick="plRepropose('${tid}','${day}')">✨ Re-propose day</button><button class="btn-outline" onclick="plClear('${tid}','${day}')">🗑 Clear day</button>
+      <button class="btn-outline pl-dayok ${planDayOk[tid+day]?'on':''}" ${it.length?'':'disabled'} onclick="plDayTick('${tid}','${day}')">${planDayOk[tid+day]?'✓ Happy with this day':'☐ Happy with this day?'}</button><button class="btn-primary" ${it.length?'':'disabled'} onclick="plSendBox('${tid}','${day}')">✅ Send day to live</button><button class="btn-outline" onclick="plSendWeekBox('${tid}')">✅ Send week</button>`}</div>
+    ${notes.map(n=>`<div class="pl-notice">↪ <b>${esc(n.name)}</b> ${esc(n.txt)} — taken off this proposed day so it isn't booked twice.</div>`).join('')}
+    <div class="pl-tot ${st.over?'over':''}"><div><b>${st.n}</b><span>proposed</span></div>${st.live?`<div><b>${st.live}</b><span>already live</span></div>`:''}<div><b>${hrsLabel(st.work+st.liveMin)}</b><span>work</span></div><div><b>${fmtDur(st.drive)}</b><span>driving</span></div>
+      <div><b>${cfg.start} → ${st.finish}</b><span>${st.over?`⚠ over his ${cfg.hours} hrs`:`fits his ${cfg.hours} hrs`}</span></div><div class="pl-bar"><i style="width:${Math.min(100,st.total/st.cap*100).toFixed(0)}%"></i></div></div>
+    <div class="pl-grid"><div><div class="pl-cards" id="pl-cards">${st.live?plLive(tid,day).map((j,i)=>`<div class="pl-card live"><div class="pl-no">${i+1}</div><div class="pl-main"><div class="pl-nm">${esc(custName(j))} <span class="tag">📅 live</span></div><div class="pl-sub2">${esc(eirPlaceText(j.eircode)||'')}</div></div></div>`).join(''):''}${cards||'<div class="empty">Nothing proposed for this day.</div>'}</div>
+      ${!sent&&sug.length?`<button class="pl-addnext" onclick="plAddNext('${tid}','${day}')">＋ Add job <span>— pulls in the next recommended: <b>${esc(sug[0].x.name)}</b>, ${esc((eirPlace(sug[0].x.eircode)||{}).town||'')} · ${Math.round(sug[0].km)} km · waiting ${jaDays(sug[0].x.since)} days</span></button>`:''}
+      ${sug.length&&!sent?`<div class="pl-sug"><div class="pl-sug-h">＋ Waiting jobs close to this day</div>${sug.map(o=>`<div class="pl-sug-r">${jaPill(o.x.kind)} <b>${esc(o.x.name)}</b> <span>${esc((eirPlace(o.x.eircode)||{}).town||'')} · ${Math.round(o.km)} km · waiting ${jaDays(o.x.since)} days · ${esc(estLabel(plEst(o.x))||'1 hr')}</span><button class="btn-outline" onclick="plAdd('${o.x.id}','${tid}','${day}')">＋ Add</button></div>`).join('')}</div>`:''}</div>
+      <div class="pl-mapw"><div id="pl-map"></div></div></div>`; }
+function plSuggest(tid,day){ const it=plItemsFor(tid,day), cfg=plCfg(tid), used=new Set(planItems.map(p=>p.id)); if(!it.length) return [];
+  const pts=it.map(p=>plPos((plPool().find(x=>x.id===p.id)||{}).eircode)).filter(Boolean);
+  return plPool().filter(x=>!used.has(x.id)&&x.eircode&&plPos(x.eircode)&&cfg.counties.includes((eirPlace(x.eircode)||{}).county)&&(!plMatOnly||matOkFor(x.id,day))).map(x=>({x, km:Math.min(...pts.map(p=>plKm(p,plPos(x.eircode))))})).filter(o=>o.km<40).sort((a,b)=>a.km-b.km).slice(0,4); }
+function plRemove(id){ const p=planItems.find(q=>q.id===id); planItems=planItems.filter(q=>q.id!==id); renderPortal(); toast(`✕ ${p?p.name:'Job'} taken off — back in Job allocations`); }
+function plAdd(id,tid,day){ const x=plPool().find(y=>y.id===id); planItems.push({id, tid, day, pos:plItemsFor(tid,day).length, name:x.name, why:`＋ Added by ${firstName(me.full_name)} · waiting ${jaDays(x.since)} days`}); renderPortal(); }
+function plMoveMenu(id,btn){ const p=planItems.find(q=>q.id===id); document.querySelectorAll('.pl-menu').forEach(m=>m.remove()); const cfg=plCfg(p.tid);
+  const m=document.createElement('div'); m.className='pl-menu'; m.innerHTML=`<div class="pl-menu-h">Move ${esc(p.name)} to…</div>`+plWeekDays().filter(d=>cfg.days.includes(parseYmd(d).getDay())&&d!==p.day).map(d=>{ const s=plStats(p.tid,d); return `<button onclick="plMove('${id}','${d}')">${esc(dayLabel(d))} <span>${s.n} jobs · ${hrsLabel(s.total)}</span></button>`; }).join('')
+    +profiles.filter(q=>q.role==='serviceman'&&q.id!==p.tid&&plCfg(q.id).calls&&!noJobs(q.id)).map(q=>`<button onclick="plMoveTo('${id}','${q.id}')">👷 ${esc(firstName(q.full_name))}'s ${esc(dayLabel(p.day))} <span>${plStats(q.id,p.day).n} jobs</span></button>`).join('');
+  btn.parentNode.appendChild(m); }
+function plMove(id,day){ const p=planItems.find(q=>q.id===id); p.day=day; p.pos=plItemsFor(p.tid,day).length; renderPortal(); toast(`📅 Moved to ${dayLabel(day)}`); }
+function plMoveTo(id,tid){ const p=planItems.find(q=>q.id===id); if(!p) return; const from=p.tid; p.tid=tid; p.pos=plItemsFor(tid,p.day).length; p.ok=false; planDayOk[from+p.day]=false; planDayOk[tid+p.day]=false; renderPortal(); toast(`👷 Moved to ${firstName(prof(tid).full_name)}'s ${dayLabel(p.day)}`); }
+function plClear(tid,day){ planItems=planItems.filter(p=>!(p.tid===tid&&p.day===day)); renderPortal(); }
+function plRepropose(tid,day){ plClear(tid,day); plPropose([tid],[day]); renderPortal(); toast('✨ Day proposed again'); }
+function plSendBox(tid,day){ const it=plItemsFor(tid,day), st=plStats(tid,day), t=prof(tid);
+  openModal(`<h2>✅ Send ${esc(dayLabel(day))} to live?</h2><div class="pl-send">${it.map((p,i)=>`<div><b>Job ${st.live+i+1}</b> · ${esc(p.name)}</div>`).join('')}</div>
+    <p class="pl-sub">These ${it.length} jobs move onto <b>${esc(firstName(t.full_name))}'s live ${esc(dayLong(day))}</b> in this order, with their sheets, notes and photos, and leave Job allocations.<br>
+    📲 WhatsApp works as normal: the day shows <b>📲 Send to all</b> — press it when you're ready (or it reminds you a week before).<br>${esc(firstName(t.full_name))} sees them on his phone straight away.</p>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="plSend('${tid}','${day}')">✅ Send to live</button></div>`); }
+function plSendWeekBox(tid){ const all=plWeekDays().filter(d=>plItemsFor(tid,d).length&&!planSent[tid+d]), days=all.filter(d=>planDayOk[tid+d]), no=all.filter(d=>!planDayOk[tid+d]), t=prof(tid);
+  openModal(`<h2>✅ Send ${esc(firstName(t.full_name))}'s week to live?</h2><div class="pl-send">${days.map(d=>{ const s=plStats(tid,d); return `<div>✓ <b>${esc(dayLabel(d))}</b> · ${s.n} jobs · ${hrsLabel(s.total)} · finish ${s.finish}${s.over?' <span class="pl-warn">⚠ over</span>':''}</div>`; }).join('')||'<div>No days ticked yet.</div>'}</div>
+    ${no.length?`<div class="pl-notick">☐ Not ticked yet — stays proposed: ${no.map(d=>`<b>${esc(dayLabel(d))}</b>`).join(', ')}</div>`:''}
+    <p class="pl-sub">Only the days you've ticked <b>✓ Happy with this day</b> go onto ${esc(firstName(t.full_name))}'s live calendar. WhatsApp: each day then shows <b>📲 Send to all</b>, or use <b>📲 Send all days this week</b>.</p>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" ${days.length?'':'disabled'} onclick="plSendWeek('${tid}')">✅ Send ${days.length} ticked day${days.length===1?'':'s'} to live</button></div>`); }
+function plTick(id){ const p=planItems.find(q=>q.id===id); if(!p) return; p.ok=!p.ok; const all=plItemsFor(p.tid,p.day); planDayOk[p.tid+p.day]=all.length>0&&all.every(q=>q.ok); renderPortal(); }
+function plDayTick(tid,day){ const v=!planDayOk[tid+day]; planDayOk[tid+day]=v; plItemsFor(tid,day).forEach(p=>p.ok=v); renderPortal(); toast(v?`✓ ${dayLabel(day)} ticked — ready to send`:'Tick removed'); }
+function plAddNext(tid,day){ const s=plSuggest(tid,day)[0]; if(!s) return toast('No more waiting jobs close to this day.'); const it=plItemsFor(tid,day), last=it[it.length-1];
+  planItems.push({id:s.x.id, tid, day, pos:it.length, name:s.x.name, why:`＋ Next recommended — ${Math.max(1,Math.round(s.km))} km from the day's jobs · waiting ${jaDays(s.x.since)} days`}); planDayOk[tid+day]=false; renderPortal(); toast(`＋ ${s.x.name} added to ${dayLabel(day)}`); }
+function plSheet(id){ const x=plPool().find(y=>y.id===id); if(!x) return; if(x.kind==='new') return jaEditCall(id); openJob(id); }
+// ⠿ drag a card up or down to change the order
+function plAttachDrag(tid){ const box=$('pl-cards'); if(!box) return; let dragId=null;
+  box.querySelectorAll('.pl-card[data-id]').forEach(c=>{
+    c.addEventListener('dragstart',e=>{ if(e.target.closest('textarea,button')) { e.preventDefault(); return; } dragId=c.dataset.id; c.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',dragId); });
+    c.addEventListener('dragend',()=>{ dragId=null; box.querySelectorAll('.pl-card').forEach(x=>x.classList.remove('dragging','drop-before','drop-after')); });
+    c.addEventListener('dragover',e=>{ if(!dragId||c.dataset.id===dragId) return; e.preventDefault(); const r=c.getBoundingClientRect(), after=e.clientY>r.top+r.height/2; box.querySelectorAll('.pl-card').forEach(x=>{ if(x!==c) x.classList.remove('drop-before','drop-after'); }); c.classList.toggle('drop-after',after); c.classList.toggle('drop-before',!after); });
+    c.addEventListener('drop',e=>{ if(!dragId) return; e.preventDefault(); plReorder(tid, dragId, c.dataset.id, c.classList.contains('drop-after')); }); }); }
+function plReorder(tid, moved, target, after){ const p=planItems.find(q=>q.id===moved); const day=p.day, ids=plItemsFor(tid,day).map(q=>q.id).filter(id=>id!==moved); let at=ids.indexOf(target); if(after) at++; ids.splice(at,0,moved);
+  ids.forEach((id,i)=>{ planItems.find(q=>q.id===id).pos=i; }); renderPortal(); toast('↕ Order changed — the route and times update'); }
+async function plSendDay(tid,day){ const it=plItemsFor(tid,day), pool=new Map(plPool().map(x=>[x.id,x])), ids=it.map(p=>p.id).filter(id=>pool.has(id)); if(!ids.length) return 0;
+  const noSheet=ids.map(id=>pool.get(id)).filter(x=>x.kind==='new'&&!x.nc.pdf_path); if(noSheet.length) throw new Error(`Add the job sheet first: ${noSheet.map(x=>x.name).join(', ')}`);
+  jaAlloc={ids, tid, day, month:null, keepOrder:true}; const ok=await jaDoAllocate(true); if(ok===false) throw new Error('not allocated');
+  planItems=planItems.filter(p=>!(p.tid===tid&&p.day===day)); planSent[tid+day]=true; planDayOk[tid+day]=false; await plSync(); return ids.length; }
+async function plSend(tid,day){ const b=$('m-save'); b.disabled=true; b.innerHTML='<span class="spin"></span> Sending…';
+  try{ const n=await plSendDay(tid,day); closeModal(); ocView='jobs'; await jumpToDate(day); renderPortal(); toast(`✅ ${n} jobs on ${firstName(prof(tid).full_name)}'s ${dayLabel(day)} — press 📲 Send to all when ready`,6000); }
+  catch(e){ b.disabled=false; b.textContent='✅ Try again'; toast('Not sent: '+(e.message||e),7000); } }
+async function plSendWeek(tid){ const days=plWeekDays().filter(d=>plItemsFor(tid,d).length&&!planSent[tid+d]&&planDayOk[tid+d]); const b=$('m-save'); b.disabled=true; b.innerHTML='<span class="spin"></span> Sending…'; let n=0, done=[];
+  try{ for(const d of days){ n+=await plSendDay(tid,d); done.push(d); } closeModal(); renderPortal(); toast(`✅ ${done.length} day${done.length===1?'':'s'} sent to live (${n} jobs) — press 📲 Send to all on each day when ready`,7000); }
+  catch(e){ closeModal(); renderPortal(); toast(`${done.length?done.map(dayLabel).join(', ')+' sent. ':''}Stopped: ${e.message||e}`,8000); } }
+async function plMapDraw(tid){ const el=$('pl-map'); if(!el) return; await loadLeaflet(); if(planMap){ planMap.remove(); planMap=null; }
+  const day=planSel[tid], cfg=plCfg(tid), pool=new Map(plPool().map(x=>[x.id,x])), it=plItemsFor(tid,day), live=plLive(tid,day);
+  planMap=L.map(el,{zoomControl:true, attributionControl:false}); window.__jaMap=planMap; L.tileLayer(tileUrl(),{maxZoom:18}).addTo(planMap);
+  const pts=[], home=plPos(cfg.home); if(home){ pts.push([home.lat,home.lng]); L.marker([home.lat,home.lng],{icon:L.divIcon({className:'',html:'<div class="pl-home">🏠</div>',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(planMap); }
+  const all=[...live.map(j=>({e:j.eircode, c:'#0f172a'})), ...it.map(p=>{ const x=pool.get(p.id); return {e:x&&x.eircode, c:x?JA_KIND[x.kind].c:'#999'}; })];
+  all.forEach((o,i)=>{ const q=plPos(o.e); if(!q) return; pts.push([q.lat,q.lng]); L.marker([q.lat,q.lng],{icon:L.divIcon({className:'',html:`<div class="pl-pin" style="--c:${o.c}">${i+1}</div>`,iconSize:[26,26],iconAnchor:[13,13]})}).addTo(planMap); });
+  if(home) pts.push([home.lat,home.lng]);
+  if(pts.length>1) L.polyline(pts,{color:'#4f46e5',weight:3,dashArray:'6 6'}).addTo(planMap);
+  if(pts.length) planMap.fitBounds(pts,{padding:[30,30]}); else planMap.setView([53.4,-7.9],7); }
+
+
+// 🧩 Propose job — on a live day: the waiting jobs that make sense for this day, closest first
+let plPJ={tid:null, day:null, km:20, kind:'all', mat:true};
+function plDayPoints(tid,day){ const pts=plLive(tid,day).map(j=>({p:plPos(j.eircode), name:custName(j), n:jobNo(j)})).filter(o=>o.p); if(pts.length) return pts; const h=plPos(plCfg(tid).home||(routeCfg||{}).depot_eircode); return h?[{p:h, name:'his start', n:0}]:[]; }
+function plProposeJobBox(tid,day){ if(tid) plPJ={...plPJ, tid, day}; ({tid,day}=plPJ); const cfg=plCfg(tid), pts=plDayPoints(tid,day), st=plStats(tid,day);
+  const busy=new Set(planItems.filter(p=>p.ok).map(p=>p.id));   // ticked (confirmed) in a proposal → not offered
+  let opts=plPool().filter(x=>!busy.has(x.id) && !(x.kind==='cancelled'&&x.booked===day&&x.man===tid) && x.eircode && plPos(x.eircode) && (plPJ.kind==='all'||x.kind===plPJ.kind) && (!plPJ.mat||matOkFor(x.id,day)))
+    .map(x=>{ let best=null; for(const o of pts){ const km=plKm(o.p,plPos(x.eircode)); if(!best||km<best.km) best={km, near:o}; } return {x, km:best?best.km:999, near:best&&best.near}; })
+    .filter(o=>o.km<=plPJ.km).sort((a,b)=>(a.km<8&&b.km<8?(b.x.kind==='cancelled')-(a.x.kind==='cancelled'):0)||(a.km<3&&b.km<3?jaDays(b.x.since)-jaDays(a.x.since):0)||a.km-b.km||jaDays(b.x.since)-jaDays(a.x.since));
+  const outArea=opts.filter(o=>cfg.counties.length&&!cfg.counties.includes((eirPlace(o.x.eircode)||{}).county)).length;
+  const fin=m=>{ const [h,mm]=cfg.start.split(':').map(Number), d=new Date(2026,0,1,h,mm+st.liveMin+st.work+st.drive+m); return d.toTimeString().slice(0,5); };
+  const rows=opts.slice(0,8).map((o,i)=>{ const x=o.x, pl=eirPlace(x.eircode), src=x.j||x.nc, inPlan=planItems.find(p=>p.id===x.id), add=plEst(x)+plDrive(o.km)*2;
+    return `<div class="pj-row ${i===0?'best':''}"><div class="pj-main"><div class="pj-nm">${i===0?'<span class="pj-best">⭐ Best fit</span>':''}${x.kind==='cancelled'?'<span class="ja-prio">⭐ Priority</span>':''}<b>${esc(x.name)}</b> ${jaPill(x.kind)} ${crewMini(src)}</div>
+      <div class="pj-sub">📍 <b>${esc(pl?pl.town:'')}</b>, Co. ${esc(pl?pl.county:'')} · ${esc(normEir(x.eircode))} — <b>${Math.max(1,Math.round(o.km))} km</b> from ${o.near&&o.near.n?`Job ${o.near.n} (${esc(o.near.name)})`:esc(o.near?o.near.name:'')}</div>
+      <div class="pj-sub">⌛ <b class="${jaDays(x.since)>=7?'pj-old':''}">waiting ${jaDays(x.since)} days</b> · ⏱ ${esc(estLabel(plEst(x))||'1 hr')} · day would finish about <b>${fin(add)}</b>${inPlan?` · <span class="pj-inplan">🧩 in ${esc(firstName(prof(inPlan.tid).full_name))}'s proposed ${esc(dayLabel(inPlan.day))} (not ticked)</span>`:''}</div>
+      ${matBoxes(x.id,{compact:true, day})}${x.note||(officeNotes[x.id]||{}).body?`<div class="pj-notes">${x.note?`<span><b>Site report:</b> ${esc(x.note)}</span>`:''}${(officeNotes[x.id]||{}).body?`<span><b>Office notes:</b> ${esc(officeNotes[x.id].body)}</span>`:''}</div>`:''}</div>
+      <div class="pj-act"><button class="btn-primary" onclick="plProposeBook('${x.id}')">＋ Book as Job ${st.live+1}</button><button class="btn-outline" onclick="plSheet('${x.id}')">📄 Sheet</button></div></div>`; }).join('');
+  openModal(`<h2>🧩 Propose a job for ${esc(firstName(prof(tid).full_name))} · ${esc(dayLong(day))}</h2>
+    <p class="pl-sub">Waiting jobs that haven't been allocated or ticked into a proposal, <b>closest to the jobs already on this day</b> first${pts.length&&pts[0].n?` (${pts.map(o=>esc(o.name)).join(', ')})`:''}. The day has ${st.live} job${st.live===1?'':'s'} · ${hrsLabel(st.liveMin)} of work so far.</p>
+    <div class="pj-filt"><span>Within</span>${[10,20,40,999].map(k=>`<button class="pl-chip ${plPJ.km===k?'on':''}" onclick="plPJ.km=${k};plProposeJobBox()">${k===999?'any distance':k+' km'}</button>`).join('')}
+      <span style="margin-left:10px">Show</span>${[['all','All'],['rebook','🔁 Unfinished'],['not_home','🚪 Not home'],['new','🆕 New calls']].map(([k,l])=>`<button class="pl-chip ${plPJ.kind===k?'on':''}" onclick="plPJ.kind='${k}';plProposeJobBox()">${l}</button>`).join('')}
+      <span style="margin-left:10px">📦</span><button class="pl-chip ${plPJ.mat?'on':''}" onclick="plPJ.mat=true;plProposeJobBox()">Material ready by this day</button><button class="pl-chip ${plPJ.mat?'':'on'}" onclick="plPJ.mat=false;plProposeJobBox()">Show all</button></div>
+    <div class="pj-list">${rows||'<div class="empty">No waiting jobs within that distance — try a wider one.</div>'}</div>
+    ${opts.length>8?`<p class="pl-sub" style="margin-top:8px">${opts.length-8} more further away — widen the distance or use 📋 Job allocations.</p>`:''}${outArea?`<p class="pl-sub">⚠ ${outArea} of these are outside ${esc(firstName(prof(tid).full_name))}'s usual areas.</p>`:''}
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button></div>`); }
+async function plProposeBook(id){ const {tid,day}=plPJ; const x=plPool().find(y=>y.id===id); jaAlloc={ids:[id], tid, day, month:null}; jaAllocRender(); await jaDoAllocate(); toast(`🧩 ${x?x.name:'Job'} booked onto ${firstName(prof(tid).full_name)}'s ${dayLabel(day)} ✓`,5000); }
+
+
+// ── 🧩 planner: saved in the database (plan_settings / plan_items / plan_days) — office and service department only ──
+let planSaved={items:new Map(), days:new Map()}, plSyncT=null, plSyncing=false;
+const plItemRow=p=>({item_id:p.id, man_id:p.tid, day:p.day, pos:p.pos||0, ok:!!p.ok, why:p.why||null, name:p.name||null});
+const plDayKey=(tid,day)=>tid+'|'+day;
+async function loadPlan(){ if(!hasPlan || !isOffice) return; if(plSyncing || plSyncT) return;   // don't overwrite changes still being saved
+  try{ const [st, it, dy]=await Promise.all([sb.from('plan_settings').select('*'), sb.from('plan_items').select('*'), sb.from('plan_days').select('*')]);
+    if(st.error||it.error||dy.error){ if(/plan_/i.test((st.error||it.error||dy.error).message||'')) hasPlan=false; return; }
+    planCfg={}; (st.data||[]).forEach(r=>{ if(r.id==='global') plMatOnly=(r.data||{}).matOnly!==false; else planCfg[r.id]=r.data||{}; });
+    planItems=(it.data||[]).map(r=>({id:r.item_id, tid:r.man_id, day:r.day, pos:r.pos||0, ok:!!r.ok, why:r.why||'', name:r.name||''}));
+    planDayOk={}; planSent={}; (dy.data||[]).forEach(r=>{ if(r.ok) planDayOk[r.man_id+r.day]=true; if(r.sent_at) planSent[r.man_id+r.day]=true; });
+    planSaved={items:new Map(planItems.map(p=>[p.id, JSON.stringify(plItemRow(p))])), days:new Map((dy.data||[]).map(r=>[plDayKey(r.man_id,r.day), JSON.stringify({ok:!!r.ok, sent:!!r.sent_at})]))};
+  }catch(e){ console.warn('planner',e); } }
+function plSyncSoon(){ if(!hasPlan||!isOffice||previewing) return; clearTimeout(plSyncT); plSyncT=setTimeout(()=>{ plSyncT=null; plSync(); },400); }
+async function plSync(){ if(!hasPlan||!isOffice||previewing) return; if(plSyncing){ plSyncSoon(); return; } plSyncing=true; clearTimeout(plSyncT); plSyncT=null;
+  try{ const now=new Map(planItems.map(p=>[p.id, JSON.stringify(plItemRow(p))]));
+    const up=planItems.filter(p=>planSaved.items.get(p.id)!==now.get(p.id)).map(p=>({...plItemRow(p), made_by:me.id}));
+    const del=[...planSaved.items.keys()].filter(id=>!now.has(id));
+    if(del.length){ const r=await sb.from('plan_items').delete().in('item_id',del); if(r.error) throw r.error; }
+    if(up.length){ const r=await sb.from('plan_items').upsert(up,{onConflict:'item_id'}); if(r.error) throw r.error; }
+    const keys=new Set([...Object.keys(planDayOk).filter(k=>planDayOk[k]), ...Object.keys(planSent).filter(k=>planSent[k])].map(k=>plDayKey(k.slice(0,36),k.slice(36))));
+    planSaved.days.forEach((v,k)=>keys.add(k));
+    const dUp=[], dNow=new Map(); for(const k of keys){ const [tid,day]=k.split('|'), v={ok:!!planDayOk[tid+day], sent:!!planSent[tid+day]}; dNow.set(k,JSON.stringify(v));
+      if(planSaved.days.get(k)!==JSON.stringify(v)) dUp.push({man_id:tid, day, ok:v.ok, sent_at:v.sent?new Date().toISOString():null, updated_by:me.id}); }
+    if(dUp.length){ const r=await sb.from('plan_days').upsert(dUp,{onConflict:'man_id,day'}); if(r.error) throw r.error; }
+    planSaved={items:now, days:dNow};
+  }catch(e){ toast('🧩 Proposal not saved: '+(e.message||e)+(/plan_/i.test(e.message||'')?' — run update-45 in Supabase':''),7000); }
+  finally{ plSyncing=false; } }
+// every change to the proposals is saved straight away
+['plPropose','plRemove','plAdd','plMove','plMoveTo','plClear','plRepropose','plTick','plDayTick','plAddNext','plReorder','plPrune'].forEach(n=>{ const f=window[n]; if(typeof f!=='function') return;
+  window[n]=function(){ const r=f.apply(this,arguments); plSyncSoon(); return r; }; });
+// the planner is office only, and needs Private Calls
+const plOn=()=>hasPlan && isOffice && dept==='calls';
+
+// ── 🔴 Cancelled by the customer (WhatsApp ❌ I can't make it) — the database flags it, the app shows it ──
+JA_KIND.cancelled={label:'Cancelled by customer', short:'Cancelled', ico:'🔴', c:'#be123c', bg:'#fff1f2'};
+if(!JA_ORDER.includes('cancelled')) JA_ORDER.unshift('cancelled');
+OUTCOME.cancelled={label:'Cancelled by customer', tag:'red', icon:'🔴'};
+let waCantNote={}, waCantFor='';
+async function loadCantNotes(){ if(!hasWa) return; const ids=jobs.filter(j=>jobOutcome(j)==='cancelled').map(j=>j.id).sort(), key=ids.join(','); if(key===waCantFor) return; waCantFor=key; if(!ids.length){ waCantNote={}; return; }
+  try{ const r=await sb.from('wa_messages').select('job_id,direction,body,created_at').in('job_id',ids).eq('direction','in').order('created_at'); if(r.error) return;
+    const m={}; (r.data||[]).forEach(x=>{ (m[x.job_id]=m[x.job_id]||[]).push(x); });
+    waCantNote={}; for(const [id,l] of Object.entries(m)){ const last=l.slice(-2).filter(x=>x.body); if(last.length) waCantNote[id]={msg:last.map(x=>x.body.trim()).join(' · '), at:last[last.length-1].created_at}; }
+  }catch(e){ console.warn('cancel notes',e); } }
+function cantMsg(j){ const n=waCantNote[j.id]; return n?n.msg:"❌ I can't make it"; }
+function cantWhen(j){ const n=waCantNote[j.id]||{}, at=n.at||j.cancel_at; return at?new Date(at).toLocaleString('en-IE',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):''; }
+function cancelCard(j,n){ const off=isOffice;
+  return `<div class="slot slot-cancel" data-job="${j.id}" onclick="openJob('${j.id}')" title="Cancelled by the customer — open the job">
+    <div class="slot-top"><span class="slot-no" style="background:#be123c">JOB ${n}</span></div><div class="sc-ico">🔴</div><div class="slot-title">${esc(custName(j)||'Job')}</div>
+    <div class="sc-t">Cancelled by the customer</div><div class="sc-m">💬 “${esc(cantMsg(j))}”${cantWhen(j)?`<br><small>WhatsApp · ${esc(cantWhen(j))}</small>`:''}</div>
+    <div class="sc-b">${off?'↩ Back in 📋 Job allocations with ⭐ priority':'Don\'t call — the office will re-book it'}</div></div>`; }
+
+// 🔴 a cancelled job keeps its place on the day as a red card
+const _slotCardCx=slotCard; slotCard=function(j,n){ return deptOf(j)==='calls'&&jobOutcome(j)==='cancelled'?cancelCard(j,n):_slotCardCx(j,n); };
+// load the planner + the customers' cancel messages with everything else
+const _loadDataPl=loadData; loadData=async function(){ const r=await _loadDataPl.apply(this,arguments);
+  try{ const before=JSON.stringify([planItems,planCfg,planDayOk,planSent,plMatOnly]), cb=waCantFor; await Promise.all([loadPlan(), loadCantNotes()]);
+    if((JSON.stringify([planItems,planCfg,planDayOk,planSent,plMatOnly])!==before || waCantFor!==cb) && me){ if(jaOpen) renderAlloc(); else if(!$('view-portal').classList.contains('hidden')) renderPortal(); else rerenderCurrent(); } }catch(e){ console.warn(e); }
+  return r; };
 </script>
 </body>
 </html>
