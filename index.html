@@ -1233,6 +1233,14 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .ch-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid #ddd6fe;border-radius:9px;padding:7px 10px;margin-top:5px;font-size:13.5px}.ch-row span{color:var(--slate);font-size:12.5px}
 .ch-note{font-size:12px;color:#6d28d9;margin-top:6px}
 
+.rp-opts{display:flex;flex-direction:column;gap:8px;margin:6px 0 10px}
+.rp-opt{display:flex;gap:12px;align-items:center;border:2px solid var(--border);border-radius:12px;padding:10px 14px;cursor:pointer;background:#fff}
+.rp-opt input{width:20px;height:20px;accent-color:#7c3aed}.rp-opt .rp-ico{font-size:20px;min-width:62px}
+.rp-opt span:nth-of-type(2){display:flex;flex-direction:column;flex:1}.rp-opt small{color:var(--slate);font-size:12.5px}
+.rp-opt em{font-style:normal;font-weight:800;font-size:12.5px;color:#6d28d9;background:#f5f3ff;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.rp-opt.on{border-color:#7c3aed;background:#faf5ff}.rp-opt.none{opacity:.55}.rp-opt.none em{color:var(--slate);background:#f1f5f9}
+.rp-mix{background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:8px}
+
 </style>
 </head>
 <body>
@@ -1453,7 +1461,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-27-1100';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-27-1200';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -7225,7 +7233,7 @@ function plPropose(tids, days, maxKm){ maxKm=maxKm||30; const used=new Set(planI
         .sort((a,b)=>((b.kind==='cancelled')-(a.kind==='cancelled'))||jaDays(b.since)-jaDays(a.since));
       // which kind of day: a 2-man or 3-man day if he still has those jobs waiting (the one waiting longest goes first), otherwise a normal 1-man day
       const crewOpts=[2,3].filter(c=>!crewDone[tid+c] && all.some(x=>plCrew(x)===c)).sort((a,b)=>jaDays(all.find(x=>plCrew(x)===b).since)-jaDays(all.find(x=>plCrew(x)===a).since));
-      const crew=crewOpts[0]||1, cand=all.filter(x=>plCrew(x)===crew), km=crew>1?60:maxKm;
+      const crew=plForceCrew?Math.max(...plForceCrew):(crewOpts[0]||1), cand=all.filter(x=>plForceCrew?plForceCrew.has(plCrew(x)):plCrew(x)===crew), km=crew>1?60:maxKm;
       if(!cand.length) continue; if(crew>1) crewDone[tid+crew]=true;
       const cap=cfg.hours*60-plLive(tid,day).reduce((a,j)=>a+(+j.est_minutes||60),0), home=plPos(cfg.home);
       const seed=cand[0], pick=[seed]; let mins=plEst(seed)+plDrive(plKm(home,plPos(seed.eircode)));
@@ -7384,7 +7392,20 @@ function plMoveMenu(id,btn){ const p=planItems.find(q=>q.id===id); document.quer
 function plMove(id,day){ const p=planItems.find(q=>q.id===id); p.day=day; p.pos=plItemsFor(p.tid,day).length; renderPortal(); toast(`📅 Moved to ${dayLabel(day)}`); }
 function plMoveTo(id,tid){ const p=planItems.find(q=>q.id===id); if(!p) return; const from=p.tid; p.tid=tid; p.pos=plItemsFor(tid,p.day).length; p.ok=false; planDayOk[from+p.day]=false; planDayOk[tid+p.day]=false; renderPortal(); toast(`👷 Moved to ${firstName(prof(tid).full_name)}'s ${dayLabel(p.day)}`); }
 function plClear(tid,day){ planItems=planItems.filter(p=>!(p.tid===tid&&p.day===day)); renderPortal(); }
-function plRepropose(tid,day){ plClear(tid,day); plPropose([tid],[day]); renderPortal(); toast('✨ Day proposed again'); }
+// ✨ Re-propose day: pick which kind of day — 1-man, 2-man and/or 3-man jobs
+let plForceCrew=null, plRepSel=null;
+function plRepropose(tid,day){ const cfg=plCfg(tid), used=new Set(planItems.filter(p=>!(p.tid===tid&&p.day===day)).map(p=>p.id));
+  const wait=plPool().filter(x=>!used.has(x.id)&&x.eircode&&plPos(x.eircode)&&cfg.counties.includes((eirPlace(x.eircode)||{}).county)&&(x.kind!=='new'||x.nc.pdf_path)&&(!plMatOnly||matOkFor(x.id,day)));
+  if(!plRepSel||plRepSel.k!==tid+day) plRepSel={k:tid+day, s:new Set([plDayCrew(tid,day)])};
+  const n=c=>wait.filter(x=>plCrew(x)===c).length, S=plRepSel.s;
+  const opt=(c,l,sub)=>`<label class="rp-opt ${S.has(c)?'on':''} ${n(c)?'':'none'}"><input type="checkbox" ${S.has(c)?'checked':''} onchange="this.checked?plRepSel.s.add(${c}):plRepSel.s.delete(${c});plRepropose('${tid}','${day}')"><span class="rp-ico">${CREW_ICON[c]}</span><span><b>${l}</b><small>${sub}</small></span><em>${n(c)} waiting</em></label>`;
+  openModal(`<h2>✨ Re-propose ${esc(dayLabel(day))}</h2><p class="pl-sub">Clears ${esc(firstName(prof(tid).full_name))}'s proposed jobs on this day and fills it again from Job allocations — with the kind of jobs you tick.</p>
+    <div class="rp-opts">${opt(1,'1-man day','normal jobs, one man')}${opt(2,'2-man day','all the 2-man jobs together · 🚩 book 1 extra man')}${opt(3,'3-man day','all the 3-man jobs together · 🚩 book 2 extra men')}</div>
+    ${S.size>1?`<div class="rp-mix">Ticking more than one mixes them on the day — the day needs the most men ticked (🚩 ${Math.max(...S)}-man day).</div>`:''}
+    <p class="pl-sub">Jobs waiting in ${esc(cfg.counties.join(', ')||'his areas')}${plMatOnly?' with 📦 material ready by this day':''}. Longest waiting first, then the nearest, until the day is full.</p>
+    <div class="modal-actions"><button class="btn-outline" onclick="plRepSel=null;closeModal()">Cancel</button><button class="btn-primary" id="rp-go" ${S.size&&[...S].some(c=>n(c))?'':'disabled'} onclick="plReproposeGo('${tid}','${day}')">✨ Re-propose day</button></div>`); }
+function plReproposeGo(tid,day){ const S=new Set(plRepSel.s); plRepSel=null; closeModal(); plClear(tid,day); plForceCrew=S; try{ plPropose([tid],[day]); }finally{ plForceCrew=null; }
+  planDayOk[tid+day]=false; renderPortal(); const c=plDayCrew(tid,day), k=plItemsFor(tid,day).length; toast(k?`✨ ${dayLabel(day)} proposed again — ${k} job${k===1?'':'s'}${c>1?` · 🚩 ${c}-man day`:''}`:'Nothing waiting for that — the day is empty',5000); }
 function plSendBox(tid,day){ const it=plItemsFor(tid,day), st=plStats(tid,day), t=prof(tid);
   openModal(`<h2>✅ Send ${esc(dayLabel(day))} to live?</h2><div class="pl-send">${it.map((p,i)=>`<div><b>Job ${st.live+i+1}</b> · ${esc(p.name)}</div>`).join('')}</div>
     ${crewFlag(plDayCrew(tid,day),firstName(t.full_name),day,chCount(tid,day)?`Extra men: ${chList(tid,day)} — on SashDash they see the day as 🤝 With ${esc(firstName(t.full_name))}`:'No extra men booked yet — the 🚩 flag stays on his live day until they are.')}
