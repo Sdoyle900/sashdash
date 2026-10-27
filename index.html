@@ -1241,6 +1241,26 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .rp-opt.on{border-color:#7c3aed;background:#faf5ff}.rp-opt.none{opacity:.55}.rp-opt.none em{color:var(--slate);background:#f1f5f9}
 .rp-mix{background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:8px}
 
+.tr-login{grid-column:1/-1;box-sizing:border-box;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:9px;padding:6px 10px;margin-top:2px;font-size:13px}
+.tr-login .tl-k{font-size:11.5px;font-weight:800;color:var(--slate);text-transform:uppercase;letter-spacing:.03em}
+.tr-login .tl-u{background:#eef2ff;color:#3730a3;border-radius:6px;padding:2px 8px;font-weight:700}
+.tr-login .tl-pw{width:170px !important;flex:none !important;font:inherit;font-size:13px;padding:4px 8px;border:1.5px solid var(--border);border-radius:7px}
+.tr-login button{border:1px solid var(--border);background:#fff;border-radius:7px;padding:3px 9px;font:inherit;font-size:12.5px;cursor:pointer}
+
+.td-wrap{display:flex;flex-direction:column;gap:14px;margin-bottom:12px}
+.td-sec{border:1.5px solid var(--border);border-radius:14px;padding:6px 12px 8px;background:#fff;transition:background .15s,border-color .15s}
+.td-sec[data-div="office"]{border-left:6px solid #475569}.td-sec[data-div="service"]{border-left:6px solid #4f46e5}.td-sec[data-div="fitting"]{border-left:6px solid #ea580c}
+.td-sec.td-over{background:#f5f3ff;border-color:#a78bfa}
+.td-h{display:flex;align-items:baseline;gap:8px;padding:6px 0 4px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap}.td-h b{font-size:15.5px;color:#0f172a}
+.td-n{background:#0f172a;color:#fff;border-radius:999px;font-size:11.5px;font-weight:800;padding:1px 8px}.td-h small{color:var(--slate);font-size:12px}
+.td-empty{display:none;border:2px dashed #cbd5e1;border-radius:10px;padding:14px;text-align:center;color:var(--slate);font-size:13px;margin:8px 0 2px}.td-sec.empty .td-empty{display:block}
+.td-sec .team-row{grid-template-columns:18px 34px 1fr 1fr 180px}.td-sec .team-row:last-child{border-bottom:none}
+.td-sec .tr-depts,.td-sec .tr-login{grid-column:3/-1}
+.td-grip{cursor:grab;color:#94a3b8;font-size:18px;user-select:none;text-align:center}.td-grip:hover{color:#4f46e5}
+.team-row.td-drag{opacity:.4}
+.td-sel{margin-left:auto;font:inherit;font-size:12.5px;font-weight:700;border:1.5px solid var(--border);border-radius:8px;padding:3px 6px;background:#f8fafc}
+@media (max-width:640px){ .td-sec .team-row{grid-template-columns:18px 34px 1fr 1fr} }
+
 </style>
 </head>
 <body>
@@ -1461,7 +1481,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-27-1200';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-27-1530';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -5904,7 +5924,7 @@ function openTeamModal(){ if(blockPreview()) return;
         <option value="admin" ${p.role==='admin'?'selected':''}>Office (full access)</option></select>
       <div class="tr-depts ${p.role!=='serviceman'?'muted':''}">
         <label><input type="checkbox" class="tr-sites" ${p.on_sites!==false?'checked':''}> 🏗️ Sites</label>
-        <label><input type="checkbox" class="tr-calls" ${p.on_calls!==false?'checked':''}> 🏠 Private Calls</label>
+        <label><input type="checkbox" class="tr-calls" ${p.on_calls!==false?'checked':''}> 🏠 Private Calls</label>${loginRow(p)}
         ${p.role==='serviceman'&&'no_new_jobs' in p?`<button type="button" class="tr-stop ${p.no_new_jobs?'on':''}" onclick="this.classList.toggle('on');this.textContent=this.classList.contains('on')?'🚫 No new jobs':'✅ Taking new jobs'" title="On: he can't be given new jobs or days. His old jobs keep his name.">${p.no_new_jobs?'🚫 No new jobs':'✅ Taking new jobs'}</button>`:''}</div></div>`).join('')}
     <div class="help"><b>Adding a service man</b><br>
       1. In Supabase go to <b>Authentication → Users → Add user → Create new user</b>.<br>
@@ -5927,11 +5947,13 @@ async function saveTeam(){
       on_sites:r.querySelector('.tr-sites').checked, on_calls:r.querySelector('.tr-calls').checked};
     const rs=r.querySelector('.tr-role'); if(!rs.disabled) row.role=rs.value;
     const st=r.querySelector('.tr-stop'); if(st) row.no_new_jobs=st.classList.contains('on');
+    if(hasDivision){ const sec=r.closest('.td-sec'); if(sec) row.division=sec.dataset.div; }
     const phone=ph.value.trim()||null;
     if(hasPhones){ const q=phone ? await sb.from('staff_phones').upsert({id:r.dataset.id, phone, updated_at:new Date().toISOString()},{onConflict:'id'}) : await sb.from('staff_phones').delete().eq('id',r.dataset.id);
       if(q.error){ $('m-save').disabled=false; return toast('Error: '+q.error.message,5000); } }
     else row.phone=phone;
-    const { error }=await sb.from('profiles').update(row).eq('id',r.dataset.id);
+    let { error }=await sb.from('profiles').update(row).eq('id',r.dataset.id);
+    if(error && /division/i.test(error.message)){ hasDivision=false; delete row.division; ({ error }=await sb.from('profiles').update(row).eq('id',r.dataset.id)); setTimeout(()=>toast('⚠ Divisions not saved — run update-52 in Supabase',8000),800); }
     if(error){ $('m-save').disabled=false; return toast('Error: '+error.message,5000); }
   }
   closeModal(); await loadData(); rerenderCurrent(); toast('Team updated');
@@ -7537,6 +7559,51 @@ const _loadDataPl=loadData; loadData=async function(){ const r=await _loadDataPl
   try{ const before=JSON.stringify([planItems,planCfg,planDayOk,planSent,plMatOnly,crewHelp,crewRemote]), cb=waCantFor; await Promise.all([loadPlan(), loadCantNotes(), loadCrew()]);
     if((JSON.stringify([planItems,planCfg,planDayOk,planSent,plMatOnly,crewHelp,crewRemote])!==before || waCantFor!==cb) && me){ if(jaOpen) renderAlloc(); else if(!$('view-portal').classList.contains('hidden')) renderPortal(); else rerenderCurrent(); } }catch(e){ console.warn(e); }
   return r; };
+
+// 🔐 Login details (update-51) — Office (full access) only, never for Office (full access) logins (Sean, Kenny)
+let staffLogins={}, hasLogins=true;   // id → {login, pw}
+async function loadLogins(){ if(!hasLogins||!isAdmin||previewing) return false;
+  try{ const [n,p]=await Promise.all([sb.rpc('staff_login_names'), sb.from('staff_logins').select('user_id,pw_note')]);
+    if(n.error||p.error){ if(/staff_login/i.test((n.error||p.error).message||'')) hasLogins=false; return false; }
+    const m={}; (n.data||[]).forEach(r=>{ m[r.user_id]={login:r.login, pw:''}; }); (p.data||[]).forEach(r=>{ (m[r.user_id]=m[r.user_id]||{login:''}).pw=r.pw_note||''; }); staffLogins=m; return true;
+  }catch(e){ console.warn('logins',e); return false; } }
+function loginRow(p){ if(!isAdmin||previewing||p.role==='admin'||!hasLogins) return ''; const L=staffLogins[p.id]||{};
+  return `<div class="tr-login" data-lid="${p.id}"><span class="tl-k">🔐 Login</span><code class="tl-u">${esc(L.login||'—')}</code>
+    <span class="tl-k">Password</span><input class="tl-pw" type="password" value="${esc(L.pw||'')}" placeholder="type it in to keep a note" autocomplete="new-password" onchange="loginSave('${p.id}',this)">
+    <button type="button" class="tl-eye" onclick="const i=this.previousElementSibling;i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁 Show':'🙈 Hide'">👁 Show</button>
+    <button type="button" class="tl-copy" title="Copy login and password" onclick="loginCopy('${p.id}',this)">📋</button></div>`; }
+async function loginSave(id,inp){ const v=inp.value.trim(); const r=v?await sb.from('staff_logins').upsert({user_id:id, pw_note:v, updated_by:me.id, updated_at:new Date().toISOString()},{onConflict:'user_id'}):await sb.from('staff_logins').delete().eq('user_id',id);
+  if(r.error) return toast('Not saved: '+r.error.message+(/staff_login/i.test(r.error.message)?' — run update-51 in Supabase':''),7000);
+  (staffLogins[id]=staffLogins[id]||{login:''}).pw=v; toast(v?'🔐 Password note saved':'Password note removed',2500); }
+function loginCopy(id,btn){ const L=staffLogins[id]||{}, pw=btn.parentNode.querySelector('.tl-pw').value; try{ navigator.clipboard.writeText(`Login: ${L.login||''}\nPassword: ${pw}`); toast('📋 Login and password copied'); }catch(e){ toast('Could not copy'); } }
+const _otmL=openTeamModal; openTeamModal=async function(){ const r=_otmL.apply(this,arguments); const fix=()=>document.querySelectorAll('.tr-login').forEach(el=>{ const row=el.closest('.team-row'); if(row&&el.parentNode!==row) row.appendChild(el); }); fix();
+  if(isAdmin&&!previewing&&hasLogins){ const ok=await loadLogins(); if(ok&&document.querySelector('.team-row')) document.querySelectorAll('.team-row').forEach(row=>{ const p=profiles.find(x=>x.id===row.dataset.id), old=row.querySelector('.tr-login'); if(!p||!old) return; old.outerHTML=loginRow(p); }); fix(); }
+  return r; };
+
+// 👥 Divisions in Manage team (update-52): Office admin · Service team · Fitting team — drag people between them
+let hasDivision=true;
+const DIVS=[['office','🏢 Office admin','Office, service department and admin logins'],['service','🔧 Service team','Service men — Private Calls and service sites'],['fitting','🚚 Fitting team','Fitters']];
+const divOf=p=>DIVS.some(d=>d[0]===p.division)?p.division:(p.role==='serviceman'?'service':'office');
+function teamGroup(){ if(document.querySelector('#modal-root .td-wrap')||document.querySelector('.td-wrap')) return; const box=document.querySelector('.team-row')?.parentNode; if(!box) return;
+  const rows=[...box.querySelectorAll(':scope > .team-row')], first=rows[0]; if(!first) return;
+  const wrap=document.createElement('div'); wrap.className='td-wrap'; first.before(wrap);
+  for(const [k,l,s] of DIVS){ const sec=document.createElement('div'); sec.className='td-sec'; sec.dataset.div=k;
+    sec.innerHTML=`<div class="td-h"><b>${l}</b> <span class="td-n"></span><small>${s}</small></div><div class="td-list"></div><div class="td-empty">Drag people here</div>`; wrap.appendChild(sec); }
+  rows.forEach(r=>{ const p=profiles.find(x=>x.id===r.dataset.id)||{}; const d=divOf(p);
+    const g=document.createElement('div'); g.className='td-grip'; g.title='Drag to another division'; g.textContent='⠿'; g.draggable=true; r.prepend(g);
+    const sel=document.createElement('select'); sel.className='td-sel'; sel.title='Division'; sel.innerHTML=DIVS.map(([k,l])=>`<option value="${k}" ${k===d?'selected':''}>${l}</option>`).join(''); sel.onchange=()=>{ wrap.querySelector(`.td-sec[data-div="${sel.value}"] .td-list`).appendChild(r); teamCounts(); };
+    (r.querySelector('.tr-depts')||r).appendChild(sel);
+    wrap.querySelector(`.td-sec[data-div="${d}"] .td-list`).appendChild(r); });
+  let drag=null;
+  wrap.addEventListener('dragstart',e=>{ const g=e.target.closest&&e.target.closest('.td-grip'); if(!g){ return; } drag=g.closest('.team-row'); drag.classList.add('td-drag'); e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',drag.dataset.id); });
+  wrap.addEventListener('dragend',()=>{ if(drag) drag.classList.remove('td-drag'); drag=null; wrap.querySelectorAll('.td-over').forEach(x=>x.classList.remove('td-over')); });
+  wrap.addEventListener('dragover',e=>{ if(!drag) return; const sec=e.target.closest('.td-sec'); if(!sec) return; e.preventDefault(); wrap.querySelectorAll('.td-over').forEach(x=>x!==sec&&x.classList.remove('td-over')); sec.classList.add('td-over');
+    const list=sec.querySelector('.td-list'), after=[...list.querySelectorAll(':scope > .team-row:not(.td-drag)')].find(r=>e.clientY<r.getBoundingClientRect().top+r.getBoundingClientRect().height/2);
+    after?list.insertBefore(drag,after):list.appendChild(drag); });
+  wrap.addEventListener('drop',e=>{ if(!drag) return; e.preventDefault(); const sec=drag.closest('.td-sec'); const sel=drag.querySelector('.td-sel'); if(sel&&sec) sel.value=sec.dataset.div; teamCounts(); });
+  teamCounts(); }
+function teamCounts(){ document.querySelectorAll('.td-sec').forEach(s=>{ const n=s.querySelectorAll('.team-row').length; s.querySelector('.td-n').textContent=n; s.classList.toggle('empty',!n); }); }
+const _otmD=openTeamModal; openTeamModal=async function(){ const r=_otmD.apply(this,arguments); teamGroup(); const v=await r; teamGroup(); return v; };
 </script>
 </body>
 </html>
