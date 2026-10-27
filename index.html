@@ -715,32 +715,36 @@
     .ja-listwrap{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:auto;max-height:calc(100vh - 250px)}
     /* 📋 narrow list (map dragged wider): each job becomes a card so everything stays visible */
     .ja-listwrap{container-type:inline-size;container-name:jalist}
-    @container jalist (max-width: 900px){
+    @container jalist (max-width: 1120px){
       .ja-table thead{display:none}
       .ja-table,.ja-table tbody{display:block;width:100%}
-      .ja-table tr.ja-row{display:grid;grid-template-columns:26px minmax(0,1.25fr) minmax(0,1fr) minmax(96px,auto);
-        grid-template-areas:"ck cu tw ac" "ck sz mn ac" "ck rp rp rp" "ck on on on";column-gap:10px;row-gap:6px;padding:10px 10px 12px 8px;border-bottom:1px solid #eef2f7}
+      .ja-table tr.ja-row{display:grid;grid-template-columns:26px minmax(0,1.25fr) minmax(0,1fr) minmax(104px,auto);
+        grid-template-areas:"ck cu tw ac" "ck sz mn ac" "ck mt mt ac" "ck rp rp rp" "ck on on on";column-gap:10px;row-gap:6px;padding:10px 10px 12px 8px;border-bottom:1px solid #eef2f7}
       .ja-table tr.ja-row>td{display:block;padding:0 !important;border:none !important;max-width:none !important;min-width:0 !important;width:auto !important}
-      .ja-table tr.ja-row>td:nth-child(1){grid-area:ck;padding-top:2px !important}
-      .ja-table tr.ja-row>td:nth-child(2){grid-area:cu}
+      .ja-table tr.ja-row>td.ja-ck{grid-area:ck;padding-top:2px !important}
+      .ja-table tr.ja-row>td:has(> .ja-name){grid-area:cu}
       .ja-table tr.ja-row>td:nth-child(3){grid-area:tw}
-      .ja-table tr.ja-row>td:nth-child(4){grid-area:sz;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-      .ja-table tr.ja-row>td:nth-child(4) div{margin:0}
-      .ja-table tr.ja-row>td:nth-child(5){grid-area:mn;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-      .ja-table tr.ja-row>td:nth-child(6){grid-area:mn;justify-self:end;align-self:start}
-      .ja-table tr.ja-row>td:nth-child(7){grid-area:rp;font-size:12.5px;background:#f8fafc;border-radius:8px;padding:6px 8px !important}
-      .ja-table tr.ja-row>td:nth-child(7)::before{content:'Site report: ';font-weight:700;color:#334155}
-      .ja-table tr.ja-row>td:nth-child(8){grid-area:on}
-      .ja-table tr.ja-row>td:nth-child(8) .ja-on{min-height:34px}
-      .ja-table tr.ja-row>td:nth-child(9){grid-area:ac;display:flex;flex-direction:column;gap:6px;align-items:stretch}
-      .ja-table tr.ja-row>td:nth-child(9) div{display:flex;gap:6px;justify-content:flex-end}
+      .ja-table tr.ja-row>td.ja-size{grid-area:sz;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+      .ja-table tr.ja-row>td.ja-size div{margin:0}
+      .ja-table tr.ja-row>td.ja-size + td{grid-area:mn;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+      .ja-table tr.ja-row>td.ja-mat{grid-area:mt}
+      .ja-table tr.ja-row>td.ja-mat .mat{flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px}
+      .ja-table tr.ja-row>td.ja-mat .mat-b{white-space:nowrap}.ja-table tr.ja-row>td.ja-mat .mb-date{display:inline}.ja-table tr.ja-row>td.ja-mat .mb-date i{display:inline}
+      .ja-table tr.ja-row>td.ja-mat .mat-note,.ja-table tr.ja-row>td.ja-mat .mat-what,.ja-table tr.ja-row>td.ja-mat .mat-by{flex-basis:auto}
+      .ja-table tr.ja-row>td:has(+ td.ja-note){grid-area:mn;justify-self:end;align-self:start}
+      .ja-table tr.ja-row>td.ja-note{grid-area:rp;font-size:12.5px;background:#f8fafc;border-radius:8px;padding:6px 8px !important}
+      .ja-table tr.ja-row>td.ja-note::before{content:'Site report: ';font-weight:700;color:#334155}
+      .ja-table tr.ja-row>td.ja-onote{grid-area:on}
+      .ja-table tr.ja-row>td.ja-onote .ja-on{min-height:34px}
+      .ja-table tr.ja-row>td.ja-act{grid-area:ac;display:flex;flex-direction:column;gap:6px;align-items:stretch}
+      .ja-table tr.ja-row>td.ja-act div{display:flex;gap:6px;justify-content:flex-end}
       .ja-name{white-space:normal}
       .ja-table td:nth-child(2) .ja-sub2{flex-wrap:wrap;white-space:normal}
       .ja-again{font-size:11.5px}
     }
-    @container jalist (max-width: 520px){
-      .ja-table tr.ja-row{grid-template-columns:26px minmax(0,1fr) auto;grid-template-areas:"ck cu ac" "ck tw ac" "ck sz sz" "ck mn mn" "ck rp rp" "ck on on"}
-      .ja-table tr.ja-row>td:nth-child(6){justify-self:end}
+    @container jalist (max-width: 560px){
+      .ja-table tr.ja-row{grid-template-columns:26px minmax(0,1fr) auto;grid-template-areas:"ck cu ac" "ck tw ac" "ck sz sz" "ck mn mn" "ck mt mt" "ck rp rp" "ck on on"}
+      .ja-table tr.ja-row>td:has(+ td.ja-note){justify-self:end}
     }
 
     .ja-mapwrap{position:sticky;top:120px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
@@ -1481,7 +1485,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-27-1530';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-27-1745';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
