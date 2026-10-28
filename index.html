@@ -1488,7 +1488,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-28-1100';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-28-1130';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -7613,6 +7613,34 @@ function teamGroup(){ if(document.querySelector('#modal-root .td-wrap')||documen
   teamCounts(); }
 function teamCounts(){ document.querySelectorAll('.td-sec').forEach(s=>{ const n=s.querySelectorAll('.team-row').length; s.querySelector('.td-n').textContent=n; s.classList.toggle('empty',!n); }); }
 const _otmD=openTeamModal; openTeamModal=async function(){ const r=_otmD.apply(this,arguments); teamGroup(); const v=await r; teamGroup(); return v; };
+
+// ── 🔔 Each office login has its own "New" (update-56) ─────────────────────────
+// jobs.admin_unread is shared by the whole office: whoever opened a job first cleared "New" for everyone.
+// Now each office login (Sean, Kenny, the service department) keeps its own: job_seen holds when *you* last
+// opened the job, and jobs.admin_news_at is when the man last did something. "New" for you = news after your last look.
+// The shared flag and mark_job_seen still work as before (push pings etc. unchanged); only what each person sees changes.
+let hasOwnSeen=true; const ownSeen=new Map(), ownSeenLocal=new Map(); let ownNews=new Map();
+function ownSeenOn(){ return hasOwnSeen && isOffice && !previewing && realMe && me && realMe.id===me.id; }
+function ownUnread(j){ const n=ownNews.get(j.id); if(!n) return !!j._sharedUnread;   // no news time (before update-56) → old shared flag
+  const s=Math.max(ownSeen.get(j.id)||0, ownSeenLocal.get(realMe.id+'|'+j.id)||0); return s<n; }
+function ownApply(){ if(!ownSeenOn()) return; (jobs||[]).forEach(j=>{ if(j._sharedUnread===undefined) j._sharedUnread=!!j.admin_unread; j.admin_unread=ownUnread(j); }); }
+async function ownMarkSeen(id){ if(!ownSeenOn()||!id) return; ownSeenLocal.set(realMe.id+'|'+id, Math.max(Date.now(), (ownNews.get(id)||0)+1));
+  const j=(jobs||[]).find(x=>x.id===id); if(j) j.admin_unread=false;
+  try{ const r=await sb.rpc('mark_job_seen_me',{p_job:id}); if(r.error){ if(/mark_job_seen_me|job_seen|function|relation/i.test(r.error.message)) hasOwnSeen=false; return; }
+    if(r.data){ ownSeen.set(id, new Date(r.data).getTime()); ownSeenLocal.delete(realMe.id+'|'+id); } }catch(e){} }   // server time wins once saved
+function ownPatchRpc(){ if(!sb||sb._ownPatched) return; const rpc=sb.rpc.bind(sb);
+  sb.rpc=function(name,args){ if(name==='mark_job_seen' && args && args.p_job) ownMarkSeen(args.p_job); return rpc(name,args); }; sb._ownPatched=true; }
+const _ownLoadData=loadData; loadData=async function(){ ownPatchRpc();
+  const r=await _ownLoadData.apply(this,arguments);
+  if(ownSeenOn()){ try{
+      const since=new Date(Date.now()-120*864e5).toISOString();
+      const [nw, sn]=await Promise.all([ sb.from('jobs').select('id,admin_news_at').gte('admin_news_at',since), sb.from('job_seen').select('job_id,seen_at').eq('user_id',realMe.id) ]);
+      if(nw.error||sn.error){ hasOwnSeen=false; }
+      else { ownNews=new Map((nw.data||[]).map(x=>[x.id,new Date(x.admin_news_at).getTime()])); ownSeen.clear(); (sn.data||[]).forEach(x=>ownSeen.set(x.job_id,new Date(x.seen_at).getTime())); ownApply(); }
+    }catch(e){ hasOwnSeen=false; } }
+  return r; };
+// the "Jobs with news" list sets admin_unread=false itself when you open one — record it as seen by you too
+const _ownNewsOpen=newsOpen; newsOpen=function(id){ ownMarkSeen(id); return _ownNewsOpen.apply(this,arguments); };
 </script>
 </body>
 </html>
