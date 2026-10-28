@@ -1431,7 +1431,7 @@ let realMe = null, previewing = false;
 let sb, me = null, isAdmin = false, isCallsOffice = false, isOffice = false, dept = 'sites';
 const DEPT = {
   sites:{label:'Sites',         icon:'🏗️', one:'site',     many:'Sites',     pin:'📍'},
-  calls:{label:'Private Calls', icon:'🏠', one:'customer', many:'Customers', pin:'🏠'}
+  calls:{label:'Service Department', icon:'🏠', one:'customer', many:'Customers', pin:'🏠'}
 };
 let profiles = [], sites = [], jobs = [], orderReqs = [];
 let currentTechId = null, currentSiteId = null, jobFilter = 'all', calWeek = null;
@@ -1488,7 +1488,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-27-1800';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-28-1100';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1575,7 +1575,7 @@ function applyIdentity(p){
   document.body.classList.toggle('previewing', previewing);
   const bn=$('preview-banner');
   if(previewing){ bn.classList.remove('hidden');
-    bn.innerHTML=`<span>👁 Viewing as <b>${esc(p.full_name)}</b> — ${p.role==='serviceman'?(realMe.role==='service_office'?'what he sees in Private Calls on his phone':'exactly what he sees on his phone'):p.role==='service_office'?'what the service department sees':'their view'}. View-only.</span><button onclick="exitViewAs()">✕ Exit</button>`;
+    bn.innerHTML=`<span>👁 Viewing as <b>${esc(p.full_name)}</b> — ${p.role==='serviceman'?(realMe.role==='service_office'?'what he sees in Service Department on his phone':'exactly what he sees on his phone'):p.role==='service_office'?'what the service department sees':'their view'}. View-only.</span><button onclick="exitViewAs()">✕ Exit</button>`;
   } else bn.classList.add('hidden');
 }
 // ── "View as" (office only) ───────────────────────────────────────
@@ -1584,7 +1584,7 @@ function toggleViewAs(e){ e.stopPropagation(); const m=$('viewas-menu');
 function renderViewAsMenu(){
   const svc=realMe.role==='service_office';   // service department: Private Calls men only
   const men=profiles.filter(p=>p.role==='serviceman' && (!svc || p.on_calls!==false)), offices=svc?[]:profiles.filter(p=>p.role==='service_office');
-  const item=p=>`<button class="${previewing&&me.id===p.id?'on':''}" onclick="enterViewAs('${p.id}')"><span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span><span>${esc(p.full_name)}<small>${p.role==='service_office'?'Service department':svc?'Private Calls':[p.on_sites!==false?'Sites':'',p.on_calls!==false?'Private Calls':''].filter(Boolean).join(' + ')}</small></span></button>`;
+  const item=p=>`<button class="${previewing&&me.id===p.id?'on':''}" onclick="enterViewAs('${p.id}')"><span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span><span>${esc(p.full_name)}<small>${p.role==='service_office'?'Service department':svc?'Service Department':[p.on_sites!==false?'Sites':'',p.on_calls!==false?'Service Department':''].filter(Boolean).join(' + ')}</small></span></button>`;
   $('viewas-menu').innerHTML=`<div class="va-h">View SashDash as…</div>
     ${previewing?`<button onclick="exitViewAs()" class="va-exit">↩ Back to my own view</button>`:''}
     ${men.length?`<div class="va-sub">Service men</div>${men.map(item).join('')}`:''}
@@ -2577,7 +2577,7 @@ function ensureSearchBar(){
       <div id="search-results"></div><div id="dash-body"></div>`;
   }
   const inp=$('dash-search');
-  inp.placeholder = dept==='calls' ? 'Search Private Calls — customer name, phone, docket no., address, day…' : 'Search Sites — site, name, phone, docket no., order…';
+  inp.placeholder = dept==='calls' ? 'Search Service Department — customer name, phone, docket no., address, day…' : 'Search Sites — site, name, phone, docket no., order…';
   if(document.activeElement!==inp && inp.value!==searchQ[dept]) inp.value=searchQ[dept];
   $('s-clear').classList.toggle('hidden', !searchQ[dept]);
   renderSearch();
@@ -3244,7 +3244,7 @@ function openShareModal(o){ if(blockPreview()) return;
   if(kind==='days'){
     const mon=ymd(mondayOf(parseYmd(shareCtx.date))), wsat=ymd(addDays(parseYmd(mon),5));
     const n=jobs.filter(x=>x.serviceman_id===owner&&siteOf(x)&&siteOf(x).work_date===shareCtx.date).length;
-    what=`${esc(firstName(ow.full_name))}'s Private Calls on <b>${esc(dayLong(shareCtx.date))}</b> (${n} job${n===1?'':'s'})`;
+    what=`${esc(firstName(ow.full_name))}'s Service Department on <b>${esc(dayLong(shareCtx.date))}</b> (${n} job${n===1?'':'s'})`;
     when=`<label>Which days</label>
       <label class="chk"><input type="radio" name="sh-span" value="day" checked onchange="shareSpan()"> Just ${esc(dayLabel(shareCtx.date))}</label>
       <label class="chk"><input type="radio" name="sh-span" value="week" onchange="shareSpan()"> The whole week — ${esc(dayLabel(mon))} to ${esc(dayLabel(wsat))}</label>
@@ -4095,9 +4095,9 @@ async function openBackupPanel(){
   const a=bkAccount(); if(!a) return; bkDev=await bkDevice();
   const h=await kvGet(BK_DIR), isPC=bkThisIsBackupPC(bkDev), dv=bkDevs.find(x=>x.account===a), sides=bkHasService()?['office','service']:['office'];
   const card=s=>{ const l=bkLastFor(s), me2=s===a&&isPC; return `<div class="bk-card ${me2?'me':''}"><h4>${bkSideName(s)} PC${me2?' · this computer':''}</h4><div class="big">${esc(bkWhen(l&&l.at))}</div>
-    <div class="sub" style="margin:4px 0 0">${s==='office'?'Private Calls + Sites':'Private Calls'}${l&&l.folder_name?'<br>📁 '+esc(l.folder_name):''}${l&&bkDue(l.at)?'<br><span class="pill a">Monday backup due</span>':''}</div></div>`; };
+    <div class="sub" style="margin:4px 0 0">${s==='office'?'Service Department + Sites':'Service Department'}${l&&l.folder_name?'<br>📁 '+esc(l.folder_name):''}${l&&bkDue(l.at)?'<br><span class="pill a">Monday backup due</span>':''}</div></div>`; };
   const {ready, waiting}=bkClearable();
-  openModal(`<div class="bk-m"><h2>💾 Backups</h2><div class="sub">Each side keeps its own archive on its backup computer. A Private Calls job is only cleared from SashDash once ${sides.length>1?'<b>both</b> have it':'it is backed up'}. Sites jobs are never cleared automatically.</div>
+  openModal(`<div class="bk-m"><h2>💾 Backups</h2><div class="sub">Each side keeps its own archive on its backup computer. A Service Department job is only cleared from SashDash once ${sides.length>1?'<b>both</b> have it':'it is backed up'}. Sites jobs are never cleared automatically.</div>
     <div class="bk-two" style="${sides.length<2?'grid-template-columns:1fr':''}">${sides.map(card).join('')}</div>
     ${!isPC?`<div class="bk-box">ℹ️ ${bkSideName(a)} backups are done on <b>${esc(dv.device_name||'another computer')}</b>. This computer doesn't need to back up. <a href="#" onclick="event.preventDefault();bkMakePC()">Make this the ${bkSideName(a)} backup computer</a> (e.g. a replacement PC).</div>`:''}
     <table class="bk-tbl"><tr><th>Backup</th><th>Computer</th><th>Jobs saved</th><th></th></tr>
@@ -4127,7 +4127,7 @@ async function bkChooseFolder(thenBackup){
     <div class="sub" style="text-align:center">📁 <b>${esc(h.name)}</b></div>
     ${n?`<div class="bk-box">✅ Found <b>${n-siteN} calls</b> for <b>${custs} customer${custs===1?'':'s'}</b>${siteN?` and <b>${siteN} Sites jobs</b>`:''} · backed up up to <b>${on(info.last_at||idx.updated_at)}</b>${info.device_name?` on the ${esc(info.device_name)}`:''}${a==='service'&&siteN?'<br>ℹ️ The Sites jobs in it are ignored here — the service department doesn\'t use them':''}</div>
       <div class="bk-box">This computer will use this folder from now on. Its next backup adds anything new or changed since then.</div>`
-    :`<div class="bk-box">This folder is empty${h.name?'':''}. SashDash will save every ${a==='office'?'Private Calls and Sites':'Private Calls'} job into it, sorted by customer, and read it back when you import old calls.</div>`}
+    :`<div class="bk-box">This folder is empty${h.name?'':''}. SashDash will save every ${a==='office'?'Service Department and Sites':'Service Department'} job into it, sorted by customer, and read it back when you import old calls.</div>`}
     <div class="modal-actions" style="justify-content:center"><button class="btn-outline" onclick="bkChooseFolder(${thenBackup?'true':''})">Choose a different folder</button><button class="btn-primary" id="bk-use">✓ Use this folder${thenBackup?' and back up':''}</button></div></div>`);
   $('bk-use').onclick=async()=>{ await kvSet(BK_DIR,h); bkDev=await bkDevice();
     if(!bkDevs.find(x=>x.account===a)){ const name=a==='office'?'Office PC':'Service PC'; await sb.from('backup_devices').upsert({account:a, device_id:bkDev.id, device_name:name, set_by:me.id},{onConflict:'account'}); bkDev.name=name; await kvSet('bkDevice',bkDev); }
@@ -4174,7 +4174,7 @@ async function runBackup(opts={}){
     await bkWriteFile(dir,'backup-info.json', JSON.stringify(info,null,1));
     const log=(await bkReadText(dir,'backup-log.txt'))||`SashDash backups on this computer (${info.device_name})\r\nFolder: ${dir.name}\r\n\r\n`;
     const pc=todo.filter(j=>deptOf(j)==='calls').length, st=todo.length-pc;
-    await bkWriteFile(dir,'backup-log.txt', log+`${new Date(at).toLocaleString('en-IE',{weekday:'short',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}   ${todo.length} jobs   (${nNew} new, ${nUpd} updated)${a==='office'?`   Private Calls ${pc} · Sites ${st}`:''}\r\n`);
+    await bkWriteFile(dir,'backup-log.txt', log+`${new Date(at).toLocaleString('en-IE',{weekday:'short',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}   ${todo.length} jobs   (${nNew} new, ${nUpd} updated)${a==='office'?`   Service Department ${pc} · Sites ${st}`:''}\r\n`);
     for(let i=0;i<saved.length;i+=200){ const r=await sb.from('job_backups').upsert(saved.slice(i,i+200),{onConflict:'job_id,account'}); if(r.error) throw r.error; }
     await sb.from('backups').insert({account:a, device_id:bkDev.id, device_name:info.device_name, folder_name:dir.name, jobs:todo.length, new_jobs:nNew, updated:nUpd, made_by:me.id, at});
     if(!bkDevs.find(x=>x.account===a)) await sb.from('backup_devices').upsert({account:a, device_id:bkDev.id, device_name:info.device_name, set_by:me.id},{onConflict:'account'});
@@ -4187,7 +4187,7 @@ async function runBackup(opts={}){
       if(!ready.length) setTimeout(()=>{ const p=$('bk-auto'); if(p && p.classList.contains('done')) bkPopClose(); }, 20000);
       rerenderCurrent(); return; }
     show(`<div style="text-align:center;font-size:40px">✅</div><h2 style="text-align:center">Backed up — ${esc(bkWhen(at))}</h2>
-      <div class="sub" style="text-align:center"><b>${todo.length} job${todo.length===1?'':'s'}</b> saved to ${esc(dir.name)}${a==='office'&&todo.length?` (${pc} Private Calls · ${st} Sites)`:''}<br>${nNew} new folder${nNew===1?'':'s'} · ${nUpd} brought up to date · nothing deleted${ocBkLine(ocRes)}</div>
+      <div class="sub" style="text-align:center"><b>${todo.length} job${todo.length===1?'':'s'}</b> saved to ${esc(dir.name)}${a==='office'&&todo.length?` (${pc} Service Department · ${st} Sites)`:''}<br>${nNew} new folder${nNew===1?'':'s'} · ${nUpd} brought up to date · nothing deleted${ocBkLine(ocRes)}</div>
       ${ready.length?`<div class="bk-box">🧹 <b>${ready.length} All done job${ready.length===1?'':'s'}</b> ${ready.length===1?'is':'are'} now on ${need.length>1?'<b>both</b> backups':'the backup'} and older than 3 weeks. <b>Clear ${ready.length===1?'it':'them'} from SashDash now?</b> Re-book and Not home jobs stay until they're rescheduled.</div>`:''}
       ${waiting.length&&miss.length?`<div class="bk-box">⏳ <b>${waiting.length} All done job${waiting.length===1?'':'s'}</b> ${waiting.length===1?'is':'are'} ready to clear, but the <b>${miss.map(bkSideName).join(' and ')} PC</b> hasn't backed ${waiting.length===1?'it':'them'} up yet (last backup <b>${esc(bkWhen((bkLastFor(miss[0])||{}).at))}</b>). They'll be cleared once it has.</div>`:''}
       <div class="modal-actions" style="justify-content:center">${ready.length?`<button class="btn-outline" onclick="closeModal()">Later</button><button class="btn-primary" onclick="bkClearNow()">🧹 Clear ${ready.length} job${ready.length===1?'':'s'}</button>`:'<button class="btn-primary" onclick="closeModal()">Done</button>'}</div>`);
@@ -4761,7 +4761,7 @@ function _renderAlloc(){
   if(v.querySelector('#ja-page')){                     // page already up — just refresh the list and pins (keeps the map where it is)
     $('ja-filters').innerHTML=jaFiltersHtml(all,cnt,counties); $('ja-list').innerHTML=listHtml; $('ja-selbar').innerHTML=jaSelBar(); jaPins(shown); return; }
   v.innerHTML=`<div id="ja-page">
-    <div class="row ja-top"><button class="btn-outline" onclick="closeAlloc()">‹ Private Calls</button>
+    <div class="row ja-top"><button class="btn-outline" onclick="closeAlloc()">‹ Service Department</button>
       <div style="flex:1;min-width:220px"><div class="page-title">📋 Job allocations</div><div class="page-sub">Everything waiting for a service man and a day — <b>oldest first</b>. Tick jobs (or click a pin) and allocate them.</div></div>
       ${plOn()&&!previewing?'<button class="btn-primary" style="background:#7c3aed;border-color:#7c3aed" onclick="plProposeBox()">✨ Propose days</button>':''}<button class="btn-outline ja-bulk" onclick="jaBulkAdd()">📥 Pile of sheets</button><button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new call</button></div>
     <div id="ja-filters">${jaFiltersHtml(all,cnt,counties)}</div>
@@ -5428,7 +5428,7 @@ function downloadWeekControl(){
   if(!weeks.length) return '';
   const count=w=>jobs.filter(j=>sites.some(x=>x.id===j.site_id&&x.work_date&&weekOf(x.work_date)===w)).length;
   return `<div class="dl-week"><select id="dl-week-sel" title="Week to download">${weeks.map(w=>`<option value="${w}" ${w===thisWk?'selected':''}>w/c ${parseYmd(w).toLocaleDateString('en-IE',{day:'numeric',month:'short'})}${w===thisWk?' (this week)':''} · ${count(w)} job${count(w)===1?'':'s'}</option>`).join('')}</select>
-    <button class="btn-primary" onclick="downloadWeek($('dl-week-sel').value)" title="Save the chosen week for ALL Private Calls men — a folder each with PDFs, mark-ups, chat &amp; photos. Nothing is deleted.">⬇ Download week</button></div>`;
+    <button class="btn-primary" onclick="downloadWeek($('dl-week-sel').value)" title="Save the chosen week for ALL Service Department men — a folder each with PDFs, mark-ups, chat &amp; photos. Nothing is deleted.">⬇ Download week</button></div>`;
 }
 // ⬇ Download week (any time) — every Private Calls man, a folder each
 async function downloadWeek(week){
@@ -5465,7 +5465,7 @@ async function ensureWeeks(_retry, onlyTech){
       if(error) fails.push(`${firstName(t.full_name)}: ${error.message}`); else made+=rows.length;
     }
     if(made){ await loadData(); rerenderCurrent(); }
-    if(fails.length) toast('⚠️ Could not set up the Private Calls diary for '+fails.join(' · '),9000);
+    if(fails.length) toast('⚠️ Could not set up the Service Department diary for '+fails.join(' · '),9000);
   } finally { weeksBusy=false; }
 }
 
@@ -5597,7 +5597,7 @@ function openWeekModal(){ if(blockPreview()||stopGuard(currentTechId)) return;
       </div></div>
     <div class="field-group"><label>For</label>
       <label class="chk"><input type="radio" name="who" value="one" checked> Just ${esc(t.full_name)}</label>
-      ${others.length?`<label class="chk"><input type="radio" name="who" value="all"> All ${others.length+1} Private Calls men</label>`:''}
+      ${others.length?`<label class="chk"><input type="radio" name="who" value="all"> All ${others.length+1} Service Department men</label>`:''}
     </div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="createWeek()">📅 Create week</button></div>`);
 }
@@ -5929,11 +5929,11 @@ function openTeamModal(){ if(blockPreview()) return;
       <input type="tel" value="${esc(p.phone)}" placeholder="Phone">
       <select class="tr-role" ${p.id===me.id?'disabled title="You can\'t change your own type"':''}>
         <option value="serviceman" ${p.role==='serviceman'?'selected':''}>Service man</option>
-        <option value="service_office" ${p.role==='service_office'?'selected':''}>Private Calls office</option>
+        <option value="service_office" ${p.role==='service_office'?'selected':''}>Service Department office</option>
         <option value="admin" ${p.role==='admin'?'selected':''}>Office (full access)</option></select>
       <div class="tr-depts ${p.role!=='serviceman'?'muted':''}">
         <label><input type="checkbox" class="tr-sites" ${p.on_sites!==false?'checked':''}> 🏗️ Sites</label>
-        <label><input type="checkbox" class="tr-calls" ${p.on_calls!==false?'checked':''}> 🏠 Private Calls</label>${loginRow(p)}
+        <label><input type="checkbox" class="tr-calls" ${p.on_calls!==false?'checked':''}> 🏠 Service Department</label>${loginRow(p)}
         ${p.role==='serviceman'&&'no_new_jobs' in p?`<button type="button" class="tr-stop ${p.no_new_jobs?'on':''}" onclick="this.classList.toggle('on');this.textContent=this.classList.contains('on')?'🚫 No new jobs':'✅ Taking new jobs'" title="On: he can't be given new jobs or days. His old jobs keep his name.">${p.no_new_jobs?'🚫 No new jobs':'✅ Taking new jobs'}</button>`:''}</div></div>`).join('')}
     <div class="help"><b>Adding a service man</b><br>
       1. In Supabase go to <b>Authentication → Users → Add user → Create new user</b>.<br>
@@ -5941,8 +5941,8 @@ function openTeamModal(){ if(blockPreview()) return;
       3. Come back here and refresh — he appears automatically. Give him his name and phone above.<br>
       📞 <b>Phone numbers</b> are office-only: the office and service department can see them; the men can't see anyone's (not even their own) and they're never on printouts or customer messages.<br>
       He logs in with just <code>john</code> and the password.<br><br>
-      <b>Service department login:</b> add a user the same way (e.g. <code>service@${LOGIN_DOMAIN}</code>), then set their type above to <b>Private Calls office</b>. They only ever see Private Calls.<br>
-      <b>Sites / Private Calls ticks</b> decide which side each man appears on. Tick both for men who work for both.<br>
+      <b>Service department login:</b> add a user the same way (e.g. <code>service@${LOGIN_DOMAIN}</code>), then set their type above to <b>Service Department office</b>. They only ever see Service Department.<br>
+      <b>Sites / Service Department ticks</b> decide which side each man appears on. Tick both for men who work for both.<br>
       <b>🚫 No new jobs</b> (click <i>✅ Taking new jobs</i> to switch): for a man who has left. He can't be given new jobs, days or orders, but all his old jobs stay under his name. Click again to undo.<br><br>
       <b>Reset a password:</b> same Users screen → ⋯ next to him → <i>Change password</i> (or delete and re-add).</div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button><button class="btn-primary" id="m-save" onclick="saveTeam()">Save changes</button></div>`);
@@ -7339,7 +7339,7 @@ function plSettings(){ if(!hasPlan) return toast('Run update-45 in Supabase firs
   const D=plSetDraft;
   openModal(`<h2>🧩 Planner settings</h2><p class="pl-sub">Who the planner proposes days for, the areas each man covers and the days he works. Only the office sees this.</p>
     ${men.map(p=>{ const c=D.men[p.id]; return `<div class="pl-set ${c.calls?'':'off'}"><div class="pl-set-h"><span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span><b>${esc(p.full_name)}</b>
-      <label class="pl-tg"><input type="checkbox" ${c.calls?'checked':''} onchange="plSetDraft.men['${p.id}'].calls=this.checked;plSettings()"> Does Private Calls jobs</label>${noJobs(p.id)?'<span class="nj-tag">🚫 No new jobs</span>':''}</div>
+      <label class="pl-tg"><input type="checkbox" ${c.calls?'checked':''} onchange="plSetDraft.men['${p.id}'].calls=this.checked;plSettings()"> Does Service Department jobs</label>${noJobs(p.id)?'<span class="nj-tag">🚫 No new jobs</span>':''}</div>
       ${c.calls?`<div class="pl-set-r"><span>Areas</span><div class="pl-chips">${PL_COUNTIES.map(k=>`<button type="button" class="pl-chip ${c.counties.includes(k)?'on':''}" onclick="plSetTog('${p.id}','counties','${k}')">${k}</button>`).join('')}</div></div>
       <div class="pl-set-r"><span>Days</span><div class="pl-chips">${[1,2,3,4,5,6].map(d=>`<button type="button" class="pl-chip d ${c.days.includes(d)?'on':''}" onclick="plSetTog('${p.id}','days',${d})">${PL_DOW[d]}</button>`).join('')}</div>
         <span class="pl-lbl">Day</span><input class="pl-in" type="number" min="2" max="12" step="0.5" style="width:62px" value="${c.hours}" onchange="plSetDraft.men['${p.id}'].hours=+this.value||8"> hrs
@@ -7361,7 +7361,7 @@ function plProposeBox(){ if(!hasPlan) return toast('Run update-45 in Supabase fi
   if(!plBox) plBox={week:ymd(addDays(mon0,7)), days:null, men:new Set(men.map(p=>p.id))};
   const days=[0,1,2,3,4,5].map(i=>ymd(addDays(parseYmd(plBox.week),i))); if(!plBox.days) plBox.days=new Set(days.filter(d=>parseYmd(d).getDay()<6&&d>todayYmd()));
   const wk=[0,1,2].map(k=>ymd(addDays(mon0,7*k))), wl=['This week','Next week','Week after'];
-  if(!men.length) return openModal(`<h2>✨ Propose days</h2><p class="pl-sub">No service man is set up for the planner yet. Open <b>🧩 Planner settings</b> and tick <b>Does Private Calls jobs</b>, then pick his areas and days.</p><div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button><button class="btn-primary" onclick="plSettings()">🧩 Planner settings</button></div>`);
+  if(!men.length) return openModal(`<h2>✨ Propose days</h2><p class="pl-sub">No service man is set up for the planner yet. Open <b>🧩 Planner settings</b> and tick <b>Does Service Department jobs</b>, then pick his areas and days.</p><div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button><button class="btn-primary" onclick="plSettings()">🧩 Planner settings</button></div>`);
   openModal(`<h2>✨ Propose days</h2><p class="pl-sub">SashDash fills each day from <b>Job allocations</b> (${plPool().length} waiting). Nothing is sent to the men or customers — you check each day first.</p>
     <div class="field-group"><label>Week</label><div class="pl-chips">${wk.map((w,i)=>`<button type="button" class="pl-chip ${plBox.week===w?'on':''}" onclick="plBox.week='${w}';plBox.days=null;plProposeBox()">${wl[i]} · ${esc(niceDate(w))}</button>`).join('')}</div></div>
     <div class="field-group"><label>Days</label><div class="pl-chips">${days.map(d=>`<button type="button" class="pl-chip d ${plBox.days.has(d)?'on':''}" ${d<=todayYmd()?'disabled':''} onclick="plBox.days.has('${d}')?plBox.days.delete('${d}'):plBox.days.add('${d}');plProposeBox()">${esc(dayLabel(d))}</button>`).join('')}</div></div>
@@ -7591,7 +7591,7 @@ const _otmL=openTeamModal; openTeamModal=async function(){ const r=_otmL.apply(t
 
 // 👥 Divisions in Manage team (update-52): Office admin · Service team · Fitting team — drag people between them
 let hasDivision=true;
-const DIVS=[['office','🏢 Office admin','Office, service department and admin logins'],['service','🔧 Service team','Service men — Private Calls and service sites'],['fitting','🚚 Fitting team','Fitters']];
+const DIVS=[['office','🏢 Office admin','Office, service department and admin logins'],['service','🔧 Service team','Service men — Service Department and service sites'],['fitting','🚚 Fitting team','Fitters']];
 const divOf=p=>DIVS.some(d=>d[0]===p.division)?p.division:(p.role==='serviceman'?'service':'office');
 function teamGroup(){ if(document.querySelector('#modal-root .td-wrap')||document.querySelector('.td-wrap')) return; const box=document.querySelector('.team-row')?.parentNode; if(!box) return;
   const rows=[...box.querySelectorAll(':scope > .team-row')], first=rows[0]; if(!first) return;
