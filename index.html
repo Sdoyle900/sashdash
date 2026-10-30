@@ -1284,6 +1284,17 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .pj-row.bf-ok{border-color:#fca5a5;background:#fff7f7}
 .modal:has(.pl-chips button:nth-child(6)){max-width:860px}
 
+.lv-grid{display:grid;grid-template-columns:110px repeat(var(--n),minmax(0,1fr));gap:5px;align-items:stretch}
+.lv-h{font-size:12px;font-weight:800;color:var(--slate);text-align:center;padding:2px 0;display:flex;flex-direction:column}.lv-h small{font-weight:600;font-size:11px}.lv-h.on{color:#4c1d95}
+.lv-man{display:flex;gap:6px;align-items:center;font-size:13.5px;font-weight:700;color:#64748b}.lv-man.on{color:#0f172a}
+.lv-c{border:1.5px solid var(--border);border-radius:9px;padding:5px 6px;font-size:12px;display:flex;flex-direction:column;gap:1px;text-align:center;justify-content:center;min-height:42px}
+.lv-c b{font-size:12.5px}.lv-c small{font-size:11px;color:#475569}.lv-c .lv-pr{color:#6d28d9;font-weight:700}
+.lv-c.free{background:#f0fdf4;border-color:#bbf7d0;color:#15803d}.lv-c.some{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}.lv-c.busy{background:#fffbeb;border-color:#fcd34d;color:#92400e}
+.lv-c.full{background:#fef2f2;border-color:#fca5a5;color:#991b1b}.lv-c.off{background:#f8fafc;color:#94a3b8;font-size:11.5px}.lv-c.with{background:#f5f3ff;border-color:#c4b5fd;color:#5b21b6;font-size:11.5px;font-weight:700}
+.lv-key{display:flex;gap:10px;align-items:center;font-size:11.5px;color:var(--slate);margin-top:6px;flex-wrap:wrap}.lv-key .k{display:inline-block;width:12px;height:12px;border-radius:3px;border:1.5px solid}
+.lv-key .k.free{background:#f0fdf4;border-color:#bbf7d0}.lv-key .k.some{background:#eff6ff;border-color:#bfdbfe}.lv-key .k.busy{background:#fffbeb;border-color:#fcd34d}.lv-key .k.full{background:#fef2f2;border-color:#fca5a5}
+.modal:has(.lv-grid){max-width:900px}
+
 </style>
 </head>
 <body>
@@ -1504,7 +1515,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-30-0845';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-30-0900';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -7290,6 +7301,7 @@ function plPropose(tids, days, maxKm){ maxKm=maxKm||30; const used=new Set(planI
       if(!cand.length) continue; if(crew>1) crewDone[tid+crew]=true;
       const cap=cfg.hours*60-plLive(tid,day).reduce((a,j)=>a+(+j.est_minutes||60),0), home=plPos(cfg.home), fin=plPos(plEnd(cfg))||home;
       const seed=cand[0], pick=[seed]; let mins=plEst(seed)+plDrive(plKm(home,plPos(seed.eircode)));
+      if(mins+plDrive(plKm(plPos(seed.eircode),fin))>cap){ if(crew>1) crewDone[tid+crew]=false; continue; }   // 📅 the day is already full of live jobs
       while(true){ const last=pick[pick.length-1], lp=plPos(last.eircode);
         const nxt=cand.filter(x=>!pick.includes(x)).map(x=>({x, km:Math.min(...pick.map(p=>plKm(plPos(p.eircode),plPos(x.eircode))))})).filter(o=>o.km<=km).sort((a,b)=>a.km-b.km||jaDays(b.x.since)-jaDays(a.x.since))[0];
         if(!nxt) break; const add=plEst(nxt.x)+plDrive(plKm(lp,plPos(nxt.x.eircode))); if(mins+add+plDrive(plKm(plPos(nxt.x.eircode),fin))>cap) break; mins+=add; pick.push(nxt.x); }
@@ -7391,6 +7403,7 @@ function plProposeBox(){ if(!hasPlan) return toast('Run update-45 in Supabase fi
     <div class="field-group"><label>Week</label><div class="pl-chips">${wk.map((w,i)=>`<button type="button" class="pl-chip ${plBox.week===w?'on':''}" onclick="plBox.week='${w}';plBox.days=null;plProposeBox()">${wl[i]} · ${esc(niceDate(w))}</button>`).join('')}</div></div>
     <div class="field-group"><label>Days</label><div class="pl-chips">${days.map(d=>`<button type="button" class="pl-chip d ${plBox.days.has(d)?'on':''}" ${d<=todayYmd()?'disabled':''} onclick="plBox.days.has('${d}')?plBox.days.delete('${d}'):plBox.days.add('${d}');plProposeBox()">${esc(dayLabel(d))}</button>`).join('')}</div></div>
     <div class="field-group"><label>Service men</label><div class="pl-men">${men.map(p=>{ const c=plCfg(p.id), on=plBox.men.has(p.id); return `<label class="pl-man ${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="this.checked?plBox.men.add('${p.id}'):plBox.men.delete('${p.id}')"> <span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span> <b>${esc(firstName(p.full_name))}</b><small>${esc(c.counties.join(', ')||'no areas set')} · ${c.hours} hrs</small></label>`; }).join('')}</div></div>
+    ${plLiveHtml(men,days)}
     <div class="pl-rules"><b>How each day is filled</b>
       <div>⭐ Starts with the <b>longest waiting</b> job in that man's areas (🔴 cancelled by the customer first)</div><div>📍 Adds the <b>nearest</b> waiting jobs to it (within 30 km)</div>
       <div>⏱ Until the day is full — job times + driving, from his start Eircode, plus anything already live that day</div><div>🔁 Never puts a job in two places · skips jobs with no Eircode or no sheet${plMatOnly?' · 📦 only jobs with material ready by that day':''} · days that already have a proposal are left alone</div></div>
@@ -7718,6 +7731,19 @@ async function bfMove(id){ const j=jobs.find(x=>x.id===id); if(!j||!bfCtx) retur
   closeModal(); openReschedule(id); await new Promise(r=>setTimeout(r,50));
   document.querySelectorAll('input[name=rs]').forEach(r=>r.checked=false); $('rs-tech').value=tid; $('rs-date').value=day;
   $('rs-why').value=`⏩ Brought forward — ${custName(jobs.find(x=>x.id===bfCtx.cid))||'a customer'} cancelled ${dayLabel(day)}`; await doReschedule(); }
+
+// 📅 Propose days: what each man already has booked live on each day of the chosen week
+function plLiveHtml(men,days){ if(!men.length) return '';
+  const cell=(p,d)=>{ const c=plCfg(p.id), dow=parseYmd(d).getDay(), works=c.days.includes(dow), live=plLive(p.id,d).filter(j=>!j.completed&&jobOutcome(j)!=='cancelled'), hrs=live.reduce((a,j)=>a+(+j.est_minutes||60),0),
+      pr=plItemsFor(p.id,d).length, w=chHelping(p.id,d), cap=c.hours*60, full=hrs>=cap, crew=Math.max(1,...live.map(j=>+j.crew||1));
+    if(!works&&!live.length) return `<div class="lv-c off">not working</div>`;
+    if(w.length) return `<div class="lv-c with">🤝 with ${esc(w.map(l=>firstName(prof(l).full_name)).join(', '))}</div>`;
+    const cls=!live.length?'free':full?'full':hrs>=cap*0.6?'busy':'some';
+    return `<div class="lv-c ${cls}" title="${esc(live.map(j=>(j.title||'')).join('\n'))}">${live.length?`<b>📅 ${live.length} live</b><small>${hrsLabel(hrs)}${full?' · full':''}${crew>1?' · 🚩 '+crew+'-man':''}</small>`:'<b>free</b>'}${pr?`<small class="lv-pr">🧩 ${pr} proposed</small>`:''}</div>`; };
+  return `<div class="field-group"><label>Already booked <span class="optional">(live jobs on each day — the planner only fills the time that's left)</span></label>
+    <div class="lv-grid" style="--n:${days.length}"><div></div>${days.map(d=>`<div class="lv-h ${plBox.days.has(d)?'on':''}">${esc(dayLabel(d).split(',')[0])}<small>${esc(niceDate(d).replace(/ 2026$/,''))}</small></div>`).join('')}
+    ${men.map(p=>`<div class="lv-man ${plBox.men.has(p.id)?'on':''}"><span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span>${esc(firstName(p.full_name))}</div>${days.map(d=>cell(p,d)).join('')}`).join('')}</div>
+    <div class="lv-key"><span class="k free"></span>free <span class="k some"></span>some jobs <span class="k busy"></span>busy <span class="k full"></span>full day — nothing more is added</div></div>`; }
 </script>
 </body>
 </html>
