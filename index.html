@@ -1279,6 +1279,11 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .ja-man.on{border-color:#7c3aed;background:#f5f3ff;color:#4c1d95}
 .ja-mtag{font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;white-space:nowrap}.ja-mtag.b{background:#dcfce7;color:#14532d}.ja-mtag.p{background:#f5f3ff;color:#5b21b6}.ja-mtag.l{background:#e0e7ff;color:#3730a3}
 
+.sc-fwd{margin-top:6px;font-size:12.5px;padding:6px 10px}
+.bf-wa{font-size:12.5px;font-weight:700;margin-top:4px}.bf-free .bf-wa{color:#15803d}.bf-sent .bf-wa{color:#b45309}.bf-ok .bf-wa{color:#b91c1c}
+.pj-row.bf-ok{border-color:#fca5a5;background:#fff7f7}
+.modal:has(.pl-chips button:nth-child(6)){max-width:860px}
+
 </style>
 </head>
 <body>
@@ -1499,7 +1504,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-30-0830';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-30-0845';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -7256,7 +7261,7 @@ function plPool(){ return jaItems().filter(x=>['not_home','rebook','new','cancel
 function plItemsFor(tid,day){ return planItems.filter(p=>p.tid===tid&&p.day===day).sort((a,b)=>a.pos-b.pos); }
 function plLive(tid,day){ return jobs.filter(j=>j.serviceman_id===tid&&deptOf(j)==='calls'&&jobOutcome(j)!=='cancelled'&&(siteOf(j)||{}).work_date===day).sort((a,b)=>(jobNo(a)||99)-(jobNo(b)||99)); }
 function plWeekDays(){ const mon=planWeek?parseYmd(planWeek):addDays(mondayOf(new Date()),7); return [0,1,2,3,4,5].map(i=>ymd(addDays(mon,i))); }
-function plWeekGo(k){ planWeek=ymd(addDays(parseYmd(plWeekDays()[0]),7*k)); if(ymd(addDays(parseYmd(planWeek),5))<todayYmd()) planWeek=ymd(mondayOf(new Date())); renderPortal(); }
+function plWeekGo(k){ planWeek=ymd(addDays(parseYmd(plWeekDays()[0]),7*k)); { const max=ymd(addDays(mondayOf(new Date()),35)); if(planWeek>max) planWeek=max; } if(ymd(addDays(parseYmd(planWeek),5))<todayYmd()) planWeek=ymd(mondayOf(new Date())); renderPortal(); }
 // a job is only ever in one place: anything booked live (or gone) drops out of the proposals
 function plPrune(){ const pool=new Map(plPool().map(x=>[x.id,x]));
   for(const p of [...planItems]){ if(pool.has(p.id)) continue; const j=jobs.find(x=>x.id===p.id), st=j?siteOf(j):null;
@@ -7380,7 +7385,7 @@ function plProposeBox(){ if(!hasPlan) return toast('Run update-45 in Supabase fi
   const men=profiles.filter(p=>p.role==='serviceman'&&plCfg(p.id).calls&&!noJobs(p.id)), mon0=mondayOf(new Date());
   if(!plBox) plBox={week:ymd(addDays(mon0,7)), days:null, men:new Set(men.map(p=>p.id))};
   const days=[0,1,2,3,4,5].map(i=>ymd(addDays(parseYmd(plBox.week),i))); if(!plBox.days) plBox.days=new Set(days.filter(d=>parseYmd(d).getDay()<6&&d>todayYmd()));
-  const wk=[0,1,2].map(k=>ymd(addDays(mon0,7*k))), wl=['This week','Next week','Week after'];
+  const wk=[0,1,2,3,4,5].map(k=>ymd(addDays(mon0,7*k))), wl=['This week','Next week','In 2 weeks','In 3 weeks','In 4 weeks','In 5 weeks'];
   if(!men.length) return openModal(`<h2>✨ Propose days</h2><p class="pl-sub">No service man is set up for the planner yet. Open <b>🧩 Planner settings</b> and tick <b>Does Service Department jobs</b>, then pick his areas and days.</p><div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button><button class="btn-primary" onclick="plSettings()">🧩 Planner settings</button></div>`);
   openModal(`<h2>✨ Propose days</h2><p class="pl-sub">SashDash fills each day from <b>Job allocations</b> (${plPool().length} waiting). Nothing is sent to the men or customers — you check each day first.</p>
     <div class="field-group"><label>Week</label><div class="pl-chips">${wk.map((w,i)=>`<button type="button" class="pl-chip ${plBox.week===w?'on':''}" onclick="plBox.week='${w}';plBox.days=null;plProposeBox()">${wl[i]} · ${esc(niceDate(w))}</button>`).join('')}</div></div>
@@ -7579,7 +7584,7 @@ function cancelCard(j,n){ const off=isOffice;
   return `<div class="slot slot-cancel" data-job="${j.id}" onclick="openJob('${j.id}')" title="Cancelled by the customer — open the job">
     <div class="slot-top"><span class="slot-no" style="background:#be123c">JOB ${n}</span></div><div class="sc-ico">🔴</div><div class="slot-title">${esc(custName(j)||'Job')}</div>
     <div class="sc-t">Cancelled by the customer</div><div class="sc-m">💬 “${esc(cantMsg(j))}”${cantWhen(j)?`<br><small>WhatsApp · ${esc(cantWhen(j))}</small>`:''}</div>
-    <div class="sc-b">${off?'↩ Back in 📋 Job allocations with ⭐ priority':'Don\'t call — the office will re-book it'}</div></div>`; }
+    <div class="sc-b">${off?'↩ Back in 📋 Job allocations with ⭐ priority':'Don\'t call — the office will re-book it'}</div>${off&&!previewing&&jobDay(j)>=todayYmd()?`<button class="btn-primary sc-fwd" onclick="event.stopPropagation();bfOpen('${j.id}')">⏩ Bring a later job forward</button>`:''}</div>`; }
 
 // 🔴 a cancelled job keeps its place on the day as a red card
 const _slotCardCx=slotCard; slotCard=function(j,n){ return deptOf(j)==='calls'&&jobOutcome(j)==='cancelled'?cancelCard(j,n):_slotCardCx(j,n); };
@@ -7681,6 +7686,38 @@ function jaManBox(all){ const men=profiles.filter(p=>p.role==='serviceman'&&dept
 function deptOk(p){ return p.on_calls!==false && !noJobs(p.id) || all_has(p.id); }
 function all_has(id){ try{ return jaItems().some(x=>jaManRel(x,id)); }catch(e){ return false; } }
 function jaManTag(x){ if(!jaMan) return ''; const r=jaManRel(x,jaMan), nm=esc(firstName(prof(jaMan).full_name)); return r==='booked'?`<span class="ja-mtag b">📅 Booked with ${nm}</span>`:r==='prop'?`<span class="ja-mtag p">🧩 Proposed for ${nm}</span>`:r==='last'?`<span class="ja-mtag l">👷 ${nm} was there last</span>`:''; }
+
+// ⏩ A customer cancels → fill the gap with a job that's booked later (up to 5 weeks ahead), nearest first
+let bfCtx=null;
+function bfWa(j){ const s=hasWa?j.wa_status:null; if(s==='confirmed'||s==='phone_ok') return {k:'ok', t:s==='phone_ok'?'✅ Confirmed by phone':'🟢 Confirmed on WhatsApp'};
+  if(s==='sent'||s==='noreply') return {k:'sent', t:s==='noreply'?'📵 Booking message sent — no reply':'🟡 Booking message sent — no reply yet'};
+  if(s==='scheduled') return {k:'free', t:'📲 Booking message not sent yet (goes '+(j.wa_go?waShort(j.wa_go):'later')+')'};
+  return {k:'free', t:'📲 Booking message not sent yet'}; }
+function bfOpen(cid){ const c=jobs.find(x=>x.id===cid); if(!c) return; const day=jobDay(c), tid=c.serviceman_id, max=ymd(addDays(parseYmd(day),42));
+  const here=[c.eircode, ...plLive(tid,day).map(j=>j.eircode)].map(e=>plPos(e)).filter(Boolean);
+  const cand=jobs.filter(j=>deptOf(j)==='calls'&&isOpenJob(j)&&j.id!==cid&&jobOutcome(j)!=='cancelled'&&j.eircode&&plPos(j.eircode)).map(j=>({j, d:jobDay(j)})).filter(o=>o.d>day&&o.d<=max)
+    .map(o=>({...o, km:here.length?Math.min(...here.map(p=>plKm(p,plPos(o.j.eircode)))):999, wa:bfWa(o.j)})).filter(o=>o.km<=40)
+    .sort((a,b)=>((b.j.serviceman_id===tid)-(a.j.serviceman_id===tid))||a.km-b.km||(b.d>a.d?1:-1)).slice(0,8);
+  bfCtx={cid, day, tid};
+  const wk=d=>{ const n=Math.round((parseYmd(d)-parseYmd(day))/864e5/7); return n<1?'same week':n===1?'1 week later':n+' weeks later'; };
+  openModal(`<h2>⏩ Fill ${esc(firstName(prof(tid).full_name))}'s ${esc(dayLabel(day))}</h2>
+    <p class="pl-sub"><b>${esc(custName(c))}</b> cancelled, so there's a free slot. These jobs are booked <b>later</b> (up to 5 weeks ahead) close to this day — ${esc(firstName(prof(tid).full_name))}'s own first, then the nearest. Moving one brings that customer forward; the jobs already on ${esc(dayLabel(day))} keep their numbers.</p>
+    <div class="pj-list">${cand.map(o=>{ const j=o.j, pl=eirPlace(j.eircode)||{}, same=j.serviceman_id===tid;
+      return `<div class="pj-row bf-${o.wa.k}"><div class="pj-main"><div class="pj-nm"><b>${esc(custName(j))}</b> ${crewMini(j)} ${same?'<span class="was-tag">🔁 his own</span>':`<span class="s-sub">now with ${esc(firstName(prof(j.serviceman_id).full_name))}</span>`}</div>
+        <div class="pj-sub">📍 <b>${esc(pl.town||'')}</b>${pl.county?', Co. '+esc(pl.county):''} · ${Math.max(1,Math.round(o.km))} km · booked <b>${esc(dayLabel(o.d))}</b> (${wk(o.d)}) · ⏱ ${esc(estLabel(+j.est_minutes||60))}</div>
+        <div class="bf-wa">${o.wa.t}</div>${matBoxes(j.id,{compact:true, ro:true, day})}</div>
+        <div class="pj-act"><button class="btn-primary" onclick="bfMove('${j.id}')">⏩ Move to ${esc(dayLabel(day))}</button></div></div>`; }).join('')||'<div class="empty">Nothing booked later within 40 km of this day.</div>'}</div>
+    <p class="pl-sub" style="margin-top:8px">📲 A moved job goes back to <b>Not sent yet</b> — press 📲 Send on ${esc(dayLabel(day))} to tell the customer the new day.</p>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button></div>`); }
+async function bfMove(id){ const j=jobs.find(x=>x.id===id); if(!j||!bfCtx) return; const {day, tid}=bfCtx, wa=bfWa(j);
+  if(wa.k==='ok'){ const ok=await confirmBox({icon:'⚠️', title:'Customer has confirmed day via WhatsApp — are you sure you want to move?',
+      body:`<b>${esc(custName(j))}</b> confirmed <b>${esc(dayLong(jobDay(j)))}</b> on WhatsApp. Moving them to <b>${esc(dayLong(day))}</b>.<br><span style="font-size:12px">Ring them first. They'll get a new booking message once you press 📲 Send on ${esc(dayLabel(day))}.</span>`,
+      ok:'Yes, move it', okClass:'btn-danger'}); if(!ok) return bfOpen(bfCtx.cid); }
+  else if(wa.k==='sent'){ const ok=await confirmBox({icon:'📲', title:'Booking message already sent',
+      body:`<b>${esc(custName(j))}</b> was told <b>${esc(dayLong(jobDay(j)))}</b> but hasn't replied. Move them to <b>${esc(dayLong(day))}</b>? They'll get a new booking message when you press 📲 Send.`, ok:'Move it', okClass:'btn-primary'}); if(!ok) return bfOpen(bfCtx.cid); }
+  closeModal(); openReschedule(id); await new Promise(r=>setTimeout(r,50));
+  document.querySelectorAll('input[name=rs]').forEach(r=>r.checked=false); $('rs-tech').value=tid; $('rs-date').value=day;
+  $('rs-why').value=`⏩ Brought forward — ${custName(jobs.find(x=>x.id===bfCtx.cid))||'a customer'} cancelled ${dayLabel(day)}`; await doReschedule(); }
 </script>
 </body>
 </html>
