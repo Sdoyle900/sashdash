@@ -1357,8 +1357,8 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .si-big b{font-size:28px;color:#a5b4fc}.si-big span{font-size:13px;opacity:.9}
 .si-m{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;align-items:end;height:120px;margin-top:6px}
 .si-m .col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:2px}
-.si-m .bars{display:flex;gap:2px;align-items:flex-end;height:90px}.si-m .bars i{display:block;width:9px;border-radius:3px 3px 0 0}
-.si-m .bars i.f{background:#16a34a}.si-m .bars i.n{background:#dc2626}.si-m small{font-size:10.5px;color:var(--slate)}
+.si-m .bars{display:flex;gap:2px;align-items:flex-end;height:90px}.si-m .bars i{display:block;width:8px;border-radius:3px 3px 0 0}
+.si-m .bars i.f{background:#16a34a}.si-m .bars i.r{background:#2563eb}.si-m .bars i.n{background:#dc2626}.si-m small{font-size:10.5px;color:var(--slate)}
 .si-key{font-size:11.5px;color:var(--slate);display:flex;gap:12px;margin-top:4px}.si-key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
 @media print{
   #print-root .si{page-break-inside:avoid;background:#fff!important;border-color:#c7d2fe}
@@ -1586,7 +1586,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-02-1105';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-02-1110';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -7920,13 +7920,10 @@ async function stImpactHtml(){ const today=todayYmd(), all=await stLoadAll(), cj
   // 5. month by month, last 12 months
   const months=[...Array(12).keys()].reverse().map(k=>{ const d=new Date(parseYmd(today)); d.setDate(1); d.setMonth(d.getMonth()-k); const m=ymd(d).slice(0,7);
     const r=stRates([...since,...before].filter(v=>v.day.slice(0,7)===m)); return {l:d.toLocaleDateString('en-IE',{month:'short'}), ...r}; });
-  const mHtml=`<div class="si-m">${months.map(m=>`<div class="col" title="${m.l}: ${m.t} visits · fixed first time ${P(m.ff)} · not home ${P(m.nh)}"><div class="bars"><i class="f" style="height:${m.ff==null?0:Math.max(2,m.ff*90)}px"></i><i class="n" style="height:${m.nh==null?0:Math.max(2,m.nh*90)}px"></i></div><small>${m.l}</small></div>`).join('')}</div>
-    <div class="si-key"><span><i style="background:#16a34a"></i>Fixed first time %</span><span><i style="background:#dc2626"></i>Not home %</span><span>— the green should go up and the red down</span></div>`;
+  const mHtml=`<div class="si-m">${months.map(m=>`<div class="col" title="${m.l}: ${m.t} visits · fixed first time ${P(m.ff)} · re-book ${P(m.rb)} · not home ${P(m.nh)}"><div class="bars"><i class="f" style="height:${m.ff==null?0:Math.max(2,m.ff*90)}px"></i><i class="r" style="height:${m.rb==null?0:Math.max(2,m.rb*90)}px"></i><i class="n" style="height:${m.nh==null?0:Math.max(2,m.nh*90)}px"></i></div><small>${m.l}</small></div>`).join('')}</div>
+    <div class="si-key"><span><i style="background:#16a34a"></i>Fixed first time %</span><span><i style="background:#2563eb"></i>Re-book unfinished %</span><span><i style="background:#dc2626"></i>Not home %</span><span>— the green should go up, the blue and red down</span></div>`;
   return `<div class="si"><h3 style="margin-top:0">📈 How SashDash is helping</h3>
-    <div class="si-sub">${before.length?`Old calls imported from before SashDash (${before.length}) compared with every visit since ${esc(niceDate(start))}.`:'Import old calls (🕘 Customer history → 📥 Import) to compare with before SashDash. Until then this compares jobs with and without each SashDash feature.'}</div>
-    <div class="si-cards">${c1}${c2}${c3}</div>
-    ${saved?`<div class="si-big"><div><b>≈ ${saved}</b><br><span>wasted trips saved in the last 12 months</span></div><div><b>≈ ${vanDays}</b><br><span>van days saved (at ${Math.round(perMan*10)/10} visits a man a day)</span></div><div style="flex:1;min-width:200px"><span>Worked out from the drop in 🚪 not-home visits${before.length?' since SashDash':' when customers confirm on WhatsApp'}.</span></div></div>`:''}
-    <h4 style="margin-top:12px">Month by month — last 12 months</h4>${mHtml}</div>`; }
+    <h4 style="margin-top:4px">Month by month — last 12 months</h4>${mHtml}</div>`; }
 const _openStatsImp=openStats; openStats=async function(){ const r=await _openStatsImp.apply(this,arguments);
   try{ const h=await stImpactHtml(), st=document.querySelector('#modal-root .st'), first=st&&st.querySelector('.st-tiles'); if(first) first.insertAdjacentHTML('afterend',h); }catch(e){ console.warn('impact',e); }
   return r; };
