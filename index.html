@@ -1366,6 +1366,10 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
   #print-root .si-big{background:#0f172a!important;padding:8px 12px}#print-root .si-big b{font-size:18pt}
   #print-root .si-m{height:95px}#print-root .si-m .bars{height:70px}
 }
+.wa-day{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;border:1px solid transparent;background:none;padding:3px 7px;margin:-3px -7px;border-radius:8px;font:inherit;font-size:13px;color:var(--navy);cursor:pointer;text-align:left}
+.wa-day span{font-size:12px;color:#4f46e5;font-weight:600}.wa-day:hover{background:#eef2ff;border-color:#c7d2fe}.wa-day:hover span,.wa-day:hover b{text-decoration:underline}
+.wa-flash{animation:waFlash 2.4s ease}@keyframes waFlash{0%,60%{box-shadow:0 0 0 4px #818cf8,0 0 0 9px rgba(129,140,248,.35)}100%{box-shadow:none}}
+.ja-go{cursor:pointer}.ja-man.ja-go:hover{background:#eef2ff;border-color:#a5b4fc}.s-sub.ja-go{color:#4f46e5;font-weight:600}.s-sub.ja-go:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -1586,7 +1590,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-02-1110';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-02-1120';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -4906,7 +4910,7 @@ function jaListHtml(shown){
         return `<div class="ja-again">📅 Booked again: <b>${esc(dayLabel(jobDay(o)))}</b> · ${esc(firstName(prof(o.serviceman_id).full_name))} (${esc((o.title||'').split(' – ')[0])}${custName(o)&&custName(o)!==x.name?' – '+esc(custName(o)):''})${isOffice&&!previewing?`<button class="btn-outline" onclick="jaLink('${x.id}','${o.id}')" title="Same phone and Eircode — take this one off the list (it stays in the history)">✓ Same job — take off list</button>`:''}</div>`; })()}</td>
       <td>${pl?`<b class="ja-town">${esc(pl.town)}${pl.exact?'':' area'}</b><div class="s-sub">Co. ${esc(pl.county)} · ${esc(normEir(x.eircode))}</div>`:'<span class="s-sub">⚠ No Eircode</span>'}</td>
       <td class="ja-size">${(x.j||x.nc).est_minutes?`<b>⏱ ${esc(estLabel((x.j||x.nc).est_minutes))}</b>`:'<span class="s-sub">⏱ not set</span>'}<div>${crewMini(x.j||x.nc)}</div></td>
-      <td>${t?`<div class="ja-man"><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(firstName(t.full_name))}</div><div class="s-sub">${esc(dayLabel(x.booked))}</div>`:`<span class="s-sub">New · added ${esc(fmtWhen(x.since))}</span>`}</td>
+      <td>${t?`<div class="ja-man ${x.booked&&jobs.some(j=>j.id===x.id)?'ja-go':''}"${x.booked&&jobs.some(j=>j.id===x.id)?` onclick="event.stopPropagation();waGoDay('${x.id}')" title="Open ${esc(firstName(t.full_name))}'s diary on ${esc(dayLabel(x.booked))}" role="button"`:''}><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(firstName(t.full_name))}</div><div class="s-sub ${x.booked&&jobs.some(j=>j.id===x.id)?'ja-go':''}"${x.booked&&jobs.some(j=>j.id===x.id)?` onclick="event.stopPropagation();waGoDay('${x.id}')" title="Open ${esc(firstName(t.full_name))}'s diary on ${esc(dayLabel(x.booked))}" role="button"`:''}>${esc(dayLabel(x.booked))}</div>`:`<span class="s-sub">New · added ${esc(fmtWhen(x.since))}</span>`}</td>
       ${hasMat?`<td class="ja-mat">${matBoxes(x.id)}</td>`:''}
       <td>${jaWhen(x)}</td>
       <td class="ja-note">${x.note?esc(x.note):'<span class="s-sub">—</span>'}</td>
@@ -7034,7 +7038,7 @@ async function waFolderPanel(el, key){
       const lastIn=[...ms].reverse().find(m=>m.direction==='in' && m.kind==='text');
       return `<tr><td class="s-title">${esc(j.title)}<div class="s-sub">${esc(waShowNum(j.wa_mobile))}</div></td>
         <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(t.full_name)}</td>
-        <td>${st.work_date?esc(dayLabel(st.work_date)):''}${j.wa_time?`<div class="s-sub">${esc(j.wa_time)}</div>`:''}</td>
+        <td>${st.work_date?`<button class="wa-day" onclick="event.stopPropagation();waGoDay('${j.id}')" title="Open ${esc(firstName(t.full_name))}'s diary on ${esc(dayLabel(st.work_date))}"><b>📅 ${esc(dayLabel(st.work_date))}</b>${j.wa_time?`<span>${esc(j.wa_time)}</span>`:''}</button>`:(j.wa_time?`<div class="s-sub">${esc(j.wa_time)}</div>`:'')}</td>
         <td class="fp-note">${outs||'—'}${lastIn?`<div class="s-sub">💬 “${esc(lastIn.body)}”</div>`:''}</td>
         <td class="fp-act"><a class="btn-outline" href="tel:+${esc(j.wa_mobile)}" onclick="event.stopPropagation()">📞 Call</a><button class="btn-outline" onclick="waPhoneOk('${j.id}')">✅ Confirmed by phone</button><button class="btn-primary" onclick="openReschedule('${j.id}')">📅 Reschedule</button><button class="btn-outline" onclick="goToJob('${j.id}')">Open</button></td></tr>`; }).join('')}
     </tbody></table></div>`; }
@@ -7230,7 +7234,7 @@ async function waLogPanel(el){
     ${rows.map(m=>{ const j=jobs.find(x=>x.id===m.job_id), st=j&&siteOf(j), t=j&&prof(j.serviceman_id), w=waLogWhat(m), nw=isNew(m);
       return `<tr style="${nw?'background:#fef2f2':''}"><td style="white-space:nowrap"><b>${rng(m)}</b>${nw?'<div><span class="tag red">New</span></div>':''}</td>
         <td class="s-title">${j?esc(waCustName(j)||j.title):'<span class="s-sub">Not linked to a job</span>'}<div class="s-sub">${esc(waShowNum(m.phone))}</div></td>
-        <td>${t?esc(firstName(t.full_name)):'—'}${st&&st.work_date?`<div class="s-sub">${esc(dayLabel(st.work_date))}</div>`:''}</td>
+        <td>${t&&st&&st.work_date?`<button class="wa-day" onclick="event.stopPropagation();waGoDay('${j.id}')" title="Open ${esc(firstName(t.full_name))}'s diary on ${esc(dayLabel(st.work_date))}"><b>${esc(firstName(t.full_name))}</b><span>📅 ${esc(dayLabel(st.work_date))}</span></button>`:`${t?esc(firstName(t.full_name)):'—'}`}</td>
         <td><span class="wa-pill wa-${w.c}">${w.ic} ${esc(w.t)}</span><div class="s-sub" style="margin-top:4px;max-width:380px">${m.direction==='in'?'⬅ from customer':'➡ from SashDash'} · ${w.line}</div></td>
         <td class="fp-act">${j&&m.direction==='in'&&w.ic==='💬'?`<button class="btn-primary" onclick="waLogOpen('${j.id}',true)">💬 Reply</button>`:''}${j?`<button class="btn-outline" onclick="waLogOpen('${j.id}',false)">Open</button>`:''}</td></tr>`; }).join('')}
     </tbody></table></div>`:`<div class="empty" style="margin:0">No WhatsApp messages ${waLogF.range==='today'?'today':waLogF.range==='week'?'in the last 7 days':'in the last 30 days'}${waLogF.who!=='all'||q?' that match':''}.</div>`}`; }
@@ -7927,6 +7931,13 @@ async function stImpactHtml(){ const today=todayYmd(), all=await stLoadAll(), cj
 const _openStatsImp=openStats; openStats=async function(){ const r=await _openStatsImp.apply(this,arguments);
   try{ const h=await stImpactHtml(), st=document.querySelector('#modal-root .st'), first=st&&st.querySelector('.st-tiles'); if(first) first.insertAdjacentHTML('afterend',h); }catch(e){ console.warn('impact',e); }
   return r; };
+
+// 📅 WhatsApp log / No reply / Can't make it: tap the day → that man's diary on that day, with the job lit up (Update 69)
+function waGoDay(id){ const j=jobs.find(x=>x.id===id); if(!j) return toast('That job is no longer in SashDash.');
+  if(jaOpen){ document.body.classList.remove('ja-wide'); jaOpen=false; if(jaMap){ jaMap.remove(); jaMap=null; jaMarkers.clear(); } }
+  const st=sites.find(x=>x.id===j.site_id)||{}; if(deptOf(j)!==dept){ dept=deptOf(j); renderDeptBar(); }
+  if(st.work_date) calWeek=weekOf(st.work_date); jobFilter='all'; openPortal(j.serviceman_id, j.site_id);
+  setTimeout(()=>{ const c=document.querySelector(`[data-job="${id}"]`); if(c){ c.scrollIntoView({block:'center',behavior:'smooth'}); c.classList.add('wa-flash'); setTimeout(()=>c.classList.remove('wa-flash'),2600); } },350); }
 </script>
 </body>
 </html>
