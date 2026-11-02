@@ -36,7 +36,7 @@
     /* login */
     .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--navy);padding:24px}
     .auth-card{background:var(--white);border-radius:16px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-    .auth-sd{display:block;height:58px;margin:0 auto 18px}
+    .auth-sd{display:block;height:56px;max-width:100%;margin:0 auto 18px}
     .brand{display:flex;align-items:center;gap:9px}
     .brand svg{flex:none}
     .brand-text{font-size:22px;font-weight:400;letter-spacing:1px;color:var(--navy)}
@@ -56,7 +56,7 @@
     .header-inner{max-width:1400px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:10px;height:58px}
     .header-inner .brand-text{color:#fff;font-size:18px}
     .header-inner .brand-text strong{color:#818cf8}
-    .sd-chip{height:30px;padding:3px 9px;background:#fff;border-radius:6px;margin-left:8px}
+    .sd-chip{height:30px;padding:0;background:#fff;border-radius:2px;margin-left:10px}
     .header-tabs{display:flex;gap:4px;margin-left:12px}
     .tab{background:transparent;color:#94a3b8;border:none;padding:8px 14px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
     .tab:hover{color:#fff;background:rgba(255,255,255,.08)}
@@ -1307,6 +1307,42 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .st-bar b{text-align:right;color:#0f172a}.st-bar small{color:var(--slate);font-size:11.5px}
 .st-t td,.st-t th{font-size:12.5px;padding:6px 8px;text-align:center}.st-t td:first-child,.st-t th:first-child{text-align:left}
 @media print{ .st-per button{display:none} }
+/* 📊 Statistics — printed report (Update 64) */
+@media print{
+  #print-root .sp{font-family:Helvetica,Arial,sans-serif;color:#0f172a;font-size:9.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #print-root .sp *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #print-root .sp-head{display:flex;align-items:center;gap:16px;border-bottom:3px solid #0f172a;padding-bottom:8px;margin-bottom:4px}
+  #print-root .sp-head img{height:58px}
+  #print-root .sp-head .t{font-size:17pt;font-weight:800;line-height:1.1;white-space:nowrap}
+  #print-root .sp-head .s{font-size:10pt;color:#475569;margin-top:2px}
+  #print-root .sp-head .r{margin-left:auto;text-align:right;font-size:9pt;color:#475569}
+  #print-root .sp-head .r b{display:block;font-size:12pt;color:#0f172a}
+  #print-root .st h2,#print-root .st .st-per,#print-root .st .modal-actions{display:none}
+  #print-root .st h3{font-size:11.5pt;margin:9px 0 5px;padding:4px 8px;background:#eef2ff;border-left:4px solid #4f46e5;border-radius:3px;page-break-after:avoid}
+  #print-root .st h4{font-size:10pt;margin:6px 0 4px;color:#334155}
+  #print-root .st-tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;page-break-inside:avoid}
+  #print-root .st-tiles.n4{grid-template-columns:repeat(4,1fr)}
+  #print-root .st-tile{border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px;background:#fff}
+  #print-root .st-tile b{font-size:17pt}
+  #print-root .st-tile span{font-size:7.5pt}
+  #print-root .st-tile small{font-size:7.5pt}
+  #print-root .st-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;page-break-inside:avoid}
+  #print-root .st-bars{gap:2px}
+  #print-root .st-bar{grid-template-columns:110px 1fr 30px auto;font-size:8.5pt;gap:6px}
+  #print-root .st-bt{height:9px;background:#e2e8f0!important}
+  #print-root .st-bt i{background:#4f46e5!important}
+  #print-root .st-t{width:100%;border-collapse:collapse;page-break-inside:avoid}
+  #print-root .st-t th{background:#0f172a!important;color:#fff;font-size:8pt;padding:4px 5px;text-transform:uppercase}
+  #print-root .st-t td{border-bottom:1px solid #e2e8f0;font-size:9pt;padding:3px 5px}
+  #print-root .st-t tbody tr:nth-child(even) td{background:#f8fafc!important}
+  #print-root .st-t .avatar{display:none}
+  #print-root .st-t th,#print-root .st-t td{display:table-cell!important}
+  #print-root .sp-foot{margin-top:12px;font-size:7.5pt;color:#64748b;border-top:1px solid #cbd5e1;padding-top:4px;display:flex;justify-content:space-between}
+}
+.oc-req{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.oc-need{margin-top:6px;font-size:12.5px;color:#b45309;font-weight:600}.field-group.oc-ok .oc-need{display:none}
+.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}
+#oc-ok:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -1324,7 +1360,7 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 <!-- ═════════ LOGIN ═════════ -->
 <div id="auth-screen" class="auth-wrap">
   <div class="auth-card">
-    <img class="auth-sd" src="sdwindows-logo.png" alt="Sean Doyle Windows" />
+    <img class="auth-sd" src="sdwindows-logo-box.png" alt="Sean Doyle Windows" />
     <div class="brand"><svg width="30" height="30" style="color:#0f172a"><use href="#sash"/></svg><span class="brand-text">SASH<strong>DASH</strong></span></div>
     <p class="auth-sub">Job sheets for the service team</p>
     <div id="auth-error" class="auth-error hidden"></div>
@@ -1340,7 +1376,7 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
   <header class="app-header">
     <div class="header-inner">
       <div class="brand" style="cursor:pointer" onclick="goHome()"><svg width="26" height="26" style="color:#fff"><use href="#sash"/></svg><span class="brand-text">SASH<strong>DASH</strong></span></div>
-      <img class="sd-chip" src="sdwindows-logo.png" alt="Sean Doyle Windows" />
+      <img class="sd-chip" src="sdwindows-logo-box.png" alt="Sean Doyle Windows" />
       <nav class="header-tabs hidden" id="admin-nav"></nav>
       <div class="header-right">
         <div class="menu-wrap hidden" id="viewas-wrap">
@@ -1527,7 +1563,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-30-1430';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-02-1040';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -6686,7 +6722,7 @@ async function printJob(id){
     const where=site.work_date?dayLong(site.work_date):(site.name||'');
     const fmtD=x=>x?new Date(x).toLocaleString('en-IE',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
     $('print-root').innerHTML=`
-      <div class="p-head"><img src="sdwindows-logo.png" class="p-logo"><div><div class="p-title">${esc(j.title)}</div>
+      <div class="p-head"><img src="sdwindows-logo-box.png" class="p-logo"><div><div class="p-title">${esc(j.title)}</div>
         <div class="p-sub">${D.label} · ${esc(where)} · ${esc(t.full_name)}</div></div></div>
       <table class="p-info">
         <tr><td>Service man</td><td>${esc(t.full_name)}</td><td>Department</td><td>${D.label}</td></tr>
@@ -7787,7 +7823,7 @@ async function openStats(){ if(!isOffice) return; const today=todayYmd(), from=y
   const rep={}; visits.forEach(v=>{ if(!v.key) return; (rep[v.key]=rep[v.key]||{name:v.name, n:0}).n++; });
   const repeat=Object.values(rep).filter(r=>r.n>=3).sort((a,b)=>b.n-a.n).slice(0,6);
   openModal(`<div class="st"><h2>📊 Statistics — Service Department</h2>
-    <div class="st-per">${[[7,'Last 7 days'],[28,'Last 4 weeks'],[91,'Last 3 months'],[365,'Last 12 months']].map(([d,l])=>`<button class="pl-chip ${stP===d?'on':''}" onclick="stP=${d};openStats()">${l}</button>`).join('')}<span class="s-sub">${esc(niceDate(from))} – ${esc(niceDate(today))} · ${visits.length} visits</span><button class="btn-outline" style="margin-left:auto" onclick="window.print()">🖨 Print</button></div>
+    <div class="st-per">${[[7,'Last 7 days'],[28,'Last 4 weeks'],[91,'Last 3 months'],[365,'Last 12 months']].map(([d,l])=>`<button class="pl-chip ${stP===d?'on':''}" onclick="stP=${d};openStats()">${l}</button>`).join('')}<span class="s-sub">${esc(niceDate(from))} – ${esc(niceDate(today))} · ${visits.length} visits</span><button class="btn-outline" style="margin-left:auto" onclick="stPrint()">🖨 Print</button></div>
     <h3>✅ How the visits went</h3><div class="st-tiles">
       ${tile(done,'All done','jobs finished')}${tile(pct(done,tot),'Fixed first time','done ÷ all visits with a result','good')}${tile(pct(rb,tot),'Re-booked',rb+' visits — more material / time needed','warn')}${tile(pct(nh,tot),'Customer not home',nh+' wasted visits','bad')}${tile(cx,'Cancelled by customer','WhatsApp ❌')}${tile(pct(signed,doneLive.length),'Signed off',signed+' signatures · jobs still in SashDash')}</div>
     <h3>⏳ Waiting list</h3><div class="st-tiles">
@@ -7802,6 +7838,30 @@ async function openStats(){ if(!isOffice) return; const today=todayYmd(), from=y
     <div class="st-2"><div><h3>📲 WhatsApp</h3>${bars([['🟢 Confirmed',wOk,pct(wOk,wSent)],['📵 No reply',wNr,pct(wNr,wSent)],['🔴 Can\'t make it',wCant,pct(wCant,wSent)]])}</div>
       <div><h3>🕘 Customers visited most</h3>${repeat.length?bars(repeat.map(r=>[r.name,r.n,'visits'])):'<div class="s-sub">No customer with 3 or more visits in this period.</div>'}</div></div>
     <div class="modal-actions"><button class="btn-primary" onclick="closeModal()">Close</button></div></div>`); }
+
+// 🖨 Statistics — a proper A4 report with the Sean Doyle Windows logo (Update 64)
+async function stPrint(){ const src=document.querySelector('#modal-root .st'); if(!src) return;
+  const per={7:'Last 7 days',28:'Last 4 weeks',91:'Last 3 months',365:'Last 12 months'}[stP]||'', today=todayYmd(), from=ymd(addDays(parseYmd(today),-stP));
+  const vis=(src.querySelector('.st-per .s-sub')||{}).textContent||'';
+  const body=src.cloneNode(true); body.querySelectorAll('.st-tiles').forEach(x=>{ if(x.children.length===4) x.classList.add('n4'); });
+  $('print-root').innerHTML=`<div class="sp"><div class="sp-head"><img src="sdwindows-logo-box.png" alt="Sean Doyle Windows">
+      <div><div class="t">Service Department — Statistics</div><div class="s">${esc(per)} · ${esc(niceDate(from))} – ${esc(niceDate(today))}</div></div>
+      <div class="r"><b>${esc((vis.match(/(\d+) visits/)||[])[1]||'0')} visits</b>Printed ${esc(new Date().toLocaleString('en-IE',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}))}</div></div>
+    ${body.outerHTML}
+    <div class="sp-foot"><span>Sean Doyle Windows Ltd · SashDash</span><span>Printed by ${esc((realMe||me).full_name)}</span></div></div>`;
+  await Promise.all([...$('print-root').querySelectorAll('img')].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;})));
+  $('toast').classList.add('hidden'); document.body.classList.add('printing'); setTimeout(()=>window.print(),50); }
+
+// ✍️ Re-book unfinished / Customer not home: the service man must write a note before he can continue (Update 64)
+const _ocNoteReq=outcomeNoteBox; outcomeNoteBox=function(o){ const p=_ocNoteReq(o);
+  try{ if(!isOffice && (o==='rebook'||o==='not_home')){ const ta=$('oc-note'), ok=$('oc-ok'), fg=ta.closest('.field-group'), lab=fg.querySelector('label');
+    lab.innerHTML=lab.innerHTML.replace(/<span class="optional">[^<]*<\/span>/,'')+' <span class="oc-req">required</span>';
+    if(o==='not_home') ta.placeholder='e.g. rang twice, no answer, left a card in the door';
+    fg.insertAdjacentHTML('beforeend',`<div class="oc-need">✍️ Write a note to continue — say ${o==='rebook'?"what's needed to finish the job":'what happened (rang, knocked, left a card…)'}.</div>`);
+    const go=ok.onclick, chk=()=>{ const v=ta.value.trim().length>=3; ok.disabled=!v; fg.classList.toggle('oc-ok',v); };
+    ok.onclick=()=>{ if(ta.value.trim().length<3){ fg.classList.add('oc-bad'); ta.focus(); return; } go(); };
+    ta.addEventListener('input',()=>{ fg.classList.remove('oc-bad'); chk(); }); chk(); setTimeout(()=>ta.focus(),50); } }catch(e){ console.warn(e); }
+  return p; };
 </script>
 </body>
 </html>
