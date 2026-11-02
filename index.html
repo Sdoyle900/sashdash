@@ -1295,6 +1295,18 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .lv-key .k.free{background:#f0fdf4;border-color:#bbf7d0}.lv-key .k.some{background:#eff6ff;border-color:#bfdbfe}.lv-key .k.busy{background:#fffbeb;border-color:#fcd34d}.lv-key .k.full{background:#fef2f2;border-color:#fca5a5}
 .modal:has(.lv-grid){max-width:900px}
 
+.modal:has(.st){max-width:1040px}.st h3{font-size:15.5px;margin:16px 0 8px;color:#0f172a}.st h4{font-size:13px;margin:8px 0 6px;color:#334155}
+.st-per{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.st-per .pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}
+.st-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.st-tile{border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:#fff;display:flex;flex-direction:column;gap:2px}
+.st-tile b{font-size:24px;color:#0f172a;line-height:1.1}.st-tile span{font-size:12px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:.02em}.st-tile small{font-size:11.5px;color:var(--slate)}
+.st-tile.good b{color:#15803d}.st-tile.warn b{color:#1d4ed8}.st-tile.bad b{color:#b91c1c}
+.st-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media (max-width:760px){.st-2{grid-template-columns:1fr}}
+.st-bars{display:flex;flex-direction:column;gap:5px}.st-bar{display:grid;grid-template-columns:130px 1fr 40px auto;gap:8px;align-items:center;font-size:12.5px}
+.st-bl{color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.st-bt{height:12px;background:#f1f5f9;border-radius:4px;overflow:hidden}.st-bt i{display:block;height:100%;background:#4f46e5;border-radius:0 4px 4px 0}
+.st-bar b{text-align:right;color:#0f172a}.st-bar small{color:var(--slate);font-size:11.5px}
+.st-t td,.st-t th{font-size:12.5px;padding:6px 8px;text-align:center}.st-t td:first-child,.st-t th:first-child{text-align:left}
+@media print{ .st-per button{display:none} }
 </style>
 </head>
 <body>
@@ -1515,7 +1527,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-10-30-0900';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-10-30-1430';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -1911,7 +1923,7 @@ function renderDashboardFor(jobs, sites, allJobs){
   ensureSearchBar();
   $('dash-head').innerHTML = `
     <div class="row"><div><div class="page-title">${D.icon} ${D.label} team</div><div class="page-sub">Tap a man to open his ${D.label} portal and upload jobs.</div></div>
-      <span class="spacer"></span>${dept==='calls'&&isOffice?'<button class="btn-outline" onclick="openCustHistory()">🕘 Customer history</button>':''}${isOffice&&hasBk&&bkAccount()&&!previewing?backupControl():(dept==='calls'&&isOffice?downloadWeekControl():'')}${plOn()&&!previewing?'<button class="btn-outline" onclick="plSettings()">🧩 Planner settings</button>':''}${isAdmin?'<button class="btn-outline" onclick="openTeamModal()">👥 Manage team</button>':''}</div>`;
+      <span class="spacer"></span>${dept==='calls'&&isOffice?'<button class="btn-outline" onclick="openCustHistory()">🕘 Customer history</button><button class="btn-outline" onclick="openStats()">📊 Statistics</button>':''}${isOffice&&hasBk&&bkAccount()&&!previewing?backupControl():(dept==='calls'&&isOffice?downloadWeekControl():'')}${plOn()&&!previewing?'<button class="btn-outline" onclick="plSettings()">🧩 Planner settings</button>':''}${isAdmin?'<button class="btn-outline" onclick="openTeamModal()">👥 Manage team</button>':''}</div>`;
   $('dash-body').innerHTML = `
     <div class="stats">
       <div class="stat"><div class="n">${open}</div><div class="l">Open jobs</div></div>
@@ -7744,6 +7756,52 @@ function plLiveHtml(men,days){ if(!men.length) return '';
     <div class="lv-grid" style="--n:${days.length}"><div></div>${days.map(d=>`<div class="lv-h ${plBox.days.has(d)?'on':''}">${esc(dayLabel(d).split(',')[0])}<small>${esc(niceDate(d).replace(/ 2026$/,''))}</small></div>`).join('')}
     ${men.map(p=>`<div class="lv-man ${plBox.men.has(p.id)?'on':''}"><span class="avatar sm" style="--c:${esc(p.colour)}">${esc(initials(p.full_name))}</span>${esc(firstName(p.full_name))}</div>${days.map(d=>cell(p,d)).join('')}`).join('')}</div>
     <div class="lv-key"><span class="k free"></span>free <span class="k some"></span>some jobs <span class="k busy"></span>busy <span class="k full"></span>full day — nothing more is added</div></div>`; }
+// 📊 Statistics report (Update 63) — office only. Visits = jobs still in SashDash + 🕘 call history (so All done jobs cleared by the backups still count)
+let stP=28, stHist={};
+async function stLoadHist(from,today){ const k=from+'|'+today; if(stHist[k]) return stHist[k]; if(!hasHist) return [];
+  try{ const r=await sb.from('call_history').select(HIST_COLS).gte('work_date',from).lte('work_date',today).limit(20000); if(r.error) return []; return stHist[k]=r.data||[]; }catch(e){ return []; } }
+async function openStats(){ if(!isOffice) return; const today=todayYmd(), from=ymd(addDays(parseYmd(today),-stP)), cj=jobs.filter(j=>deptOf(j)==='calls');
+  if(!stHist[from+'|'+today]) openModal(`<div class="st"><h2>📊 Statistics — Service Department</h2><div class="empty"><span class="spin"></span> Adding up the visits…</div></div>`);
+  const hist=await stLoadHist(from,today);
+  const live=cj.filter(j=>{ const d=jobDay(j); return d&&d>=from&&d<=today&&(j.completed||jobOutcome(j)); }).map(j=>({id:j.id, man:j.serviceman_id, day:jobDay(j), o:jobOutcome(j), j, name:custName(j), key:phoneKey(j.customer_phone||j.ref_no)}));
+  const seen=new Set(live.map(v=>v.id+'|'+v.day));
+  const visits=[...live, ...hist.filter(h=>h.outcome&&h.outcome!=='cancelled'&&!seen.has(h.source_job_id+'|'+h.work_date)).map(h=>({id:h.source_job_id, man:h.serviceman_id, day:String(h.work_date).slice(0,10), o:h.outcome, j:null, name:h.cust_name||'', key:h.phone_key}))].filter(v=>['done','rebook','not_home'].includes(v.o));
+  const inP=cj.filter(j=>{ const d=jobDay(j); return d&&d>=from&&d<=today; }), fin=visits;
+  const cnt=k=>fin.filter(v=>v.o===k).length, done=cnt('done'), rb=cnt('rebook'), nh=cnt('not_home'), cx=cj.filter(j=>jobOutcome(j)==='cancelled').length, tot=done+rb+nh||1;
+  const pct=(a,b)=>b?Math.round(a/b*100)+'%':'—';
+  const wait=jaItems().filter(x=>x.kind!=='booked'), ages=wait.map(x=>jaDays(x.since)), oldest=wait.slice().sort((a,b)=>jaDays(b.since)-jaDays(a.since))[0];
+  const avgWait=ages.length?Math.round(ages.reduce((a,b)=>a+b,0)/ages.length):0;
+  const wa=cj.filter(j=>j.wa_status&&jobDay(j)>=from), wOk=wa.filter(j=>['confirmed','phone_ok'].includes(j.wa_status)).length, wNr=wa.filter(j=>j.wa_status==='noreply').length, wCant=wa.filter(j=>j.wa_status==='cant').length, wSent=wa.filter(j=>!['no_wa','stopped'].includes(j.wa_status)).length;
+  const doneLive=live.filter(v=>v.o==='done'), signed=doneLive.filter(v=>v.j.sig_at).length;
+  const tile=(v,l,sub,cls)=>`<div class="st-tile ${cls||''}"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:''}</div>`;
+  const men=profiles.filter(p=>p.role==='serviceman'&&(visits.some(v=>v.man===p.id)||cj.some(j=>j.serviceman_id===p.id&&isOpenJob(j)))).map(p=>{ const f=fin.filter(v=>v.man===p.id), d=f.filter(v=>v.o==='done').length, r=f.filter(v=>v.o==='rebook').length, n=f.filter(v=>v.o==='not_home').length;
+    const days=new Set(f.map(v=>v.day)).size, ahead=cj.filter(j=>j.serviceman_id===p.id&&isOpenJob(j)&&jobDay(j)>today).length;
+    return {p, d, r, n, t:d+r+n, days, ahead, sig:doneLive.filter(v=>v.man===p.id&&v.j.sig_at).length, dl:doneLive.filter(v=>v.man===p.id).length}; }).sort((a,b)=>b.t-a.t);
+  const bars=(rows,unit)=>{ const mx=Math.max(1,...rows.map(r=>r[1])); return `<div class="st-bars">${rows.map(([l,v,s])=>`<div class="st-bar"><span class="st-bl">${esc(l)}</span><span class="st-bt"><i style="width:${(v/mx*100).toFixed(1)}%"></i></span><b>${v}</b>${s?`<small>${esc(s)}</small>`:''}</div>`).join('')}</div>`; };
+  const byCounty={}; wait.forEach(x=>{ const c=(eirPlace(x.eircode)||{}).county||'No Eircode'; byCounty[c]=(byCounty[c]||0)+1; });
+  const ageB=[['0–7 days',0,7],['8–14 days',8,14],['15–30 days',15,30],['Over 30 days',31,9999]].map(([l,a,b])=>[l,ages.filter(d=>d>=a&&d<=b).length]);
+  const kinds=[['🆕 New calls','new'],['🔁 Unfinished','rebook'],['🚪 Not home','not_home'],['🔴 Cancelled','cancelled']].map(([l,k])=>[l,wait.filter(x=>x.kind===k).length]);
+  const matR=wait.filter(x=>matState(x.id)==='ready').length, matD=wait.filter(x=>['due','late'].includes(matState(x.id))).length, matL=wait.filter(x=>matState(x.id)==='late').length;
+  const weeks=[...Array(Math.min(13,Math.max(1,Math.ceil(stP/7)))).keys()].reverse().map(k=>{ const ws=ymd(addDays(mondayOf(new Date()),-7*k)), we=ymd(addDays(parseYmd(ws),5)); const f=visits.filter(v=>v.day>=ws&&v.day<=we);
+    return {l:k?`w/c ${niceDate(ws).replace(/ 2026$/,'')}`:'This week', d:f.filter(v=>v.o==='done').length, r:f.filter(v=>v.o==='rebook').length, n:f.filter(v=>v.o==='not_home').length}; });
+  const rep={}; visits.forEach(v=>{ if(!v.key) return; (rep[v.key]=rep[v.key]||{name:v.name, n:0}).n++; });
+  const repeat=Object.values(rep).filter(r=>r.n>=3).sort((a,b)=>b.n-a.n).slice(0,6);
+  openModal(`<div class="st"><h2>📊 Statistics — Service Department</h2>
+    <div class="st-per">${[[7,'Last 7 days'],[28,'Last 4 weeks'],[91,'Last 3 months'],[365,'Last 12 months']].map(([d,l])=>`<button class="pl-chip ${stP===d?'on':''}" onclick="stP=${d};openStats()">${l}</button>`).join('')}<span class="s-sub">${esc(niceDate(from))} – ${esc(niceDate(today))} · ${visits.length} visits</span><button class="btn-outline" style="margin-left:auto" onclick="window.print()">🖨 Print</button></div>
+    <h3>✅ How the visits went</h3><div class="st-tiles">
+      ${tile(done,'All done','jobs finished')}${tile(pct(done,tot),'Fixed first time','done ÷ all visits with a result','good')}${tile(pct(rb,tot),'Re-booked',rb+' visits — more material / time needed','warn')}${tile(pct(nh,tot),'Customer not home',nh+' wasted visits','bad')}${tile(cx,'Cancelled by customer','WhatsApp ❌')}${tile(pct(signed,doneLive.length),'Signed off',signed+' signatures · jobs still in SashDash')}</div>
+    <h3>⏳ Waiting list</h3><div class="st-tiles">
+      ${tile(wait.length,'Waiting now','in Job allocations')}${tile(avgWait+' days','Average wait')}${tile(oldest?jaDays(oldest.since)+' days':'—','Longest wait',oldest?esc(oldest.name):'','bad')}${tile(cj.filter(j=>isOpenJob(j)&&jobDay(j)>today).length,'Booked ahead','open jobs on future days')}</div>
+    <div class="st-2"><div><h4>How long they've waited</h4>${bars(ageB)}</div><div><h4>What's waiting</h4>${bars(kinds)}</div></div>
+    <div class="st-2"><div><h4>Waiting by county</h4>${bars(Object.entries(byCounty).sort((a,b)=>b[1]-a[1]).slice(0,8))}</div>
+      <div><h4>📦 Material for waiting jobs</h4>${bars([['✅ Ready',matR],['⏳ Coming',matD,matL?matL+' overdue':''],['❓ Not confirmed',wait.length-matR-matD]])}</div></div>
+    <h3>👷 Each service man (${esc(stP===7?'last 7 days':stP===28?'last 4 weeks':stP===91?'last 3 months':'last 12 months')})</h3>
+    <table class="s-table st-t"><thead><tr><th>Man</th><th>Visits</th><th>✅ Done</th><th>Fixed first time</th><th>🔁 Re-book</th><th>🚪 Not home</th><th>Days worked</th><th>Visits a day</th><th>✍️ Signed</th><th>📅 Booked ahead</th></tr></thead><tbody>
+    ${men.map(m=>`<tr><td><span class="avatar sm" style="--c:${esc(m.p.colour)}">${esc(initials(m.p.full_name))}</span> ${esc(firstName(m.p.full_name))}</td><td>${m.t}</td><td>${m.d}</td><td><b>${pct(m.d,m.t)}</b></td><td>${pct(m.r,m.t)}</td><td>${pct(m.n,m.t)}</td><td>${m.days}</td><td>${m.days?(m.t/m.days).toFixed(1):'—'}</td><td>${pct(m.sig,m.dl)}</td><td>${m.ahead}</td></tr>`).join('')}</tbody></table>
+    <h3>📅 Week by week</h3><table class="s-table st-t"><thead><tr><th>Week</th><th>✅ Done</th><th>🔁 Re-book</th><th>🚪 Not home</th><th>Fixed first time</th></tr></thead><tbody>${weeks.map(w=>`<tr><td>${esc(w.l)}</td><td>${w.d}</td><td>${w.r}</td><td>${w.n}</td><td><b>${pct(w.d,w.d+w.r+w.n)}</b></td></tr>`).join('')}</tbody></table>
+    <div class="st-2"><div><h3>📲 WhatsApp</h3>${bars([['🟢 Confirmed',wOk,pct(wOk,wSent)],['📵 No reply',wNr,pct(wNr,wSent)],['🔴 Can\'t make it',wCant,pct(wCant,wSent)]])}</div>
+      <div><h3>🕘 Customers visited most</h3>${repeat.length?bars(repeat.map(r=>[r.name,r.n,'visits'])):'<div class="s-sub">No customer with 3 or more visits in this period.</div>'}</div></div>
+    <div class="modal-actions"><button class="btn-primary" onclick="closeModal()">Close</button></div></div>`); }
 </script>
 </body>
 </html>
