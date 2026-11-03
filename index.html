@@ -674,6 +674,24 @@
     @keyframes prodspin{to{transform:rotate(360deg)}}
     :is(#view-oa,#view-fit,.fxm) .prod-bar{align-items:center}:is(#view-oa,#view-fit,.fxm) .prod-pill{white-space:nowrap;font-weight:800;font-size:12.5px;border-radius:20px;padding:3px 10px;background:#dcfce7;color:#166534}:is(#view-oa,#view-fit,.fxm) .prod-pill.saving{background:#fef3c7;color:#92400e}:is(#view-oa,#view-fit,.fxm) .prod-pill.bad{background:#fee2e2;color:#991b1b}
     :is(#view-oa,#view-fit,.fxm) .prod-local{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:12px;padding:10px 12px;margin:-4px 0 14px;color:#78350f;font-size:13.5px}
+    :is(#view-oa,#view-fit,.fxm) /* ── Update 75 ── */
+    .f5q input{width:58px;font-weight:900;font-size:13px;border:1.5px solid #cbd5e1;border-radius:6px;padding:2px 4px;text-align:center}
+    :is(#view-oa,#view-fit,.fxm) .f5cut{display:inline-flex;gap:4px;align-items:center;font-size:12px;font-weight:700;margin-left:4px}:is(#view-oa,#view-fit,.fxm) .f5cut a{color:#6d28d9;text-decoration:none;background:#f5f3ff;border-radius:6px;padding:2px 7px}:is(#view-oa,#view-fit,.fxm) .f5cut label{cursor:pointer;color:#64748b;text-transform:none;letter-spacing:0;margin:0;font-size:14px}
+    :is(#view-oa,#view-fit,.fxm) .f5cut.add{cursor:pointer;border:1.5px dashed #c4b5fd;color:#6d28d9;border-radius:6px;padding:2px 7px;text-transform:none;letter-spacing:0}
+    :is(#view-oa,#view-fit,.fxm) .f5del{border:none;background:none;cursor:pointer;font-size:14px;opacity:.55;padding:2px 4px}:is(#view-oa,#view-fit,.fxm) .f5del:hover{opacity:1}
+    :is(#view-oa,#view-fit,.fxm) .f5add{margin-left:4px}:is(#view-oa,#view-fit,.fxm) .f5more{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;font-weight:700;color:var(--slate);margin:6px 0}
+    :is(#view-oa,#view-fit,.fxm) /* ── Update 76: ❓ no team yet ── */
+    .board tr.f6row td{background:#fffbeb}:is(#view-oa,#view-fit,.fxm) .board td.f6tm b{color:#b45309!important}:is(#view-oa,#view-fit,.fxm) .board td.f6tm span{color:#b45309!important;font-weight:700}
+    :is(#view-oa,#view-fit,.fxm) .blk2.f6blk{background:repeating-linear-gradient(135deg,#fffbeb 0 10px,#fef3c7 10px 20px)!important;color:#78350f!important;border:2.5px dashed #d97706;box-shadow:none}:is(#view-oa,#view-fit,.fxm) .blk2.f6blk small{color:#92400e!important}
+    :is(#view-oa,#view-fit,.fxm) .f6tag{display:block;background:#d97706;color:#fff;font-weight:900;font-size:10px;border-radius:5px;padding:1px 6px;margin-bottom:3px;width:max-content}
+    :is(#view-oa,#view-fit,.fxm) .f6pick{display:inline-block;margin:4px 4px 0 0;background:#d97706;color:#fff;border:none;border-radius:6px;padding:3px 8px;font-weight:800;font-size:11.5px;cursor:pointer}:is(#view-oa,#view-fit,.fxm) .f6pick.big{display:block;width:100%;padding:8px;font-size:14px;margin:6px 0}
+    :is(#view-oa,#view-fit,.fxm) .dcol.f6col{background:#fffbeb;border:2px dashed #d97706}:is(#view-oa,#view-fit,.fxm) .dcol.f6col .dch b{color:#b45309}
+    :is(#view-oa,#view-fit,.fxm) .mchip.f6chipm{background:#fef3c7!important;color:#78350f!important;border:1.5px dashed #d97706}
+    :is(#view-oa,#view-fit,.fxm) .ac.f6chip{background:#d97706;color:#fff}
+    :is(#view-oa,#view-fit,.fxm) .fx-tp.f6tp{border:2px dashed #d97706;background:#fffbeb}:is(#view-oa,#view-fit,.fxm) .fx-tp.f6tp.sel{background:#fef3c7;border:2.5px solid #d97706;color:#78350f}
+    :is(#view-oa,#view-fit,.fxm) .fx-box.f6info{background:#fffbeb!important;border-color:#f59e0b!important;color:#78350f}
+    :is(#view-oa,#view-fit,.fxm) .fy-crew.f6crew{border-style:dashed;border-color:#d97706;background:#fffbeb}:is(#view-oa,#view-fit,.fxm) .fy-crew.f6crew.on{border-style:solid;background:#fef3c7}
+    :is(#view-oa,#view-fit,.fxm) .f6load{background:#fffbeb;border:1.5px dashed #d97706;color:#78350f;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-weight:700;font-size:13.5px}
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2074,7 +2092,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-03-1645';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-03-1715';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -9774,7 +9792,7 @@ function fyNDGo(){ const s=fyND, b=fitData.bookings.find(x=>x.id===s.bid), o=oaF
   const same=s.team===b.team&&s.day===fxDates(b)[0]; if(same&&!(o.cancel&&o.cancel.status==='open')){ closeModal(); return; }
   const cx=o.cancel&&o.cancel.status==='open'; if(!same) fyMove(b,s.team,s.day,s.floor,cx?'customer cancelled':'');
   if(cx){ o.cancel.status='rebooked'; o.cancel.doneAt=fxNow(); o.cancel.doneBy=oaWho(); o.cancel.doneText=`📅 New date: ${fitDL(fxDates(b)[0])}${fxDates(b).length>1?' – '+fitDL(fxDates(b).slice(-1)[0]):''} · Team ${b.team}`; if(!o.cancel.seenAt) o.cancel.seenAt=fxNow(); oaSave(); }
-  fitSave(); closeModal(); fitRender(); toast(`Booked: Team ${b.team} · ${fitDL(fxDates(b)[0])} — Office Administration's diary moves too`); }
+  fitSave(); closeModal(); fitRender(); toast(`Booked: ${b.team===0?'❓ No team yet':'Team '+b.team} · ${fitDL(fxDates(b)[0])}`); }
 
 // ── 🔴 cancelled by the customer: Office Administration tells the fitting manager ──
 function fyCancelList(){ if(!oaOrders||!fitData) return []; return oaOrders.filter(o=>o.cancel&&o.cancel.status==='open'&&fitBk(o.id)); }
@@ -9839,7 +9857,7 @@ function fyMapHtml(){ const all=fyMJobs(), L=all.filter(fyMOk), n=(g,k)=>all.fil
   const any=fyMF.st.length||fyMF.tg.length||fyMF.ty.length, noLL=L.filter(x=>!x.ll).length;
   return `<div class="fx-h" style="margin-top:0"><h2>🗺 Map</h2><span class="sub" style="color:var(--slate)">Every job placed by its Eircode · ${L.length} of ${all.length} shown${noLL?` · ${noLL} with no location yet`:''}</span><span class="spacer"></span>${any?`<button class="btn-outline ft-sm" onclick="fyMF={st:[],tg:[],ty:[]};fyMSel=null;fitRender()">✕ Clear filters</button>`:''}</div>
   <div class="fy-mfil"><div class="fy-mg"><span class="fy-ml">Status</span>${FY_MST.map(([k,l,c])=>chip('st',k,l,c)).join('')}</div><div class="fy-mg"><span class="fy-ml">Order</span>${FY_OT.map(([k,l])=>chip('tg',k,l)).join('')}</div><div class="fy-mg"><span class="fy-ml">Customer</span>${FY_MTY.map(([k,l])=>chip('ty',k,l)).join('')}</div></div>
-  <div class="fy-mwrap"><div id="fy-map"></div><div class="fy-mlist"><div class="fy-mlh">${L.length} job${L.length===1?'':'s'}</div>${L.map(x=>{ const s=FY_MST.find(y=>y[0]===x.s), b=fitBk(x.o.id); return `<div class="fy-mli ${fyMSel===x.o.id?'on':''}" onclick="fyMSel='${x.o.id}';fitRender()"><span class="fy-pin" style="--c:${s[2]}">${FY_MTY.find(y=>y[0]===x.o.type)[2]}</span><div><b>${esc(oaTitle(x.o))}</b><div class="sub">📍 ${esc((x.o.type==='builder'?x.o.siteEir:x.o.eir)||'—')} · <span style="color:${s[2]};font-weight:800">${s[1]}</span></div>${b&&x.s==='booked'?`<div class="sub">Team ${b.team} · ${fitDL(fxDates(b)[0])}${fxDates(b).length>1?' – '+fitDL(fxDates(b).slice(-1)[0]):''}</div>`:''}${x.ll?'':'<div class="sub" style="color:#b45309">no location — add coordinates in Office Administration</div>'}${fyOtChips(x.o.id)}</div></div>`; }).join('')||'<div class="oa-empty">No jobs match these filters.</div>'}</div></div>
+  <div class="fy-mwrap"><div id="fy-map"></div><div class="fy-mlist"><div class="fy-mlh">${L.length} job${L.length===1?'':'s'}</div>${L.map(x=>{ const s=FY_MST.find(y=>y[0]===x.s), b=fitBk(x.o.id); return `<div class="fy-mli ${fyMSel===x.o.id?'on':''}" onclick="fyMSel='${x.o.id}';fitRender()"><span class="fy-pin" style="--c:${s[2]}">${FY_MTY.find(y=>y[0]===x.o.type)[2]}</span><div><b>${esc(oaTitle(x.o))}</b><div class="sub">📍 ${esc((x.o.type==='builder'?x.o.siteEir:x.o.eir)||'—')} · <span style="color:${s[2]};font-weight:800">${s[1]}</span></div>${b&&x.s==='booked'?`<div class="sub">Team ${b.team} · ${fitDL(fxDates(b)[0])}${fxDates(b).length>1?' – '+fitDL(fxDates(b).slice(-1)[0]):''}</div>`:''}${x.ll?'':(x.o.type==='builder'?x.o.siteEir:x.o.eir)?'<div class="sub" style="color:#b45309">📍 finding the Eircode on the map…</div>':'<div class="sub" style="color:#b45309">no Eircode — add it in Office Administration</div>'}${fyOtChips(x.o.id)}</div></div>`; }).join('')||'<div class="oa-empty">No jobs match these filters.</div>'}</div></div>
   <div class="fy-mleg"><span><i style="background:#16a34a"></i>Booked in</span><span><i style="background:#7c3aed"></i>In production</span><span><i style="background:#2563eb"></i>Re-book unfinished</span><span>Letter on the pin: <b>S</b> site · <b>B</b> builder · <b>P</b> private client</span><span>Inside a row = any of them · across rows = all must match</span></div>`; }
 function fyMPop(x){ const s=FY_MST.find(y=>y[0]===x.s), t=FY_MTY.find(y=>y[0]===x.o.type), b=fitBk(x.o.id), eir=x.o.type==='builder'?x.o.siteEir:x.o.eir;
   return `<div class="fy-mpop"><b>${esc(oaTitle(x.o))}</b><div>${t[1].replace(/s$/,'')} · 📍 ${esc(eir||'')}</div><div style="color:${s[2]};font-weight:800">${s[1]}${b&&x.s==='booked'?' · Team '+b.team+' · '+fitDL(fxDates(b)[0]):''}</div>${fyOtChips(x.o.id)}<div class="fy-mbt"><button onclick="fxJS('${x.o.id}')">📄 Job sheet</button><button onclick="fxFromDiary('${x.o.id}')">🏭 Open</button><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(x.ll?x.ll.join(','):eir||'')}" target="_blank" rel="noopener">🧭 Directions</a></div></div>`; }
@@ -10099,7 +10117,8 @@ async function prodUpScan(oid,v){ if(prodSt!=='ready') return; prodPill('saving'
   try{ const files=[]; for(let i=0;i<v.files.length;i++){ const f=v.files[i], path=`orders/${prodSafe(oid)}/scan-${i+1}-${prodSafe(f.name)}`; await prodPut(path,f,f.type); files.push({path,type:f.type,name:f.name}); }
     const row={key:'s:'+oid,oid,files,created_by:prodWho()}; const r=await sb.from('prod_files').upsert(row); if(r.error) throw r.error; prodIdx[row.key]=row; prodBusy--; prodPill('ok'); }
   catch(e){ prodBusy--; prodPill('bad'); toast('⚠ The order scan didn\'t save to SashDash — check the internet and pick it again',8000); console.warn(e); } }
-async function prodDownBlob(k){ if(prodGot['b:'+k]) return; prodGot['b:'+k]=1; const x=prodIdx['b:'+k], f=x&&x.files&&x.files[0]; if(!f) return;
+function prodDownBlob(k){ if(prodGot['b:'+k]) return prodGot['b:'+k]; return prodGot['b:'+k]=prodDownBlob2(k); }
+async function prodDownBlob2(k){ const x=prodIdx['b:'+k], f=x&&x.files&&x.files[0]; if(!f) return;
   const r=await sb.storage.from('prod-files').download(f.path); if(r.error||!r.data){ delete prodGot['b:'+k]; return; }
   fitBlobs[k]={url:URL.createObjectURL(r.data),type:f.type||r.data.type,_fromServer:true}; prodAfterFile(); }
 async function prodDownScan(oid){ if(prodGot['s:'+oid]) return; prodGot['s:'+oid]=1; const x=prodIdx['s:'+oid]; if(!x||!x.files) return; const files=[];
@@ -10135,6 +10154,108 @@ function prodLocalBring(){ if(!prodLocal) return; const fd=prodLocal.fd||{};
   prodLocal.orders.forEach(o=>{ if(o.scan) o.scan={name:o.scan.name,lost:true}; oaOrders.unshift(o); if(fd.jobs&&fd.jobs[o.id]) fitData.jobs[o.id]=fd.jobs[o.id]; (fd.bookings||[]).filter(b=>b.oid===o.id).forEach(b=>fitData.bookings.push(b)); });
   const n=prodLocal.orders.length; prodLocalForget(true); prodQueue(); prodRefresh(); toast(`📤 ${n} order${n>1?'s':''} brought onto SashDash`); }
 function prodLocalForget(quiet){ try{ ['sashdash-oa-v2','sashdash-oa-diary-v2','sashdash-fit-v2'].forEach(k=>localStorage.removeItem(k)); localStorage.setItem('sashdash-prod-local-done','1'); }catch(e){} prodLocal=null; if(!quiet) prodRefresh(); }
+
+
+// ════════ Update 75 — 🏭 Manufacturing: edit a job's lines (＋ add line, change quantity, remove) and 📎 cutting list any time ════════
+const _f5LineHtml=fxLineHtml; fxLineHtml=function(o,l){ let h=_f5LineHtml.apply(this,arguments); const id=l.id, k='saw-'+id;
+  const qty=`<span class="qty f5q" onclick="event.stopPropagation()">× <input type="number" min="1" value="${l.qty||1}" title="Change the quantity" onchange="f5Qty('${o.id}','${id}',this.value)"></span>`;
+  h=h.replace(`<span class="qty">× ${l.qty||1}</span>`,qty); if(l.pdf) h=h.replace(`<span class="pdfc" title="Cutting list">📎 ${esc(l.pdf)}</span>`,'');
+  const cut=l.pdf?`<span class="f5cut"><a href="#" onclick="event.preventDefault();event.stopPropagation();f5CutOpen('${id}')" title="Open the cutting list">📎 ${esc(l.pdf)}</a><label title="Replace the cutting list" onclick="event.stopPropagation()">↻<input type="file" accept="application/pdf,image/*" style="display:none" onchange="f5Cut('${o.id}','${id}',this.files)"></label></span>`
+    :`<label class="f5cut add" title="Attach the cutting list (PDF or photo)" onclick="event.stopPropagation()">📎 Cutting list<input type="file" accept="application/pdf,image/*" style="display:none" onchange="f5Cut('${o.id}','${id}',this.files)"></label>`;
+  const del=l.made||l.ready?'':`<button class="f5del" title="Remove this line" onclick="event.stopPropagation();f5Del('${o.id}','${id}')">🗑</button>`;
+  const i=h.lastIndexOf('</div>'); return i>0?h.slice(0,i)+cut+del+h.slice(i):h; };
+const _f5Fac=fxFac; fxFac=function(o){ let h=_f5Fac.apply(this,arguments); const j=fitFJ(o.id);
+  if(!j.lines.length) return `<span class="sub" style="color:#854d0e;font-weight:700">No lines yet</span> <button class="btn-outline ft-sm" onclick="event.stopPropagation();f5Add('${o.id}','pvc')">＋ Add line</button>`;
+  // ＋ Add line in each department box, and one for another department underneath
+  h=h.replace(/<div class="dept" style="--dc:[^"]*"><div class="dh"><b>([^<]*)<\/b>/g,(m,name)=>{ const k=['pvc','comp','hw','alu'].find(x=>fxDeptName(x)===name)||'pvc'; return m.replace('<div class="dh">',`<div class="dh" data-f5="${k}">`); });
+  h=h.replace(/(<div class="dh" data-f5="(\w+)">[\s\S]*?)(<span class="spacer"><\/span>)/g,(m,a,k,sp)=>a+sp+`<button class="btn-outline ft-sm f5add" onclick="event.stopPropagation();f5Add('${o.id}','${k}')">＋ Add line</button>`);
+  const used=['pvc','comp','hw','alu'].filter(k=>j.lines.some(l=>fxDept(l)===k)), free=['pvc','comp','hw','alu'].filter(k=>!used.includes(k));
+  if(free.length&&fxSub==='all'){ const at=h.lastIndexOf('<div class="allrdy">')>=0?h.lastIndexOf('<div class="allrdy">'):h.lastIndexOf('<div class="fsum"'); const add=`<div class="f5more">＋ Add a line for ${free.map(k=>`<button class="btn-outline ft-sm" onclick="event.stopPropagation();f5Add('${o.id}','${k}')">${fxDeptName(k)}</button>`).join(' ')}</div>`; h=at>=0?h.slice(0,at)+add+h.slice(at):h+add; }
+  return h; };
+function f5Qty(oid,lid,v){ const l=fxLine(oid,lid); if(!l) return; const n=Math.max(1,parseInt(v,10)||1); if(n===(l.qty||1)) return; const was=l.qty||1; l.qty=n;
+  fxLog(oid,'✎',oaWho()+' · '+fxDeptName(fxDept(l)),`${fxProdTxt(l)}${l.nums.length?' '+l.nums.join(' · '):''}: quantity ${was} → ${n}`); fitSave(); fitRender(); toast('Quantity changed to '+n); }
+function f5Del(oid,lid){ const j=fitFJw(oid), l=j.lines.find(x=>x.id===lid); if(!l) return; if(!confirm(`Remove ${fxProdTxt(l)} × ${l.qty||1}${l.nums.length?' ('+l.nums.join(', ')+')':''} from this job?`)) return;
+  j.lines=j.lines.filter(x=>x.id!==lid); fxLog(oid,'🗑',oaWho()+' · '+fxDeptName(fxDept(l)),`Line removed: ${fxProdTxt(l)} × ${l.qty||1}${l.nums.length?' '+l.nums.join(' · '):''}`); fitSave(); fitRender(); toast('Line removed'); }
+let f5A=null;
+function f5Add(oid,k){ f5A={oid,k,prod:FX_GROUPS[k][0],qty:1,custom:''}; f5AddForm(); }
+function f5AddForm(){ const s=f5A, o=oaFind(s.oid);
+  openModal(`<h2>＋ Add a line — ${esc(oaTitle(o))}</h2>
+   <div class="field-group"><label>Department</label><div class="fx-filters" style="margin:0">${['pvc','comp','hw','alu'].map(k=>`<button class="${s.k===k?'on':''}" onclick="f5A.k='${k}';f5A.prod=FX_GROUPS['${k}'][0];f5AddForm()">${fxDeptName(k)}</button>`).join('')}</div></div>
+   <div class="fx-g2" style="gap:10px"><div class="field-group"><label>What</label><select onchange="f5A.prod=this.value;f5AddForm()">${fxProdOptions(s.prod,s.k)}</select></div>
+   <div class="field-group"><label>Quantity</label><input type="number" min="1" value="${s.qty}" oninput="f5A.qty=Math.max(1,parseInt(this.value,10)||1)"></div></div>
+   ${s.prod==='custom'?`<div class="field-group"><label>What is it?</label><input value="${esc(s.custom)}" oninput="f5A.custom=this.value" placeholder="e.g. Bay window"></div>`:''}
+   <div class="field-group"><label>Job no. <span class="optional">(optional — the department can add it later)</span></label><input id="f5-jn" placeholder="e.g. W-2730"></div>
+   <div class="oa-hint">It goes on the job as NOT READY, shows on that department's factory tablet, and is logged on the job sheet updates.</div>
+   <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" style="background:#0f766e" onclick="f5AddGo()">＋ Add line</button></div>`); fxModal(); }
+function f5AddGo(){ const s=f5A, j=fitFJw(s.oid); if(s.prod==='custom'&&!s.custom.trim()){ toast('Say what it is'); return; } const jn=(($('f5-jn')||{}).value||'').trim();
+  const l={id:'l'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),prod:s.prod,custom:s.prod==='custom'?s.custom.trim():'',sub:s.prod==='custom'?s.k:'',qty:s.qty,nums:jn?[jn]:[],made:false,ready:false,madeBy:'',madeAt:'',readyBy:'',readyAt:'',pdf:''};
+  j.lines.push(l); j.isNew=false; fxLog(s.oid,'＋',oaWho()+' · '+fxDeptName(s.k),`Line added: ${fxProdTxt(l)} × ${l.qty}${jn?' '+jn:''}`); f5A=null; fitSave(); closeModal(); fitRender(); toast('Line added'); }
+// 📎 cutting list: attach (or replace) at any time, before or after the job number / 🪚 send to saw
+function f5Cut(oid,lid,fl){ const f=fl&&fl[0], l=fxLine(oid,lid); if(!f||!l) return; const had=l.pdf; l.pdf=f.name; fitBlobs['saw-'+lid]={url:URL.createObjectURL(f),type:f.type};
+  fxLog(oid,'📎',oaWho()+' · '+fxDeptName(fxDept(l)),`Cutting list ${had?'replaced':'added'} for ${fxProdTxt(l)}${l.nums.length?' '+l.nums.join(' · '):''} · ${f.name}`); fitSave(); fitRender(); toast('📎 Cutting list saved'); }
+async function f5CutOpen(lid){ const k='saw-'+lid; let b=fitBlobs[k]; if(b){ window.open(b.url,'_blank'); return; }
+  if(!(typeof prodIdx!=='undefined'&&prodIdx['b:'+k])){ toast('The file isn\'t on SashDash — attach it again (↻)'); return; }
+  const w=window.open('','_blank'); if(w) w.document.write('<p style="font-family:Arial;padding:20px">Loading the cutting list…</p>');
+  await prodDownBlob(k); b=fitBlobs[k]; if(b){ if(w) w.location.href=b.url; else window.open(b.url,'_blank'); } else { if(w) w.close(); toast('Couldn\'t load the cutting list — check the internet'); } }
+
+
+// ════════ Update 76 — 📅 book a day with ❓ no team yet (team 0) · 🗺 Map places jobs by Eircode ════════
+const F6_NT={n:0,leader:'',phone:'',men:[],col:'#d97706',inuse:true,van:'',none:true};
+const F6_LAB='❓ No team yet';
+const _f6Team=fitTeam; fitTeam=function(n){ return +n===0?F6_NT:_f6Team.apply(this,arguments); };
+function f6None(){ return (fitData&&fitData.bookings||[]).filter(b=>b.team===0&&oaFind(b.oid)&&fitStatus(oaFind(b.oid))==='booked'); }
+const _f6Shown=fxTeamsShown; fxTeamsShown=function(){ const r=_f6Shown.apply(this,arguments); return (fitData.bookings||[]).some(b=>b.team===0)&&!fxTP?[F6_NT].concat(r):r; };
+// every "Team 0" on screen reads "❓ No team yet"
+function f6Fix(root){ if(!root) return; const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); const hit=[]; let n; while((n=w.nextNode())) if(/Team 0(?!\d)|\bT0 · /.test(n.nodeValue)) hit.push(n);
+  hit.forEach(t=>{ t.nodeValue=t.nodeValue.replace(/Team 0(?!\d)/g,F6_LAB).replace(/\bT0 · /g,'❓ '); }); }
+const _f6Week=fxWeekHtml; fxWeekHtml=function(){ return _f6Week.apply(this,arguments).replace(/<td class="tm" style="border-left:5px solid #d97706"><b>Team 0<\/b><span>[^<]*<\/span>/,`<td class="tm f6tm" style="border-left:5px dashed #d97706"><b>${F6_LAB}</b><span>booked — pick a team</span>`).replace('<tr><td class="tm f6tm"','<tr class="f6row"><td class="tm f6tm"'); };
+const _f6Day=fxDayHtml; fxDayHtml=function(){ return _f6Day.apply(this,arguments).replace(/<div class="dcol fx-cell" style="--tc:#d97706" data-team="0"([^>]*)><div class="dch"><b>Team 0<\/b><span>[^<]*<\/span>/,`<div class="dcol fx-cell f6col" style="--tc:#d97706" data-team="0"$1><div class="dch"><b>${F6_LAB}</b><span>booked — pick a team</span>`); };
+const _f6Blk=fxBlk; fxBlk=function(b){ let h=_f6Blk.apply(this,arguments); if(b.team!==0) return h;
+  return h.replace('class="blk2','class="blk2 f6blk').replace('<b>','<span class="f6tag">❓ TEAM NOT PICKED YET</span><b>').replace('<button class="jsb"',`<button class="f6pick" onclick="event.stopPropagation();fyNewDate('${b.id}')">👷 Pick team</button><button class="jsb"`); };
+const _f6Render=fitRender; fitRender=function(){ const r=_f6Render.apply(this,arguments); const v=$('view-fit'); if(!v||!fitOn||prodSt!=='ready') return r;
+  try{ const n=f6None().length, ch=v.querySelector('.achips'); if(n&&ch) ch.insertAdjacentHTML('afterbegin',`<button class="ac f6chip" onclick="fxDV='week';fxDTab='diary';fitWeek=ymd(mondayOf(parseYmd(fxDates(f6None().sort((a,b)=>a.start<b.start?-1:1)[0])[0])));fitGo('diary')">❓ ${n} booked — no team yet</button>`);
+    v.querySelectorAll('.dcol[data-team="0"] .dcard[data-bid]').forEach(c=>{ if(!c.querySelector('.f6pick')) { const bt=c.querySelector('.jsb'); if(bt) bt.insertAdjacentHTML('beforebegin',`<button class="f6pick big" onclick="fyNewDate('${c.dataset.bid}')">👷 Pick team</button>`); } });
+    v.querySelectorAll('.mchip[data-bid]').forEach(c=>{ const b=fitData.bookings.find(x=>x.id===c.dataset.bid); if(b&&b.team===0) c.classList.add('f6chipm'); });
+    f6Fix(v); }catch(e){ console.warn(e); } return r; };
+const _f6OaRender=oaRender; oaRender=function(){ const r=_f6OaRender.apply(this,arguments); try{ if(oaOn) f6Fix($('view-oa')); }catch(e){} return r; };
+const _f6Open=openModal; openModal=function(){ const r=_f6Open.apply(this,arguments); try{ if(oaOn||fitOn) f6Fix(document.querySelector('#modal-root .modal')); }catch(e){} return r; };
+// 🗓 Book a team: first tile "❓ No team yet"
+const _f6AlForm=fitAlForm; fitAlForm=function(){ _f6AlForm.apply(this,arguments); const m=document.querySelector('#modal-root .modal'); if(!m) return; const a=fitAl;
+  const g=m.querySelector('.fx-tpick'); if(g) g.insertAdjacentHTML('afterbegin',`<div class="fx-tp f6tp ${a.team===0?'sel':''}" style="cursor:pointer" onclick="fitAl.team=0;fitAlForm()"><b>${F6_LAB}</b>Hold the day now<br><span style="color:var(--slate)">pick the team later</span></div>`);
+  if(a.team===0){ m.querySelectorAll('.fx-tp:not(.f6tp)').forEach(x=>x.classList.remove('sel'));
+    const box=m.querySelector('.fx-box'); if(box){ box.classList.add('f6info'); box.innerHTML=`<b>${F6_LAB}</b><div style="margin-top:6px">The days are held in the diary on the <b>${F6_LAB}</b> row (dashed orange) until you pick a team — 👷 Pick team on the card, or drag it onto a team.</div><div style="margin-top:6px">No team sees it on their phone or the Loading list yet. The factory still works to these dates.</div>`; }
+    const bt=m.querySelector('.modal-actions .btn-primary'); if(bt) bt.innerHTML=bt.innerHTML.replace('🗓 Book','🗓 Book — no team yet'); } };
+fitAlSave=function(){ const a=fitAl; if(a.team==null){ toast('Pick a team, or ❓ No team yet'); return; } const j=fitFJw(a.oid), T=fitTeam(a.team), now=new Date().toISOString(), tn=a.team===0?F6_LAB:'Team '+a.team;
+  if(a.re && j.outcome){ j.history.push({outcome:j.outcome,out:j.out,at:now}); j.chat.push({who:'',at:now,text:`🗓 Re-booked after ${j.outcome==='unf'?'⟲ Unfinished':'⚠ Snag'} — ${tn} · ${fitDL(a.start)}`,evt:true}); j.outcome=null; j.out={}; j.sig=null; }
+  if(a.bid){ const b=fitData.bookings.find(x=>x.id===a.bid); Object.assign(b,{team:a.team,start:a.start,days:a.days,time:a.time,crew:{leader:T.leader,men:T.men.slice()}}); }
+  else fitData.bookings.push({id:'b'+Date.now().toString(36),oid:a.oid,team:a.team,start:a.start,days:a.days,time:a.time,crew:{leader:T.leader,men:T.men.slice()}});
+  j.isNew=false; j.days=a.days; if(!a.re) j.chat.push({who:'',at:now,text:`🔧 ${a.bid?'Moved to':'Booked for'} ${tn} · ${fitDL(a.start)}${fitDates(a.start,a.days).length>1?' – '+fitDL(fitDates(a.start,a.days).slice(-1)[0]):''} by ${oaWho()}`,evt:true});
+  fitSave(); closeModal(); fitRender(); toast(`Booked: ${tn} · ${fitDL(a.start)}`); };
+// 📅 Change date / crew (👷 Pick team): "❓ No team yet" as the first choice; picking a team keeps the dates
+const _f6ND=fyNDForm; fyNDForm=function(){ _f6ND.apply(this,arguments); const m=document.querySelector('#modal-root .modal'); if(!m) return; const s=fyND, list=m.querySelector('.fy-crews'); if(!list) return;
+  list.insertAdjacentHTML('afterbegin',`<label class="fy-crew f6crew ${s.team===0?'on':''}"><input type="radio" name="fycrew" ${s.team===0?'checked':''} onchange="fyND.team=0;fyNDForm()"><span><b>${F6_LAB}</b><small>hold the days, pick the team later</small></span></label>`);
+  if(s.team===0){ const bt=m.querySelector('.modal-actions .btn-primary'); if(bt) bt.innerHTML=bt.innerHTML.replace(/Book ❓ No team yet|Book Team 0/,'Book — no team yet'); } };
+const _f6Move=fyMove; fyMove=function(b,team){ const was=b.team; _f6Move.apply(this,arguments); try{ const j=fitFJw(b.oid), c=j.chat[j.chat.length-1], l=(j.log||[])[ (j.log||[]).length-1 ];
+    [c,l].forEach(x=>{ if(x&&x.text) x.text=x.text.replace(/Team 0(?!\d)/g,F6_LAB); });
+    if(was===0&&team!==0&&c) c.text=c.text.replace(/^📅 Moved from/,'👷 Team picked — moved from'); }catch(e){} };
+// dragging a ❓ card onto a team = pick that team (move, not a 2nd crew)
+const _f6Drop=fxDropAsk; fxDropAsk=function(bid,team,day){ _f6Drop.apply(this,arguments); const b=fitData.bookings.find(x=>x.id===bid);
+  if(b&&b.team===0&&fxDropSt&&fxDropSt.mode==='add'){ fxDropSt.mode='move'; fxDropForm(); } };
+const _f6DropForm=fxDropForm; fxDropForm=function(){ _f6DropForm.apply(this,arguments); const s=fxDropSt, b=s&&fitData.bookings.find(x=>x.id===s.bid); const m=document.querySelector('#modal-root .modal');
+  if(m&&b&&(b.team===0||s.team===0)){ const sh=m.querySelector('.shch'); if(sh) sh.remove(); } };
+// 🚚 Loading: not on a van until a team is picked
+const _f6LBk=fyLoadBk; fyLoadBk=function(v){ return _f6LBk.apply(this,arguments).filter(b=>b.team!==0); };
+const _f6LDay=fyLDayHtml; fyLDayHtml=function(v){ const h=_f6LDay.apply(this,arguments), n=fitData.bookings.filter(b=>b.team===0&&fxDates(b).includes(v)&&oaFind(b.oid)&&fitStatus(oaFind(b.oid))==='booked');
+  return (n.length?`<div class="f6load">❓ ${n.length} job${n.length>1?'s':''} booked this day with no team yet (${n.map(b=>esc(oaTitle(oaFind(b.oid)))).join(', ')}) — not on a van until the fitting manager picks a team.</div>`:'')+h; };
+
+// ── 🗺 Map: a job with no coordinates is placed by its Eircode (looked up once, kept for everyone) ──
+const _f6LL=fyLL; fyLL=function(o){ const ll=_f6LL.apply(this,arguments); if(ll) return ll; try{ const e=normEir((o.type==='builder'?o.siteEir:o.eir)||''); const g=e&&geoCache.get(e); if(g&&g.lat) return [g.lat,g.lng]; }catch(e){} return null; };
+let f6Geo=false;
+const _f6MapInit=fyMapInit; fyMapInit=function(){ _f6MapInit.apply(this,arguments); if(f6Geo) return;
+  const todo=fyMJobs().filter(x=>!x.ll).map(x=>(x.o.type==='builder'?x.o.siteEir:x.o.eir)||'').filter(e=>e&&e.replace(/\s/g,'').length>=7&&!geoCache.has(normEir(e)));
+  if(!todo.length) return; f6Geo=true;
+  (async()=>{ let found=0; try{ await loadRouteData(); for(const e of todo){ const p=await geocodeEir(e); if(p) found++; } }catch(e){ console.warn('map eircode',e); }
+    f6Geo=false; if(found&&fitOn&&fitView==='map'&&!document.querySelector('#modal-root .modal')) fitRender(); else if(!found&&!mapKey()) toast('🗺 Eircodes can\'t be looked up — add the TomTom key in the route settings (Service Department)',6000); })(); };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
