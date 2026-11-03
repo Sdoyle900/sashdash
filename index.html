@@ -668,6 +668,12 @@
     @media (max-width:900px){ :is(#view-oa,#view-fit,.fxm) .fy-mwrap{grid-template-columns:1fr} :is(#view-oa,#view-fit,.fxm) #fy-map{height:420px} :is(#view-oa,#view-fit,.fxm) .fy-mlist{height:auto;max-height:420px} :is(#view-oa,#view-fit,.fxm) .fy-lch{grid-template-columns:1fr} :is(#view-oa,#view-fit,.fxm) .fy-lsum{grid-template-columns:repeat(2,1fr)} :is(#view-oa,#view-fit,.fxm) .fy-lwk{grid-template-columns:1fr} :is(#view-oa,#view-fit,.fxm) .fy-ltab th:nth-child(5),:is(#view-oa,#view-fit,.fxm) .fy-ltab td:nth-child(5){display:none} :is(#view-oa,#view-fit,.fxm) .fy-g2{grid-template-columns:1fr} :is(#view-oa,#view-fit,.fxm) .fy-lrow{grid-template-columns:1fr} }
     :is(#view-oa,#view-fit,.fxm) .ac .fy-rb{color:#fff}:is(#view-oa,#view-fit,.fxm) .ac.a0{background:#991b1b}
     :is(#view-oa,#view-fit,.fxm) .board td.tm .fy-van,:is(#view-oa,#view-fit,.fxm) .dch .fy-van{white-space:normal;overflow:visible}
+    :is(#view-oa,#view-fit,.fxm) /* ── Update 74 ── */
+    .prod-gate{text-align:center;background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:46px 20px;margin:20px auto;max-width:640px;color:var(--navy)}:is(#view-oa,#view-fit,.fxm) .prod-gate h2{margin:10px 0}:is(#view-oa,#view-fit,.fxm) .prod-gate p{margin:6px 0}
+    :is(#view-oa,#view-fit,.fxm) .prod-spin{width:38px;height:38px;border:4px solid #ccfbf1;border-top-color:#0f766e;border-radius:50%;margin:0 auto;animation:prodspin .8s linear infinite}
+    @keyframes prodspin{to{transform:rotate(360deg)}}
+    :is(#view-oa,#view-fit,.fxm) .prod-bar{align-items:center}:is(#view-oa,#view-fit,.fxm) .prod-pill{white-space:nowrap;font-weight:800;font-size:12.5px;border-radius:20px;padding:3px 10px;background:#dcfce7;color:#166534}:is(#view-oa,#view-fit,.fxm) .prod-pill.saving{background:#fef3c7;color:#92400e}:is(#view-oa,#view-fit,.fxm) .prod-pill.bad{background:#fee2e2;color:#991b1b}
+    :is(#view-oa,#view-fit,.fxm) .prod-local{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:12px;padding:10px 12px;margin:-4px 0 14px;color:#78350f;font-size:13.5px}
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2068,7 +2074,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-03-1045';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-03-1645';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -8427,7 +8433,7 @@ function waGoDay(id){ const j=jobs.find(x=>x.id===id); if(!j) return toast('That
 // Demo only: orders are kept in this browser (localStorage), nothing goes to Supabase,
 // no SQL. Only the Office (full access) logins see the button, never in "View as".
 let oaOn=false, oaType='all', oaStage='', oaQ='', oaOrders=null, oaFormType='private', oaPages=[''];
-const oaScans={};   // scans picked this session (not kept after a reload in the preview)
+const oaScans=prodScanProxy({});   // Update 74: scans are saved to SashDash (prod-files)   // scans picked this session (not kept after a reload in the preview)
 const OA_KEY='sashdash-oa-v2';
 const OA_TYPES={private:{label:'Private clients',icon:'👤',col:'#2563eb'}, builder:{label:'Builders',icon:'🔨',col:'#c2410c'}, site:{label:'Sites',icon:'🏢',col:'#15803d'}};
 const OA_STAGES=[['received','📥','Order received'],['account','👤','Account made'],['factory','🏭','Sent to manufacturing'],['ready','🚚','Ready for fitting'],['paid','💶','Paid in full']];
@@ -8489,7 +8495,7 @@ const _oaApplyId=applyIdentity; applyIdentity=function(){ oaOff(); return _oaApp
 // ── The OA main page ──
 function oaRender(){
   const el=$('view-oa'); if(!el || !oaOn) return; oaLoad(); oaDiaryLoad();
-  if(oaView==='diary'){ el.innerHTML=oaDemoBar()+oaViewBar()+oaDiaryHtml(); return; }
+  oaView='orders';   // Update 73: Office Administration has no diary — fitting dates come from the fitting manager
   const inType=oaOrders.filter(o=>oaType==='all'||o.type===oaType);
   const cnt=k=>oaOrders.filter(o=>k==='all'||o.type===k).length;
   const q=oaQ.trim().toLowerCase(), qd=q.replace(/\s+/g,'');
@@ -8500,7 +8506,7 @@ function oaRender(){
   const typeBtn=(k,lab)=>`<button class="oa-type t-${k} ${oaType===k?'on':''}" onclick="oaType='${k}';oaStage='';oaRender()">${lab}<span class="n">${cnt(k)}</span></button>`;
   const stg=(k,ic,lab,n,cls)=>`<button class="oa-stage ${oaStage===k?'on':''} ${n&&cls?cls:''}" onclick="oaStage=oaStage==='${k}'?'':'${k}';oaRender()"><b>${n}</b><span>${ic} ${lab}</span></button>`;
   el.innerHTML=`
-    ${oaDemoBar()}${oaViewBar()}
+    ${oaDemoBar()}
     <div class="oa-types">${typeBtn('all','📋 All')}${typeBtn('private','👤 Private clients')}${typeBtn('builder','🔨 Builders')}${typeBtn('site','🏢 Sites')}</div>
     <div class="oa-stages">
       ${stg('received','📥','New orders',sc('received'),'')}
@@ -8611,8 +8617,8 @@ function oaOpenOrder(id){
     <div class="oa-stamps">${stamps}</div>
     ${si>0&&s!=='paid'?`<div style="margin:-8px 0 12px;text-align:right"><button class="btn-outline" style="padding:5px 10px;font-size:12px" onclick="oaUnstamp('${o.id}')">↩ Undo last stamp</button></div>`:''}
     <div class="oa-kv">${det}${kv('Order book pages','Pg '+esc(o.pages.join(' · ')))}${kv('Order scan', o.scan?(oaScans[o.id]?`<a href="${oaScans[o.id].url}" target="_blank">📄 ${esc(o.scan.name)}</a>`:`📄 ${esc(o.scan.name)} <span class="oa-hint">(not kept after a reload in the preview)</span>`):'<span class="oa-hint">No scan uploaded</span>')}</div>
-    <div class="oa-links" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button class="btn-primary oa-dbtn" onclick="oaDiaryAdd(null,'${o.id}')">📅 Add to diary</button>${coords?`<a class="btn-outline" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}">📍 Map</a>`:''}${o.phone||o.contact?`<a class="btn-outline" href="tel:${esc((o.phone||o.contact).replace(/\s+/g,''))}">📞 Ring</a>`:''}</div>
-    ${typeof fitOaBox==='function'?fitOaBox(o.id):''}${oaOrderDiary(o.id)}
+    <div class="oa-links" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${coords?`<a class="btn-outline" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}">📍 Map</a>`:''}${o.phone||o.contact?`<a class="btn-outline" href="tel:${esc((o.phone||o.contact).replace(/\s+/g,''))}">📞 Ring</a>`:''}</div>
+    ${typeof fitOaBox==='function'?fitOaBox(o.id):''}
     <div class="oa-g2" style="gap:12px">
       <div class="oa-box" style="padding-bottom:12px"><h4>💶 Payments</h4>
         <div class="oa-pay"><span>Order total</span><span>${oaEur(o.total)}</span></div>
@@ -8771,7 +8777,7 @@ function pvIsSean(){ return !!(realMe && realMe.role==='admin'); }   // Update 7
 let fitOn=false, fitView='main', fitJobId=null, fitFilter='all', fitQ='', fitData=null;
 let fitWeek=null, fitDMode='board', fitTeamN=1, fitDay=null, fitMonth=null;
 let fitPhTeam=3, fitPhDay=null, fitPhJob=null, fitPhTab='sheet', fitPhFile='scan';
-const fitBlobs={};
+const fitBlobs=prodBlobProxy({});   // Update 74: files picked here are saved to SashDash (prod-files)
 const FIT_KEY='sashdash-fit-v2';
 const FIT_PRODS=[['upvc','🪟','uPVC windows'],['comp','🚪','Composite doors'],['aluw','🔲','Aluminium windows'],['alud','🚪','Aluminium doors'],['timw','🪵','Timber windows'],['timd','🚪','Timber doors'],['custom','✏️','Custom']];
 const FIT_COLS=['#0f766e','#2563eb','#c2410c','#7c3aed','#db2777','#ca8a04','#0891b2','#65a30d','#9333ea','#dc2626','#475569','#16a34a'];
@@ -9118,9 +9124,9 @@ function fitSheetContent(o,fid){ const j=fitFJ(o.id);
     if(oaScans[o.id]) return `<div class="ft-pdf" data-url="${oaScans[o.id].url}"></div>`;
     return `<div style="padding:14px;font-size:11px;color:#334155"><b style="font-size:13px">ORDER — ${esc(oaTitle(o)).toUpperCase()}</b><div>Pg ${esc((o.pages||[]).join(' · '))} · ${esc(oaWhere(o))}</div>
      <table style="width:100%;border-collapse:collapse;margin-top:10px">${j.lines.map(l=>`<tr><td style="border:1px solid #cbd5e1;padding:6px;font-weight:700">${fitProd(l.prod)[1]} ${esc(l.prod==='custom'?l.custom:fitProd(l.prod)[2])}</td><td style="border:1px solid #cbd5e1;padding:6px">${esc(l.nums.join(', '))}</td></tr>`).join('')}${['W1 Kitchen','W2 Living','W3 Bed 1','W4 Bed 2','W5 Bath','D1 Front door'].map(r=>`<tr><td style="border:1px solid #cbd5e1;padding:6px">${r}</td><td style="border:1px solid #cbd5e1;padding:6px">&nbsp;</td></tr>`).join('')}</table>
-     <div style="margin-top:10px;color:#64748b">(Sample sheet — in the preview the real order scan only shows if it was uploaded in OA this session.)</div></div>`; }
+     <div style="margin-top:10px;color:#64748b">${typeof prodLoadingFile==='function'&&prodLoadingFile(o)?'⏳ Loading the order scan from SashDash…':'(No order scan on SashDash — the order lines are shown instead.)'}</div></div>`; }
   const f=j.files.find(x=>x.id===fid); const bl=fitBlobs[fid];
-  if(!bl) return `<div style="padding:30px;text-align:center;color:#64748b">📐 ${esc(f?f.name:'')}<br><small>The file isn't kept after a reload in the preview — add it again in the job.</small></div>`;
+  if(!bl) return `<div style="padding:30px;text-align:center;color:#64748b">📐 ${esc(f?f.name:'')}<br><small>⏳ Loading from SashDash… (if it never appears, add the file again in the job)</small></div>`;
   if(/image/.test(bl.type)) return `<img src="${bl.url}" style="width:100%">`;
   return `<div class="ft-pdf" data-url="${bl.url}"></div>`; }
 let fitMk={on:false,tool:'line',col:'#e11d48',cur:null,undo:[]};
@@ -9278,7 +9284,7 @@ const _fxSeed=fitSeed; fitSeed=function(){ const d=_fxSeed.apply(this,arguments)
 const _fxLoad=fitLoad; fitLoad=function(){ const had=!!fitData; _fxLoad.apply(this,arguments); if(!had&&fitData&&!(fitData.v>=2)){ fitData=fitSeed(); fitSave(); } };
 
 // ── Dept button opens the diary; bar text ──
-const FX_BAR=()=>`<div class="oa-demo fx-demo"><span>🧪 <b>Sample data</b> — Office Administration and Fitting are only shown to Office logins (full access). They run on sample jobs saved in this browser only: nothing is sent to Sites, the Service Department, the men or customers.</span><span class="spacer"></span><button class="btn-outline" onclick="fitReset()">↺ Reset sample data</button></div>`;
+var FX_BAR=()=>`<div class="oa-demo fx-demo"><span>🧪 <b>Sample data</b> — Office Administration and Fitting are only shown to Office logins (full access). They run on sample jobs saved in this browser only: nothing is sent to Sites, the Service Department, the men or customers.</span><span class="spacer"></span><button class="btn-outline" onclick="fitReset()">↺ Reset sample data</button></div>`;
 oaDemoBar=function(){ return FX_BAR().replace('fitReset()','oaResetDemo()').replace('Reset sample data','Reset sample orders'); };
 fitReset=function(){ if(!confirm('Put Fitting back to the sample data? Anything changed in Fitting in this browser is lost.')) return; fitData=fitSeed(); fitSave(); fitRender(); toast('Fitting sample data reset'); };
 
@@ -9309,17 +9315,17 @@ fitOpen=function(v){ if(!fitAllowed()) return;
 fitBtn=function(){ const bar=$('dept-bar'); if(!bar||!fitAllowed()) return; const inner=bar.querySelector('.dept-inner'); if(!inner) return;
   if(fitOn) inner.querySelectorAll('.dept-btn.on').forEach(b=>b.classList.remove('on'));
   fitLoad(); const nNew=fitOrders().filter(o=>['new','unf','snag'].includes(fitStatus(o))).length, open=fitOrders().filter(o=>!['fitted','sd'].includes(fitStatus(o))).length;
-  inner.insertAdjacentHTML('beforeend', `<button class="dept-btn d-fit ${fitOn?'on':''}" onclick="fitOpen('diary')" title="Fitting — Office only, sample data">${nNew?'<span class="dot" style="background:#facc15"></span>':''}<span class="di">🔧</span>Fitting<span class="dc">${open}</span></button>`); };
+  inner.insertAdjacentHTML('beforeend', `<button class="dept-btn d-fit ${fitOn?'on':''}" onclick="fitOpen('diary')" title="Fitting — Office (full access) only">${nNew?'<span class="dot" style="background:#facc15"></span>':''}<span class="di">🔧</span>Fitting<span class="dc">${open}</span></button>`); };
 fitSearchText=function(o){ const j=fitFJ(o.id), bs=fitData.bookings.filter(b=>b.oid===o.id);
   return [oaTitle(o),o.name,o.siteName,o.phone,o.contact,o.eir,o.siteEir,(o.pages||[]).join(' '),...j.lines.map(l=>l.nums.join(' ')+' '+fitProd(l.prod)[2]+' '+l.custom),...bs.map(b=>'team '+b.team+' '+fitCrewTxt(fitTeam(b.team)))].join(' ').toLowerCase(); };
 function fxSearchHtml(q){ const res=fitOrders().filter(o=>fitSearchText(o).includes(q));
   return `<div class="fx-h"><h2>🔍 Search</h2><span class="sub" style="color:var(--slate)">${res.length} found for “${esc(fitQ.trim())}”</span><span class="spacer"></span><button class="btn-outline" onclick="fitQ='';fitRender()">✕ Clear search</button></div>${res.length?fxTable(res,true):'<div class="oa-empty">Nothing found.</div>'}`; }
 
 // ── 📥 To allocate ──
-function fxScanBox(o){ const s=oaScans[o.id];
-  if(s&&/pdf/.test(s.type||'')) return `<iframe class="fx-pdf" src="${s.url}"></iframe>`;
+function fxScanBox(o){ const s=oaScans[o.id], ty=s?String((s.files&&s.files[0]&&s.files[0].type)||s.type||''):'', nm=s?String((s.files&&s.files[0]&&s.files[0].name)||''):'';   // Update 73: the type is on the picked file
+  if(s&&(/pdf/.test(ty)||/\.pdf$/i.test(nm))) return `<iframe class="fx-pdf" src="${s.url}"></iframe>`;
   if(s) return `<img class="fx-img" src="${s.url}">`;
-  return `<div class="fx-nopdf"><div class="pgx">📄</div><b>${o.scan?esc(o.scan.name):'Order scan'} · Pg ${esc((o.pages||[]).join(' · '))}</b><span>${o.scan?'The scan was picked on another visit — in this sample version files are only kept until the page is reloaded.':'Sample order — no scan attached. Office Administration attaches the scanned order when logging it.'}</span></div>`; }
+  return `<div class="fx-nopdf"><div class="pgx">📄</div><b>${o.scan?esc(o.scan.name):'Order scan'} · Pg ${esc((o.pages||[]).join(' · '))}</b><span>${typeof prodLoadingFile==='function'&&prodLoadingFile(o)?'⏳ Loading the order scan from SashDash…':o.scan&&o.scan.lost?'This scan was picked before Update 74 and wasn\'t kept — attach it again in Office Administration.':o.scan?'The scan isn\'t on SashDash — attach it again in Office Administration.':'No scan attached. Office Administration attaches the scanned order when logging it.'}</span></div>`; }
 function fxDraft(oid){ const j=fitFJw(oid); if(!j.draft) j.draft={secs:{},note:'',days:j.days||1,men:j.men||2}; return j.draft; }
 function fxToAllocHtml(){ const list=fitOrders().filter(o=>fitStatus(o)==='new').sort((a,b)=>new Date(b.stamps.factory.at)-new Date(a.stamps.factory.at));
   if(!list.length) return `<div class="fx-h"><h2>📥 To allocate</h2></div><div class="oa-empty">✔ Nothing to allocate. New jobs land here when Office Administration stamps 🏭 Sent to manufacturing.</div>`;
@@ -9972,6 +9978,163 @@ function fyMigrate(d){ if(!d||d.v>=3) return d;
   d.v=3; return d; }
 const _fySeed=fitSeed; fitSeed=function(){ return fyMigrate(_fySeed.apply(this,arguments)); };
 const _fyLoad3=fitLoad; fitLoad=function(){ _fyLoad3.apply(this,arguments); if(fitData&&!(fitData.v>=3)){ fyMigrate(fitData); fitSave(); } };
+
+
+// ════════ Update 74 — SashDash Production saves to the SashDash database (update-74-production.sql) ════════
+// Office Administration + Fitting: no more sample data, nothing kept in the browser. Each order (with its fitting job and
+// bookings) is one row in prod_orders; teams / vans / tablets / alarms / team-change log / yard ticks are rows in prod_state;
+// scans, cutting lists, job-sheet versions and team files go to the private 'prod-files' storage bucket (index: prod_files).
+// Only Office (full access) logins can read or write any of it (RLS). Sites / Service Department are not touched.
+var prodWriting=new Set(), prodSt='idle', prodErr='', prodVer={}, prodSaved={}, prodStateSaved={}, prodIdx={}, prodGot={}, prodBusy=0, prodTimer=null, prodChan=null, prodLastOA=null, prodLastJS=null, prodLocal=null;
+const PROD_STATE_KEYS=['teams','vans','tablets','alarms','hide','log','yard'];
+function prodEmptyFit(){ const teams=[]; for(let n=1;n<=20;n++) teams.push({n,leader:'',phone:'',men:[],col:FIT_COLS[(n-1)%FIT_COLS.length],inuse:false,van:''});
+  return {teams, vans:[], log:[], jobs:{}, bookings:[], hide:[], alarms:{ns:7,nf:4}, yard:{t:{},done:{}}, v:3,
+    tablets:[{n:1,name:'PVC windows saw',col:'#2563eb',see:['upvc'],people:[]},{n:2,name:'PVC doors',col:'#0891b2',see:['upvcd','upvcp','upvcf'],people:[]},{n:3,name:'Composite doors',col:'#7c3aed',see:['comp'],people:[]},{n:4,name:'Hardwood shop',col:'#a16207',see:['timw','timd'],people:[]},{n:5,name:'Aluminium shop',col:'#475569',see:['aluw','alusd','alup','aluls','aluf'],people:[]}]}; }
+function prodWho(){ return ((realMe||me||{}).full_name)||'Office'; }
+function prodNoTable(e){ return /prod_|relation|schema cache|does not exist|PGRST20/i.test((e&&(e.message||e.code))||''); }
+
+// ── no sample data any more ──
+oaSeed=function(){ return []; };
+fitSeed=function(){ return prodEmptyFit(); };
+oaLoad=function(){ if(!oaOrders) oaOrders=[]; };
+fitLoad=function(){ oaLoad(); try{ oaDiaryLoad(); }catch(e){} if(!fitData) fitData=prodEmptyFit();
+  if(!fitWeek){ const d=oaWorkDay(new Date()); fitWeek=ymd(mondayOf(d)); fitDay=ymd(d); fitPhDay=ymd(d); } };
+oaSave=function(){ prodQueue(); };
+fitSave=function(){ prodQueue(); };
+
+// ── load everything once (Office full access only) ──
+async function prodLoad(force){
+  if(!oaAllowed()||!sb) return; if(prodSt==='loading'||(prodSt==='ready'&&!force)) return;
+  prodSt='loading'; prodRefresh();
+  try{
+    const [o,s,f]=await Promise.all([sb.from('prod_orders').select('*'), sb.from('prod_state').select('*'), sb.from('prod_files').select('*')]);
+    const err=o.error||s.error||f.error; if(err){ prodSt=prodNoTable(err)?'nosql':'error'; prodErr=err.message||String(err); prodRefresh(); return; }
+    const fd=prodEmptyFit(); (s.data||[]).forEach(r=>{ if(PROD_STATE_KEYS.includes(r.key)&&r.data!=null){ fd[r.key]=r.data; prodStateSaved[r.key]=JSON.stringify(r.data); } });
+    if(fd.teams.length<20){ for(let n=fd.teams.length+1;n<=20;n++) fd.teams.push({n,leader:'',phone:'',men:[],col:FIT_COLS[(n-1)%FIT_COLS.length],inuse:false,van:''}); }
+    const rows=(o.data||[]).slice().sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    oaOrders=rows.map(r=>r.data); fd.jobs={}; fd.bookings=[];
+    rows.forEach(r=>{ if(r.fit) fd.jobs[r.id]=r.fit; (r.bookings||[]).forEach(b=>fd.bookings.push(b)); prodVer[r.id]=r.version; prodSaved[r.id]=JSON.stringify(prodDoc(r.id,r.data,fd)); });
+    fitData=fd; prodIdx={}; (f.data||[]).forEach(r=>prodIdx[r.key]=r);
+    PROD_STATE_KEYS.forEach(k=>{ if(!(k in prodStateSaved)) prodStateSaved[k]=JSON.stringify(fd[k]); });
+    prodSt='ready'; prodWatch(); prodLocalCheck();
+  }catch(e){ prodSt='error'; prodErr=e.message||String(e); }
+  prodRefresh(); }
+function prodRefresh(){ try{ renderDeptBar(); }catch(e){} try{ if(oaOn&&!document.querySelector('#modal-root .modal')) oaRender(); }catch(e){} try{ if(fitOn&&!document.querySelector('#modal-root .modal')) fitRender(); }catch(e){} prodPill(); }
+function prodGate(el){ if(prodSt==='ready') return false; if(prodSt==='idle') setTimeout(()=>prodLoad(),0);
+  el.innerHTML=prodSt==='nosql'
+    ?`<div class="prod-gate"><div style="font-size:40px">🗄</div><h2>One step before Office Administration and Fitting can be used</h2><p>Run <b>update-74-production.sql</b> in Supabase → <b>SQL Editor</b> (once), then reload SashDash.</p><p class="sub">Office Administration and Fitting now save to the SashDash database instead of this browser. The sample data is gone.</p><button class="btn-outline" onclick="prodSt='idle';prodLoad()">↻ Try again</button></div>`
+    :prodSt==='error'?`<div class="prod-gate"><div style="font-size:40px">⚠️</div><h2>Couldn't load Office Administration / Fitting</h2><p class="sub">${esc(prodErr)}</p><button class="btn-outline" onclick="prodSt='idle';prodLoad()">↻ Try again</button></div>`
+    :`<div class="prod-gate"><div class="prod-spin"></div><h2>Loading…</h2></div>`;
+  return true; }
+const _prodOaRender=oaRender; oaRender=function(){ const el=$('view-oa'); if(el&&oaOn&&prodGate(el)) return; return _prodOaRender.apply(this,arguments); };
+const _prodFitRender=fitRender; fitRender=function(){ const el=$('view-fit'); if(el&&fitOn&&prodGate(el)) return; return _prodFitRender.apply(this,arguments); };
+const _prodRDB=renderDeptBar; renderDeptBar=function(){ const r=_prodRDB.apply(this,arguments); try{ if(prodSt==='idle'&&oaAllowed()) setTimeout(()=>prodLoad(),0); }catch(e){} return r; };
+
+// ── saving: only orders / settings that changed, a version check per order ──
+function prodDoc(id,o,fd){ fd=fd||fitData; return {data:o, fit:(fd&&fd.jobs&&fd.jobs[id])||null, bookings:(fd?fd.bookings:[]).filter(b=>b.oid===id)}; }
+function prodQueue(){ if(prodSt!=='ready') return; clearTimeout(prodTimer); prodTimer=setTimeout(prodSync,350); prodPill('saving'); }
+async function prodSync(){ if(prodSt!=='ready') return; if(prodBusy){ prodTimer=setTimeout(prodSync,300); return; } prodBusy=1; let bad=0;
+  try{
+    const seen=new Set();
+    for(const o of (oaOrders||[])){ const id=o.id; seen.add(id); const doc=prodDoc(id,o), s=JSON.stringify(doc); if(prodSaved[id]===s) continue; prodWriting.add(id);
+      if(prodVer[id]==null){ const r=await sb.from('prod_orders').insert({id,data:doc.data,fit:doc.fit,bookings:doc.bookings,version:1,updated_by:prodWho()}).select('id,version');
+        if(r.error){ bad++; console.warn('prod insert',r.error); continue; } prodVer[id]=1; prodSaved[id]=s; }
+      else { const v=prodVer[id], r=await sb.from('prod_orders').update({data:doc.data,fit:doc.fit,bookings:doc.bookings,version:v+1,updated_by:prodWho(),updated_at:new Date().toISOString()}).eq('id',id).eq('version',v).select('id,version');
+        if(r.error){ bad++; console.warn('prod update',r.error); continue; }
+        if(!r.data||!r.data.length){ await prodPull(id,true); continue; }
+        prodVer[id]=v+1; prodSaved[id]=s; } }
+    for(const id of Object.keys(prodSaved)){ if(seen.has(id)) continue; const r=await sb.from('prod_orders').delete().eq('id',id); if(r.error){ bad++; continue; }
+      delete prodSaved[id]; delete prodVer[id]; prodDelFiles(id); }
+    for(const k of PROD_STATE_KEYS){ const s=JSON.stringify(fitData[k]); if(prodStateSaved[k]===s) continue;
+      const r=await sb.from('prod_state').upsert({key:k,data:fitData[k],updated_by:prodWho(),updated_at:new Date().toISOString()}); if(r.error){ bad++; continue; } prodStateSaved[k]=s; }
+  }catch(e){ bad++; console.warn('prod sync',e); }
+  prodWriting.clear(); prodBusy=0; if(bad){ prodPill('bad'); clearTimeout(prodTimer); prodTimer=setTimeout(prodSync,8000); } else prodPill('ok'); }
+// someone else changed an order: take theirs (and say so if we had a change on it)
+async function prodPull(id,clash){ const r=await sb.from('prod_orders').select('*').eq('id',id).maybeSingle(); if(r.error) return;
+  const row=r.data; if(!row){ oaOrders=oaOrders.filter(x=>x.id!==id); delete fitData.jobs[id]; fitData.bookings=fitData.bookings.filter(b=>b.oid!==id); delete prodSaved[id]; delete prodVer[id]; prodRefresh(); return; }
+  const i=oaOrders.findIndex(x=>x.id===id); if(i>=0) oaOrders[i]=row.data; else oaOrders.unshift(row.data);
+  if(row.fit) fitData.jobs[id]=row.fit; else delete fitData.jobs[id];
+  fitData.bookings=fitData.bookings.filter(b=>b.oid!==id).concat(row.bookings||[]);
+  prodVer[id]=row.version; prodSaved[id]=JSON.stringify(prodDoc(id,row.data));
+  if(clash) toast(`⚠ ${oaTitle(row.data)} was changed on another computer at the same time — it now shows their version. Please do your last change again.`,8000);
+  prodRefresh(); }
+// live: other office computers' changes appear without a reload
+function prodWatch(){ if(prodChan||!sb||!sb.channel) return;
+  try{ prodChan=sb.channel('sashdash-prod')
+    .on('postgres_changes',{event:'*',schema:'public',table:'prod_orders'},p=>{ const id=(p.new&&p.new.id)||(p.old&&p.old.id); if(!id) return;
+        if(p.eventType==='DELETE'){ if(prodVer[id]!=null&&(oaOrders||[]).some(x=>x.id===id)){ oaOrders=oaOrders.filter(x=>x.id!==id); delete fitData.jobs[id]; fitData.bookings=fitData.bookings.filter(b=>b.oid!==id); delete prodSaved[id]; delete prodVer[id]; prodRefresh(); } return; }
+        if(p.new&&prodVer[id]!=null&&p.new.version<=prodVer[id]) return; if(prodWriting.has(id)) return;
+        const lo=(oaOrders||[]).find(x=>x.id===id); if(lo&&prodSaved[id]!=null&&JSON.stringify(prodDoc(id,lo))!==prodSaved[id]){ prodQueue(); return; }   // our own unsaved change: the version check sorts it out
+        prodPull(id,false); })
+    .on('postgres_changes',{event:'*',schema:'public',table:'prod_state'},async p=>{ const k=p.new&&p.new.key; if(!k||!PROD_STATE_KEYS.includes(k)) return;
+        const r=await sb.from('prod_state').select('*').eq('key',k).maybeSingle(); if(r.error||!r.data) return; const s=JSON.stringify(r.data.data);
+        if(s===prodStateSaved[k]) return; fitData[k]=r.data.data; prodStateSaved[k]=s; prodRefresh(); })
+    .on('postgres_changes',{event:'*',schema:'public',table:'prod_files'},p=>{ if(p.new&&p.new.key) prodIdx[p.new.key]=p.new; else if(p.old&&p.old.key) delete prodIdx[p.old.key]; })
+    .subscribe(); }catch(e){ console.warn('prod live',e); } }
+// a small "✓ Saved" pill on the Office Administration / Fitting bar
+let prodPillSt='ok';
+function prodPillTxt(){ return prodPillSt==='saving'?'⏳ Saving…':prodPillSt==='bad'?'⚠ Not saved — check the internet (trying again)':'✓ Saved to SashDash'; }
+function prodPillHtml(){ return `<span class="prod-pill ${prodPillSt}">${prodPillTxt()}</span>`; }
+function prodPill(s){ if(s) prodPillSt=s; document.querySelectorAll('.prod-pill').forEach(p=>{ p.className='prod-pill '+prodPillSt; p.textContent=prodPillTxt(); }); }
+window.addEventListener('beforeunload',e=>{ if(prodSt==='ready'&&(prodPillSt==='saving'||prodPillSt==='bad'||prodBusy)){ e.preventDefault(); e.returnValue=''; } });
+
+// ── files: picked files go to the server; opened files come back from it ──
+function prodBlobProxy(t){ return new Proxy(t,{
+  set(o,k,v){ o[k]=v; if(typeof k==='string'&&v&&v.url&&!v._fromServer) setTimeout(()=>prodUpBlob(k,v),0); return true; },
+  get(o,k){ if(typeof k==='string'&&!(k in o)&&prodIdx&&prodIdx['b:'+k]) prodDownBlob(k); return o[k]; } }); }
+function prodScanProxy(t){ return new Proxy(t,{
+  set(o,k,v){ o[k]=v; if(typeof k==='string'&&k!=='_new'&&v&&v.files&&!v._fromServer) setTimeout(()=>prodUpScan(k,v),0); return true; },
+  get(o,k){ if(typeof k==='string'&&k!=='_new'&&!(k in o)&&prodIdx&&prodIdx['s:'+k]) prodDownScan(k); return o[k]; } }); }
+function prodSafe(n){ return String(n||'file').replace(/[^\w.\- ]+/g,'_').slice(-80); }
+function prodOidOfBlob(k){ let m=/^sheet-(.+)-\d+$/.exec(k); if(m) return m[1];
+  for(const [oid,j] of Object.entries((fitData&&fitData.jobs)||{})){ if(k.startsWith('saw-')&&(j.lines||[]).some(l=>'saw-'+l.id===k)) return oid; if((j.files||[]).some(f=>f.id===k)) return oid; }
+  return fitJobId||''; }
+async function prodPut(path,blob,type){ const r=await sb.storage.from('prod-files').upload(path,blob,{upsert:true,contentType:type||blob.type||'application/octet-stream'}); if(r.error) throw r.error; }
+async function prodUpBlob(k,v){ if(prodSt!=='ready') return; prodPill('saving'); prodBusy++;
+  try{ const blob=await (await fetch(v.url)).blob(), oid=prodOidOfBlob(k), ext=/pdf/.test(v.type||blob.type)?'.pdf':/png/.test(v.type)?'.png':/jpe?g/.test(v.type)?'.jpg':'', path=`orders/${prodSafe(oid||'x')}/${prodSafe(k)}${ext}`;
+    await prodPut(path,blob,v.type); const row={key:'b:'+k,oid,files:[{path,type:v.type||blob.type,name:k+ext}],created_by:prodWho()};
+    const r=await sb.from('prod_files').upsert(row); if(r.error) throw r.error; prodIdx[row.key]=row; prodBusy--; prodPill('ok'); }
+  catch(e){ prodBusy--; prodPill('bad'); toast('⚠ A file didn\'t save to SashDash — check the internet and add it again',8000); console.warn(e); } }
+async function prodUpScan(oid,v){ if(prodSt!=='ready') return; prodPill('saving'); prodBusy++;
+  try{ const files=[]; for(let i=0;i<v.files.length;i++){ const f=v.files[i], path=`orders/${prodSafe(oid)}/scan-${i+1}-${prodSafe(f.name)}`; await prodPut(path,f,f.type); files.push({path,type:f.type,name:f.name}); }
+    const row={key:'s:'+oid,oid,files,created_by:prodWho()}; const r=await sb.from('prod_files').upsert(row); if(r.error) throw r.error; prodIdx[row.key]=row; prodBusy--; prodPill('ok'); }
+  catch(e){ prodBusy--; prodPill('bad'); toast('⚠ The order scan didn\'t save to SashDash — check the internet and pick it again',8000); console.warn(e); } }
+async function prodDownBlob(k){ if(prodGot['b:'+k]) return; prodGot['b:'+k]=1; const x=prodIdx['b:'+k], f=x&&x.files&&x.files[0]; if(!f) return;
+  const r=await sb.storage.from('prod-files').download(f.path); if(r.error||!r.data){ delete prodGot['b:'+k]; return; }
+  fitBlobs[k]={url:URL.createObjectURL(r.data),type:f.type||r.data.type,_fromServer:true}; prodAfterFile(); }
+async function prodDownScan(oid){ if(prodGot['s:'+oid]) return; prodGot['s:'+oid]=1; const x=prodIdx['s:'+oid]; if(!x||!x.files) return; const files=[];
+  for(const f of x.files){ const r=await sb.storage.from('prod-files').download(f.path); if(r.error||!r.data){ delete prodGot['s:'+oid]; return; } files.push(new File([r.data],f.name||'scan',{type:f.type||r.data.type})); }
+  oaScans[oid]={files,url:URL.createObjectURL(files[0]),_fromServer:true}; prodAfterFile(); }
+function prodAfterFile(){ const m=document.querySelector('#modal-root .modal');
+  if(m){ if(prodLastJS&&m.querySelector('.js-grid')) fxJS(prodLastJS[0],prodLastJS[1]); else if(prodLastOA&&m.querySelector('.oa-stamps')) oaOpenOrder(prodLastOA); return; }
+  try{ if(fitOn) fitRender(); else if(oaOn) oaRender(); }catch(e){} }
+function prodLoadingFile(o){ return o&&o.scan&&prodIdx['s:'+o.id]&&!oaScans[o.id]; }
+async function prodDelFiles(oid){ try{ const keys=Object.keys(prodIdx).filter(k=>prodIdx[k].oid===oid), paths=keys.flatMap(k=>(prodIdx[k].files||[]).map(f=>f.path));
+    if(paths.length) await sb.storage.from('prod-files').remove(paths); if(keys.length) await sb.from('prod_files').delete().in('key',keys); keys.forEach(k=>delete prodIdx[k]); }catch(e){ console.warn('prod files delete',e); } }
+const _prodFxJS=fxJS; fxJS=function(oid,doc){ prodLastJS=[oid,doc]; return _prodFxJS.apply(this,arguments); };
+const _prodOaOpenOrder=oaOpenOrder; oaOpenOrder=function(id){ prodLastOA=id; return _prodOaOpenOrder.apply(this,arguments); };
+// deleting an order takes its fitting job, bookings and files with it
+const _prodOaDel=oaDel; oaDel=function(id){ const had=(oaOrders||[]).some(x=>x.id===id); _prodOaDel.apply(this,arguments);
+  if(had&&!(oaOrders||[]).some(x=>x.id===id)&&fitData){ delete fitData.jobs[id]; fitData.bookings=fitData.bookings.filter(b=>b.oid!==id); prodQueue(); } };
+
+// ── the bar at the top: no "sample data" any more ──
+FX_BAR=()=>`<div class="oa-demo fx-demo prod-bar"><span>🔒 <b>Office Administration and Fitting</b> — Office logins (full access) only. Everything saves to SashDash straight away, so every office computer sees the same.</span><span class="spacer"></span>${prodPillHtml()}</div>${prodLocalBox()}`;
+oaDemoBar=function(){ return FX_BAR(); };
+fitReset=function(){}; oaResetDemo=function(){};
+
+// ── one-off: orders typed into this browser before Update 74 (not the sample ones) can be brought across ──
+const PROD_SAMPLE_IDS=['oa1','oa2','oa3','oa4','oa5','oa6','oa7','oa8','oa9','oa10'];
+function prodLocalCheck(){ prodLocal=null; try{ if(localStorage.getItem('sashdash-prod-local-done')) return;
+    const oa=JSON.parse(localStorage.getItem('sashdash-oa-v2')||'null'), fd=JSON.parse(localStorage.getItem('sashdash-fit-v2')||'null');
+    const mine=Array.isArray(oa)?oa.filter(o=>o&&o.id&&!PROD_SAMPLE_IDS.includes(o.id)&&!(oaOrders||[]).some(x=>x.id===o.id)):[];
+    if(mine.length) prodLocal={orders:mine,fd}; else if(oa||fd) prodLocalForget(true); }catch(e){} }
+function prodLocalBox(){ if(!prodLocal) return ''; const n=prodLocal.orders.length;
+  return `<div class="prod-local">📤 <b>${n} order${n>1?'s':''} typed into this browser before the update</b> (${prodLocal.orders.slice(0,4).map(o=>esc(oaTitle(o))).join(', ')}${n>4?'…':''}) — bring ${n>1?'them':'it'} onto SashDash? The sample orders are left behind. Scans picked back then weren't kept, so attach them again.
+   <span class="spacer"></span><button class="btn-primary" style="background:#0f766e" onclick="prodLocalBring()">📤 Bring across</button><button class="btn-outline" onclick="if(confirm('Forget the orders in this browser? They are not on SashDash.'))prodLocalForget()">✕ No thanks</button></div>`; }
+function prodLocalBring(){ if(!prodLocal) return; const fd=prodLocal.fd||{};
+  prodLocal.orders.forEach(o=>{ if(o.scan) o.scan={name:o.scan.name,lost:true}; oaOrders.unshift(o); if(fd.jobs&&fd.jobs[o.id]) fitData.jobs[o.id]=fd.jobs[o.id]; (fd.bookings||[]).filter(b=>b.oid===o.id).forEach(b=>fitData.bookings.push(b)); });
+  const n=prodLocal.orders.length; prodLocalForget(true); prodQueue(); prodRefresh(); toast(`📤 ${n} order${n>1?'s':''} brought onto SashDash`); }
+function prodLocalForget(quiet){ try{ ['sashdash-oa-v2','sashdash-oa-diary-v2','sashdash-fit-v2'].forEach(k=>localStorage.removeItem(k)); localStorage.setItem('sashdash-prod-local-done','1'); }catch(e){} prodLocal=null; if(!quiet) prodRefresh(); }
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
