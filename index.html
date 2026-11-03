@@ -692,6 +692,10 @@
     :is(#view-oa,#view-fit,.fxm) .fx-box.f6info{background:#fffbeb!important;border-color:#f59e0b!important;color:#78350f}
     :is(#view-oa,#view-fit,.fxm) .fy-crew.f6crew{border-style:dashed;border-color:#d97706;background:#fffbeb}:is(#view-oa,#view-fit,.fxm) .fy-crew.f6crew.on{border-style:solid;background:#fef3c7}
     :is(#view-oa,#view-fit,.fxm) .f6load{background:#fffbeb;border:1.5px dashed #d97706;color:#78350f;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-weight:700;font-size:13.5px}
+    :is(#view-oa,#view-fit,.fxm) /* ── Update 77 ── */
+    .f7up{display:flex;gap:8px;align-items:center;margin-top:5px}:is(#view-oa,#view-fit,.fxm) .f7up label{cursor:pointer;text-transform:none;letter-spacing:0;margin:0}
+    :is(#view-oa,#view-fit,.fxm) .f7hist{margin-top:6px;font-size:12.5px;border-left:3px solid #e2e8f0;padding-left:8px;color:var(--slate)}:is(#view-oa,#view-fit,.fxm) .f7hist a{color:#4f46e5;font-weight:700}
+    :is(#view-oa,#view-fit,.fxm) .f7dl{margin-left:6px;padding:2px 8px}:is(#view-oa,#view-fit,.fxm) .f7latest{background:#6d28d9!important;margin-bottom:8px;width:100%}:is(#view-oa,#view-fit,.fxm) .fx-drop.f7over{background:#ede9fe;border-color:#6d28d9}
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2092,7 +2096,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-03-1715';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-03-1735';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -8634,7 +8638,7 @@ function oaOpenOrder(id){
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--slate)">Job stamps</div>
     <div class="oa-stamps">${stamps}</div>
     ${si>0&&s!=='paid'?`<div style="margin:-8px 0 12px;text-align:right"><button class="btn-outline" style="padding:5px 10px;font-size:12px" onclick="oaUnstamp('${o.id}')">↩ Undo last stamp</button></div>`:''}
-    <div class="oa-kv">${det}${kv('Order book pages','Pg '+esc(o.pages.join(' · ')))}${kv('Order scan', o.scan?(oaScans[o.id]?`<a href="${oaScans[o.id].url}" target="_blank">📄 ${esc(o.scan.name)}</a>`:`📄 ${esc(o.scan.name)} <span class="oa-hint">(not kept after a reload in the preview)</span>`):'<span class="oa-hint">No scan uploaded</span>')}</div>
+    <div class="oa-kv">${det}${kv('Order book pages','Pg '+esc(o.pages.join(' · ')))}${kv('Order scan', oaScanKv(o))}</div>
     <div class="oa-links" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${coords?`<a class="btn-outline" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}">📍 Map</a>`:''}${o.phone||o.contact?`<a class="btn-outline" href="tel:${esc((o.phone||o.contact).replace(/\s+/g,''))}">📞 Ring</a>`:''}</div>
     ${typeof fitOaBox==='function'?fitOaBox(o.id):''}
     <div class="oa-g2" style="gap:12px">
@@ -10087,7 +10091,11 @@ function prodWatch(){ if(prodChan||!sb||!sb.channel) return;
     .on('postgres_changes',{event:'*',schema:'public',table:'prod_state'},async p=>{ const k=p.new&&p.new.key; if(!k||!PROD_STATE_KEYS.includes(k)) return;
         const r=await sb.from('prod_state').select('*').eq('key',k).maybeSingle(); if(r.error||!r.data) return; const s=JSON.stringify(r.data.data);
         if(s===prodStateSaved[k]) return; fitData[k]=r.data.data; prodStateSaved[k]=s; prodRefresh(); })
-    .on('postgres_changes',{event:'*',schema:'public',table:'prod_files'},p=>{ if(p.new&&p.new.key) prodIdx[p.new.key]=p.new; else if(p.old&&p.old.key) delete prodIdx[p.old.key]; })
+    .on('postgres_changes',{event:'*',schema:'public',table:'prod_files'},async p=>{ const k=(p.new&&p.new.key)||(p.old&&p.old.key); if(!k) return;
+        if(p.eventType==='DELETE'){ delete prodIdx[k]; return; }
+        const r=await sb.from('prod_files').select('*').eq('key',k).maybeSingle(); if(r.error||!r.data) return; const old=prodIdx[k]; prodIdx[k]=r.data;
+        if(old&&JSON.stringify(old.files)!==JSON.stringify(r.data.files)){ delete prodGot[k];   // a file was replaced on another computer: drop the old copy
+          if(k.startsWith('s:')&&!k.includes('#')) delete oaScans[k.slice(2)]; else if(k.startsWith('b:')) delete fitBlobs[k.slice(2)]; prodRefresh(); } })
     .subscribe(); }catch(e){ console.warn('prod live',e); } }
 // a small "✓ Saved" pill on the Office Administration / Fitting bar
 let prodPillSt='ok';
@@ -10114,14 +10122,15 @@ async function prodUpBlob(k,v){ if(prodSt!=='ready') return; prodPill('saving');
     const r=await sb.from('prod_files').upsert(row); if(r.error) throw r.error; prodIdx[row.key]=row; prodBusy--; prodPill('ok'); }
   catch(e){ prodBusy--; prodPill('bad'); toast('⚠ A file didn\'t save to SashDash — check the internet and add it again',8000); console.warn(e); } }
 async function prodUpScan(oid,v){ if(prodSt!=='ready') return; prodPill('saving'); prodBusy++;
-  try{ const files=[]; for(let i=0;i<v.files.length;i++){ const f=v.files[i], path=`orders/${prodSafe(oid)}/scan-${i+1}-${prodSafe(f.name)}`; await prodPut(path,f,f.type); files.push({path,type:f.type,name:f.name}); }
+  try{ const files=[]; for(let i=0;i<v.files.length;i++){ const f=v.files[i], path=`orders/${prodSafe(oid)}/scan-${Date.now().toString(36)}-${i+1}-${prodSafe(f.name)}`; await prodPut(path,f,f.type); files.push({path,type:f.type,name:f.name}); }
     const row={key:'s:'+oid,oid,files,created_by:prodWho()}; const r=await sb.from('prod_files').upsert(row); if(r.error) throw r.error; prodIdx[row.key]=row; prodBusy--; prodPill('ok'); }
   catch(e){ prodBusy--; prodPill('bad'); toast('⚠ The order scan didn\'t save to SashDash — check the internet and pick it again',8000); console.warn(e); } }
 function prodDownBlob(k){ if(prodGot['b:'+k]) return prodGot['b:'+k]; return prodGot['b:'+k]=prodDownBlob2(k); }
 async function prodDownBlob2(k){ const x=prodIdx['b:'+k], f=x&&x.files&&x.files[0]; if(!f) return;
   const r=await sb.storage.from('prod-files').download(f.path); if(r.error||!r.data){ delete prodGot['b:'+k]; return; }
   fitBlobs[k]={url:URL.createObjectURL(r.data),type:f.type||r.data.type,_fromServer:true}; prodAfterFile(); }
-async function prodDownScan(oid){ if(prodGot['s:'+oid]) return; prodGot['s:'+oid]=1; const x=prodIdx['s:'+oid]; if(!x||!x.files) return; const files=[];
+function prodDownScan(oid){ if(prodGot['s:'+oid]) return prodGot['s:'+oid]; return prodGot['s:'+oid]=prodDownScan2(oid); }
+async function prodDownScan2(oid){ const x=prodIdx['s:'+oid]; if(!x||!x.files) return; const files=[];
   for(const f of x.files){ const r=await sb.storage.from('prod-files').download(f.path); if(r.error||!r.data){ delete prodGot['s:'+oid]; return; } files.push(new File([r.data],f.name||'scan',{type:f.type||r.data.type})); }
   oaScans[oid]={files,url:URL.createObjectURL(files[0]),_fromServer:true}; prodAfterFile(); }
 function prodAfterFile(){ const m=document.querySelector('#modal-root .modal');
@@ -10256,6 +10265,48 @@ const _f6MapInit=fyMapInit; fyMapInit=function(){ _f6MapInit.apply(this,argument
   if(!todo.length) return; f6Geo=true;
   (async()=>{ let found=0; try{ await loadRouteData(); for(const e of todo){ const p=await geocodeEir(e); if(p) found++; } }catch(e){ console.warn('map eircode',e); }
     f6Geo=false; if(found&&fitOn&&fitView==='map'&&!document.querySelector('#modal-root .modal')) fitRender(); else if(!found&&!mapKey()) toast('🗺 Eircodes can\'t be looked up — add the TomTom key in the route settings (Service Department)',6000); })(); };
+
+
+// ════════ Update 77 — 🧾 Office Administration: update the order PDF (pick or drag in), earlier versions kept ════════
+function oaScanKv(o){ const id=o.id, cur=o.scan?(oaScans[id]?`<a href="${oaScans[id].url}" target="_blank">📄 ${esc(o.scan.name)}</a>`
+      :(typeof prodLoadingFile==='function'&&prodLoadingFile(o))?`📄 ${esc(o.scan.name)} <span class="oa-hint">⏳ loading…</span>`:`📄 ${esc(o.scan.name)} <span class="oa-hint">— not on SashDash, attach it again</span>`):'<span class="oa-hint">No scan uploaded</span>';
+  const H=(o.scanHist||[]).slice().reverse();
+  return `<div class="f7scan">${cur}${o.scan&&o.scan.at?` <span class="oa-hint">· v${(o.scanHist||[]).length+1} · ${esc(o.scan.by||'')} ${oaDT(o.scan.at)}</span>`:''}
+    <div class="f7up"><label class="btn-outline ft-sm">⬆ ${o.scan?'Update order PDF':'Attach order PDF'}<input type="file" accept="application/pdf,image/*" multiple style="display:none" onchange="oaScanUpd('${id}',this.files)"></label><span class="oa-hint">or drag the PDF onto this box</span></div>
+    ${H.length?`<div class="f7hist">${H.map(h=>`<div>v${h.v} · ${esc(h.name)} <span class="oa-hint">${h.at?oaDT(h.at):''}${h.by?' · '+esc(h.by):''}</span> ${h.key&&typeof prodIdx!=='undefined'&&prodIdx[h.key]?`<a href="#" onclick="event.preventDefault();oaScanOld('${h.key}')">Open</a>`:''}</div>`).join('')}</div>`:''}</div>`; }
+async function oaScanUpd(id,fl){ const o=oaFind(id); fl=[...(fl||[])].filter(f=>/pdf|image/.test(f.type)); if(!o||!fl.length){ if(fl&&!fl.length) toast('Drop a PDF or a photo of the order'); return; }
+  const now=new Date().toISOString();
+  if(o.scan){ const hist=o.scanHist=o.scanHist||[], v=hist.length+1, key='s:'+id+'#v'+v, row=(typeof prodIdx!=='undefined')&&prodIdx['s:'+id];
+    if(row){ try{ const r=await sb.from('prod_files').upsert({key,oid:id,files:row.files,created_by:row.created_by||''}); if(!r.error) prodIdx[key]=Object.assign({},row,{key}); }catch(e){} }
+    hist.push({v,name:o.scan.name,at:o.scan.at||(o.stamps.received&&o.stamps.received.at)||'',by:o.scan.by||(o.stamps.received&&o.stamps.received.by)||'',key:row?key:''}); }
+  const name=fl.length===1?fl[0].name:fl.length+' files';
+  o.scan={name,at:now,by:oaWho()}; oaScans[id]={files:fl,url:URL.createObjectURL(fl[0])};
+  try{ if(fitData&&fitData.jobs&&fitData.jobs[id]) fxLog(id,'🧾',oaWho()+' · Office Administration',`Order PDF updated (v${(o.scanHist||[]).length+1}) — ${name}`); }catch(e){}
+  oaSave(); try{ fitSave(); }catch(e){} oaRender(); oaOpenOrder(id); toast('🧾 Order PDF updated — Fitting sees the new one'); }
+async function oaScanOld(key){ const x=prodIdx[key], f=x&&x.files&&x.files[0]; if(!f) return; const w=window.open('','_blank'); if(w) w.document.write('<p style="font-family:Arial;padding:20px">Loading…</p>');
+  const r=await sb.storage.from('prod-files').download(f.path); if(r.error||!r.data){ if(w) w.close(); toast('Couldn\'t load it — check the internet'); return; }
+  const u=URL.createObjectURL(r.data); if(w) w.location.href=u; else window.open(u,'_blank'); }
+const _f7Open=oaOpenOrder; oaOpenOrder=function(id){ _f7Open.apply(this,arguments); const m=document.querySelector('#modal-root .modal'); if(!m||!oaFind(id)) return;
+  m.addEventListener('dragover',e=>{ if([...(e.dataTransfer&&e.dataTransfer.types||[])].includes('Files')){ e.preventDefault(); m.style.outline='4px dashed #6d28d9'; m.style.outlineOffset='-8px'; } });
+  m.addEventListener('dragleave',e=>{ if(e.target===m) m.style.outline=''; });
+  m.addEventListener('drop',e=>{ if(!e.dataTransfer||!e.dataTransfer.files||!e.dataTransfer.files.length) return; e.preventDefault(); m.style.outline=''; oaScanUpd(id,e.dataTransfer.files); }); };
+
+// ── ⬆ Update job sheet: ⬇ download the latest version (or any earlier one) to mark up, then upload it back (pick or drag) ──
+async function f7SheetGet(oid,v){ const o=oaFind(oid), S=fitFJ(oid).sheets||[];
+  if(v===1){ let s=oaScans[oid]; if(!s&&typeof prodIdx!=='undefined'&&prodIdx['s:'+oid]){ await prodDownScan(oid); s=oaScans[oid]; } return s?{blob:s.files[0],name:(o.scan&&o.scan.name)||'order.pdf'}:null; }
+  const x=S[v-2]; if(!x||!x.blob) return null; let b=fitBlobs[x.blob]; if(!b&&typeof prodIdx!=='undefined'&&prodIdx['b:'+x.blob]){ await prodDownBlob(x.blob); b=fitBlobs[x.blob]; }
+  if(!b) return null; return {blob:await (await fetch(b.url)).blob(),name:x.name||('job-sheet-v'+v+'.pdf')}; }
+async function f7SheetDl(oid,v){ toast('⬇ Getting v'+v+'…'); const r=await f7SheetGet(oid,v); if(!r){ toast('v'+v+' isn\'t on SashDash — there\'s no file to download'); return; }
+  const a=document.createElement('a'), u=URL.createObjectURL(r.blob); a.href=u; a.download=`${oaTitle(oaFind(oid)).replace(/[\\/:*?"<>|]+/g,'-')} - job sheet v${v} - ${r.name}`.replace(/(\.pdf)?$/i,'').slice(0,150)+(/\.(png|jpe?g)$/i.test(r.name)?'':'.pdf');
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),60000); }
+const _f7SheetUpd=fxSheetUpd; fxSheetUpd=function(oid){ _f7SheetUpd.apply(this,arguments); const m=document.querySelector('#modal-root .modal'); if(!m) return; const n=(fitFJ(oid).sheets||[]).length+1;
+  m.querySelectorAll('.jsv-h .jh:not(.new)').forEach(r=>{ const v=+((r.querySelector('.vn')||{}).textContent||'').replace(/\D/g,''); if(v) r.insertAdjacentHTML('beforeend',`<button class="btn-outline ft-sm f7dl" title="Download v${v}" onclick="f7SheetDl('${oid}',${v})">⬇</button>`); });
+  const drop=m.querySelector('.fx-drop'); if(!drop) return;
+  drop.insertAdjacentHTML('beforebegin',`<button class="btn-primary f7latest" onclick="f7SheetDl('${oid}',${n})">⬇ Download v${n} (the latest) to mark up</button>`);
+  drop.innerHTML=`📎 Tap to pick the marked-up PDF — or drag it here<br><small>download v${n} above, add your changes, then upload it here as v${n+1}</small>`;
+  drop.addEventListener('dragover',e=>{ e.preventDefault(); e.stopPropagation(); drop.classList.add('f7over'); });
+  drop.addEventListener('dragleave',()=>drop.classList.remove('f7over'));
+  drop.addEventListener('drop',e=>{ e.preventDefault(); e.stopPropagation(); drop.classList.remove('f7over'); const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!f) return; fxSheetFile=f; const nm=$('fx-sh-name'); if(nm) nm.textContent='✓ '+f.name; }); };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
