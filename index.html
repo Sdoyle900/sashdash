@@ -698,6 +698,16 @@
     :is(#view-oa,#view-fit,.fxm) .f7dl{margin-left:6px;padding:2px 8px}:is(#view-oa,#view-fit,.fxm) .f7latest{background:#6d28d9!important;margin-bottom:8px;width:100%}:is(#view-oa,#view-fit,.fxm) .fx-drop.f7over{background:#ede9fe;border-color:#6d28d9}
     :is(#view-oa,#view-fit,.fxm) .f8pb{border:1.5px dashed #f59e0b;background:#fff;color:#b45309;font-weight:800;font-size:11.5px;border-radius:7px;padding:3px 7px;margin-right:4px;cursor:pointer;white-space:nowrap}:is(#view-oa,#view-fit,.fxm) .f8pb.on{background:#f59e0b;border-style:solid;color:#fff}
     :is(#view-oa,#view-fit,.fxm) .f8ip{display:inline-block;background:#fff7ed;border:1.5px solid #f59e0b;color:#b45309;font-weight:800;font-size:11px;border-radius:6px;padding:1px 6px;margin-right:4px;white-space:nowrap}
+    :is(#view-oa,#view-fit,.fxm) .topbar9.f9mid{margin:4px 0 12px}
+    :is(#view-oa,#view-fit,.fxm) /* ── Update 80 ── */
+    .frow.frow,:is(#view-oa,#view-fit,.fxm) .fhead.fhead{grid-template-columns:230px minmax(0,1fr) 84px 84px 84px 40px}
+    :is(#view-oa,#view-fit,.fxm) .tk .big.ip-on{background:#f59e0b;border-color:#f59e0b}:is(#view-oa,#view-fit,.fxm) .tk{text-align:center}
+    @media (max-width:720px){ :is(#view-oa,#view-fit,.fxm) .frow.frow{grid-template-columns:1fr 1fr} :is(#view-oa,#view-fit,.fxm) .fhead.fhead{display:none} }
+    :is(#view-oa,#view-fit,.fxm) .f11wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}:is(#view-oa,#view-fit,.fxm) .f11m{min-width:0}:is(#view-oa,#view-fit,.fxm) .f11h{font-weight:900;font-size:16px;color:var(--navy);margin:0 0 6px 2px}
+    :is(#view-oa,#view-fit,.fxm) .f11wrap .mgrid{grid-template-columns:repeat(6,1fr) 26px;gap:3px}:is(#view-oa,#view-fit,.fxm) .f11wrap .mc{min-height:74px;padding:3px}:is(#view-oa,#view-fit,.fxm) .f11wrap .mh{font-size:10px}:is(#view-oa,#view-fit,.fxm) .f11wrap .md{font-size:12px}:is(#view-oa,#view-fit,.fxm) .f11wrap .md em{font-size:10px;padding:0 5px}
+    :is(#view-oa,#view-fit,.fxm) .f11wrap .mchip{font-size:10px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}:is(#view-oa,#view-fit,.fxm) .f11wrap .mc.sun{padding:2px}:is(#view-oa,#view-fit,.fxm) .f11wrap .mmore{font-size:10px}
+    :is(#view-oa,#view-fit,.fxm) .f11sw{margin-left:8px}
+    @media (max-width:1100px){ :is(#view-oa,#view-fit,.fxm) .f11wrap{grid-template-columns:1fr} :is(#view-oa,#view-fit,.fxm) .f11wrap .mc{min-height:90px} }
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2098,7 +2108,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-03-1750';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-04-0915';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -8946,7 +8956,7 @@ function fitJobHtml(){
   const lines=j.lines.map((l,i)=>{ const p=fitProd(l.prod);
     return `<div class="frow"><div style="display:flex;flex-direction:column;gap:5px"><select onchange="fitLine(${i},'prod',this.value)">${FIT_PRODS.map(x=>`<option value="${x[0]}" ${x[0]===l.prod?'selected':''}>${x[1]} ${x[0]==='custom'?'Custom…':x[2]}</option>`).join('')}</select>${l.prod==='custom'?`<input value="${esc(l.custom)}" placeholder="What is it?" onchange="fitLine(${i},'custom',this.value)">`:''}</div>
       <div class="chips">${l.nums.map((n,k)=>`<span class="chip">${esc(n)}<b onclick="fitNumDel(${i},${k})">✕</b></span>`).join('')}<input class="chip-in" id="fit-num-${i}" placeholder="Job no." onkeydown="if(event.key==='Enter')fitNumAdd(${i})"><button class="plus" onclick="fitNumAdd(${i})">＋</button></div>
-      <div class="tk" onclick="fitLine(${i},'made',${!l.made})"><div class="big ${l.made?'saw-on':''}">${l.made?'✓':''}</div>🪚 Made</div><div class="tk" onclick="fitLine(${i},'ready',${!l.ready})"><div class="big ${l.ready?'on':''}">${l.ready?'✓':''}</div>Ready</div><button class="btn-outline" style="padding:6px 8px" onclick="fitLineDel(${i})">🗑</button></div>`; }).join('');
+      <div class="tk" onclick="f10Stage(${i},'saw')"><div class="big ${l.saw?'saw-on':''}">${l.saw?'✓':''}</div>🪚 Gone to saw</div><div class="tk" onclick="f10Stage(${i},'made')"><div class="big ${l.made?'ip-on':''}">${l.made?'✓':''}</div>⚙ In production</div><div class="tk" onclick="f10Stage(${i},'ready')"><div class="big ${l.ready?'on':''}">${l.ready?'✓':''}</div>✔ Ready</div><button class="btn-outline" style="padding:6px 8px" onclick="fitLineDel(${i})">🗑</button></div>`; }).join('');
   const files=[{id:'scan',name:'Order scan (from OA)',sub:o.scan?esc(o.scan.name):'the order sheet OA logged',team:j.scanTeam}].concat(j.files.map(f=>({id:f.id,name:esc(f.name),sub:`added by ${esc(f.by)} ${oaDate(f.at)}${fitBlobs[f.id]?'':' · file not kept after a reload in the preview'}`,team:f.team})));
   const outBox = (st==='unf'||st==='snag') ? `<div class="oa-warn" style="${st==='unf'?'background:#dbeafe;color:#1e3a8a':''}"><b>${st==='unf'?'⟲ Unfinished':'⚠ Snag'}</b> — ${b?'Team '+b.team+' · '+fitDL(b.start):''}<br>${j.out.type?esc(j.out.type)+' — ':''}${esc(j.out.text||'')}${j.out.need?'<br>Needs: '+esc(j.out.need):''}${(j.out.photos||[]).length?`<div style="display:flex;gap:6px;margin-top:6px">${j.out.photos.map(p=>`<img src="${p}" style="width:70px;height:56px;object-fit:cover;border-radius:6px">`).join('')}</div>`:''}<div style="margin-top:8px;display:flex;gap:8px"><button class="btn-outline" onclick="fitAllocate('${o.id}')">🗓 Re-book a team</button><button class="btn-primary" style="background:#be185d" onclick="fitSendSD('${o.id}')">➡ Send to service department</button></div></div>`
    : st==='sd' ? `<div class="oa-warn" style="background:#fce7f3;color:#9d174d">🛠️ Sent to the service department ${oaDT(j.sentSD.at)} by ${esc(j.sentSD.by)} · ⏱ ${esc(j.sentSD.time)} · 👷 ${esc(j.sentSD.men)} · 📦 ${esc(j.sentSD.mat)}<br>${esc(j.sentSD.note||'')}<br><small>In the preview nothing is really sent — in the real build it lands in Service Department 📋 Job allocations as a 🆕 new call "🔧 From Fitting".</small><div style="margin-top:6px"><button class="btn-outline" onclick="fitUnsend('${o.id}')">↩ Take back</button></div></div>`
@@ -8955,8 +8965,8 @@ function fitJobHtml(){
   ${j.isNew?`<div class="newbar"><span style="font-size:24px">🆕</span><div style="flex:1"><b>New from Office Administration</b> — stamped 🏭 Sent to manufacturing ${oaDT(S.factory.at)} by ${esc(S.factory.by)}.<br>Fill in what's needed and press <b>💾 Save</b>. It then joins the normal list and the 🆕 goes away.</div></div>`:''}
   ${outBox}
   <div class="oa-stamps" style="grid-template-columns:repeat(6,minmax(0,1fr));margin-bottom:14px">${stamp(!!S.received,'Order received',S.received?oaDate(S.received.at)+' · '+esc(S.received.by):'')}${stamp(!!S.account,'Account made',S.account?oaDate(S.account.at)+' · '+esc(S.account.by):'')}${stamp(!!S.factory,'Sent to manufacturing',S.factory?oaDate(S.factory.at)+' · '+esc(S.factory.by):'')}${stamp(!!S.ready,'Ready for fitting',S.ready?oaDate(S.ready.at)+' · '+esc(S.ready.by):'when every sub-heading is Ready')}${stamp(!!b,'🔧 Fitting booked',b?`Team ${b.team} · ${fitDL(b.start)}`:'not yet')}${stamp(j.outcome==='done','✅ Fitted',j.outcome==='done'?'by Team '+(b?b.team:''):'set by the team')}</div>
-  <div class="fx-box" style="margin-bottom:14px"><div style="display:flex;align-items:center;margin-bottom:10px"><h4 style="margin:0;flex:1">🏭 Factory</h4><span class="sub" style="color:var(--slate);font-size:13px;margin-right:10px">🪚 Made = made in the factory · Ready = ready to go out</span><button class="btn-primary" style="background:#0f766e" onclick="fitLineAdd()">＋ Add sub-heading</button></div>
-   ${j.lines.length?'<div class="fhead"><div>Sub-heading</div><div>Factory job numbers</div><div style="text-align:center">🪚 Made</div><div style="text-align:center">Ready</div><div></div></div>'+lines:'<div class="sub" style="color:var(--slate);padding:6px 0">No sub-headings yet — ＋ Add sub-heading (uPVC windows, composite doors, aluminium, timber or custom) and its factory job numbers.</div>'}</div>
+  <div class="fx-box" style="margin-bottom:14px"><div style="display:flex;align-items:center;margin-bottom:10px"><h4 style="margin:0;flex:1">🏭 Factory</h4><span class="sub" style="color:var(--slate);font-size:13px;margin-right:10px">🪚 Gone to saw → ⚙ In production → ✔ Ready to go out</span><button class="btn-primary" style="background:#0f766e" onclick="fitLineAdd()">＋ Add sub-heading</button></div>
+   ${j.lines.length?'<div class="fhead"><div>Sub-heading</div><div>Factory job numbers</div><div style="text-align:center">🪚 Gone to saw</div><div style="text-align:center">⚙ In production</div><div style="text-align:center">✔ Ready</div><div></div></div>'+lines:'<div class="sub" style="color:var(--slate);padding:6px 0">No sub-headings yet — ＋ Add sub-heading (uPVC windows, composite doors, aluminium, timber or custom) and its factory job numbers.</div>'}</div>
   <div class="fx-g2"><div class="fx-box"><h4 style="margin:0 0 10px">🧾 From Office Administration <span class="sub" style="font-weight:500;font-size:12px;color:var(--slate)">· read-only here</span></h4><div class="fx-kv">${det}${kv('Order book pages','Pg '+esc((o.pages||[]).join(' · ')))}${kv('Sales rep',esc(o.rep))}</div><div class="note-bar" style="margin:12px 0 0">💶 Prices and payments stay with OA — the fitting manager and the teams never see them.</div></div>
    <div class="fx-box"><h4 style="margin:0 0 10px">🔧 Fitting details</h4><div class="fx-g2" style="gap:10px"><div class="field-group"><label>Days to fit</label><select id="fit-days">${[0.5,1,2,3,4,5].map(d=>`<option value="${d}" ${+j.days===d?'selected':''}>${fitDaysTxt(d)}</option>`).join('')}</select></div><div class="field-group"><label>Men needed</label><select id="fit-men">${[1,2,3,4,5].map(m=>`<option value="${m}" ${+j.men===m?'selected':''}>👷 ${m}-man</option>`).join('')}</select></div></div>
     <div class="field-group"><label>Notes for the team</label><textarea id="fit-notes" rows="3" placeholder="Scaffold, keys, skip, access…">${esc(j.notes)}</textarea></div><div class="field-group"><label>Office notes <span class="optional">(team doesn't see)</span></label><textarea id="fit-office" rows="2">${esc(j.office)}</textarea></div></div></div>
@@ -9416,8 +9426,8 @@ function fxMfHtml(){
   const cntSub=k=>os.filter(o=>k==='all'||fitFJ(o.id).lines.some(l=>fxDept(l)===k)).length;
   let list=os.filter(inSub);
   if(fxSub!=='all'&&FIT_PRODS.some(p=>p[0]===fitFilter)&&FX_GROUPS[fxSub].includes(fitFilter)) list=list.filter(o=>fitFJ(o.id).lines.some(l=>l.prod===fitFilter)); else if(fxSub!=='all') fitFilter='all';
-  const f8ip=o=>fitFJ(o.id).lines.some(l=>l.made&&!l.ready&&(fxSub==='all'||fxDept(l)===fxSub)), stc=k=>list.filter(o=>k==='all'||(k==='ip'?f8ip(o):fitStatus(o)===k)).length;
-  const shown=list.filter(o=>fxSt==='all'||(fxSt==='ip'?f8ip(o):fitStatus(o)===fxSt)).sort((a,b)=>new Date(a.stamps.factory.at)-new Date(b.stamps.factory.at));
+  const f8in=l=>fxSub==='all'||fxDept(l)===fxSub, f8ip=o=>fitFJ(o.id).lines.some(l=>l.made&&!l.ready&&f8in(l)), f8sw=o=>fitFJ(o.id).lines.some(l=>l.saw&&!l.made&&!l.ready&&f8in(l)), f8f=(o,k)=>k==='ip'?f8ip(o):k==='sw'?f8sw(o):fitStatus(o)===k, stc=k=>list.filter(o=>k==='all'||f8f(o,k)).length;
+  const shown=list.filter(o=>fxSt==='all'||f8f(o,fxSt)).sort((a,b)=>new Date(a.stamps.factory.at)-new Date(b.stamps.factory.at));
   const subs=`<div class="mfsubs">${FX_SUBS.map(([k,ic,lab])=>`<button class="${fxSub===k?'on':''}" onclick="fxSub='${k}';fitFilter='all';fxHL=null;fitRender()"><span>${ic}</span>${lab}<em>${cntSub(k)}</em></button>`).join('')}</div>`;
   const heads= fxSub!=='all'&&FX_GROUPS[fxSub].length>1 ? `<div class="mfheads"><span class="lbl">${fxDeptName(fxSub)} ›</span><button class="${FX_GROUPS[fxSub].includes(fitFilter)?'':'on'}" onclick="fitFilter='all';fitRender()">All</button>${FX_GROUPS[fxSub].map(k=>{ const p=fitProd(k), n=os.filter(o=>fitFJ(o.id).lines.some(l=>l.prod===k)).length; return `<button class="${fitFilter===k?'on':''}" onclick="fitFilter='${k}';fitRender()">${p[1]} ${p[2]}<em>${n}</em></button>`; }).join('')}</div>`:'';
   const f=(k,lab)=>`<button class="${fxSt===k?'on':''}" onclick="fxSt='${k}';fitRender()">${lab} ${stc(k)}</button>`;
@@ -9431,7 +9441,7 @@ function fxMfHtml(){
    ${aBox(a2,'a2','2nd alarm','⏰',`Not finished — fitting within ${A.nf} days`,'⚙ In production on the tablet but not ✔ READY, and the job is booked to be fitted within '+A.nf+' days')}
    ${hl?`<div class="fromd"><span>📅 Opened from the Diary — <b>${esc(oaTitle(hl))}</b>${fitBk(hl.id)?' · Team '+fitBk(hl.id).team+' · '+fitDL(fitBk(hl.id).start):''}</span><span class="spacer"></span><button class="btn-outline ft-sm" onclick="fxHL=null;fitGo('diary')">← Back to diary</button><button class="btn-outline ft-sm" onclick="fxHL=null;fitRender()">✕</button></div>`:''}
    ${subs}${heads}
-   <div class="fx-filters">${f('all','All')}${f('mfg','🏭 Being made')}${f('ip','⚙ In production')}${f('ready','🚚 Ready to fit')}${f('booked','📅 Booked')}</div>
+   <div class="fx-filters">${f('all','All')}${f('mfg','🏭 Being made')}${f('sw','🪚 Gone to saw')}${f('ip','⚙ In production')}${f('ready','🚚 Ready to fit')}${f('booked','📅 Booked')}</div>
    <div class="fx-legend"><span><span class="rdy on mini">✔ READY</span> tap to mark ready / undo</span><span><span class="sawb on">🪚✓</span> sent to the saw</span><span><span class="f8pb on">⚙ In production</span> started (on the tablet or here)</span><span><span class="sawb">🪚</span> not sent yet — needs a job no. first</span><span>W-2611 = factory job no. · type it in and press Enter</span></div>
    ${shown.length?fxTable(shown):'<div class="oa-empty">Nothing here.</div>'}
    <div class="sub" style="margin-top:8px;font-size:12px;color:var(--slate)">Jobs arrive here from 📥 To allocate. Each department enters its job numbers, sends each line to the saw with its cutting list, then marks it ✔ READY (or the tablet does). When every line is READY the row lights up green and the OA order gets its 🚚 Ready for fitting stamp. Fitted, unfinished and snag jobs are in 🔧 After install.</div>`; }
@@ -10323,6 +10333,35 @@ function f8Fix(){ if(!fitData||!fitData.jobs) return; let n=0;
   Object.values(fitData.jobs).forEach(j=>(j.lines||[]).forEach(l=>{ if(l.made&&!l.ready&&!String(l.madeBy||'').startsWith('Tablet')&&!String(l.madeBy||'').endsWith(' · office')){ l.saw=true; l.sawBy=l.sawBy||l.madeBy; l.sawAt=l.sawAt||l.madeAt; l.made=false; l.madeBy=l.madeAt=''; n++; } else if(l.made&&!('saw' in l)&&l.pdf){ l.saw=true; l.sawBy=l.madeBy; l.sawAt=l.madeAt; } }));
   if(n){ prodQueue(); } }
 const _f8Load=prodLoad; prodLoad=async function(){ const r=await _f8Load.apply(this,arguments); try{ if(prodSt==='ready'&&!prodLoad.f8){ prodLoad.f8=1; f8Fix(); prodRefresh(); } }catch(e){ console.warn(e); } return r; };
+
+// ── Update 79: on 🏭 Manufacturing the search bar sits just above the department buttons (All / PVC / …) ──
+const _f9Render=fitRender; fitRender=function(){ const r=_f9Render.apply(this,arguments); try{ const v=$('view-fit'); if(fitOn&&fitView==='alloc'&&v){ const t=v.querySelector('.topbar9'), s=v.querySelector('.mfsubs'); if(t&&s){ s.parentNode.insertBefore(t,s); t.classList.add('f9mid'); } } }catch(e){} return r; };
+
+// ── Update 80: the three stages of a line — 🪚 Gone to saw → ⚙ In production → ✔ Ready. Ticking a stage ticks the ones before it; unticking one unticks the ones after it ──
+function f10Stage(i,k){ try{ fitKeepForm(); }catch(e){} const oid=fitJobId, j=fitFJw(oid), l=j.lines[i]; if(!l) return; const who=oaWho()+' · office', now=fxNow(), on=!l[k];
+  const saw=v=>{ l.saw=v; if(v){ l.sawBy=l.sawBy||who; l.sawAt=l.sawAt||now; } else l.sawBy=l.sawAt=''; };
+  const made=v=>{ l.made=v; if(v){ l.madeBy=l.madeBy||who; l.madeAt=l.madeAt||now; } else l.madeBy=l.madeAt=''; };
+  if(on&&k==='ready'&&!l.nums.length){ toast('Enter the job number first'); return; }
+  if(k==='saw'){ if(on) saw(true); else { saw(false); if(l.ready) fxReadyGo(oid,l.id,false,who); made(false); } }
+  if(k==='made'){ if(on){ saw(true); made(true); } else { if(l.ready) fxReadyGo(oid,l.id,false,who); made(false); } }
+  if(k==='ready'){ if(on){ saw(true); made(true); fxReadyGo(oid,l.id,true,who); } else fxReadyGo(oid,l.id,false,who); }
+  fxLog(oid,{saw:'🪚',made:'⚙',ready:'✔'}[k],who,`${fxProdTxt(l)}${l.nums.length?' '+l.nums.join(' · '):''} — ${on?'':'not '}${{saw:'gone to saw',made:'in production',ready:'READY'}[k]}`);
+  fitSave(); fitRender(); }
+// Manufacturing filters follow the same stages: 🪚 Gone to saw (sent, not started) · ⚙ In production · ✔ Ready to fit
+
+// ── Update 80: 📅 Month shows 3 months at a time (toggle 1 / 3 months, remembered on this computer) ──
+let f11N=3; try{ const v=localStorage.getItem('fitMonths'); if(v==='1') f11N=1; }catch(e){}
+function f11Set(n){ f11N=n; try{ localStorage.setItem('fitMonths',String(n)); }catch(e){} fitRender(); }
+const _f11Month=fxMonthHtml; fxMonthHtml=function(){ if(f11N!==3) return _f11Month.apply(this,arguments);
+  const d=parseYmd(fitDay), first=fitMonth?parseYmd(fitMonth):new Date(d.getFullYear(),d.getMonth(),1), keep=fitMonth; let h='<div class="f11wrap">';
+  for(let k=0;k<3;k++){ const m=new Date(first.getFullYear(),first.getMonth()+k,1); fitMonth=ymd(m);
+    h+=`<div class="f11m"><div class="f11h">${m.toLocaleDateString('en-IE',{month:'long',year:'numeric'})}</div>${_f11Month.apply(this,arguments)}</div>`; }
+  fitMonth=keep; return h+'</div>'; };
+const _f11Render=fitRender; fitRender=function(){ const r=_f11Render.apply(this,arguments); try{ const v=$('view-fit'); if(!fitOn||!v||fxDV!=='month'||fitView!=='diary') return r;
+    const lab=v.querySelector('.week-bar .wk-label'); if(lab&&f11N===3){ const d=parseYmd(fitDay), f=fitMonth?parseYmd(fitMonth):new Date(d.getFullYear(),d.getMonth(),1), l=new Date(f.getFullYear(),f.getMonth()+2,1);
+      const b=lab.querySelector('b'); if(b) b.textContent=f.toLocaleDateString('en-IE',{month:'short'})+' – '+l.toLocaleDateString('en-IE',{month:'short',year:'numeric'}); }
+    const sw=v.querySelector('.week-bar .dvsw')||v.querySelector('.week-bar'); if(sw&&!v.querySelector('.f11sw')) sw.insertAdjacentHTML('afterend',`<div class="dvsw f11sw"><button class="${f11N===1?'on':''}" onclick="f11Set(1)">1 month</button><button class="${f11N===3?'on':''}" onclick="f11Set(3)">3 months</button></div>`);
+  }catch(e){ console.warn(e); } return r; };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
