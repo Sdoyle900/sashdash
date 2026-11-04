@@ -761,6 +761,23 @@
     body.prod-team #view-fit.page{max-width:none;padding:0;margin:0}
     body.prod-team #view-fit .u85ph .ft-phh{display:none}
     body.prod-team #view-fit .u85ph .ft-phone{max-width:none;border-radius:0;box-shadow:none;border:none;min-height:calc(100vh - 62px);min-height:calc(100dvh - 62px)}
+    body.prod-as.prod-team #view-fit.page,body.prod-as.prod-tablet #view-fit.page{max-width:1400px;padding:14px 20px 40px;margin:0 auto}
+    body.prod-as.prod-team #view-fit .u85ph.u89phone{flex-direction:column;align-items:center;gap:10px}
+    body.prod-as.prod-team #view-fit .u85ph.u89phone .ft-phone{width:390px;max-width:100%;min-height:780px;max-height:820px;overflow:auto;border:12px solid #0f172a;border-radius:38px;box-shadow:0 16px 40px rgba(15,23,42,.3)}
+    body.prod-as.prod-team #view-fit .u85ph.u89phone .ft-phh{display:flex}
+    #view-fit .u89dev{display:flex;flex-direction:column;align-items:center;gap:10px}#view-fit .u89dev .tframe .tabscreen{width:1180px;height:820px;zoom:.8;border-radius:8px;overflow:hidden}
+    #view-fit .u89cap{font-size:13px;color:var(--slate);font-weight:700}
+    @media (max-width:1100px){ #view-fit .u89dev .tframe .tabscreen{zoom:.55} }
+    :is(#view-oa,#view-fit,.fxm) .u91key{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:12.5px;font-weight:700;color:#334155;margin:6px 0 8px}:is(#view-oa,#view-fit,.fxm) .u91key span{display:flex;align-items:center;gap:5px}:is(#view-oa,#view-fit,.fxm) .u91key i{width:14px;height:14px;border-radius:4px;display:inline-block}:is(#view-oa,#view-fit,.fxm) .u91key .u91k2{color:#94a3b8;font-weight:600}
+    :is(#view-oa,#view-fit,.fxm) .blk2.u91-cb,:is(#view-oa,#view-fit,.fxm) .mchip.u91-cb{color:#422006}:is(#view-oa,#view-fit,.fxm) .blk2.u91-cb .lk{background:#fff}
+    :is(#view-oa,#view-fit,.fxm) .dcard.u91-done{background:#f0fdf4}:is(#view-oa,#view-fit,.fxm) .dcard.u91-rb{background:#eff6ff}:is(#view-oa,#view-fit,.fxm) .dcard.u91-cb{background:#fefce8}:is(#view-oa,#view-fit,.fxm) .dcard.u91-bk{background:#fdf2f8}
+    :is(#view-oa,#view-fit,.fxm) .u92tag{display:block;width:max-content;max-width:100%;border-radius:5px;padding:1px 6px;font-size:10.5px;font-weight:900;letter-spacing:.3px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}:is(#view-oa,#view-fit,.fxm) .u92tag.rb{background:#fff;color:#1d4ed8}:is(#view-oa,#view-fit,.fxm) .u92tag.cb{background:#422006;color:#fde68a}
+    :is(#view-oa,#view-fit,.fxm) .dcard .u92tag.rb{background:#dbeafe}:is(#view-oa,#view-fit,.fxm) .dcard .u92tag.cb{background:#fef3c7;color:#92400e}
+    :is(#view-oa,#view-fit,.fxm) .u92hl{outline:4px solid #f59e0b!important;outline-offset:2px;animation:u92p 1s ease-in-out 3}@keyframes u92p{50%{outline-color:#0f172a}}
+    :is(#view-oa,#view-fit,.fxm) .fx-filters .u92f{background:#fef3c7;border-color:#f59e0b;color:#92400e}:is(#view-oa,#view-fit,.fxm) .fx-filters .u92f.u92f.on{background:#d97706;border-color:#d97706;color:#fff}
+    :is(#view-oa,#view-fit,.fxm) tr.u92row td{background:#fffbeb}:is(#view-oa,#view-fit,.fxm) tr.u92row td:first-child{box-shadow:inset 5px 0 0 #f59e0b}:is(#view-oa,#view-fit,.fxm) .u92pill{background:#fde68a;color:#78350f}
+    :is(#view-oa,#view-fit,.fxm) .u92prev{font-size:12px;color:#475569;margin-top:3px}:is(#view-oa,#view-fit,.fxm) .u92acts{display:flex;flex-direction:column;gap:4px;margin-top:6px;align-items:flex-start}
+    :is(#view-oa,#view-fit,.fxm) .u92note{font-size:12.5px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:6px 10px;margin:-4px 0 10px}
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2161,7 +2178,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-04-1450';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-04-1635';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -10894,7 +10911,7 @@ const _u88Src=u86Src; u86Src=async function(oid,k){ const m=/^v(\d+)$/.exec(k||'
 u86Canvas=async function(oid,k,W){ W=W||1100; const s=await u86Src(oid,k); const c=document.createElement('canvas'), x=c.getContext('2d'); let r1=1;
   if(s&&(/pdf/.test(s.type||'')||!/image/.test(s.type||''))){ if(!window.pdfjsLib) return {c:null,why:'The PDF viewer didn\'t load — check the internet'};
     try{ const doc=await pdfjsLib.getDocument(s.url).promise, pages=[]; for(let p=1;p<=doc.numPages;p++){ const pg=await doc.getPage(p), v0=pg.getViewport({scale:1}), vp=pg.getViewport({scale:W/v0.width}), pc=document.createElement('canvas'); pc.width=Math.round(vp.width); pc.height=Math.round(vp.height); await pg.render({canvasContext:pc.getContext('2d'),viewport:vp}).promise; pages.push(pc); }
-      c.width=W; c.height=pages.reduce((a,p)=>a+p.height,0); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); let y=0; pages.forEach(p=>{ x.drawImage(p,0,y); y+=p.height; }); r1=pages[0].height/c.height; }
+      c.width=W; c.height=pages.reduce((a,p)=>a+p.height,0); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); let y=0; pages.forEach(p=>{ x.drawImage(p,0,y); y+=p.height; }); r1=pages[0].height/c.height; c._pages=pages.map(p=>p.height); }
     catch(e){ return {c:null,why:'Couldn\'t open the PDF'}; } }
   else if(s){ const im=await new Promise(r=>{ const i=new Image(); i.onload=()=>r(i); i.onerror=()=>r(null); i.src=s.url; }); if(!im) return {c:null,why:'Couldn\'t open the picture'};
     c.width=W; c.height=Math.round(W*im.naturalHeight/im.naturalWidth); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height); }
@@ -10905,6 +10922,104 @@ u86Canvas=async function(oid,k,W){ W=W||1100; const s=await u86Src(oid,k); const
 // a team login: the phone fills the screen, no second SashDash header
 const _u88Cls=u84Classes; u84Classes=function(){ const r=_u88Cls.apply(this,arguments); const R=u83R(); document.body.classList.toggle('prod-team',!!R&&R.kind==='team'); return r; };
 const _u88Id=applyIdentity; applyIdentity=function(){ const r=_u88Id.apply(this,arguments); try{ const R=u83R(); document.body.classList.toggle('prod-team',!!R&&R.kind==='team'); }catch(e){} return r; };
+
+// ════ 👁 View as on a computer: a 📱 fitting team shows inside a phone, a factory tablet inside a tablet ════
+const _u89Tab=u83TabRender; u83TabRender=function(){ const r=_u89Tab.apply(this,arguments); try{ const el=$('view-fit'), t=el&&el.querySelector('.u83tab');
+    if(prodAs&&t&&!t.closest('.u89dev')){ const w=document.createElement('div'); w.className='u89dev u89tab'; w.innerHTML='<div class="tframe"><div class="tcam"></div></div><div class="u89cap">📱 Tablet screen — exactly what the tablet on the floor shows</div>'; t.parentNode.insertBefore(w,t); w.querySelector('.tframe').appendChild(t); } }catch(e){} return r; };
+const _u89FR=fitRender; fitRender=function(){ const r=_u89FR.apply(this,arguments); try{ const R=u83R(), el=$('view-fit'), p=el&&el.querySelector('.u85ph');
+    if(prodAs&&R&&R.kind==='team'&&p&&!p.classList.contains('u89phone')){ p.classList.add('u89phone'); p.insertAdjacentHTML('beforeend','<div class="u89cap">📱 Team '+R.team+'\'s phone — exactly what the leader sees</div>'); } }catch(e){} return r; };
+
+
+// ════ Update 90 — 🖨 Print report: the fitter's reports big at the top, sheets page by page with no blank gaps, the conversation last in clear writing, never stuck ════
+const U90_OUT=/^(✅ All done|⟲ Unfinished|⚠ Fitted with a snag|↩ Result cleared)/;
+function u90Reports(oid){ const j=fitFJ(oid), C=j.chat||[], out=[];
+  C.forEach((m,i)=>{ if(!m.evt||!U90_OUT.test(m.text||'')) return; const t0=new Date(m.at).getTime();
+    const ph=C.filter(x=>!x.evt&&(x.photos||[]).length&&Math.abs(new Date(x.at).getTime()-t0)<10*60e3).flatMap(x=>x.photos);
+    out.push({at:m.at,text:m.text,photos:ph,cls:/^✅/.test(m.text)?'ok':/^⚠/.test(m.text)?'snag':/^⟲/.test(m.text)?'unf':'clr'}); });
+  return out; }
+function u90Timeout(p,ms){ return Promise.race([p,new Promise(r=>setTimeout(()=>r({c:null,why:'took too long to load — open 📄 Job sheet on After install to see it'}),ms))]); }
+u86Report=async function(oid){ const o=oaFind(oid); if(!o) return; const w=window.open('','_blank'); if(!w){ toast('Allow pop-ups to print'); return; }
+  w.document.write('<p style="font-family:Arial;padding:20px;font-size:16px">⏳ Getting the report ready…</p>');
+  let cap=null; const keep=fyPrint; fyPrint=function(div,title,sub,body){ cap={div,title,sub,body}; };
+  try{ fitReport(oid); }finally{ fyPrint=keep; } if(!cap){ w.close(); return; }
+  let body=cap.body, conv=''; const ci=body.indexOf('<h2>Conversation</h2>'); if(ci>=0){ conv=body.slice(ci+'<h2>Conversation</h2>'.length); body=body.slice(0,ci); }
+  const R=u90Reports(oid), b=fitBk(oid);
+  const reps=`<h2 class="rh">🔧 Fitter's reports</h2>${R.length?R.map(x=>`<div class="rep ${x.cls}"><div class="rd">${new Date(x.at).toLocaleDateString('en-IE',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}<b>${new Date(x.at).toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})}</b></div><div class="rt2">${esc(x.text)}</div></div>`).join(''):'<div class="box">No report from the team yet.</div>'}`;
+  let photos=''; { const pi=body.indexOf('<h2>Photos</h2>'); if(pi>=0){ photos=body.slice(pi); body=body.slice(0,pi); } }   // photos go after the job sheets
+  const wf=body.indexOf('<h2>What was fitted</h2>'), te=wf>=0?body.indexOf('</table>',wf):-1; if(te>=0) body=body.slice(0,te+8)+reps+body.slice(te+8); else { const kvEnd=body.indexOf('</div>',body.indexOf('<div class="kv">'))+6; body=body.slice(0,kvEnd)+reps+body.slice(kvEnd); }
+  const S=u86Sheets(oid).filter(s=>s.n>0), parts=[];
+  for(const s of S){ const r=await u90Timeout(u86Canvas(oid,s.k,1000),20000);
+    if(!r.c){ parts.push(`<div class="sh"><h3>📄 ${esc(s.name)}</h3><div class="box">⚠ ${esc(r.why)}</div></div>`); continue; }
+    const H=r.c._pages||[r.c.height]; let y=0; H.forEach((h,i)=>{ const pc=document.createElement('canvas'); pc.width=r.c.width; pc.height=Math.round(h); pc.getContext('2d').drawImage(r.c,0,y,r.c.width,h,0,0,r.c.width,h); y+=h;
+      parts.push(`<div class="sh"><h3>📄 ${esc(s.name)}${H.length>1?` — page ${i+1} of ${H.length}`:''} · ✏️ marked up by the team</h3><img src="${pc.toDataURL('image/jpeg',.82)}"></div>`); }); }
+  const sheets=parts.length?`<h2>Job sheets with the team's mark-ups</h2>${parts.join('')}`:'';
+  const css=`${FY_PRINT_CSS}
+   h2.rh{font-size:19px;margin-top:14px}.rep{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;border:2px solid #cbd5e1;border-left-width:8px;border-radius:8px;padding:12px 14px;margin:8px 0;break-inside:avoid}
+   .rep .rd{font-size:13px;color:#475569}.rep .rd b{display:block;font-size:22px;color:#0f172a}.rep .rt2{font-size:19px;font-weight:700;line-height:1.35;color:#0f172a}
+   .rep.snag{border-color:#f59e0b;background:#fffbeb}.rep.unf{border-color:#3b82f6;background:#eff6ff}.rep.ok{border-color:#16a34a;background:#f0fdf4}.rep.clr{border-color:#94a3b8;background:#f8fafc}.rep.clr .rt2{font-size:15px;font-weight:600;color:#475569}
+   .rph{margin:0 0 10px 164px}.sh{break-inside:avoid;margin:12px 0}.sh h3{font-size:14px;margin:0 0 6px}.sh img{width:100%;max-height:245mm;object-fit:contain;border:1px solid #cbd5e1}
+   .conv .msg{font-size:15px;padding:8px 0;line-height:1.45}.conv .evt{font-size:14px;padding:6px 9px;margin:5px 0;line-height:1.4;color:#334155}.conv{break-before:auto}`;
+  w.document.open(); w.document.write(`<!doctype html><meta charset="utf-8"><title>${esc(cap.title)}</title><style>${css}</style>${fyPrintHead(cap.div,cap.title,cap.sub)}${body}${sheets}${photos}${conv?`<h2>Conversation</h2><div class="conv">${conv}</div>`:''}<div class="ft"><span>SashDash Production · Sean Doyle Windows Ltd · Roscommon</span><span>Printed by ${esc(oaWho())} · ${oaDT(new Date())}</span></div><script>window.onload=()=>setTimeout(()=>print(),300)<\/script>`); w.document.close(); };
+
+
+// ════════ Update 91 — 📅 Diary: colour by result (like the Service Department) · a job can't be booked twice on the same day ════════
+// 🟩 all done · 🟦 re-book (unfinished / snag) · 🟨 call back (the return visit after a re-book) · 🩷 booked (still to be fitted)
+const U91={done:['#16a34a','✅ All done'],rb:['#2563eb','⟲ Re-book'],cb:['#eab308','↩ Call back'],bk:['#db2777','📅 Booked']};
+function u91St(b){ const j=fitFJ(b.oid), cur=fitBk(b.oid);
+  if(b.res) return b.res==='done'?'done':'rb';
+  if(b.second&&cur&&cur.id!==b.id){ const c=u91St(cur); return c; }
+  if(cur&&cur.id===b.id){ if(j.outcome==='done') return 'done'; if(j.outcome==='unf'||j.outcome==='snag') return 'rb'; return (b.cb||(j.history||[]).length)?'cb':'bk'; }
+  // an earlier visit: match it to the job's history in date order
+  const prev=fitData.bookings.filter(x=>x.oid===b.oid&&!x.second&&(!cur||x.id!==cur.id)).sort((a,c)=>a.start<c.start?-1:1), i=prev.findIndex(x=>x.id===b.id), h=(j.history||[])[i];
+  return h&&h.outcome==='done'?'done':'rb'; }
+const _u91FR=fitRender; fitRender=function(){ const r=_u91FR.apply(this,arguments); try{ const v=$('view-fit'); if(!fitOn||!v||fitView!=='diary') return r;
+    v.querySelectorAll('[data-bid]').forEach(el=>{ const b=fitData.bookings.find(x=>x.id===el.dataset.bid); if(!b||b.team===0) return; const st=u91St(b); el.style.setProperty('--tc',U91[st][0]); el.classList.add('u91-'+st); el.title=U91[st][1]+' — '+(el.title||''); });
+    const top=v.querySelector('.fx-dtabs,.fx-dt')||v.querySelector('.topbar9'); if(top&&!v.querySelector('.u91key')) top.insertAdjacentHTML('afterend',`<div class="u91key">${Object.values(U91).map(([c,l])=>`<span><i style="background:${c}"></i>${l}</span>`).join('')}<span class="u91k2">❓ No team yet stays orange</span></div>`); }catch(e){ console.warn(e); } return r; };
+
+// ── booking: re-booking marks the old visit with its result; the same job is never on the same day twice ──
+const _u91Save=fitAlSave; fitAlSave=function(){ const a=fitAl; let cur=null, out=null;
+  try{ if(a&&a.re&&!a.bid){ cur=fitBk(a.oid); out=fitFJ(a.oid).outcome; } }catch(e){}
+  const r=_u91Save.apply(this,arguments);
+  try{ if(a&&!document.querySelector('#modal-root .modal')){
+      if(cur&&out){ cur.res=out; const nb=fitBk(a.oid); if(nb&&nb.id!==cur.id) nb.cb=true; }
+      if(u91Dedupe(a.oid)) toast('That job was already on that day — kept once'); fitSave(); fitRender(); } }catch(e){ console.warn(e); }
+  return r; };
+// two visits of the same job by the same team on the same day are one visit: keep the newest
+function u91Dedupe(oid){ if(!fitData) return 0; const seen=new Map(), drop=new Set(); let n=0;
+  fitData.bookings.slice().reverse().forEach(b=>{ if(oid&&b.oid!==oid) return; if(b.second) return; const k=b.oid+'|'+b.team+'|'+b.start; if(seen.has(k)){ const keep=seen.get(k); if(b.res&&!keep.res&&keep.id!==fitBk(b.oid).id) keep.res=b.res; drop.add(b.id); n++; } else seen.set(k,b); });
+  if(n) fitData.bookings=fitData.bookings.filter(b=>!drop.has(b.id)); return n; }
+// one-off tidy of the doubles already there (e.g. Belltree booked 3 times on Wed 4 Nov)
+const _u91Load=prodLoad; prodLoad=async function(){ const r=await _u91Load.apply(this,arguments); try{ if(prodSt==='ready'&&!prodLoad.u91&&u83Can('state')){ prodLoad.u91=1; if(u91Dedupe()){ prodQueue(); prodRefresh(); } } }catch(e){ console.warn(e); } return r; };
+
+
+// ════════ Update 92 — ⟲ re-books shown on the diary cards · 🔧 After install keeps a ↩ Re-booked list (amber) with 📅 Open in calendar · fitted jobs drop off 4 weeks after ✅ All done ════════
+function u92Hist(oid){ return (fitFJ(oid).history||[]).filter(h=>h.outcome==='unf'||h.outcome==='snag'); }
+function u92Rebooked(o){ const j=fitFJ(o.id); return !j.outcome&&!j.sentSD&&u92Hist(o.id).length>0&&!!fitBk(o.id); }
+const U92_KEEP=28;   // days a fitted job stays on 🔧 After install after ✅ All done
+function u92Old(o){ const j=fitFJ(o.id); if(j.outcome!=='done') return false; const at=(j.out&&j.out.at)||(j.sig&&j.sig.at); return !!at&&oaDays(at)>U92_KEEP; }
+const _u92List=fyAfterList; fyAfterList=function(){ const L=_u92List.apply(this,arguments).filter(o=>!u92Old(o)||fitFJ(o.id).yard), have=new Set(L.map(o=>o.id));
+  fitOrders().forEach(o=>{ if(!have.has(o.id)&&u92Rebooked(o)) L.push(o); }); return L; };
+const _u92St=fyAfterSt; fyAfterSt=function(o){ if(u92Rebooked(o)&&!fitFJ(o.id).yard) return 'rebooked'; return _u92St.apply(this,arguments); };
+function u92Prev(oid){ return u92Hist(oid).map(h=>`<div class="u92prev">${h.outcome==='snag'?'⚠ Snag':'⟲ Unfinished'} · ${h.at?oaDate(h.at):''}${h.out&&h.out.text?' — “'+esc(h.out.text)+'”':''}</div>`).join(''); }
+// 📅 open the job's visit in the diary, lit up
+let u92HL=null;
+function u92Cal(oid){ const b=fitBk(oid); if(!b){ toast('Not booked yet'); return; } u92HL=b.id; fitQ=''; fxDV='week'; fxDTab='diary'; fitWeek=ymd(mondayOf(parseYmd(fxDates(b)[0]))); fitDay=fxDates(b)[0]; fitGo('diary'); }
+const _u92FR=fitRender; fitRender=function(){ const r=_u92FR.apply(this,arguments); try{ const v=$('view-fit'); if(!fitOn||!v) return r;
+  if(fitView==='diary'){
+    v.querySelectorAll('[data-bid]').forEach(el=>{ if(el.querySelector('.u92tag')) return; const b=fitData.bookings.find(x=>x.id===el.dataset.bid); if(!b||b.team===0||typeof u91St!=='function') return; const st=u91St(b);
+      let tag=''; if(st==='rb'){ const nb=fitBk(b.oid), nx=nb&&nb.id!==b.id&&nb.start>b.start?nb:null; tag=`<span class="u92tag rb">⟲ RE-BOOK${nx?' → '+parseYmd(nx.start).toLocaleDateString('en-IE',{weekday:'short',day:'numeric',month:'short'}):' — not booked yet'}</span>`; }
+      else if(st==='cb'){ const h=u92Hist(b.oid).slice(-1)[0]; tag=`<span class="u92tag cb">↩ RE-BOOK${h?' · after '+(h.outcome==='snag'?'⚠ snag':'⟲ unfinished'):''}</span>`; }
+      if(!tag) return; if(el.classList.contains('mchip')) el.insertAdjacentHTML('afterbegin',st==='rb'?'⟲ ':'↩ '); else el.insertAdjacentHTML('afterbegin',tag); });
+    if(u92HL){ const el=v.querySelector(`[data-bid="${u92HL}"]`); u92HL=null; if(el){ el.classList.add('u92hl'); setTimeout(()=>el.scrollIntoView({block:'center',behavior:'smooth'}),60); setTimeout(()=>el.classList.remove('u92hl'),4000); } } }
+  if(fitView==='after'&&!fitQ.trim()){ const os=fyAfterList(), n=os.filter(o=>fyAfterSt(o)==='rebooked').length, fb=v.querySelector('.fx-filters');
+    if(fb&&!fb.querySelector('.u92f')){ const sn=[...fb.children].find(x=>/Snag/.test(x.textContent)); const h=`<button class="u92f ${fxAfter==='rebooked'?'on':''}" onclick="fxAfter='rebooked';fitRender()">↩ Re-booked ${n}</button>`; if(sn) sn.insertAdjacentHTML('afterend',h); else fb.insertAdjacentHTML('beforeend',h); }
+    v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/); if(!m) return; const oid=m[1], o=oaFind(oid); if(!o) return; const st=fyAfterSt(o), td=tr.children, b=fitBk(oid);
+      if(st==='rebooked'){ tr.classList.add('u92row'); if(td[3]) td[3].innerHTML=`<span class="ft-pill u92pill">↩ Re-booked</span>${b?`<div class="sub" style="margin-top:4px;font-weight:700;color:#92400e">👷 Team ${b.team} · ${fxDates(b).map(fitDL).join(', ')}</div>`:''}${u92Prev(oid)}${typeof u87Badge==='function'?`<div style="margin-top:5px">${u87Badge(oid,true)}</div>`:''}`;
+        const a=td[td.length-1]; if(a){ a.querySelectorAll('button').forEach(x=>{ if(/Re-book team|Mark for service/.test(x.textContent)){ const nx=x.nextSibling; x.remove(); if(nx&&nx.nodeName==='BR') nx.remove(); } }); a.insertAdjacentHTML('beforeend',`<div class="u92acts"><button class="btn-primary ft-sm" style="background:#b45309" onclick="event.stopPropagation();u92Cal('${oid}')">📅 Open in calendar</button><button class="btn-outline ft-sm" onclick="event.stopPropagation();fyNewDate('${b?b.id:''}')">📅 Change date / team</button></div>`); } }
+      else if(b&&(st==='unf'||st==='snag'||st==='fitted')){ const a=td[td.length-1]; if(a&&!a.querySelector('.u92cal')) a.insertAdjacentHTML('beforeend',`<div class="u92acts"><button class="btn-outline ft-sm u92cal" onclick="event.stopPropagation();u92Cal('${oid}')">📅 Open in calendar</button></div>`);
+        if(u92Hist(oid).length&&td[3]&&!td[3].querySelector('.u92prev')) td[3].insertAdjacentHTML('beforeend',`<div class="sub" style="margin-top:4px">${st==='fitted'?'after a re-book:':'earlier:'}</div>${u92Prev(oid)}`); } });
+    const note=v.querySelector('.fx-filters'); if(note&&!v.querySelector('.u92note')) note.insertAdjacentHTML('afterend',`<div class="u92note">↩ <b>Re-booked</b> jobs stay here (amber) until the team taps ✅ All done. Fitted jobs drop off this list ${U92_KEEP/7} weeks after they're done.</div>`); }
+  }catch(e){ console.warn(e); } return r; };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
