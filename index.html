@@ -703,11 +703,10 @@
     .frow.frow,:is(#view-oa,#view-fit,.fxm) .fhead.fhead{grid-template-columns:230px minmax(0,1fr) 84px 84px 84px 40px}
     :is(#view-oa,#view-fit,.fxm) .tk .big.ip-on{background:#f59e0b;border-color:#f59e0b}:is(#view-oa,#view-fit,.fxm) .tk{text-align:center}
     @media (max-width:720px){ :is(#view-oa,#view-fit,.fxm) .frow.frow{grid-template-columns:1fr 1fr} :is(#view-oa,#view-fit,.fxm) .fhead.fhead{display:none} }
-    :is(#view-oa,#view-fit,.fxm) .f11wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}:is(#view-oa,#view-fit,.fxm) .f11m{min-width:0}:is(#view-oa,#view-fit,.fxm) .f11h{font-weight:900;font-size:16px;color:var(--navy);margin:0 0 6px 2px}
-    :is(#view-oa,#view-fit,.fxm) .f11wrap .mgrid{grid-template-columns:repeat(6,1fr) 26px;gap:3px}:is(#view-oa,#view-fit,.fxm) .f11wrap .mc{min-height:74px;padding:3px}:is(#view-oa,#view-fit,.fxm) .f11wrap .mh{font-size:10px}:is(#view-oa,#view-fit,.fxm) .f11wrap .md{font-size:12px}:is(#view-oa,#view-fit,.fxm) .f11wrap .md em{font-size:10px;padding:0 5px}
-    :is(#view-oa,#view-fit,.fxm) .f11wrap .mchip{font-size:10px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}:is(#view-oa,#view-fit,.fxm) .f11wrap .mc.sun{padding:2px}:is(#view-oa,#view-fit,.fxm) .f11wrap .mmore{font-size:10px}
+    :is(#view-oa,#view-fit,.fxm) .f11wrap{display:flex;flex-direction:column;gap:18px}:is(#view-oa,#view-fit,.fxm) .f11m{min-width:0}:is(#view-oa,#view-fit,.fxm) .f11h{font-weight:900;font-size:18px;color:var(--navy);margin:0 0 6px 2px;padding-bottom:4px;border-bottom:2px solid #fed7aa}
+    :is(#view-oa,#view-fit,.fxm) .f11wrap .mgrid{grid-template-columns:repeat(6,minmax(0,1fr)) 70px}:is(#view-oa,#view-fit,.fxm) .f11wrap .mc{min-width:0}
+    :is(#view-oa,#view-fit,.fxm) .f11wrap .mchip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     :is(#view-oa,#view-fit,.fxm) .f11sw{margin-left:8px}
-    @media (max-width:1100px){ :is(#view-oa,#view-fit,.fxm) .f11wrap{grid-template-columns:1fr} :is(#view-oa,#view-fit,.fxm) .f11wrap .mc{min-height:90px} }
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2108,7 +2107,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-04-0915';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-04-0930';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
