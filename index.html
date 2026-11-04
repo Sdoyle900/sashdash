@@ -707,6 +707,9 @@
     :is(#view-oa,#view-fit,.fxm) .f11wrap .mgrid{grid-template-columns:repeat(6,minmax(0,1fr)) 70px}:is(#view-oa,#view-fit,.fxm) .f11wrap .mc{min-width:0}
     :is(#view-oa,#view-fit,.fxm) .f11wrap .mchip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     :is(#view-oa,#view-fit,.fxm) .f11sw{margin-left:8px}
+    :is(#view-oa,#view-fit,.fxm) .tlist.tlist{overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}:is(#view-oa,#view-fit,.fxm) .tlist.tlist::-webkit-scrollbar{width:14px}:is(#view-oa,#view-fit,.fxm) .tlist.tlist::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:7px}
+    :is(#view-oa,#view-fit,.fxm) .f12s{display:flex;gap:8px;padding:10px 18px 0}:is(#view-oa,#view-fit,.fxm) .f12s input{flex:1;font-size:20px;padding:12px 16px;border:2px solid #cbd5e1;border-radius:12px;background:#fff}:is(#view-oa,#view-fit,.fxm) .f12s input:focus{border-color:#0f766e;outline:none}:is(#view-oa,#view-fit,.fxm) .f12s button{font-size:20px;border:2px solid #cbd5e1;background:#fff;border-radius:12px;padding:0 18px;cursor:pointer}
+    :is(#view-oa,#view-fit,.fxm) .fy-lc.f12nt.f12nt{border:2.5px dashed #d97706;border-left:8px dashed #d97706;background:#fffbeb}:is(#view-oa,#view-fit,.fxm) .fy-lc.f12nt .fy-lteam b{color:#b45309}:is(#view-oa,#view-fit,.fxm) .fy-lc.f12nt .fy-lteam span{color:#92400e;font-weight:700}
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2107,7 +2110,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-04-0930';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-04-0950';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -10263,10 +10266,6 @@ const _f6Drop=fxDropAsk; fxDropAsk=function(bid,team,day){ _f6Drop.apply(this,ar
   if(b&&b.team===0&&fxDropSt&&fxDropSt.mode==='add'){ fxDropSt.mode='move'; fxDropForm(); } };
 const _f6DropForm=fxDropForm; fxDropForm=function(){ _f6DropForm.apply(this,arguments); const s=fxDropSt, b=s&&fitData.bookings.find(x=>x.id===s.bid); const m=document.querySelector('#modal-root .modal');
   if(m&&b&&(b.team===0||s.team===0)){ const sh=m.querySelector('.shch'); if(sh) sh.remove(); } };
-// 🚚 Loading: not on a van until a team is picked
-const _f6LBk=fyLoadBk; fyLoadBk=function(v){ return _f6LBk.apply(this,arguments).filter(b=>b.team!==0); };
-const _f6LDay=fyLDayHtml; fyLDayHtml=function(v){ const h=_f6LDay.apply(this,arguments), n=fitData.bookings.filter(b=>b.team===0&&fxDates(b).includes(v)&&oaFind(b.oid)&&fitStatus(oaFind(b.oid))==='booked');
-  return (n.length?`<div class="f6load">❓ ${n.length} job${n.length>1?'s':''} booked this day with no team yet (${n.map(b=>esc(oaTitle(oaFind(b.oid)))).join(', ')}) — not on a van until the fitting manager picks a team.</div>`:'')+h; };
 
 // ── 🗺 Map: a job with no coordinates is placed by its Eircode (looked up once, kept for everyone) ──
 const _f6LL=fyLL; fyLL=function(o){ const ll=_f6LL.apply(this,arguments); if(ll) return ll; try{ const e=normEir((o.type==='builder'?o.siteEir:o.eir)||''); const g=e&&geoCache.get(e); if(g&&g.lat) return [g.lat,g.lng]; }catch(e){} return null; };
@@ -10361,6 +10360,22 @@ const _f11Render=fitRender; fitRender=function(){ const r=_f11Render.apply(this,
       const b=lab.querySelector('b'); if(b) b.textContent=f.toLocaleDateString('en-IE',{month:'short'})+' – '+l.toLocaleDateString('en-IE',{month:'short',year:'numeric'}); }
     const sw=v.querySelector('.week-bar .dvsw')||v.querySelector('.week-bar'); if(sw&&!v.querySelector('.f11sw')) sw.insertAdjacentHTML('afterend',`<div class="dvsw f11sw"><button class="${f11N===1?'on':''}" onclick="f11Set(1)">1 month</button><button class="${f11N===3?'on':''}" onclick="f11Set(3)">3 months</button></div>`);
   }catch(e){ console.warn(e); } return r; };
+
+
+// ════════ Update 82 — 📱 tablets: the job list scrolls + 🔍 search · 🚚 Loading shows ❓ no-team jobs ════════
+// 🔍 search on each tablet (only the lines on that tablet; all three tabs follow it)
+let f12Q='', f12On=false;
+function f12Match(x,q){ const o=x.o, l=x.l; return [oaTitle(o),o.name,o.siteName,o.unitNo,o.block,(o.pages||[]).join(' '),l.nums.join(' '),fxProdTxt(l),l.custom].join(' ').toLowerCase().includes(q); }
+const _f12Lines=fxTabLines; fxTabLines=function(){ const r=_f12Lines.apply(this,arguments); const q=f12Q.trim().toLowerCase(); return f12On&&q?r.filter(x=>f12Match(x,q)):r; };
+const _f12Screen=fxTabScreen; fxTabScreen=function(t){ f12On=true; let h; try{ h=_f12Screen.apply(this,arguments); } finally { f12On=false; }
+  const box=`<div class="f12s"><input id="f12q" value="${esc(f12Q)}" placeholder="🔍 Search this tablet — job, site, page no. or job no. (e.g. 1235)" oninput="f12Q=this.value;fxTabShow(${t.n});const i=$('f12q');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}">${f12Q?`<button onclick="f12Q='';fxTabShow(${t.n})">✕</button>`:''}</div>`;
+  h=h.replace('<div class="ttabs">',box+'<div class="ttabs">');
+  if(f12Q.trim()) h=h.replace('Nothing here 👍','Nothing matches “'+esc(f12Q.trim())+'”');
+  return h; };
+// 🚚 Loading: a job with ❓ no team yet still gets its card, so the yard can get it ready
+const _f12LCard=fyLCard; fyLCard=function(b,v){ let h=_f12LCard.apply(this,arguments); if(b.team!==0) return h;
+  return h.replace('class="fy-lc ','class="fy-lc f12nt ').replace(/<div class="fy-lteam"><b>Team 0<\/b><span>[^<]*<\/span>/,`<div class="fy-lteam"><b>❓ No team yet</b><span>van not picked — the fitting manager picks the team</span>`); };
+const _f12Print=fyPrint; fyPrint=function(div,title,sub,body){ const f=x=>String(x||'').replace(/Team 0(?!\d)( · ⭐ )?/g,'❓ No team yet — not picked yet').replace(/⭐  · /g,''); return _f12Print.call(this,div,f(title),f(sub),f(body)); };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
