@@ -731,6 +731,22 @@
     :is(#view-oa,#view-fit,.fxm) .pm-c{border-radius:6px;padding:2px 8px;font-weight:800;font-size:12px}:is(#view-oa,#view-fit,.fxm) .pm-c.s{background:#fef3c7;color:#92400e}:is(#view-oa,#view-fit,.fxm) .pm-c.p{background:#ede9fe;color:#5b21b6}:is(#view-oa,#view-fit,.fxm) .pm-c.f{background:#ccfbf1;color:#115e59}:is(#view-oa,#view-fit,.fxm) .pm-c.t{background:#e0e7ff;color:#3730a3}:is(#view-oa,#view-fit,.fxm) .pm-x{color:#94a3b8;font-size:12px}
     :is(#view-oa,#view-fit,.fxm) .pm-movenote{font-size:12.5px;font-weight:700;color:#854d0e}
     @media (max-width:720px){ :is(#view-oa,#view-fit,.fxm) .pm-row{grid-template-columns:34px 1fr}:is(#view-oa,#view-fit,.fxm) .pm-row select{grid-column:2 / -1} }
+    :is(#view-oa,#view-fit,.fxm) .u84wrap{position:relative;display:inline-block}
+    :is(#view-oa,#view-fit,.fxm) .u84menu{position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:300px;max-height:70vh;overflow:auto;text-align:left}
+    :is(#view-oa,#view-fit,.fxm) .u84menu .u84note{font-size:12px;color:var(--slate);padding:8px 12px 10px;border-top:1px solid #f1f5f9;margin-top:4px;line-height:1.4}
+    :is(#view-oa,#view-fit,.fxm) .u84as{display:flex;align-items:center;gap:10px;background:#0f766e;color:#fff;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px;box-shadow:0 2px 8px rgba(15,118,110,.25)}
+    :is(#view-oa,#view-fit,.fxm) .u84as b{font-weight:900}:is(#view-oa,#view-fit,.fxm) .u84as u{text-decoration-color:#5eead4;text-underline-offset:3px}
+    :is(#view-oa,#view-fit,.fxm) .u84as .u84btn,:is(#view-oa,#view-fit,.fxm) .u84as .u84x{border:1.5px solid rgba(255,255,255,.6);background:rgba(255,255,255,.12);color:#fff;border-radius:8px;padding:6px 12px;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap}
+    :is(#view-oa,#view-fit,.fxm) .u84as .u84x{background:#fff;color:#0f766e;border-color:#fff}
+    #view-fit .u83tab+.u84as,#view-fit>.u84as{margin:10px 14px}
+    :is(#view-oa,#view-fit,.fxm) .u85fit{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}:is(#view-oa,#view-fit,.fxm) .u85fit span{background:#ccfbf1;color:#115e59;border-radius:6px;padding:1px 7px;font-size:11.5px;font-weight:800;white-space:nowrap}
+    :is(#view-oa,#view-fit,.fxm) .u85ph{display:flex;justify-content:center}
+    :is(#view-oa,#view-fit,.fxm) .u85ph .ft-phone{width:100%;max-width:560px;min-height:calc(100vh - 140px);max-height:none;border:none;border-radius:16px;box-shadow:0 2px 10px rgba(15,23,42,.12)}
+    :is(#view-oa,#view-fit,.fxm) .td-wrap .pm-team{border-left:6px solid #ca8a04}:is(#view-oa,#view-fit,.fxm) .td-wrap .pm-yard{border-left:6px solid #0891b2}
+    :is(#view-oa,#view-fit,.fxm) .pm-row input.pm-n[readonly]{background:#f1f5f9;color:#0f172a;font-weight:800;cursor:default}
+    :is(#view-oa,#view-fit,.fxm) .u85pw{display:flex;flex-direction:column;gap:5px;font-size:12.5px}:is(#view-oa,#view-fit,.fxm) .u85pw code{font-size:14px;font-weight:900;letter-spacing:1.5px;background:#f1f5f9;border-radius:6px;padding:2px 8px;color:#0f172a}:is(#view-oa,#view-fit,.fxm) .u85pw code.pw{letter-spacing:2.5px}
+    :is(#view-oa,#view-fit,.fxm) .u85pw .r{display:flex;gap:6px;align-items:center;flex-wrap:wrap}:is(#view-oa,#view-fit,.fxm) .u85pw button{border:1px solid var(--border);background:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;cursor:pointer}:is(#view-oa,#view-fit,.fxm) .u85pw button.new{background:#fef3c7;border-color:#f59e0b;color:#92400e}:is(#view-oa,#view-fit,.fxm) .u85pw small{color:#94a3b8}
+    :is(#view-oa,#view-fit,.fxm) .u85big{text-align:center}:is(#view-oa,#view-fit,.fxm) .u85big .l{font-size:14px;color:var(--slate);margin:10px 0 4px}:is(#view-oa,#view-fit,.fxm) .u85big .v{font-size:26px;font-weight:900;letter-spacing:3px}:is(#view-oa,#view-fit,.fxm) .u85big .v.p{font-size:40px;letter-spacing:8px;background:#fef3c7;border-radius:12px;padding:10px}
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2131,7 +2147,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-04-1046';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-04-1330';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -10556,6 +10572,141 @@ const _u83STeam=openTeamModal; openTeamModal=function(){ const all=profiles; let
   try{ profiles=all.filter(p=>!PROD_ROLES[p.role]); r=_u83STeam.apply(this,arguments); } finally { profiles=all; }
   try{ document.querySelectorAll('.team-row .tr-role').forEach(s=>{ if(s.querySelector('[value="prod_oa"]')) return; s.insertAdjacentHTML('beforeend',`<optgroup label="SashDash Production — moves them to Production → 👥 Manage team">${U83_TYPES[2][1].map(([k,t])=>`<option value="${k}">${t}</option>`).join('')}</optgroup>`); }); }catch(e){ console.warn(e); }
   return r; };
+
+
+// ════════ Update 84 — 👁 View as on SashDash Production (Office full access only) — see exactly what a Production login sees, and still make changes ════════
+let prodAs=null;   // {id, role, full_name} — the Production login Sean / Kenny is looking through; changes still save as them (realMe)
+const _u84Role=u83Role; u83Role=function(){ if(prodAs&&realMe&&realMe.role==='admin'&&!previewing) return prodAs.role; return _u84Role.apply(this,arguments); };
+function u84Classes(){ const R=u83R(), b=document.body; b.classList.toggle('prod-role',!!R); b.classList.toggle('prod-dept',!!R&&R.kind==='dept'); b.classList.toggle('prod-tablet',!!R&&R.kind==='tab'); b.classList.toggle('prod-as',!!prodAs);
+  const rb=$('role-badge'); if(rb&&realMe&&realMe.role==='admin'){ rb.classList.remove('hidden'); rb.textContent=prodAs&&R?'👁 '+R.badge:'OFFICE'; } }
+function u84Enter(role,id){ if(!(realMe&&realMe.role==='admin')||previewing) return; const p=id&&profiles.find(x=>x.id===id);
+  prodAs={id:p?p.id:'', role, full_name:p?(p.full_name||'(no name)'):PROD_ROLES[role].lab.replace(/^\S+\s/,'')}; u84Close();
+  if(document.querySelector('#modal-root .modal')) closeModal(); u84Classes(); renderDeptBar(); u83Home(); window.scrollTo(0,0); }
+function u84Exit(){ const wasOa=oaOn; prodAs=null; u84Close(); if(document.querySelector('#modal-root .modal')) closeModal(); u84Classes(); renderDeptBar(); if(wasOa) oaOpen(); else fitOpen('diary'); window.scrollTo(0,0); }
+function u84Close(){ document.querySelectorAll('.u84menu').forEach(m=>m.remove()); }
+function u84Menu(btn){ if(document.querySelector('.u84menu')){ u84Close(); return; } const ppl=r=>profiles.filter(p=>p.role===r);
+  const item=(r,p)=>{ const R=PROD_ROLES[r], on=prodAs&&prodAs.role===r&&(!p||prodAs.id===p.id);
+    return `<button class="${on?'on':''}" onclick="u84Enter('${r}','${p?p.id:''}')"><span class="avatar sm" style="--c:${esc(p?p.colour||'#94a3b8':'#cbd5e1')}">${p?esc(initials(p.full_name||'?')):'—'}</span><span>${p?esc(p.full_name||'(no name)'):'<i>No login yet</i>'}<small>${R.lab}</small></span></button>`; };
+  const grp=(lab,rs)=>`<div class="va-sub">${lab}</div>`+rs.map(r=>ppl(r).length?ppl(r).map(p=>item(r,p)).join(''):item(r,null)).join('');
+  const m=document.createElement('div'); m.className='menu va-menu u84menu';
+  m.innerHTML=`<div class="va-h">View SashDash Production as…</div>${prodAs?'<button class="va-exit" onclick="u84Exit()">↩ Back to my own view</button>':''}
+    ${grp('🧾 Office Administration',['prod_oa'])}${grp('🔧 Fitting manager',['prod_fit'])}${grp('🏭 Departments',['prod_pvc','prod_hw','prod_alu'])}${grp('📱 Factory tablets',['prod_tab1','prod_tab2','prod_tab3','prod_tab4','prod_tab5'])}
+    <div class="u84note">You see exactly what that login sees — and you can still make changes. They save for real, as you.</div>`;
+  btn.parentNode.style.position='relative'; btn.parentNode.appendChild(m); }
+document.addEventListener('click',e=>{ if(!e.target.closest('.u84menu,.u84btn')) u84Close(); });
+function u84Banner(){ const R=u83R(); if(!prodAs||!R) return '';
+  return `<div class="u84as"><span>👁 Viewing SashDash Production as <b>${esc(prodAs.full_name)}</b> · ${R.lab} — exactly what they see. <u>Changes you make here are saved for real</u>, as ${esc(prodWho())}.</span><span class="spacer"></span><span class="u84wrap"><button class="u84btn" onclick="u84Menu(this)">👁 Switch ▾</button></span><button class="u84x" onclick="u84Exit()">✕ Exit</button></div>`; }
+// the Production bar: 👁 View as beside 👥 Manage team; while viewing, the banner on top and their name in the bar
+const _u84Bar=FX_BAR; FX_BAR=function(){ let h=_u84Bar.apply(this,arguments);
+  if(prodAs&&u83R()) return u84Banner()+h.replace('logged in as '+esc(prodWho()),'logged in as '+esc(prodAs.full_name));
+  if(realMe&&realMe.role==='admin'&&!previewing) h=h.replace('<button class="btn-outline pm-btn"','<span class="u84wrap"><button class="btn-outline pm-btn u84btn" onclick="u84Menu(this)">👁 View as ▾</button></span><button class="btn-outline pm-btn"');
+  return h; };
+// a tablet screen gets the banner too
+const _u84Tab=u83TabRender; u83TabRender=function(){ const r=_u84Tab.apply(this,arguments); try{ const el=$('view-fit'); if(prodAs&&el&&!el.querySelector('.u84as')) el.insertAdjacentHTML('afterbegin',u84Banner()); }catch(e){} return r; };
+// the Service "View as" and signing out always end it
+const _u84EVA=enterViewAs; enterViewAs=function(){ if(prodAs){ prodAs=null; u84Classes(); } return _u84EVA.apply(this,arguments); };
+const _u84Out=signOut; signOut=function(){ prodAs=null; try{ u84Classes(); }catch(e){} return _u84Out.apply(this,arguments); };
+
+
+// ════════ Update 85 — 👥 two more Production sections: 🚚 Fitting teams (one login per team, named Team 1 … Team 20 — the team's phone; the fitting manager sets who is in each team on 👥 Teams) · 📦 Yard loading (the 🚚 Loading page) ════════
+for(let n=1;n<=20;n++) PROD_ROLES['prod_team'+n]={kind:'team',team:n,lab:`🚚 Team ${n}`,badge:'TEAM '+n,tabs:[]};
+PROD_ROLES.prod_yard={kind:'yard',lab:'📦 Yard loading',badge:'YARD',tabs:[],btn:'Yard loading'};
+U83_TYPES[2][1].push(['prod_yard',PROD_ROLES.prod_yard.lab]);
+U83_TYPES.push(['🚚 Fitting teams',Array.from({length:20},(_,i)=>['prod_team'+(i+1),PROD_ROLES['prod_team'+(i+1)].lab])]);
+U83_GRPS.push(['team','🚚 Fitting teams','One login per team (team1 … team20) on the leader\'s phone — that team\'s jobs only, never prices. Who is in each team is set by the fitting manager on 👥 Teams',r=>/^prod_team\d+$/.test(r)],
+  ['yard','📦 Yard loading','The 🚚 Loading page only — vans going out, tick lines loaded, print the loading list',r=>r==='prod_yard']);
+const _u85Sees=u83Sees; u83Sees=function(r){ const R=PROD_ROLES[r], c=(cls,t)=>`<span class="pm-c ${cls}">${t}</span>`, x=t=>`<span class="pm-x">${t}</span>`;
+  if(R&&R.kind==='team'){ const t=fitData&&fitTeam(R.team), crew=t?[t.leader&&'⭐ '+t.leader,...(t.men||[])].filter(Boolean):[]; return c('f',`📱 Team ${R.team} phone`)+(crew.length?c('t','👷 '+esc(crew.join(' · '))):x('no crew set yet'))+x('crew set by the fitting manager on 👥 Teams · no prices'); }
+  if(R&&R.kind==='yard') return c('f','🚚 Loading')+x('no Diary · no money · no Sites / Service');
+  return _u85Sees.apply(this,arguments); };
+const _u85Home=u83Home; u83Home=function(){ const R=u83R(); if(R&&R.kind==='team'){ fitPhJob=null; fitPhTeam=R.team; fitOpen('phone'); return true; } if(R&&R.kind==='yard'){ fitOpen('load'); return true; } return _u85Home.apply(this,arguments); };
+// department bar: a team login has none (just its phone); the yard has one button
+const _u85RDB=renderDeptBar; renderDeptBar=function(){ const r=_u85RDB.apply(this,arguments), R=u83R(); if(!R) return r; const bar=$('dept-bar'); if(!bar) return r;
+  if(R.kind==='team'){ bar.classList.add('hidden'); bar.innerHTML=''; }
+  if(R.kind==='yard'){ const b=bar.querySelector('.d-fit'); if(b){ b.innerHTML='<span class="di">📦</span>Yard loading'; b.setAttribute('onclick',"fitOpen('load')"); b.title='Yard loading'; } }
+  return r; };
+// what they can't do
+const u85K=()=>{ const R=u83R(); return R&&(R.kind==='team'||R.kind==='yard')?R.kind:null; };
+const _u85Alloc=fitAllocate; fitAllocate=function(){ if(u85K()) return toast('The fitting manager does that'); return _u85Alloc.apply(this,arguments); };
+const _u85ND=fyNewDate; fyNewDate=function(){ if(u85K()) return toast('The fitting manager does that'); return _u85ND.apply(this,arguments); };
+const _u85Job=fitOpenJob; fitOpenJob=function(oid){ const k=u85K(); if(k==='yard') return fxJS(oid); if(k==='team'){ fitPhOpen(oid); return; } return _u85Job.apply(this,arguments); };
+const _u85FD=fxFromDiary; fxFromDiary=function(oid){ if(u85K()==='yard') return fxJS(oid); return _u85FD.apply(this,arguments); };
+const _u85JS=fxJS; fxJS=function(){ const r=_u85JS.apply(this,arguments); try{ if(u85K()){ const m=document.querySelector('#modal-root .modal'); if(m) m.querySelectorAll('button[onclick*="fitAllocate"],button[onclick*="fxFromDiary"],button[onclick*="fyNewDate"]').forEach(b=>b.remove()); } }catch(e){} return r; };
+// draw
+const _u85FR=fitRender; fitRender=function(){ const R=u83R(); if(!R||!fitOn||(R.kind!=='team'&&R.kind!=='yard')) return _u85FR.apply(this,arguments);
+  if(R.kind==='team'){ const el=$('view-fit'); if(!el||prodGate(el)) return; fitLoad(); fitPhTeam=R.team; const t=fitTeam(R.team);
+    el.innerHTML=(typeof u84Banner==='function'?u84Banner():'')+(t?`<div class="u85ph"><div class="ft-phone" id="ft-phone">${fitPhJob?fitPhJobHtml():fitPhListHtml(t)}</div></div>`:`<div class="prod-gate"><div style="font-size:40px">🚚</div><h2>Team ${R.team} isn't set up yet</h2><p class="sub">The fitting manager sets the teams up in Fitting → 👥 Teams.</p></div>`);
+    if(t) setTimeout(fitPhAfter,0); return; }
+  fitView='load'; const r=_u85FR.apply(this,arguments); try{ const v=$('view-fit');
+    v.querySelectorAll('.ft-nav button').forEach(b=>{ if(!/Loading/.test(b.textContent)) b.remove(); });
+    v.querySelectorAll('.achips .ac').forEach(b=>b.remove());
+  }catch(e){ console.warn(e); } return r; };
+const _u85Bar=FX_BAR; FX_BAR=function(){ const R=u83R(); if(!R||R.kind!=='yard') return _u85Bar.apply(this,arguments);
+  return (typeof u84Banner==='function'?u84Banner():'')+`<div class="oa-demo fx-demo prod-bar u83bar"><span>📦 <b>Yard loading</b> — logged in as ${esc(prodAs?prodAs.full_name:prodWho())}. You see the 🚚 Loading page: vans going out, tick each line as it's loaded, print the list.</span><span class="spacer"></span>${prodPillHtml()}</div>`; };
+// 👁 View as (Production) lists them too
+const _u85Menu=u84Menu; u84Menu=function(btn){ _u85Menu.apply(this,arguments); const m=document.querySelector('.u84menu'); if(!m) return; const note=m.querySelector('.u84note');
+  const teams=profiles.filter(p=>/^prod_team\d+$/.test(p.role)).sort((a,b)=>+a.role.slice(9)-+b.role.slice(9)), yard=profiles.filter(p=>p.role==='prod_yard');
+  const it=(r,p)=>`<button onclick="u84Enter('${r}','${p?p.id:''}')"><span class="avatar sm" style="--c:${esc(p?p.colour||'#94a3b8':'#cbd5e1')}">${p?esc(initials(p.full_name||'?')):'—'}</span><span>${p?esc(p.full_name||'(no name)'):'<i>No login yet</i>'}<small>${PROD_ROLES[r].lab}</small></span></button>`;
+  const used=(fitData&&fitTeamsUsed?fitTeamsUsed():[]).map(t=>'prod_team'+t.n), shown=new Set(teams.map(p=>p.role));
+  note.insertAdjacentHTML('beforebegin',`<div class="va-sub">🚚 Fitting teams</div>${teams.map(p=>it(p.role,p)).join('')}${used.filter(r=>!shown.has(r)).map(r=>it(r,null)).join('')}<div class="va-sub">📦 Yard loading</div>${yard.length?yard.map(p=>it('prod_yard',p)).join(''):it('prod_yard',null)}`); };
+
+// 👥 Teams page: the fitters allocated to each team, under the team name
+// a team login's name is just "Team n"
+const _u85Row=u83Row; u83Row=function(p){ const R=PROD_ROLES[p.role]; return _u85Row.apply(this,[R&&R.kind==='team'?Object.assign({},p,{full_name:'Team '+R.team}):p].concat([].slice.call(arguments,1))); };
+document.addEventListener('change',e=>{ const s=e.target; if(!s.classList||!s.classList.contains('pm-role')) return; const R=PROD_ROLES[s.value], row=s.closest('.pm-row'), n=row&&row.querySelector('.pm-n'); if(!n) return;
+  if(R&&R.kind==='team'){ n.value='Team '+R.team; n.readOnly=true; } else n.readOnly=false; });
+const _u85Pull=u83Pull; u83Pull=function(){ const r=_u85Pull.apply(this,arguments); document.querySelectorAll('.pm-row .pm-role').forEach(s=>{ const R=PROD_ROLES[s.value], n=s.closest('.pm-row').querySelector('.pm-n'); if(n) n.readOnly=!!(R&&R.kind==='team'); }); return r; };
+const _u85Team=u83Team; u83Team=async function(){ const r=await _u85Team.apply(this,arguments); document.querySelectorAll('.pm-row .pm-role').forEach(s=>{ const R=PROD_ROLES[s.value], n=s.closest('.pm-row').querySelector('.pm-n'); if(n&&R&&R.kind==='team'){ n.readOnly=true; n.title='A team login is always called Team '+R.team+' — the fitting manager sets the crew on 👥 Teams'; } }); return r; };
+
+// yard ticks loading (prod_state "yard"), so it saves settings like the fitting manager
+const _u85Can=u83Can; u83Can=function(what){ if(what==='state'&&realMe&&realMe.role==='prod_yard') return true; return _u85Can.apply(this,arguments); };
+
+// ════ 🔐 team logins and passwords on 👥 Teams (fitting manager + Office full access) ════
+let u85L=null, u85Busy=false, u85Show={}, u85Err='';
+function u85CanLogins(){ const r=realMe&&realMe.role; return (r==='admin'||r==='prod_fit')&&!previewing; }
+async function u85Load(){ if(u85Busy||!u85CanLogins()) return; u85Busy=true;
+  try{ const r=await sb.rpc('prod_team_logins'); if(r.error){ u85Err=/prod_team_logins|function|schema cache/i.test(r.error.message)?'sql':r.error.message; u85L={}; }
+    else { u85Err=''; u85L={}; (r.data||[]).forEach(x=>u85L[x.team]=x); } }catch(e){ u85Err=e.message; u85L={}; }
+  u85Busy=false; if(fitOn&&fitView==='teams'&&!document.querySelector('#modal-root .modal')) fitRender(); }
+function u85Pw(){ const L='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz', D='23456789', S='#!?@%+', all=L+D+S, r=n=>{ const a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]%n; };
+  for(;;){ let p=''; for(let i=0;i<6;i++) p+=all[r(all.length)]; if(/[A-Za-z]/.test(p)&&/[2-9]/.test(p)&&/[#!?@%+]/.test(p)) return p; } }
+function u85Cell(n){ if(u85Err==='sql') return `<div class="u85pw"><small>Run <b>update-85-fitting-teams-yard.sql</b> in Supabase to see and change team passwords here</small></div>`;
+  if(!u85L) return '<div class="u85pw"><small>Loading…</small></div>'; const x=u85L[n];
+  if(!x) return `<div class="u85pw"><small>No login yet</small><div class="r"><button class="new" onclick="u85SetupAsk(${n})">🔐 Set up login</button></div></div>`;
+  const by=x.changed_at?`${oaDT(x.changed_at)}${x.changed_by?' · '+esc(x.changed_by):''}`:'';
+  return `<div class="u85pw"><div class="r"><code>${esc(x.login)}</code><code class="pw">${x.pw?(u85Show[n]?esc(x.pw):'••••••'):'<i>not known</i>'}</code>${x.pw?`<button onclick="u85Show[${n}]=!u85Show[${n}];fitRender()">${u85Show[n]?'🙈 Hide':'👁 Show'}</button>`:''}</div>
+    <div class="r"><button class="new" onclick="u85NewAsk(${n})">🔄 New password</button>${by?`<small>changed ${by}</small>`:''}</div></div>`; }
+function u85TeamsDom(){ const v=$('view-fit'); if(!v||!u85CanLogins()) return; const tb=v.querySelector('table.oa-table'); if(!tb||tb.querySelector('.u85h')) return;
+  const hr=tb.querySelector('thead tr'); if(!hr) return; const th=document.createElement('th'); th.className='u85h'; th.style.width='270px'; th.textContent='🔐 Login · password'; hr.insertBefore(th,hr.children[4]||null);
+  tb.querySelectorAll('tbody tr').forEach(tr=>{ const m=tr.innerHTML.match(/login: team(\d+)/); const td=document.createElement('td'); if(m) td.innerHTML=u85Cell(+m[1]); tr.insertBefore(td,tr.children[4]||null); }); }
+const _u85TR=fitRender; fitRender=function(){ const r=_u85TR.apply(this,arguments); try{ if(fitOn&&fitView==='teams'&&u85CanLogins()){ if(u85L===null) u85Load(); u85TeamsDom(); } }catch(e){ console.warn(e); } return r; };
+function u85Log(text){ try{ (fitData.log=fitData.log||[]).unshift({at:new Date().toISOString(),by:oaWho(),text}); fitSave(); }catch(e){} }
+let u85Last='';
+function u85Copy(n){ try{ navigator.clipboard.writeText('Login: team'+n+'\nPassword: '+u85Last); toast('📋 Login and password copied'); }catch(e){ toast('Could not copy'); } }
+function u85Done(n,pw,what){ u85Last=pw; openModal(`<h2>✅ Team ${n} — ${what}</h2><div class="u85big"><div class="l">Login</div><div class="v">team${n}</div><div class="l">Password</div><div class="v p">${esc(pw)}</div></div>
+   <div style="margin-top:12px;font-size:14px;color:var(--slate)">${what==='new password'?`Team ${n}'s phone is signed out. `:''}Give the team leader this password — it's kept here on 👥 Teams. They sign in with <b>team${n}</b> and the password.</div>
+   <div class="modal-actions"><button class="btn-outline" onclick="u85Copy(${n})">📋 Copy</button><button class="btn-primary" style="background:#0f766e" onclick="closeModal();fitRender()">Done</button></div>`); }
+function u85NewAsk(n){ openModal(`<h2>🔄 New password for Team ${n}?</h2><div style="font-size:15px;line-height:1.6">SashDash makes a new 6-character password for <b>team${n}</b>.<br>• The old password stops working straight away.<br>• Team ${n}'s phone is <b>signed out within a minute</b> and stays signed out until they type the new password.<br>• The new password is kept here on 👥 Teams.</div><div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="u85go" style="background:#b45309" onclick="u85NewGo(${n})">🔄 Make new password</button></div>`); }
+async function u85NewGo(n){ const b=$('u85go'); if(b) b.disabled=true; const pw=u85Pw(); const r=await sb.rpc('prod_team_password',{p_team:n,p_pw:pw});
+  if(r.error){ if(b) b.disabled=false; return toast('Not changed: '+r.error.message,8000); }
+  u85Log(`🔄 New password for Team ${n}`); u85Show[n]=true; await u85Load(); u85Done(n,pw,'new password'); }
+function u85SetupAsk(n){ openModal(`<h2>🔐 Set up a login for Team ${n}?</h2><div style="font-size:15px;line-height:1.6">SashDash makes the login <b>team${n}</b> with a new 6-character password.<br>• Team ${n} signs in on the leader's phone with <b>team${n}</b> and the password.<br>• They see only Team ${n}'s jobs — never prices.</div><div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="u85go" style="background:#0f766e" onclick="u85SetupGo(${n})">🔐 Set up login</button></div>`); }
+async function u85SetupGo(n){ const b=$('u85go'); if(b) b.disabled=true; const pw=u85Pw(); const r=await sb.rpc('prod_team_create',{p_team:n,p_email:'team'+n+'@'+LOGIN_DOMAIN,p_pw:pw});
+  if(r.error){ if(b) b.disabled=false; return toast('Not set up: '+r.error.message+(/prod_team_create|function|schema cache/i.test(r.error.message)?' — run update-85-fitting-teams-yard.sql in Supabase first':''),9000); }
+  u85Log(`🔐 Login set up for Team ${n} (team${n})`); u85Show[n]=true; try{ await loadData(); }catch(e){} await u85Load(); u85Done(n,pw,'login set up'); }
+
+// ════ 🚚 a team's phone: keeps its job list right, and signs out when the password is changed ════
+async function u85TeamTick(){ const R=u83R(); if(!R||R.kind!=='team'||prodAs||previewing||!sb||!me) return;
+  try{ const u=await sb.auth.getUser(); const e=u&&u.error;
+    if(e&&(e.status===401||e.status===403||/session|jwt|expired|not.?found|invalid/i.test(e.message||''))&&!/fetch|network/i.test(e.message||'')){
+      try{ await signOut(); }catch(x){} try{ showAuthError('Your team\'s password was changed — sign in with the new password.'); }catch(x){} return; } }catch(e){ return; }
+  if(prodSt!=='ready'||prodBusy||prodPillSt==='saving') return;
+  try{ const r=await sb.from('prod_orders').select('id,version'); if(r.error) return; const seen=new Set(); let ch=false;
+    for(const x of r.data||[]){ seen.add(x.id); if(prodVer[x.id]!==x.version){ await prodPull(x.id); ch=true; } }
+    for(const o of (oaOrders||[]).slice()){ if(!seen.has(o.id)){ oaOrders=oaOrders.filter(y=>y.id!==o.id); delete fitData.jobs[o.id]; fitData.bookings=fitData.bookings.filter(b=>b.oid!==o.id); delete prodSaved[o.id]; delete prodVer[o.id]; if(fitPhJob===o.id) fitPhJob=null; ch=true; } }
+    if(ch&&!document.querySelector('#modal-root .modal')) fitRender(); }catch(e){} }
+setInterval(u85TeamTick,60000);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') u85TeamTick(); });
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
