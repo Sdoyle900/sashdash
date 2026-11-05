@@ -2196,7 +2196,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-05-1045';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-05-1115';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -11195,6 +11195,9 @@ const _u99FR=fitRender; fitRender=function(){ const r=_u99FR.apply(this,argument
     b.outerHTML=l.made||l.ready?`<span class="f8pb on u99" title="${esc('⚙ In production · '+(l.madeBy||'')+' '+(l.madeAt?oaDT(l.madeAt):''))}">⚙ In production</span>`
       :l.saw?`<span class="f8pb u99 sent" title="Sent ${esc(l.sawAt?oaDT(l.sawAt):'')} — goes ⚙ In production when the tablet taps it">📤 Sent · waiting for the tablet</span>`
       :`<button class="f8pb u99 send" onclick="event.stopPropagation();fxSaw('${m[1]}','${m[2]}')" title="Send this line to the saw (with its cutting list)">📤 Send to saw</button>`; }); }catch(e){ console.warn(e); } return r; };
+
+// ════ Update 99 — a job sent to manufacturing with no lines (and not booked / fitted / on hold) goes back to 📥 To allocate ════
+const _u100St=fitStatus; fitStatus=function(o){ const st=_u100St.apply(this,arguments); if(st==='mfg'||st==='ready'){ const j=fitFJ(o.id); if(!(j.lines||[]).length&&!j.hold&&!fitBk(o.id)) return 'new'; } return st; };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
