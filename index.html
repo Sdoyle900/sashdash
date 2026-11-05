@@ -805,6 +805,19 @@
     :is(#view-oa,#view-fit,.fxm) .u101tr{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;align-items:end;height:190px;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:12px}:is(#view-oa,#view-fit,.fxm) .u101m{display:flex;flex-direction:column;align-items:center;height:100%;gap:3px}:is(#view-oa,#view-fit,.fxm) .u101stk{flex:1;width:70%;display:flex;flex-direction:column-reverse;justify-content:flex-start}:is(#view-oa,#view-fit,.fxm) .u101stk i{display:block;width:100%}:is(#view-oa,#view-fit,.fxm) .u101stk i:last-child{border-radius:4px 4px 0 0}:is(#view-oa,#view-fit,.fxm) .u101m span{font-size:11.5px;color:var(--slate);font-weight:700}:is(#view-oa,#view-fit,.fxm) .u101m em{font-style:normal;font-size:11px;font-weight:800;min-height:14px}
     :is(#view-oa,#view-fit,.fxm) .u101key{display:flex;gap:14px;margin:8px 2px;font-size:12.5px;font-weight:700}:is(#view-oa,#view-fit,.fxm) .u101key span{display:flex;align-items:center;gap:5px}:is(#view-oa,#view-fit,.fxm) .u101key i{width:12px;height:12px;border-radius:3px;display:inline-block}
     @media (max-width:900px){ :is(#view-oa,#view-fit,.fxm) .u101tiles{grid-template-columns:repeat(2,minmax(0,1fr))}:is(#view-oa,#view-fit,.fxm) .u101grid{grid-template-columns:1fr} }
+    body #viewas-wrap{display:none!important}
+    body .u103wrap{position:relative;display:inline-block}
+    body .u103menu{position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:300px;max-height:70vh;overflow:auto;text-align:left;color:var(--navy);display:block}
+    body .u103menu .u84note{font-size:12px;color:var(--slate);padding:8px 12px 10px;border-top:1px solid #f1f5f9;margin-top:4px;line-height:1.4;max-width:300px}
+    body .preview-banner .u103wrap{position:relative}
+    body .preview-banner button.u103sw{background:#fff;color:#1f2937;border:1.5px solid #1f2937}
+    :is(#view-oa,#view-fit,.fxm) .u105row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border:1.5px dashed #c7d2fe;border-radius:10px;background:#f8fafc;font-size:13px}:is(#view-oa,#view-fit,.fxm) .u105row.on{background:#eef2ff;border-style:solid;border-color:#a5b4fc}:is(#view-oa,#view-fit,.fxm) .u105row>span{flex:1}
+    :is(#view-oa,#view-fit,.fxm) .u105grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:12px 0;max-height:60vh;overflow:auto;padding:2px}
+    :is(#view-oa,#view-fit,.fxm) .u105pg{border:2px solid var(--border);background:#fff;border-radius:12px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit}:is(#view-oa,#view-fit,.fxm) .u105pg b{font-size:13px}:is(#view-oa,#view-fit,.fxm) .u105pg small{font-size:11.5px;color:var(--slate);font-weight:700}
+    :is(#view-oa,#view-fit,.fxm) .u105pg .u105im{position:relative;display:block;width:100%;aspect-ratio:.707;background:#f1f5f9;border-radius:6px;overflow:hidden}:is(#view-oa,#view-fit,.fxm) .u105pg img{width:100%;height:100%;object-fit:contain;display:block}
+    :is(#view-oa,#view-fit,.fxm) .u105pg.on{border-color:#4338ca;background:#eef2ff}:is(#view-oa,#view-fit,.fxm) .u105pg.on img{opacity:.35;filter:grayscale(1)}:is(#view-oa,#view-fit,.fxm) .u105pg.on small{color:#4338ca}:is(#view-oa,#view-fit,.fxm) .u105lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:42px}
+    :is(#view-oa,#view-fit,.fxm) .u105sum{font-size:14px;padding:8px 12px;background:#f8fafc;border-radius:8px}:is(#view-oa,#view-fit,.fxm) .u105load{grid-column:1/-1;padding:40px;text-align:center;color:var(--slate)}
+    :is(#view-oa,#view-fit,.fxm) .u105ban{background:#eef2ff;border:1.5px solid #a5b4fc;color:#3730a3;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:8px}
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2205,7 +2218,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-05-1140';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-05-1215';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -10207,10 +10220,11 @@ function prodWatch(){ if(prodChan||!sb||!sb.channel) return;
         const o=(oaOrders||[]).find(x=>x.id===id); if(!o) return; const before=JSON.stringify(prodDoc(id,o)), clean=prodSaved[id]===before;
         prodMoneyIn(o,true); if(clean) prodSaved[id]=JSON.stringify(prodDoc(id,o)); prodRefresh(); })
     .on('postgres_changes',{event:'*',schema:'public',table:'prod_files'},async p=>{ const k=(p.new&&p.new.key)||(p.old&&p.old.key); if(!k) return;
-        if(p.eventType==='DELETE'){ delete prodIdx[k]; return; }
+        if(p.eventType==='DELETE'){ delete prodIdx[k]; if(k.startsWith('p:')&&!k.includes('#')){ delete oaScans[k.slice(2)]; delete prodGot['s:'+k.slice(2)]; prodRefresh(); } return; }
         const r=await sb.from('prod_files').select('*').eq('key',k).maybeSingle(); if(r.error||!r.data) return; const old=prodIdx[k]; prodIdx[k]=r.data;
+        if(!old&&k.startsWith('p:')&&!k.includes('#')){ delete oaScans[k.slice(2)]; delete prodGot['s:'+k.slice(2)]; prodRefresh(); return; }
         if(old&&JSON.stringify(old.files)!==JSON.stringify(r.data.files)){ delete prodGot[k];   // a file was replaced on another computer: drop the old copy
-          if(k.startsWith('s:')&&!k.includes('#')) delete oaScans[k.slice(2)]; else if(k.startsWith('b:')) delete fitBlobs[k.slice(2)]; prodRefresh(); } })
+          if((k.startsWith('s:')||k.startsWith('p:'))&&!k.includes('#')){ delete oaScans[k.slice(2)]; delete prodGot['s:'+k.slice(2)]; } else if(k.startsWith('b:')) delete fitBlobs[k.slice(2)]; prodRefresh(); } })
     .subscribe(); }catch(e){ console.warn('prod live',e); } }
 // a small "✓ Saved" pill on the Office Administration / Fitting bar
 let prodPillSt='ok';
@@ -11269,6 +11283,135 @@ function u102TabFor(l){ const k=fxDept(l), g=FX_GROUPS[k]||[]; const t=(fitData.
 const _u102TL=fxTabLines; fxTabLines=function(t){ if(!t||!Array.isArray(t.see)||t.see.includes('custom')) return _u102TL.apply(this,arguments);
   const t2=Object.assign({},t,{see:t.see.concat('custom')}), r=_u102TL.apply(this,[t2].concat([].slice.call(arguments,1)));
   return r.filter(x=>x.l.prod!=='custom'||u102TabFor(x.l)===t.n); };
+
+
+// ════════ Update 102 — 👁 View as for Sites / Service Department moves off the top bar onto the Sites and Service Department pages, styled like Production's ════════
+function u103Can(){ return !!(realMe&&['admin','service_office'].includes(realMe.role)); }
+function u103Close(){ document.querySelectorAll('.u103menu').forEach(m=>m.remove()); }
+function u103Menu(btn,e){ if(e) e.stopPropagation(); if(document.querySelector('.u103menu')){ u103Close(); return; }
+  renderViewAsMenu(); const m=document.createElement('div'); m.className='menu va-menu u103menu';
+  m.innerHTML=$('viewas-menu').innerHTML.replace('View SashDash as…',`View SashDash ${realMe.role==='service_office'?'Service Department':'Sites &amp; Service Department'} as…`)+'<div class="u84note">You see exactly what that login sees. View-only — nothing can be changed in their name.</div>';
+  m.addEventListener('click',()=>setTimeout(u103Close,0)); btn.parentNode.appendChild(m); }
+document.addEventListener('click',e=>{ if(!e.target.closest('.u103menu,.u103btn')) u103Close(); });
+// the button on the Sites / Service Department page, beside 👥 Manage team
+const _u103Dash=renderDashboardFor; renderDashboardFor=function(){ const r=_u103Dash.apply(this,arguments); try{ const h=$('dash-head'), row=h&&h.querySelector('.row');
+    if(row&&u103Can()&&!previewing&&!row.querySelector('.u103btn')){ const w=`<span class="u84wrap u103wrap"><button class="btn-outline u103btn" onclick="u103Menu(this,event)">👁 View as ▾</button></span>`;
+      const mt=[...row.querySelectorAll('button')].find(b=>/Manage team/.test(b.textContent)); if(mt) mt.insertAdjacentHTML('beforebegin',w); else row.insertAdjacentHTML('beforeend',w); } }catch(e){ console.warn(e); } return r; };
+// while viewing: 👁 Switch ▾ on the orange banner, like Production
+const _u103Id=applyIdentity; applyIdentity=function(){ const r=_u103Id.apply(this,arguments); try{ const bn=$('preview-banner'); if(previewing&&bn&&!bn.querySelector('.u103btn')){ const x=bn.querySelector('button'); if(x) x.insertAdjacentHTML('beforebegin',`<span class="u84wrap u103wrap"><button class="u103btn u103sw" onclick="u103Menu(this,event)">👁 Switch ▾</button></span>`); } }catch(e){} return r; };
+
+
+// ════════ Update 102 — taking ✔ READY off a line (or adding a new line) takes the job back out of "Ready to fit" ════════
+// Before: once every line was READY the OA order got 🚚 Ready for fitting, and that stamp kept the job "ready" for good — even after READY was taken off a line.
+// Now: a job with lines is only ready when every line is ✔ READY, and the automatic stamp comes off when that stops being true.
+fitReady=function(o,j){ return (j.lines||[]).length ? j.lines.every(l=>l.ready) : !!(o.stamps&&o.stamps.ready); };
+function u104Fix(oid){ try{ const o=oaFind(oid), j=fitFJ(oid); if(!o||!o.stamps||!o.stamps.ready) return false; const L=j.lines||[];
+    if(L.length&&!L.every(l=>l.ready)){ delete o.stamps.ready; oaSave(); fxLog(oid,'↩',oaWho(),'🚚 Ready for fitting taken off — not every line is ✔ READY now'); return true; } }catch(e){} return false; }
+const _u104RG=fxReadyGo; fxReadyGo=function(oid,lid,on){ const r=_u104RG.apply(this,arguments); if(!on&&u104Fix(oid)) { fitSave(); fitRender(); } return r; };
+const _u104Save=fitSave; fitSave=function(){ try{ (fitOrders?fitOrders():[]).forEach(o=>{ const L=fitFJ(o.id).lines||[]; if(o.stamps&&o.stamps.ready&&L.length&&!L.every(l=>l.ready)) u104Fix(o.id); }); }catch(e){} return _u104Save.apply(this,arguments); };
+
+
+// ════════ Update 102 — 🔒 pages of the order PDF for the office + fitting manager only ════════
+// o.priv = {pages:[n,…] (1-based), at, by}.
+// The full order PDF moves to a private file (prod_files key 'p:<order>', storage 'private/<order>/…') that only Office (full access), Office Administration and
+// the fitting manager can open. The normal order file ('s:<order>') is replaced by a copy with those pages taken out — that's what the departments,
+// the factory tablets, the fitting teams and the yard get (Supabase blocks the private file for them: update-102 SQL).
+function u105Pages(o){ return (o&&o.priv&&o.priv.pages)||[]; }
+function u105Txt(P){ return P.length===1?'page '+P[0]:'pages '+P.slice(0,-1).join(', ')+' and '+P[P.length-1]; }
+function u105Real(){ return !!(realMe&&['admin','prod_oa','prod_fit'].includes(realMe.role)); }            // this login can open the full PDF
+function u105Office(){ const r=(typeof prodAs!=='undefined'&&prodAs)?prodAs.role:(realMe&&realMe.role); return !previewing&&(r==='admin'||r==='prod_oa'); }   // can choose the pages
+function u105Ro(){ return typeof u98Ro==='function'&&u98Ro(); }                                           // the screen is drawn for a department / tablet / team / yard
+// when Office views as a department / tablet / team / the yard, they're shown the copy those logins get
+const u105Cut={};
+function u105NeedCut(oid){ return u105Ro()&&u105Real()&&u105Pages(oaFind(oid)).length>0; }
+async function u105MakeCut(oid){ const o=oaFind(oid), P=u105Pages(o); if(!P.length){ delete u105Cut[oid]; return null; }
+  if(!oaScans[oid]&&typeof prodDownScan==='function') await prodDownScan(oid); const s=oaScans[oid]; if(!s||!s.files||!s.files[0]) return null;
+  const k=P.join(',')+'|'+s.url; if(u105Cut[oid]&&u105Cut[oid].k===k) return u105Cut[oid];
+  const bytes=await u105CutBytes(s.files[0],P); u105Cut[oid]={k,url:URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),blob:new Blob([bytes],{type:'application/pdf'})}; return u105Cut[oid]; }
+async function u105CutBytes(file,P){ const src=await PDFLib.PDFDocument.load(await file.arrayBuffer(),{ignoreEncryption:true}), out=await PDFLib.PDFDocument.create();
+  const keep=src.getPageIndices().filter(i=>!P.includes(i+1)); (await out.copyPages(src,keep)).forEach(p=>out.addPage(p)); return await out.save(); }
+
+// ── the row on the Office Administration order ──
+const _u105Kv=oaScanKv; oaScanKv=function(o){ let h=_u105Kv.apply(this,arguments); if(!o||!o.scan||!u105Office()) return h; const P=u105Pages(o);
+  return h.replace(/<\/div>$/,`<div class="u105row ${P.length?'on':''}"><span>🔒 <b>Fitting manager only:</b> ${P.length?u105Txt(P)+` <span class="oa-hint">— the departments, tablets, teams and the yard get the order without ${P.length===1?'it':'them'}</span>`:'<span class="oa-hint">none — everyone sees every page</span>'}</span><button class="btn-outline ft-sm" onclick="u105Pick('${o.id}')">🔒 ${P.length?'Change':'Choose'} pages</button></div></div>`); };
+
+// ── the page picker ──
+let u105F=null;
+async function u105Pick(oid,why){ if(!u105Office()) return; const o=oaFind(oid);
+  if(!oaScans[oid]&&typeof prodDownScan==='function'){ toast('⏳ Opening the order PDF…'); await prodDownScan(oid); }
+  const s=oaScans[oid], f0=s&&s.files&&s.files[0];
+  if(!f0){ toast('The order PDF isn\'t on SashDash — attach it first'); return; }
+  if(s.files.length>1||!(/pdf/.test(f0.type)||/\.pdf$/i.test(f0.name||''))){ toast('Pages can only be hidden on a PDF — this order was attached as photos'); return; }
+  u105F={oid,sel:new Set(u105Pages(o)),n:0,thumbs:[],why:why||''}; u105Form(true);
+  try{ const pdf=await pdfjsLib.getDocument(s.url).promise; u105F.n=pdf.numPages;
+    for(let i=1;i<=pdf.numPages;i++){ const pg=await pdf.getPage(i), vp=pg.getViewport({scale:0.42}), c=document.createElement('canvas'); c.width=vp.width; c.height=vp.height; await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise; u105F.thumbs[i]=c.toDataURL('image/jpeg',.8); }
+  }catch(e){ console.warn(e); u105F.err=true; } u105F.sel=new Set([...u105F.sel].filter(i=>i<=u105F.n)); u105Form(); }
+function u105Form(loading){ const f=u105F, o=oaFind(f.oid), P=[...f.sel].sort((a,b)=>a-b);
+  const grid=loading?'<div class="u105load">⏳ Opening the order PDF…</div>':f.err?'<div class="u105load">⚠ The PDF couldn\'t be opened here — check the internet and try again.</div>':Array.from({length:f.n},(_,k)=>{ const i=k+1, on=f.sel.has(i);
+    return `<button class="u105pg ${on?'on':''}" onclick="u105F.sel.${on?'delete':'add'}(${i});u105Form()"><span class="u105im">${f.thumbs[i]?`<img src="${f.thumbs[i]}">`:''}${on?'<span class="u105lock">🔒</span>':''}</span><b>Page ${i}</b><small>${on?'🔒 Fitting manager only':'👁 Everyone'}</small></button>`; }).join('');
+  openModal(`<h2>🔒 Pages for the fitting manager only — ${esc(oaTitle(o))}</h2>${f.why?`<div class="oa-warn">${f.why}</div>`:''}<div class="u86sub">Tap the pages to keep for the <b>office and the fitting manager</b>. The departments, the factory tablets, the fitting teams and the yard get the order <b>with those pages taken out</b> — they can't open, download or print them.</div>
+    <div class="u105grid">${grid}</div>
+    <div class="u105sum">${loading||f.err?'':P.length?`🔒 <b>${u105Txt(P)}</b> kept back · everyone else gets <b>${f.n-P.length} of ${f.n}</b> pages`:'👁 Every page is shown to everyone'}${P.length&&P.length>=f.n?' — <b style="color:#dc2626">leave at least one page for everyone</b>':''}</div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" style="background:#4338ca" ${loading||f.err||(P.length&&P.length>=f.n)?'disabled':''} onclick="u105Go()">🔒 Save</button></div>`); fxModal('u105m'); }
+
+// ── save: private full copy + the copy everyone else gets ──
+let u105Busy=false;
+async function u105Go(){ if(u105Busy) return; const f=u105F, oid=f.oid, o=oaFind(oid), P=[...f.sel].sort((a,b)=>a-b), had=u105Pages(o);
+  if(JSON.stringify(P)===JSON.stringify(had)&&!(P.length&&!prodIdx['p:'+oid])){ closeModal(); return; }
+  const s=oaScans[oid], full=s&&s.files&&s.files[0]; if(!full){ toast('The order PDF isn\'t loaded — try again'); return; }
+  u105Busy=true; const btn=document.querySelector('#modal-root .modal-actions .btn-primary'); if(btn){ btn.disabled=true; btn.textContent='⏳ Saving…'; }
+  prodPill('saving'); prodBusy++;
+  try{ const now=Date.now().toString(36), base=prodSafe(full.name||'order.pdf'), sRow=prodIdx['s:'+oid], oldPaths=((sRow&&sRow.files)||[]).map(x=>x.path);
+    let pRow=prodIdx['p:'+oid];
+    if(P.length){
+      // 1) the full order goes to the private file (once)
+      if(!pRow){ const path=`private/${prodSafe(oid)}/order-${now}-${base}`; await prodPut(path,full,full.type||'application/pdf');
+        pRow={key:'p:'+oid,oid,files:[{path,type:full.type||'application/pdf',name:full.name||'order.pdf'}],created_by:prodWho()};
+        const r=await sb.from('prod_files').upsert(pRow); if(r.error) throw r.error; prodIdx[pRow.key]=pRow; }
+      // 2) everyone else's copy, without the pages
+      const bytes=await u105CutBytes(full,P), cut=new Blob([bytes],{type:'application/pdf'}), path=`orders/${prodSafe(oid)}/scan-${now}-1-${base}`;
+      await prodPut(path,cut,'application/pdf'); const row={key:'s:'+oid,oid,files:[{path,type:'application/pdf',name:full.name||'order.pdf'}],created_by:prodWho()};
+      const r=await sb.from('prod_files').upsert(row); if(r.error) throw r.error; prodIdx[row.key]=row; }
+    else if(pRow){
+      // every page back for everyone: the full order goes back as the normal file, the private one goes
+      const path=`orders/${prodSafe(oid)}/scan-${now}-1-${base}`; await prodPut(path,full,full.type||'application/pdf');
+      const row={key:'s:'+oid,oid,files:[{path,type:full.type||'application/pdf',name:full.name||'order.pdf'}],created_by:prodWho()};
+      const r=await sb.from('prod_files').upsert(row); if(r.error) throw r.error; prodIdx[row.key]=row;
+      await sb.storage.from('prod-files').remove(pRow.files.map(x=>x.path)); await sb.from('prod_files').delete().eq('key','p:'+oid); delete prodIdx['p:'+oid]; }
+    // the old normal file goes, unless an earlier version (🕘 v1, v2 …) still points at it
+    const keep=new Set(Object.values(prodIdx).flatMap(x=>(x.files||[]).map(y=>y.path))), gone=oldPaths.filter(p=>!keep.has(p));
+    if(gone.length) try{ await sb.storage.from('prod-files').remove(gone); }catch(e){}
+    if(P.length) o.priv={pages:P,at:fxNow(),by:oaWho()}; else delete o.priv;
+    try{ if(fitData&&fitData.jobs&&fitData.jobs[oid]) fxLog(oid,'🔒',oaWho()+' · Office Administration',P.length?`Order PDF: ${u105Txt(P)} for the office and fitting manager only`:'Order PDF: every page shown to everyone again'); fitSave(); }catch(e){}
+    oaSave(); prodBusy--; prodPill('ok'); u105Busy=false; delete u105Cut[oid];
+    closeModal(); if(oaOn) oaOpenOrder(oid); toast(P.length?'🔒 '+u105Txt(P)+' — office and fitting manager only':'👁 Every page shown to everyone');
+  }catch(e){ console.warn(e); prodBusy--; prodPill('bad'); u105Busy=false; if(btn){ btn.disabled=false; btn.textContent='🔒 Save'; } toast('⚠ Not saved — check the internet and try again',8000); } }
+
+// ── the office and fitting manager open the full PDF; everyone else gets the normal file (already without the pages) ──
+const _u105Down=prodDownScan2; prodDownScan2=async function(oid){ const x=u105Real()&&prodIdx['p:'+oid]; if(!x||!x.files) return _u105Down.apply(this,arguments);
+  const files=[]; for(const f of x.files){ const r=await sb.storage.from('prod-files').download(f.path); if(r.error||!r.data){ delete prodGot['s:'+oid]; return _u105Down.apply(this,arguments); } files.push(new File([r.data],f.name||'order.pdf',{type:f.type||r.data.type})); }
+  oaScans[oid]={files,url:URL.createObjectURL(files[0]),_fromServer:true}; prodAfterFile(); };
+
+// ── a new order PDF on an order with hidden pages: the old private copy is kept with the earlier version, and the pages have to be chosen again ──
+const _u105Upd=oaScanUpd; oaScanUpd=async function(id,fl){ const o=oaFind(id), had=u105Pages(o), p=prodIdx['p:'+id], v=((o&&o.scanHist)||[]).length+1;
+  if(had.length&&p){ try{ const k='p:'+id+'#v'+v, r=await sb.from('prod_files').upsert({key:k,oid:id,files:p.files,created_by:p.created_by||''}); if(!r.error) prodIdx[k]=Object.assign({},p,{key:k});
+      await sb.from('prod_files').delete().eq('key','p:'+id); delete prodIdx['p:'+id]; }catch(e){ console.warn(e); } }
+  const r=await _u105Upd.apply(this,arguments);
+  if(had.length&&oaFind(id)&&oaFind(id).scan){ const oo=oaFind(id); delete oo.priv; oaSave(); setTimeout(()=>u105Pick(id,`🔒 The last order PDF had ${u105Txt(had)} for the fitting manager only. This is a new PDF — choose the pages again. <b>Until you save, everyone can see every page.</b>`),900); }
+  return r; };
+// 🕘 earlier versions: the office and fitting manager open the full one
+const _u105Old=oaScanOld; oaScanOld=function(key){ const pk=key.replace(/^s:/,'p:'); if(u105Real()&&prodIdx[pk]) return _u105Old.call(this,pk); return _u105Old.apply(this,arguments); };
+// a department's ⬇ "Download the latest" / a new job sheet version starts from the copy without the hidden pages — so they never reach the teams
+const _u105Get=f7SheetGet; f7SheetGet=async function(oid,v){ if(v===1&&u105Real()&&u105Pages(oaFind(oid)).length){ const c=await u105MakeCut(oid); return c?{blob:c.blob,name:(oaFind(oid).scan&&oaFind(oid).scan.name)||'order.pdf'}:null; } return _u105Get.apply(this,arguments); };
+
+// ── the job sheet viewer, ↗ Open and the team's phone ──
+const _u105Box=fxScanBox; fxScanBox=function(o){ const P=u105Pages(o); if(!P.length) return _u105Box.apply(this,arguments);
+  if(u105NeedCut(o.id)){ const c=u105Cut[o.id]; if(!c||c.k!==P.join(',')+'|'+(oaScans[o.id]||{}).url){ u105MakeCut(o.id).then(x=>{ if(x&&document.querySelector('#modal-root .js-grid')&&prodLastJS&&prodLastJS[0]===o.id) fxJS(o.id,prodLastJS[1]); }); return '<div class="fx-nopdf"><b>⏳ Opening the order…</b></div>'; }
+    return `<iframe class="fx-pdf" src="${c.url}"></iframe>`; }
+  if(u105Ro()) return _u105Box.apply(this,arguments);
+  return `<div class="u105ban">🔒 <b>${u105Txt(P)[0].toUpperCase()+u105Txt(P).slice(1)}</b> — only the office and the fitting manager see ${P.length===1?'this page':'these pages'}. The departments, tablets, teams and the yard get the order without ${P.length===1?'it':'them'}.</div>`+_u105Box.apply(this,arguments); };
+const _u105Open=u97Open; u97Open=function(oid){ if(u105NeedCut(oid)){ const w=window.open('','_blank'); u105MakeCut(oid).then(c=>{ if(c&&w) w.location.href=c.url; else if(c) window.open(c.url,'_blank'); }); return; } return _u105Open.apply(this,arguments); };
+const _u105Src=u86Src; u86Src=async function(oid,k){ if(k==='scan'&&u105NeedCut(oid)){ const c=await u105MakeCut(oid); return c?{url:c.url,type:'application/pdf'}:null; } return _u105Src.apply(this,arguments); };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
