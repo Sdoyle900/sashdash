@@ -783,6 +783,19 @@
     :is(#view-oa,#view-fit,.fxm) .u93fl{display:inline-block;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:800}:is(#view-oa,#view-fit,.fxm) .u93fl.keep{background:#ccfbf1;color:#115e59}:is(#view-oa,#view-fit,.fxm) .u93fl.hold{background:#e0e7ff;color:#3730a3}
     :is(#view-oa,#view-fit,.fxm) .js-docs.js-docs{grid-template-columns:1fr 1fr auto}:is(#view-oa,#view-fit,.fxm) .js-docs .u94open{flex:0 0 auto;min-width:120px;background:#0f172a;color:#fff;border-color:#0f172a}:is(#view-oa,#view-fit,.fxm) .js-docs .u94open small{color:#cbd5e1}:is(#view-oa,#view-fit,.fxm) .js-docs .u94open[disabled]{opacity:.4}
     :is(#view-oa,#view-fit,.fxm) .u95off{opacity:.35;filter:grayscale(1);cursor:not-allowed!important}
+    :is(#view-oa,#view-fit,.fxm) .oa-stamps.u96{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media (max-width:640px){ :is(#view-oa,#view-fit,.fxm) .oa-stamps.u96{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    :is(#view-oa,#view-fit,.fxm) .oa-stages.u96s{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media (max-width:640px){ :is(#view-oa,#view-fit,.fxm) .oa-stages.u96s{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    :is(#view-oa,#view-fit,.fxm) .oa-stamp.u96g{background:#dcfce7;border-color:#22c55e}:is(#view-oa,#view-fit,.fxm) .oa-stamp.u96g b{color:#15803d}
+    :is(#view-oa,#view-fit,.fxm) .oa-stamp.u96p{background:#fff7ed;border:1.5px solid #f59e0b;border-style:solid}:is(#view-oa,#view-fit,.fxm) .oa-stamp.u96p b{color:#b45309}
+    :is(#view-oa,#view-fit,.fxm) .oa-stamp.u96w{background:#f8fafc;border-style:solid;border-color:#cbd5e1}:is(#view-oa,#view-fit,.fxm) .oa-stamp.u96w b{color:#475569}
+    :is(#view-oa,#view-fit,.fxm) .u96s2{display:block;font-size:11px;color:#64748b;margin-top:3px}
+    :is(#view-oa,#view-fit,.fxm) .u96pc{display:flex;flex-direction:column;gap:6px}:is(#view-oa,#view-fit,.fxm) .u96pc .oa-stamp{flex:1}
+    :is(#view-oa,#view-fit,.fxm) .u96fit{font-size:12px;font-weight:700;color:#64748b;background:#f1f5f9;border-radius:8px;padding:6px 8px}:is(#view-oa,#view-fit,.fxm) .u96fit.on{background:#ccfbf1;color:#115e59}
+    :is(#view-oa,#view-fit,.fxm) .ta-pdf .js-tabs{display:flex;gap:8px;align-items:center}:is(#view-oa,#view-fit,.fxm) .ta-pdf .js-tabs .u97open{margin-left:auto;background:#0f172a;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-weight:800;cursor:pointer}:is(#view-oa,#view-fit,.fxm) .ta-pdf .js-tabs .u97open[disabled]{opacity:.4}
+    :is(#view-oa,#view-fit,.fxm) .fy-ot.ro span{display:inline-flex;align-items:center;border:1.5px solid #0f766e;background:#f0fdfa;color:#115e59;border-radius:8px;padding:3px 9px;font-weight:800;font-size:12.5px;margin:0 5px 4px 0}
+    :is(#view-oa,#view-fit,.fxm) .f8pb.u99{cursor:default}:is(#view-oa,#view-fit,.fxm) .f8pb.u99.send{cursor:pointer;background:#7c3aed;border-color:#7c3aed;color:#fff}:is(#view-oa,#view-fit,.fxm) .f8pb.u99.sent{background:#f5f3ff;border-color:#c4b5fd;color:#6d28d9}
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2183,7 +2196,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-04-1700';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-05-1045';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -11128,6 +11141,60 @@ function u95Dom(root){ if(!root) return;
     const off=m[1]==='f8Prod'?(!l.made&&!l.ready&&!(+m[4])&&!l.saw):(!l.ready&&!l.made); el.classList.toggle('u95off',off); if(off) el.title=m[1]==='f8Prod'?U95_SAW:(m[1]==='f8Ready'?'Tap ⚙ In production first':U95_MADE); }); }
 const _u95FR=fitRender; fitRender=function(){ const r=_u95FR.apply(this,arguments); try{ u95Dom($('view-fit')); }catch(e){} return r; };
 const _u95Open=openModal; openModal=function(){ const r=_u95Open.apply(this,arguments); try{ if(fitOn) u95Dom(document.querySelector('#modal-root .modal')); }catch(e){} return r; };
+
+
+// ════════ Update 95 — 🧾 Office Administration: one stamp "👤🏭 Account made · sent to manufacturing" instead of two ════════
+function u96Both(id){ const o=oaFind(id); if(!o) return; const now=new Date().toISOString(), who=oaWho(); if(!o.stamps.account) o.stamps.account={at:now,by:who}; o.stamps.factory={at:now,by:who}; oaAutoPaid(o); oaAfter(id,'Stamped: Account made · sent to manufacturing'); }
+const _u96Un=oaUnstamp; oaUnstamp=function(id){ const o=oaFind(id); if(o&&oaStageOf(o)==='factory'&&o.stamps.account){ if(!confirm('Take off the "Account made · sent to manufacturing" stamp?')) return; delete o.stamps.factory; delete o.stamps.account; oaAfter(id,'Stamp taken off'); return; } return _u96Un.apply(this,arguments); };
+const _u96Open=oaOpenOrder; oaOpenOrder=function(id){ const r=_u96Open.apply(this,arguments); try{ const o=oaFind(id), box=document.querySelector('#modal-root .modal .oa-stamps'); if(!o||!box||box.children.length!==5) return r;
+    const A=o.stamps.account, F=o.stamps.factory, t=box.children[1], lab='👤🏭 Account made · sent to manufacturing';
+    let h; if(F) h=`<div class="oa-stamp done"><b>✓ Account made · sent to manufacturing</b>${oaDT(F.at)}<br>${esc(F.by)}</div>`;
+    else if(A) h=`<div class="oa-stamp next"><b>${lab}</b>account made ${oaDate(A.at)} · not sent yet<button class="btn-primary" onclick="oaStamp('${o.id}','factory')">Stamp now</button></div>`;
+    else h=`<div class="oa-stamp next"><b>${lab}</b>not yet<button class="btn-primary" onclick="u96Both('${o.id}')">Stamp now</button></div>`;
+    t.outerHTML=h; box.children[2].remove(); box.classList.add('u96'); }catch(e){ console.warn(e); } return r; };
+// the "👤 Account made" counter only shows while an old order is still sitting between the two stamps
+const _u96R=oaRender; oaRender=function(){ const r=_u96R.apply(this,arguments); try{ const v=$('view-oa'); v&&v.querySelectorAll('.oa-stages .oa-stage').forEach(b=>{ if(/Account made/.test(b.textContent)&&b.querySelector('b').textContent.trim()==='0'&&oaStage!=='account'){ const p=b.parentNode; b.remove(); p.classList.add('u96s'); } }); }catch(e){} return r; };
+// 🚚 Ready for fitting follows Manufacturing (no stamp button) · 💶 Paid in full shows money collected and the fitting date booked by Fitting
+function u96Ready(o){ const j=fitFJ(o.id), L=j.lines||[], all=L.length&&L.every(l=>l.ready), mk=L.some(l=>l.made||l.ready), sw=L.filter(l=>l.saw&&!l.made&&!l.ready).length, rd=L.filter(l=>l.ready).length;
+  if(!o.stamps.factory) return `<div class="oa-stamp"><b>🚚 Ready for fitting</b>not sent to manufacturing yet</div>`;
+  if(all||o.stamps.ready){ const s=o.stamps.ready; return `<div class="oa-stamp done u96g"><b>✔ Job ready to fit</b>${s?oaDT(s.at):'every line ✔ READY'}${s&&s.by?'<br>'+esc(s.by):''}</div>`; }
+  if(mk) return `<div class="oa-stamp u96p"><b>⚙ In production</b>${rd} of ${L.length} line${L.length>1?'s':''} ready<span class="u96s2">goes green when Manufacturing has every line ✔ READY</span></div>`;
+  return `<div class="oa-stamp u96w"><b>⏳ Waiting for manufacturing</b>${L.length?`${L.length} line${L.length>1?'s':''} not started${sw?` · 🪚 ${sw} gone to saw`:''}`:'no lines yet'}</div>`; }
+function u96Paid(o){ const bal=oaBal(o), b=fitBk(o.id), j=fitFJ(o.id), m=o.moneyIn;
+  const top=o.stamps.paid||bal<=0?`<div class="oa-stamp done"><b>✓ Paid in full</b>${o.stamps.paid?oaDT(o.stamps.paid.at)+'<br>'+esc(o.stamps.paid.by||''):''}</div>`
+    : m?`<div class="oa-stamp done u96g"><b>✔ Money collected</b>${oaDT(m.at)}<br>${esc(m.by||'')}<span class="u96s2">balance ${oaEur(bal)}</span></div>`
+    : `<div class="oa-stamp next"><b>💶 Paid in full</b>Balance ${oaEur(bal)}<button class="btn-primary" style="background:#15803d" onclick="fxMoneySet('${o.id}',true)">✔ Money collected</button></div>`;
+  const ds=b?fxDates(b):[]; const fit=j.hold?`⏸ Fitting on hold${j.hold.why?' — '+esc(j.hold.why):''}`:b?`🔧 Fitting: ${ds.length>1?fitDL(ds[0])+' – '+fitDL(ds.slice(-1)[0]):fitDL(ds[0])}${b.team===0?' · ❓ no team yet':' · Team '+b.team}`:'🔧 Fitting not booked yet';
+  return `<div class="u96pc">${top}<div class="u96fit ${b?'on':''}">${fit}</div></div>`; }
+const _u96Open2=oaOpenOrder; oaOpenOrder=function(id){ const r=_u96Open2.apply(this,arguments); try{ const o=oaFind(id), box=document.querySelector('#modal-root .modal .oa-stamps.u96'); if(!o||!box||box.children.length!==4) return r;
+    box.children[2].outerHTML=u96Ready(o); box.children[3].outerHTML=u96Paid(o); }catch(e){ console.warn(e); } return r; };
+
+// ════ Update 96 — the order PDF stays put while you work beside it (no reload / flicker on every change) · ↗ Open PDF on 📥 To allocate ════
+let u97Hold=null;
+function u97Keep(){ const v=$('view-fit'); if(!v||!Element.prototype.moveBefore) return; const f=v.querySelector('iframe.fx-pdf'); if(!f||!f.src) return;
+  if(!u97Hold){ u97Hold=document.createElement('div'); u97Hold.style.cssText='position:fixed;left:-9999px;top:0;width:600px;height:800px;overflow:hidden'; document.body.appendChild(u97Hold); }
+  try{ u97Hold.moveBefore(f,null); }catch(e){} }
+function u97Put(){ if(!u97Hold) return; const old=u97Hold.querySelector('iframe.fx-pdf'); if(!old) return; const v=$('view-fit'), nw=v&&[...v.querySelectorAll('iframe.fx-pdf')].find(x=>x.src===old.src);
+  try{ if(nw){ nw.parentNode.moveBefore(old,nw); nw.remove(); } else old.remove(); }catch(e){ old.remove(); } }
+const _u97FR=fitRender; fitRender=function(){ try{ u97Keep(); }catch(e){} let r; try{ r=_u97FR.apply(this,arguments); } finally { try{ u97Put(); }catch(e){} }
+  try{ const v=$('view-fit'), tb=v&&v.querySelector('.ta-pdf .js-tabs'); if(tb&&!tb.querySelector('.u97open')&&fxTaSel){ const s=oaScans[fxTaSel]; tb.insertAdjacentHTML('beforeend',`<button class="u97open" ${s&&s.url?'':'disabled'} onclick="u97Open('${fxTaSel}')" title="Open the order full size in a new tab — zoom, print or save there">↗ Open PDF</button>`); } }catch(e){} return r; };
+function u97Open(oid){ const s=oaScans[oid]; if(!s||!s.url){ toast('No PDF to open'); return; } if(!window.open(s.url,'_blank')) toast('Allow pop-ups to open the PDF'); }
+
+// ════ Update 97 — departments, tablets, the yard and the teams: order type (New / Repl / NMG / S/O …) is read-only, and nothing about money ════
+function u98Ro(){ const R=typeof u83R==='function'&&u83R(); return !!R&&['dept','tab','yard','team'].includes(R.kind); }
+const _u98Ot=fyOtBoxes; fyOtBoxes=function(oid,big){ if(!u98Ro()) return _u98Ot.apply(this,arguments); const s=fyOt(oid);
+  return s.length?`<div class="fy-ot ro ${big?'big':''}" title="Set by the fitting manager">${s.map(k=>`<span class="on">✓ ${fyOtName(k)}</span>`).join('')}</div>`:''; };
+const _u98OtSet=fyOtSet; fyOtSet=function(){ if(u98Ro()){ toast('The fitting manager sets this'); return; } return _u98OtSet.apply(this,arguments); };
+const _u98Chips=fxChips; fxChips=function(){ const h=_u98Chips.apply(this,arguments); return u98Ro()?h.replace(/<span class="sc[^"]*"[^>]*title="Goes green when Office Administration confirms the money is collected">[^<]*<\/span>/,''):h; };
+const _u98MBox=fxMoneyBox; fxMoneyBox=function(){ return u98Ro()?'':_u98MBox.apply(this,arguments); };
+
+// ════ Update 98 — departments: "📤 Send to saw" instead of "⚙ Start"; ⚙ In production only comes from the tablet (or the fitting manager / office) ════
+function u99Dept(){ const R=typeof u83R==='function'&&u83R(); return !!R&&R.kind==='dept'; }
+const _u99Prod=f8Prod; f8Prod=function(oid,lid,n){ if(u99Dept()&&!n){ toast('⚙ In production is set by the tablet — or the fitting manager'); return; } return _u99Prod.apply(this,arguments); };
+const _u99FR=fitRender; fitRender=function(){ const r=_u99FR.apply(this,arguments); try{ if(u99Dept()) $('view-fit').querySelectorAll('button.f8pb').forEach(b=>{ const m=(b.getAttribute('onclick')||'').match(/f8Prod\('([^']+)','([^']+)',0\)/); if(!m) return; const l=fxLine(m[1],m[2]); if(!l) return;
+    b.outerHTML=l.made||l.ready?`<span class="f8pb on u99" title="${esc('⚙ In production · '+(l.madeBy||'')+' '+(l.madeAt?oaDT(l.madeAt):''))}">⚙ In production</span>`
+      :l.saw?`<span class="f8pb u99 sent" title="Sent ${esc(l.sawAt?oaDT(l.sawAt):'')} — goes ⚙ In production when the tablet taps it">📤 Sent · waiting for the tablet</span>`
+      :`<button class="f8pb u99 send" onclick="event.stopPropagation();fxSaw('${m[1]}','${m[2]}')" title="Send this line to the saw (with its cutting list)">📤 Send to saw</button>`; }); }catch(e){ console.warn(e); } return r; };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
