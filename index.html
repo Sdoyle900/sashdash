@@ -2205,7 +2205,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-05-1125';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-05-1140';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -11260,6 +11260,15 @@ function u101Html(){ if(!u101Can()) return '<div class="oa-warn">📊 Statistics
 const _u101Diary=fxDiaryHtml; fxDiaryHtml=function(){ if(fitView==='stats') return u101Html(); return _u101Diary.apply(this,arguments); };
 const _u101Go=fitGo; fitGo=function(v){ if(v==='stats'&&!u101Can()) v='diary'; return _u101Go.apply(this,[v].concat([].slice.call(arguments,1))); };
 const _u101FR=fitRender; fitRender=function(){ if(fitView==='stats'&&!u101Can()) fitView='diary'; const r=_u101FR.apply(this,arguments); try{ if(!u101Can()) $('view-fit').querySelectorAll('.ft-nav button').forEach(b=>{ if(/fitGo\('stats'\)/.test(b.getAttribute('onclick')||'')) b.remove(); }); }catch(e){} return r; };
+
+
+// ════════ Update 101 — ✏️ custom lines (typed-in items) go to their department's tablet ════════
+// A tablet only listed lines whose item type it's set up for, so a ✏️ Custom line (e.g. "sash windows" under Hardwood) never reached any tablet.
+// Now it goes to the first tablet that makes that department's items (Hardwood → the tablet with timber windows/doors, and so on).
+function u102TabFor(l){ const k=fxDept(l), g=FX_GROUPS[k]||[]; const t=(fitData.tablets||[]).slice().sort((a,b)=>a.n-b.n).find(t=>(t.see||[]).some(p=>g.includes(p))); return t?t.n:null; }
+const _u102TL=fxTabLines; fxTabLines=function(t){ if(!t||!Array.isArray(t.see)||t.see.includes('custom')) return _u102TL.apply(this,arguments);
+  const t2=Object.assign({},t,{see:t.see.concat('custom')}), r=_u102TL.apply(this,[t2].concat([].slice.call(arguments,1)));
+  return r.filter(x=>x.l.prod!=='custom'||u102TabFor(x.l)===t.n); };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
