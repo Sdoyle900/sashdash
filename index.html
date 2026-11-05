@@ -778,6 +778,11 @@
     :is(#view-oa,#view-fit,.fxm) tr.u92row td{background:#fffbeb}:is(#view-oa,#view-fit,.fxm) tr.u92row td:first-child{box-shadow:inset 5px 0 0 #f59e0b}:is(#view-oa,#view-fit,.fxm) .u92pill{background:#fde68a;color:#78350f}
     :is(#view-oa,#view-fit,.fxm) .u92prev{font-size:12px;color:#475569;margin-top:3px}:is(#view-oa,#view-fit,.fxm) .u92acts{display:flex;flex-direction:column;gap:4px;margin-top:6px;align-items:flex-start}
     :is(#view-oa,#view-fit,.fxm) .u92note{font-size:12.5px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:6px 10px;margin:-4px 0 10px}
+    :is(#view-oa,#view-fit,.fxm) .dtabs .u93t{border-color:#a5b4fc}:is(#view-oa,#view-fit,.fxm) .dtabs .u93t.on{background:#4338ca;border-color:#4338ca;color:#fff}:is(#view-oa,#view-fit,.fxm) .dtabs .u93t.cx{border-color:#fca5a5}:is(#view-oa,#view-fit,.fxm) .dtabs .u93t.cx.on{background:#dc2626;border-color:#dc2626}:is(#view-oa,#view-fit,.fxm) .dtabs .u93t.rb{border-color:#93c5fd}:is(#view-oa,#view-fit,.fxm) .dtabs .u93t.rb.on{background:#2563eb;border-color:#2563eb}
+    :is(#view-oa,#view-fit,.fxm) .u93h{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:9px 12px;font-size:13.5px;color:#312e81;margin-bottom:10px}:is(#view-oa,#view-fit,.fxm) .u93sub{font-size:15px;margin:16px 0 6px}
+    :is(#view-oa,#view-fit,.fxm) .u93fl{display:inline-block;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:800}:is(#view-oa,#view-fit,.fxm) .u93fl.keep{background:#ccfbf1;color:#115e59}:is(#view-oa,#view-fit,.fxm) .u93fl.hold{background:#e0e7ff;color:#3730a3}
+    :is(#view-oa,#view-fit,.fxm) .js-docs.js-docs{grid-template-columns:1fr 1fr auto}:is(#view-oa,#view-fit,.fxm) .js-docs .u94open{flex:0 0 auto;min-width:120px;background:#0f172a;color:#fff;border-color:#0f172a}:is(#view-oa,#view-fit,.fxm) .js-docs .u94open small{color:#cbd5e1}:is(#view-oa,#view-fit,.fxm) .js-docs .u94open[disabled]{opacity:.4}
+    :is(#view-oa,#view-fit,.fxm) .u95off{opacity:.35;filter:grayscale(1);cursor:not-allowed!important}
 
     .page-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
     .page-sub{color:var(--slate);font-size:13px;margin-top:2px}
@@ -2178,7 +2183,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-04-1635';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-04-1700';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -10787,7 +10792,7 @@ async function u86Report(oid){ const o=oaFind(oid); if(!o) return; const w=windo
   w.document.open(); w.document.write(`<!doctype html><meta charset="utf-8"><title>${esc(cap.title)}</title><style>${FY_PRINT_CSS} .sheets{page-break-before:always}.sheet+.sheet{page-break-before:always}.sheet img{width:100%;border:1px solid #cbd5e1}</style>${fyPrintHead(cap.div,cap.title,cap.sub)}${cap.body}${sheets}<div class="ft"><span>SashDash Production · Sean Doyle Windows Ltd · Roscommon</span><span>Printed by ${esc(oaWho())} · ${oaDT(new Date())}</span></div><script>window.onload=()=>setTimeout(()=>print(),300)<\/script>`); w.document.close(); }
 
 // ── 🔧 After install: the two buttons on every job ──
-const _u86FR=fitRender; fitRender=function(){ const r=_u86FR.apply(this,arguments); try{ const v=$('view-fit'); if(fitOn&&fitView==='after'&&v&&!fitQ.trim()){
+const _u86FR=fitRender; fitRender=function(){ const r=_u86FR.apply(this,arguments); try{ const v=$('view-fit'); if(fitOn&&(fitView==='after'||u93Aft())&&v&&!fitQ.trim()){
     v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/), td=tr.lastElementChild; if(!m||!td||td.querySelector('.u86b')) return; const oid=m[1], n=u86Sheets(oid).reduce((a,s)=>a+s.n,0);
       td.querySelectorAll('button[onclick^="fitReport"]').forEach(b=>{ const nx=b.nextSibling; b.remove(); if(nx&&nx.nodeName==='BR') nx.remove(); });
       td.insertAdjacentHTML('afterbegin',`<div class="u86b"><button class="btn-outline ft-sm" onclick="u86Open('${oid}')">📄 Job sheet${n?` <em>✏️ ${n}</em>`:''}</button><button class="btn-outline ft-sm" onclick="u86Report('${oid}')">🖨 Print report</button></div>`); }); } }catch(e){ console.warn(e); } return r; };
@@ -10831,7 +10836,7 @@ function u87Bar(){ const p=u87Pick, o=p&&oaFind(p.oid); if(!o) return ''; const 
   return `<div class="u87bar"><div><b>🗓 Re-book — ${esc(oaTitle(o))}</b><span>${{unf:'⟲ Unfinished',snag:'⚠ Snag'}[j.outcome]||''}${j.out&&j.out.text?' — “'+esc(j.out.text)+'”':''}${b?' · last visit Team '+b.team:''} · ⏱ ${fitDaysTxt(j.days)} · 👷 ${j.men}-man</span></div>
     ${u87Badge(p.oid,true)}<span class="u87hint">👆 Click a team's day in the diary to book it</span><button class="u87x" onclick="u87Pick=null;fitRender()">✕ Cancel</button></div>`; }
 const _u87FR=fitRender; fitRender=function(){ const r=_u87FR.apply(this,arguments); try{ const v=$('view-fit'); if(!fitOn||!v) return r;
-    if(fitView==='after'&&!fitQ.trim()) v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/); if(!m) return; const oid=m[1];
+    if((fitView==='after'||u93Aft())&&!fitQ.trim()) v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/); if(!m) return; const oid=m[1];
         tr.querySelectorAll('button').forEach(bt=>{ if(/Re-book team/.test(bt.textContent)) bt.setAttribute('onclick',`event.stopPropagation();u87Start('${oid}')`); });
         const rc=tr.children[3]; if(rc&&!rc.querySelector('.u87m')){ const bd=u87Badge(oid,true); if(bd) rc.insertAdjacentHTML('beforeend',`<div style="margin-top:5px">${bd}</div>`); } });
     if(u87Pick&&fitView==='diary'&&!fitQ.trim()){ if(!oaFind(u87Pick.oid)){ u87Pick=null; return r; } const top=v.querySelector('.topbar9'); (top||v.firstElementChild).insertAdjacentHTML('afterend',u87Bar()); v.classList.add('u87on');
@@ -10958,8 +10963,16 @@ u86Report=async function(oid){ const o=oaFind(oid); if(!o) return; const w=windo
    .rep .rd{font-size:13px;color:#475569}.rep .rd b{display:block;font-size:22px;color:#0f172a}.rep .rt2{font-size:19px;font-weight:700;line-height:1.35;color:#0f172a}
    .rep.snag{border-color:#f59e0b;background:#fffbeb}.rep.unf{border-color:#3b82f6;background:#eff6ff}.rep.ok{border-color:#16a34a;background:#f0fdf4}.rep.clr{border-color:#94a3b8;background:#f8fafc}.rep.clr .rt2{font-size:15px;font-weight:600;color:#475569}
    .rph{margin:0 0 10px 164px}.sh{break-inside:avoid;margin:12px 0}.sh h3{font-size:14px;margin:0 0 6px}.sh img{width:100%;max-height:245mm;object-fit:contain;border:1px solid #cbd5e1}
-   .conv .msg{font-size:15px;padding:8px 0;line-height:1.45}.conv .evt{font-size:14px;padding:6px 9px;margin:5px 0;line-height:1.4;color:#334155}.conv{break-before:auto}`;
-  w.document.open(); w.document.write(`<!doctype html><meta charset="utf-8"><title>${esc(cap.title)}</title><style>${css}</style>${fyPrintHead(cap.div,cap.title,cap.sub)}${body}${sheets}${photos}${conv?`<h2>Conversation</h2><div class="conv">${conv}</div>`:''}<div class="ft"><span>SashDash Production · Sean Doyle Windows Ltd · Roscommon</span><span>Printed by ${esc(oaWho())} · ${oaDT(new Date())}</span></div><script>window.onload=()=>setTimeout(()=>print(),300)<\/script>`); w.document.close(); };
+   .conv .msg{font-size:15px;padding:8px 0;line-height:1.45}.conv .evt{font-size:14px;padding:6px 9px;margin:5px 0;line-height:1.4;color:#334155}.conv{break-before:auto}
+   img.photo{cursor:zoom-in;width:200px;height:150px}.lb{display:none;position:fixed;inset:0;background:rgba(15,23,42,.88);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px}.lb img{max-width:96vw;max-height:84vh;object-fit:contain;border-radius:6px;background:#fff}.lbb{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.lbb button{font-size:15px;font-weight:700;border:none;border-radius:8px;padding:9px 16px;cursor:pointer;background:#fff}.lbb #lbm{color:#fff;font-size:14px}@media print{.lb{display:none!important}}`;
+  w.document.open(); w.document.write(`<!doctype html><meta charset="utf-8"><title>${esc(cap.title)}</title><style>${css}</style>${fyPrintHead(cap.div,cap.title,cap.sub)}${body}${sheets}${photos}${conv?`<h2>Conversation</h2><div class="conv">${conv}</div>`:''}<div class="ft"><span>SashDash Production · Sean Doyle Windows Ltd · Roscommon</span><span>Printed by ${esc(oaWho())} · ${oaDT(new Date())}</span></div><div id="lb" class="lb" onclick="if(event.target===this)this.style.display='none'"><img id="lbi"><div class="lbb"><button onclick="lbSave()">⬇ Save image</button><button onclick="lbCopy()">📋 Copy image</button><button onclick="document.getElementById('lb').style.display='none'">✕ Close</button><span id="lbm"></span></div></div>
+<script>
+document.querySelectorAll('img.photo').forEach((im,i)=>{ im.title='Click to make it bigger · save or copy'; im.onclick=()=>{ const b=document.getElementById('lb'); document.getElementById('lbi').src=im.src; b.dataset.n=i+1; document.getElementById('lbm').textContent=''; b.style.display='flex'; }; });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('lb').style.display='none'; });
+async function lbBlob(){ const src=document.getElementById('lbi').src; return await (await fetch(src)).blob(); }
+async function lbSave(){ try{ const bl=await lbBlob(), a=document.createElement('a'), ext=/png/.test(bl.type)?'png':'jpg'; a.href=URL.createObjectURL(bl); a.download=document.title.replace(/[\\/:*?"<>|]+/g,'-')+' - photo '+document.getElementById('lb').dataset.n+'.'+ext; document.body.appendChild(a); a.click(); a.remove(); }catch(e){ document.getElementById('lbm').textContent='Right-click the photo → Save image as…'; } }
+async function lbCopy(){ const m=document.getElementById('lbm'); try{ const im=document.getElementById('lbi'), c=document.createElement('canvas'); c.width=im.naturalWidth; c.height=im.naturalHeight; c.getContext('2d').drawImage(im,0,0); const bl=await new Promise(r=>c.toBlob(r,'image/png')); await navigator.clipboard.write([new ClipboardItem({'image/png':bl})]); m.textContent='✔ Copied — paste it into an email or WhatsApp'; }catch(e){ m.textContent='Right-click the photo → Copy image'; } }
+<\/script><script>window.onload=()=>setTimeout(()=>print(),300)<\/script>`); w.document.close(); };
 
 
 // ════════ Update 91 — 📅 Diary: colour by result (like the Service Department) · a job can't be booked twice on the same day ════════
@@ -11011,7 +11024,7 @@ const _u92FR=fitRender; fitRender=function(){ const r=_u92FR.apply(this,argument
       else if(st==='cb'){ const h=u92Hist(b.oid).slice(-1)[0]; tag=`<span class="u92tag cb">↩ RE-BOOK${h?' · after '+(h.outcome==='snag'?'⚠ snag':'⟲ unfinished'):''}</span>`; }
       if(!tag) return; if(el.classList.contains('mchip')) el.insertAdjacentHTML('afterbegin',st==='rb'?'⟲ ':'↩ '); else el.insertAdjacentHTML('afterbegin',tag); });
     if(u92HL){ const el=v.querySelector(`[data-bid="${u92HL}"]`); u92HL=null; if(el){ el.classList.add('u92hl'); setTimeout(()=>el.scrollIntoView({block:'center',behavior:'smooth'}),60); setTimeout(()=>el.classList.remove('u92hl'),4000); } } }
-  if(fitView==='after'&&!fitQ.trim()){ const os=fyAfterList(), n=os.filter(o=>fyAfterSt(o)==='rebooked').length, fb=v.querySelector('.fx-filters');
+  if((fitView==='after'||u93Aft())&&!fitQ.trim()){ const os=fyAfterList(), n=os.filter(o=>fyAfterSt(o)==='rebooked').length, fb=v.querySelector('.fx-filters');
     if(fb&&!fb.querySelector('.u92f')){ const sn=[...fb.children].find(x=>/Snag/.test(x.textContent)); const h=`<button class="u92f ${fxAfter==='rebooked'?'on':''}" onclick="fxAfter='rebooked';fitRender()">↩ Re-booked ${n}</button>`; if(sn) sn.insertAdjacentHTML('afterend',h); else fb.insertAdjacentHTML('beforeend',h); }
     v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/); if(!m) return; const oid=m[1], o=oaFind(oid); if(!o) return; const st=fyAfterSt(o), td=tr.children, b=fitBk(oid);
       if(st==='rebooked'){ tr.classList.add('u92row'); if(td[3]) td[3].innerHTML=`<span class="ft-pill u92pill">↩ Re-booked</span>${b?`<div class="sub" style="margin-top:4px;font-weight:700;color:#92400e">👷 Team ${b.team} · ${fxDates(b).map(fitDL).join(', ')}</div>`:''}${u92Prev(oid)}${typeof u87Badge==='function'?`<div style="margin-top:5px">${u87Badge(oid,true)}</div>`:''}`;
@@ -11020,6 +11033,101 @@ const _u92FR=fitRender; fitRender=function(){ const r=_u92FR.apply(this,argument
         if(u92Hist(oid).length&&td[3]&&!td[3].querySelector('.u92prev')) td[3].insertAdjacentHTML('beforeend',`<div class="sub" style="margin-top:4px">${st==='fitted'?'after a re-book:':'earlier:'}</div>${u92Prev(oid)}`); } });
     const note=v.querySelector('.fx-filters'); if(note&&!v.querySelector('.u92note')) note.insertAdjacentHTML('afterend',`<div class="u92note">↩ <b>Re-booked</b> jobs stay here (amber) until the team taps ✅ All done. Fitted jobs drop off this list ${U92_KEEP/7} weeks after they're done.</div>`); }
   }catch(e){ console.warn(e); } return r; };
+
+
+// ════════ Update 93 — ⏸ On hold: a job with no date yet comes off the diary into an On hold list (beside 📅 Diary) · the factory keeps the old day or holds it on the floor ════════
+// j.hold = {at, by, why, floor:'keep'|'hold', keepDay, b:{the booking it had, if any}, sec:[2nd crews]}
+FIT_ST.hold=['⏸','On hold','#e0e7ff','#3730a3'];
+const _u93St=fitStatus; fitStatus=function(o){ const j=o&&fitFJ(o.id); if(j&&j.hold&&!j.sentSD&&!j.outcome) return 'hold'; return _u93St.apply(this,arguments); };
+function u93List(){ return fitOrders().filter(o=>fitStatus(o)==='hold').sort((a,b)=>String(fitFJ(a.id).hold.at).localeCompare(String(fitFJ(b.id).hold.at))); }
+// the factory: "keep the original day" still works to that day (alarms, tablets); "hold on the floor" waits
+const _u93Ns=fxNs; fxNs=function(){ const out=_u93Ns.apply(this,arguments), A=fxAl();
+  u93List().forEach(o=>{ const h=fitFJ(o.id).hold; if(h.floor!=='keep'||!h.keepDay) return; const n=fxDaysTo(h.keepDay); if(n<0) return; const b=Object.assign({},h.b||{},{start:h.keepDay});
+    fitFJ(o.id).lines.forEach(l=>{ if(!l.made&&n<=A.ns) out.push({o,l,b,n}); if(l.made&&!l.ready&&n<=A.nf) out.push({o,l,b,n,nf:true}); }); }); return out; };
+const _u93TL=fxTabLines; fxTabLines=function(t){ const out=_u93TL.apply(this,arguments); try{ out.forEach(x=>{ const h=fitFJ(x.o.id).hold; if(!h||fitStatus(x.o)!=='hold') return;
+    if(h.floor==='keep'&&h.keepDay){ x.b=Object.assign({},h.b||{},{start:h.keepDay}); x.fl=h.keepDay; const n=fxDaysTo(h.keepDay); x.ns=!x.l.made&&n>=0&&n<=fxAl().ns; x.nf=x.l.made&&!x.l.ready&&n>=0&&n<=fxAl().nf; } else { x.b=null; x.fl=null; x.ns=false; x.nf=false; } });
+    out.sort((a,b)=>(b.ns-a.ns)||(b.nf-a.nf)||(a.at-b.at)); }catch(e){} return out; };
+
+// ── putting a job on hold ──
+let u93F=null;
+function u93Ask(oid){ const b=fitBk(oid), o=oaFind(oid); if(!o) return; u93F={oid,why:'',floor:'keep'}; u93Form(); }
+function u93Form(){ const f=u93F, o=oaFind(f.oid), b=fitBk(f.oid), ds=b?fxDates(b):[], cur=b?fyFloor(b):null;
+  openModal(`<h2>⏸ Put on hold — ${esc(oaTitle(o))}</h2><div class="u86sub">${b?`now Team ${b.team} · ${fitDL(ds[0])}${ds.length>1?' – '+fitDL(ds.slice(-1)[0]):''}`:'not booked'} — it comes off the diary and waits in <b>⏸ On hold</b> until you give it a date.</div>
+   <div class="field-group"><label>Why <span class="optional">(optional)</span></label><input id="u93why" value="${esc(f.why)}" oninput="u93F.why=this.value" placeholder="e.g. no date available · site not ready · waiting on the customer"></div>
+   ${b?`<div class="fy-floorq"><b>🏭 Production — which date does the floor work to?</b>
+     <label class="${f.floor==='keep'?'on':''}"><input type="radio" name="u93fl" ${f.floor==='keep'?'checked':''} onchange="u93F.floor='keep';u93Form()"> <b>Keep the original day on the floor</b> — the factory still works to ${fitDL(cur)}</label>
+     <label class="${f.floor==='hold'?'on':''}"><input type="radio" name="u93fl" ${f.floor==='hold'?'checked':''} onchange="u93F.floor='hold';u93Form()"> <b>Hold it on the floor</b> — the factory waits until it gets a new date (no alarms)</label></div>`:''}
+   <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" style="background:#4338ca" onclick="u93Go()">⏸ Put on hold</button></div>`); fxModal(); const w=$('u93why'); if(w){ w.focus(); w.setSelectionRange(w.value.length,w.value.length); } }
+function u93Go(){ const f=u93F, j=fitFJw(f.oid), b=fitBk(f.oid), now=fxNow(), sec=b?fitData.bookings.filter(x=>x.oid===f.oid&&x.second&&x.id!==b.id):[];
+  j.hold={at:now,by:oaWho(),why:(f.why||'').trim(),floor:b?f.floor:'hold',keepDay:b&&f.floor==='keep'?fyFloor(b):null,b:b?JSON.parse(JSON.stringify(b)):null,sec:JSON.parse(JSON.stringify(sec))};
+  if(b){ const ids=new Set([b.id,...sec.map(x=>x.id)]); fitData.bookings=fitData.bookings.filter(x=>!ids.has(x.id)); }
+  const t=`⏸ Put on hold by ${oaWho()}${j.hold.why?' — '+j.hold.why:''}${b?` · was Team ${b.team} · ${fitDL(fxDates(b)[0])}`:''}${b?(f.floor==='keep'?` — factory keeps ${fitDL(j.hold.keepDay)}`:' — held on the floor'):''}`;
+  (j.chat=j.chat||[]).push({who:'',at:now,text:t,evt:true}); fxLog(f.oid,'⏸',oaWho(),t.replace(/^⏸ /,'')); fitSave(); closeModal(); fxDTab='hold'; fitGo('diary'); toast('⏸ On hold'); }
+// coming off hold: any new booking (or putting it back on its old day)
+function u93Clear(oid,how){ const j=fitFJw(oid); if(!j.hold) return; const now=fxNow(), b=fitBk(oid); delete j.hold;
+  const t=`▶ Off hold — ${how||(b?'booked Team '+b.team+' · '+fitDL(fxDates(b)[0]):'')} by ${oaWho()}`; (j.chat=j.chat||[]).push({who:'',at:now,text:t,evt:true}); fxLog(oid,'▶',oaWho(),t.replace(/^▶ /,'')); }
+function u93Back(oid){ const j=fitFJw(oid), h=j.hold; if(!h||!h.b) return; if(!confirm(`Put it back on Team ${h.b.team} · ${fitDL(fxDates(h.b)[0])}?`)) return;
+  fitData.bookings.push(h.b,...(h.sec||[])); u93Clear(oid,'back on Team '+h.b.team+' · '+fitDL(fxDates(h.b)[0])); fitSave(); fitRender(); toast('▶ Back in the diary'); }
+function u93Book(oid){ if(typeof u87Start==='function'){ u87Pick={oid,hold:true}; fitQ=''; fxDTab='diary'; fxDV=fxDV==='month'?'week':fxDV; fitGo('diary'); } else fitAllocate(oid); }
+const _u93AlSave=fitAlSave; fitAlSave=function(){ const oid=fitAl&&fitAl.oid, had=oid&&fitFJ(oid).hold; const r=_u93AlSave.apply(this,arguments); try{ if(had&&fitBk(oid)&&!document.querySelector('#modal-root .modal')){ u93Clear(oid); fitSave(); fitRender(); } }catch(e){} return r; };
+const _u93NDGo=fyNDGo; fyNDGo=function(){ const s=fyND, b=s&&fitData.bookings.find(x=>x.id===s.bid), oid=b&&b.oid, had=oid&&fitFJ(oid).hold; const r=_u93NDGo.apply(this,arguments); try{ if(had&&fitBk(oid)){ u93Clear(oid); fitSave(); } }catch(e){} return r; };
+// the re-book bar works for a held job too
+const _u93Bar=u87Bar; u87Bar=function(){ let h=_u93Bar.apply(this,arguments); if(u87Pick&&u87Pick.hold){ const j=fitFJ(u87Pick.oid); h=h.replace('🗓 Re-book —','▶ Book from ⏸ On hold —').replace(/<span>[^<]*(<[^>]*>[^<]*)*?<\/span><\/div>/,`<span>${j.hold&&j.hold.why?'“'+esc(j.hold.why)+'” · ':''}⏱ ${fitDaysTxt(j.days)} · 👷 ${j.men}-man</span></div>`); } return h; };
+
+// ── the ⏸ On hold tab beside 📅 Diary ──
+function u93Aft(){ return typeof fitView!=='undefined'&&fitView==='diary'&&fxDTab==='rbs'&&!fitQ.trim(); }
+function u93Rbs(){ return fyAfterList().filter(o=>['unf','snag','rebooked'].includes(fyAfterSt(o))); }
+function u93CxDone(){ return (oaOrders||[]).filter(o=>o.cancel&&o.cancel.status!=='open'&&o.cancel.doneAt&&oaDays(o.cancel.doneAt)<=28).sort((a,b)=>String(b.cancel.doneAt).localeCompare(String(a.cancel.doneAt))); }
+const _u93Diary=fxDiaryHtml; fxDiaryHtml=function(){ const mode=['hold','cx','rbs'].includes(fxDTab)?fxDTab:null, want=mode==='hold'; if(mode) fxDTab='diary'; let h; try{ h=_u93Diary.apply(this,arguments); } finally { if(mode) fxDTab=mode; }
+  if(mode){ const i0=h.indexOf('<div class="fy-cbox">'); if(i0>=0){ const k=h.indexOf('<div class="dtabs">'); const e0=h.indexOf('</div>',k)+6; if(i0>=e0){ const cb=fyCancelBox(); h=h.replace(cb,''); } } }
+  const L=u93List(), i=h.indexOf('<div class="dtabs">'); if(i<0) return h; const e=h.indexOf('</div>',i);
+  const ncx=fyCancelList().length, nr=u93Rbs().length;
+  const tabs=h.slice(i,e).replace(/class="(r )?on"/g,(m,r)=>mode?`class="${r||''}"`:m)+`<button class="u93t ${mode==='hold'?'on':''}" onclick="fxDTab='hold';fitRender()">⏸ On hold <em>${L.length}</em></button><button class="u93t cx ${mode==='cx'?'on':''}" onclick="fxDTab='cx';fitRender()">🔴 Cancelled <em>${ncx}</em></button><button class="u93t rb ${mode==='rbs'?'on':''}" onclick="fxDTab='rbs';fitRender()">⟲ Re-book &amp; snag <em>${nr}</em></button>`;
+  h=h.slice(0,i)+tabs+h.slice(e); if(!mode) return h;
+  if(mode==='cx'){ const end=h.indexOf('</div>',h.indexOf('<div class="dtabs">'))+6, D=u93CxDone();
+    return h.slice(0,end)+(fyCancelBox()||'<div class="u93h">🔴 <b>Cancelled</b> — nothing waiting. When Office Administration sends a customer cancellation it shows here until you give it a new date or free the day.</div>')
+      +(D.length?`<h3 class="u93sub">Dealt with in the last 4 weeks</h3><table class="oa-table"><thead><tr><th>Job</th><th>Why</th><th>What was done</th><th style="width:170px">When</th></tr></thead><tbody>${D.map(o=>`<tr><td><b>${esc(oaTitle(o))}</b></td><td>“${esc(o.cancel.why||'')}”</td><td>${esc(o.cancel.doneText||o.cancel.status)}</td><td>${oaDT(o.cancel.doneAt)}<div class="sub">${esc(o.cancel.doneBy||'')}</div></td></tr>`).join('')}</tbody></table>`:''); }
+  if(mode==='rbs'){ const end=h.indexOf('</div>',h.indexOf('<div class="dtabs">'))+6, keepL=fyAfterList, keepF=fxAfter; let t='';
+    const RL=u93Rbs(); try{ fyAfterList=function(){ return RL; }; fxAfter='all'; t=fxAfterHtml(); } finally { fyAfterList=keepL; fxAfter=keepF; }
+    const ti=t.indexOf('<table'); t=ti>=0?t.slice(ti):t;
+    return h.slice(0,end)+`<div class="u93h">⟲ <b>Re-book &amp; snag</b> — jobs the team came back from with ⟲ Unfinished or ⚠ Snag, and the ↩ return visits booked for them (they stay until ✅ All done).</div>`+t; }
+  const end=h.indexOf('</div>',h.indexOf('<div class="dtabs">'))+6;
+  const rows=L.map(o=>{ const j=fitFJ(o.id), x=j.hold, t=OA_TYPES[o.type], ds=x.b?fxDates(x.b):[];
+    return `<tr class="r" onclick="if(!event.target.closest('button'))fxFromDiary('${o.id}')"><td><span class="oa-tbar" style="background:${t.col}"></span><span style="display:inline-block;vertical-align:middle"><b>${esc(oaTitle(o))}</b><div class="sub">${t.icon} ${t.label.replace(/s$/,'')} · Pg ${esc((o.pages||[]).join(' · '))}</div><div class="sub">${esc(oaPlace(o.type==='builder'?o.siteEir:o.eir)||oaWhere(o))}</div></span></td>
+      <td><b>${oaDate(x.at)}</b><div class="sub">${esc(x.by||'')} · ${fxAge(x.at)}</div></td>
+      <td>${x.why?`“${esc(x.why)}”`:'<span class="sub">—</span>'}</td>
+      <td>${x.b?`👷 Team ${x.b.team} · ${fitDL(ds[0])}${ds.length>1?' – '+fitDL(ds.slice(-1)[0]):''}`:'<span class="sub">not booked</span>'}</td>
+      <td>${x.floor==='keep'&&x.keepDay?`<span class="u93fl keep">🏭 Factory keeps ${fitDL(x.keepDay)}</span>`:'<span class="u93fl hold">⏸ Held on the floor</span>'}<div style="margin-top:4px">${fxMat(o.id)?'<span class="sc g">✔ Material ready</span>':'<span class="sc">⏳ Material</span>'}</div></td>
+      <td><div class="u92acts"><button class="btn-primary ft-sm" style="background:#0f766e" onclick="event.stopPropagation();u93Book('${o.id}')">📅 Book a date</button>${x.b?`<button class="btn-outline ft-sm" onclick="event.stopPropagation();u93Back('${o.id}')">↩ Back to ${fitDL(ds[0])}</button>`:''}<button class="btn-outline ft-sm" onclick="event.stopPropagation();fxJS('${o.id}')">📄 Job sheet</button></div></td></tr>`; }).join('');
+  return h.slice(0,end)+`<div class="u93h"><b>⏸ On hold</b> — jobs taken off the diary with no date yet. <b>📅 Book a date</b> opens the diary: click a team's day.</div>
+    <table class="oa-table"><thead><tr><th style="width:280px">Job</th><th style="width:130px">On hold since</th><th>Why</th><th style="width:180px">Was booked</th><th style="width:200px">Factory</th><th style="width:170px"></th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="sub" style="padding:20px">Nothing on hold.</td></tr>'}</tbody></table>`; };
+// ⏸ On hold buttons: 📅 Change date / crew, 🗓 Book a team, and the job sheet
+const _u93ND=fyNDForm; fyNDForm=function(){ _u93ND.apply(this,arguments); try{ const b=fitData.bookings.find(x=>x.id===fyND.bid), a=document.querySelector('#modal-root .modal .modal-actions'); if(b&&a&&!a.querySelector('.u93btn')) a.insertAdjacentHTML('afterbegin',`<button class="btn-outline u93btn" style="margin-right:auto;border-color:#6366f1;color:#4338ca" onclick="u93Ask('${b.oid}')">⏸ On hold — no date yet</button>`); }catch(e){} };
+const _u93Al=fitAlForm; fitAlForm=function(){ _u93Al.apply(this,arguments); try{ const a=document.querySelector('#modal-root .modal .modal-actions'); if(fitAl&&a&&!a.querySelector('.u93btn')&&!fitFJ(fitAl.oid).hold) a.insertAdjacentHTML('afterbegin',`<button class="btn-outline u93btn" style="margin-right:auto;border-color:#6366f1;color:#4338ca" onclick="u93Ask('${fitAl.oid}')">⏸ On hold — no date yet</button>`); }catch(e){} };
+const _u93JS=fxJS; fxJS=function(oid){ const r=_u93JS.apply(this,arguments); try{ const st=fitStatus(oaFind(oid)), a=document.querySelector('#modal-root .modal .modal-actions'); if(a&&!a.querySelector('.u93btn')&&!(typeof u83R==='function'&&u83R()&&u83R().kind!=='fit')&&['booked','ready','mfg'].includes(st)) a.insertAdjacentHTML('afterbegin',`<button class="btn-outline u93btn" style="border-color:#6366f1;color:#4338ca" onclick="u93Ask('${oid}')">⏸ On hold</button>`); }catch(e){} return r; };
+// a 2nd crew on the same team and day as the main visit is a double too
+const _u93Dd=u91Dedupe; u91Dedupe=function(oid){ let n=_u93Dd.apply(this,arguments); const main=new Map(); fitData.bookings.forEach(b=>{ if(!b.second&&(!oid||b.oid===oid)) fxDates(b).forEach(d=>main.set(b.oid+'|'+b.team+'|'+d,1)); });
+  const before=fitData.bookings.length; fitData.bookings=fitData.bookings.filter(b=>!(b.second&&(!oid||b.oid===oid)&&main.has(b.oid+'|'+b.team+'|'+fxDates(b)[0]))); return n+(before-fitData.bookings.length); };
+
+// ════ 📄 Job sheet pop-up: ↗ Open the sheet you're looking at (Office Administration's order or Production's latest version) full size in a new tab ════
+function u94Open(){ const el=document.querySelector('#modal-root .js-pdf .fx-pdf, #modal-root .js-pdf .fx-img'); if(!el||!el.src){ toast('No file to open'); return; } const w=window.open(el.src,'_blank'); if(!w) toast('Allow pop-ups to open the sheet'); }
+const _u94JS=fxJS; fxJS=function(oid,doc){ const r=_u94JS.apply(this,arguments); try{ const m=document.querySelector('#modal-root .modal'), d=m&&m.querySelector('.js-docs'), has=m&&m.querySelector('.js-pdf .fx-pdf, .js-pdf .fx-img');
+    if(d&&!d.querySelector('.u94open')) d.insertAdjacentHTML('beforeend',`<button class="u94open" ${has?'':'disabled'} onclick="u94Open()" title="Open this sheet full size in a new tab — print, save or zoom there"><b>↗ Open</b><small>${fxJSDoc==='oa'?'Office Administration':'Production'} sheet</small></button>`); }catch(e){} return r; };
+
+
+// ════════ Update 94 — the three stages go in order: ⚙ In production needs 🪚 Gone to saw first · ✔ Ready needs ⚙ In production first ════════
+const U95_SAW='Tick 🪚 Gone to saw first', U95_MADE='Tick ⚙ In production first';
+const _u95St=f10Stage; f10Stage=function(i,k){ const l=fitFJ(fitJobId).lines[i]; if(l&&!l[k]){ if(k==='made'&&!l.saw){ toast(U95_SAW); return; } if(k==='ready'&&!l.made){ toast(U95_MADE); return; } } return _u95St.apply(this,arguments); };
+const _u95Prod=f8Prod; f8Prod=function(oid,lid,n){ const l=fxLine(oid,lid); if(l&&!l.made&&!l.ready&&!n&&!l.saw){ toast(U95_SAW); return; } return _u95Prod.apply(this,arguments); };
+const _u95Rdy=fxReady; fxReady=function(oid,lid){ const l=fxLine(oid,lid); if(l&&!l.ready&&!l.made){ toast(U95_MADE); return; } return _u95Rdy.apply(this,arguments); };
+const _u95TRdy=f8Ready; f8Ready=function(oid,lid,n){ const l=fxLine(oid,lid); if(l&&!l.ready&&!l.made){ toast('Tap ⚙ In production first'); return; } return _u95TRdy.apply(this,arguments); };
+// greyed out until the stage before is ticked
+function u95Dom(root){ if(!root) return;
+  root.querySelectorAll('[onclick*="f10Stage("]').forEach(el=>{ const m=(el.getAttribute('onclick')||'').match(/f10Stage\((\d+),'(\w+)'\)/); if(!m||!fitJobId) return; const l=fitFJ(fitJobId).lines[+m[1]]; if(!l) return; const off=!l[m[2]]&&((m[2]==='made'&&!l.saw)||(m[2]==='ready'&&!l.made)); el.classList.toggle('u95off',off); if(off) el.title=m[2]==='made'?U95_SAW:U95_MADE; });
+  root.querySelectorAll('[onclick*="f8Prod("],[onclick*="fxReady("],[onclick*="f8Ready("]').forEach(el=>{ const m=(el.getAttribute('onclick')||'').match(/(f8Prod|fxReady|f8Ready)\('([^']+)','([^']+)'(?:,(\d+))?\)/); if(!m) return; const l=fxLine(m[2],m[3]); if(!l) return;
+    const off=m[1]==='f8Prod'?(!l.made&&!l.ready&&!(+m[4])&&!l.saw):(!l.ready&&!l.made); el.classList.toggle('u95off',off); if(off) el.title=m[1]==='f8Prod'?U95_SAW:(m[1]==='f8Ready'?'Tap ⚙ In production first':U95_MADE); }); }
+const _u95FR=fitRender; fitRender=function(){ const r=_u95FR.apply(this,arguments); try{ u95Dom($('view-fit')); }catch(e){} return r; };
+const _u95Open=openModal; openModal=function(){ const r=_u95Open.apply(this,arguments); try{ if(fitOn) u95Dom(document.querySelector('#modal-root .modal')); }catch(e){} return r; };
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
