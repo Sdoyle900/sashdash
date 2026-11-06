@@ -2263,7 +2263,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-06-1410';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-06-1430';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -11695,7 +11695,8 @@ function qcBad(l){ return !!l.ans&&((l.flag==='yes'&&l.ans==='yes')||(l.flag==='
 function qcAnsTxt(a){ return a==='yes'?'Yes':a==='no'?'No':a==='na'?'N/A':'—'; }
 
 document.head.insertAdjacentHTML('beforeend',`<style>
-#qc-root{position:fixed;inset:0;z-index:9000;background:#f1f5f9;display:flex;flex-direction:column;font-family:inherit;color:#0f172a}
+html.qc-open,html.qc-open body{overflow:hidden!important}
+#qc-root{position:fixed;left:0;top:0;width:100vw;max-width:100vw;height:100vh;height:100dvh;overflow:hidden;z-index:9000;background:#f1f5f9;display:flex;flex-direction:column;font-family:inherit;color:#0f172a}
 #qc-root .qc-top{background:#0f766e;color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:10px}
 #qc-root .qc-top small{display:block;opacity:.85;font-size:12.5px}#qc-root .qc-top b{font-size:17px}#qc-root .qc-x{margin-left:auto;background:#ffffff26;border:0;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800;font-size:13px;cursor:pointer}
 #qc-root .qc-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:16px}
@@ -11711,7 +11712,9 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 #qc-root .qc-tool{display:flex;align-items:center;gap:5px;padding:9px 12px;border-radius:9px;font-weight:800;font-size:14px;border:1.5px solid #cbd5e1;background:#fff;color:#0f172a;cursor:pointer;font-family:inherit}#qc-root .qc-tool.on{background:#0f172a;color:#fff;border-color:#0f172a}
 #qc-root .qc-dot{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px #cbd5e1;cursor:pointer;padding:0}#qc-root .qc-dot.on{box-shadow:0 0 0 3px #0f172a}
 #qc-root .qc-sheetbox{margin:8px 10px 0}#qc-root .qc-sheet{position:relative;background:#fff;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden}#qc-root .qc-sheet img,#qc-root .qc-sheet canvas.pg{display:block;width:100%}
-#qc-root .qc-ink{position:absolute;left:0;top:0;width:100%;height:100%;touch-action:pinch-zoom}#qc-root .qc-ink.off{pointer-events:none}
+#qc-root .qc-ink{position:absolute;left:0;top:0;width:100%;height:100%;touch-action:none}
+#qc-root .qc-scroll{overflow-x:auto;overflow-y:hidden;border-radius:6px;-webkit-overflow-scrolling:touch}#qc-root .qc-scroll .qc-sheet{min-width:100%}
+#qc-root .qc-zb{display:flex;align-items:center;gap:6px;margin:0 0 6px}#qc-root .qc-zb .qc-tool{padding:6px 12px;font-size:16px}#qc-root .qc-zp{font-weight:800;font-size:13.5px;min-width:44px;text-align:center}#qc-root .qc-zb small{margin-left:auto;color:#64748b;font-size:11.5px}#qc-root .qc-ink.off{pointer-events:none}
 #qc-root .qc-keys{display:flex;gap:6px;flex-wrap:wrap;margin:8px 12px 0;font-size:12px;color:#475569}#qc-root .qc-keys span{background:#fff;border:1px solid #e2e8f0;border-radius:99px;padding:3px 9px}#qc-root .qc-sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:4px}
 #qc-root .qc-np{margin:10px 12px 0;display:grid;gap:8px}#qc-root textarea{width:100%;box-sizing:border-box;font:inherit;font-size:15px;padding:10px;border:1.5px solid #cbd5e1;border-radius:10px;min-height:70px;background:#fff}#qc-root textarea.f{border-color:#fdba74}
 #qc-root .qc-phs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#qc-root .qc-phs img{width:70px;height:58px;object-fit:cover;border-radius:7px}#qc-root .qc-phs .rm{position:relative}#qc-root .qc-phs .rm b{position:absolute;top:-6px;right:-6px;background:#0f172a;color:#fff;border-radius:50%;width:20px;height:20px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -11809,10 +11812,10 @@ function qcStart(){ const f=fitOut, o=oaFind(f.oid); if(!o) return; const T=qcT(
     set:{comments:T.comments!==false,client:T.client!==false,fitter:T.fitter!==false},col:null,sheet:null,sheetKey:null,sheetWhy:'',cur:null,ptrs:new Set()};
   if(d&&Array.isArray(d.lines)&&d.lines.length){ Object.assign(QW,{i:Math.min(d.i||0,d.lines.length),max:d.max||0,lines:d.lines,marks:d.marks||[],comments:d.comments||''}); toast('Carrying on from where you left off'); }
   closeModal(); qcRender(); qcSheetLoad(); }
-function qcClose(){ if(!confirm('Stop the quality check for now?\n\nYour answers are kept on this phone. The job isn\'t finished until you sign off.')) return; qcDraftSave(); qcSheetPark(); $('qc-root')&&$('qc-root').remove(); QW=null; fitRender(); }
+function qcClose(){ if(!confirm('Stop the quality check for now?\n\nYour answers are kept on this phone. The job isn\'t finished until you sign off.')) return; qcDraftSave(); qcSheetPark(); $('qc-root')&&$('qc-root').remove(); document.documentElement.classList.remove('qc-open'); QW=null; fitRender(); }
 function qcN(){ return QW.lines.length; }
 function qcColFor(li){ const used=[]; QW.marks.forEach(m=>{ if(m.li!==li&&!used.includes(m.li)) used.push(m.li); }); const own=QW.marks.find(m=>m.li===li); if(own) return own.col; return QC_COLS[used.length%QC_COLS.length]; }
-function qcRender(){ if(!QW) return; let root=$('qc-root'); if(!root){ document.body.insertAdjacentHTML('beforeend','<div id="qc-root"></div>'); root=$('qc-root'); }
+function qcRender(){ if(!QW) return; let root=$('qc-root'); if(!root){ document.body.insertAdjacentHTML('beforeend','<div id="qc-root"></div>'); root=$('qc-root'); } document.documentElement.classList.add('qc-open');
   qcSheetPark(); const o=oaFind(QW.oid), N=qcN(), i=QW.i; QW.max=Math.max(QW.max,i);
   const dots=`<div class="qc-dots">${QW.lines.map((l,x)=>`<i class="${x===i?'c':qcBad(l)?'f':l.ans?'d':''} ${x>QW.max?'x':''}" title="${x+1}. ${esc(l.t)}" onclick="qcJump(${x})"></i>`).join('')}</div>`;
   const top=`<div class="qc-top"><div><small>${esc(fitWho(true))} · ${esc(o?oaTitle(o):'')}</small><b>✅ Quality check</b></div><button class="qc-x" onclick="qcClose()">✕ Stop</button></div>`;
@@ -11824,8 +11827,8 @@ function qcRender(){ if(!QW) return; let root=$('qc-root'); if(!root){ document.
     body=`<div class="qc-qn"><span class="qc-b">${i+1} of ${N}</span><span class="t ${bad?'f':''}">${bad?'⚑ '+esc(l.t)+' — '+qcAnsTxt(l.ans):l.req?'Required':'Optional — can be skipped'}${l.extra?' · added for this job':''}</span></div>${dots}
      <div class="qc-q">${esc(l.t)}${l.req?' <span class="r">*</span>':''}</div><div class="qc-abs">${ab('yes','Yes')}${ab('no','No')}${ab('na','N/A')}</div>
      ${bad?`<div class="qc-hint f">⚑ ${sh?'Highlight it on the job sheet, and/or say what\'s wrong below.':'Say what\'s wrong below — add a photo if it helps.'}</div>`:l.ans?'<div class="qc-hint">✔ Note and photo are optional.</div>':''}
-     ${sh?`<div class="qc-tools"><span class="qc-tool on" title="Highlighter">▮ Highlighter</span>${QC_COLS.map(c=>`<button class="qc-dot ${QW.col===c?'on':''}" style="background:${c}" onclick="qcCol('${c}')" title="Colour"></button>`).join('')}<span style="flex:1"></span><button class="qc-tool" onclick="qcUndo()" ${mine?'':'disabled style="opacity:.45"'}>↶ Undo</button></div>
-       <div class="qc-sheetbox" id="qc-slot"></div>${legend()}<div class="qc-hint" style="margin-top:6px">📄 ${QW.sheetRef&&QW.sheetRef.v>1?'Job sheet v'+QW.sheetRef.v+' (the latest)':'Job sheet'} · one finger highlights · two fingers move and zoom</div>`:(!bad&&QW.marks.length?legend().replace('class="qc-keys"','class="qc-keys" title="Marked on the job sheet so far"'):'')}
+     ${sh?`<div class="qc-tools"><span class="qc-tool on" title="Highlighter">▮ Highlighter</span>${QC_COLS.map(c=>`<button class="qc-dot ${QW.col===c?'on':''}" style="background:${c}" onclick="qcCol('${c}')" title="Colour"></button>`).join('')}<span style="flex:1"></span><button class="qc-tool" id="qc-undo" onclick="qcUndo()" ${mine?'':'disabled style="opacity:.45"'}>↶ Undo</button></div>
+       <div class="qc-sheetbox" id="qc-slot"></div><div id="qc-legend">${legend()}</div><div class="qc-hint" style="margin-top:6px">📄 ${QW.sheetRef&&QW.sheetRef.v>1?'Job sheet v'+QW.sheetRef.v+' (the latest)':'Job sheet'} · one finger highlights · two fingers zoom and move · ＋ to zoom in for finer marks</div>`:(!bad&&QW.marks.length?legend().replace('class="qc-keys"','class="qc-keys" title="Marked on the job sheet so far"'):'')}
      ${l.ans?`<div class="qc-np"><textarea class="${bad?'f':''}" placeholder="${bad?'What\'s wrong? e.g. which window, what\'s needed':'Note (optional)'}" oninput="qcNote(this.value)">${esc(l.note||'')}</textarea>
        <div class="qc-phs">${(l.photos||[]).map((p,x)=>`<span class="rm"><img src="${p}"><b onclick="qcPhDel(${x})">✕</b></span>`).join('')}<label class="qc-btn" for="qc-pf">📷 ${(l.photos||[]).length?'Add another':'Add photo'}</label><input type="file" id="qc-pf" accept="image/*" multiple style="display:none" onchange="qcPhotos(this.files)"></div></div>`:''}
      <button class="qc-add" onclick="qcAddLine()">＋ Add a line for this job</button>`;
@@ -11848,36 +11851,71 @@ function qcAddLine(){ const t=(prompt('What else needs checking on this job?')||
   const bad=confirm(`"${t}"\n\nIs this something that should be OK?\n\nOK = it's a problem when the answer is No (e.g. "Sills sealed")\nCancel = it's a problem when the answer is Yes (e.g. "Trims missing")`);
   QW.lines.push({id:'x'+Date.now().toString(36),t,flag:bad?'no':'yes',req:true,pdf:true,ans:null,note:'',photos:[],extra:true}); QW.max=Math.max(QW.max,qcN()-1); qcDraftSave(); qcRender(); toast(`Added as line ${qcN()} of ${qcN()}`); }
 function qcCol(c){ QW.col=c; const l=QW.lines[QW.i]; QW.marks.forEach(m=>{ if(m.li===l.id) m.col=c; }); qcDraftSave(); qcRender(); }
-function qcUndo(){ const l=QW.lines[QW.i]; for(let x=QW.marks.length-1;x>=0;x--) if(QW.marks[x].li===l.id){ QW.marks.splice(x,1); break; } qcDraftSave(); qcRender(); }
+function qcUndo(){ const l=QW.lines[QW.i]; for(let x=QW.marks.length-1;x>=0;x--) if(QW.marks[x].li===l.id){ QW.marks.splice(x,1); break; } qcDraftSave(); qcInkDraw(); qcBits(); }
 
 // ── the job sheet: rendered once per check, every page, kept in a holder and moved onto each question that needs it ──
 function qcSheetSrc(oid){ const L=(typeof u88Latest==='function')?u88Latest(oid):{key:'scan',v:1}; return {key:L.key,v:L.v||1,blob:L.blob||null}; }   // the same latest job sheet the team sees on the phone — never cutting lists
 async function qcSrc(oid,ref){ return u86Src(oid,ref&&ref.blob?ref.blob:'scan'); }
-async function qcPages(src,W){ const out=[];
-  if(src&&(/pdf/.test(src.type||'')||!/image/.test(src.type||''))){ if(!window.pdfjsLib) throw new Error('The PDF viewer didn\'t load — check the internet');
-    const doc=await pdfjsLib.getDocument(src.url).promise; for(let p=1;p<=Math.min(doc.numPages,8);p++){ const pg=await doc.getPage(p), v0=pg.getViewport({scale:1}), vp=pg.getViewport({scale:W/v0.width}); const c=document.createElement('canvas'); c.width=Math.round(vp.width); c.height=Math.round(vp.height); const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); await pg.render({canvasContext:x,viewport:vp}).promise; out.push(c); } }
-  else if(src){ const im=await new Promise(r=>{ const i=new Image(); i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src.url; }); if(!im) throw new Error('Couldn\'t open the picture'); const c=document.createElement('canvas'); c.width=W; c.height=Math.round(W*im.naturalHeight/im.naturalWidth); const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height); out.push(c); }
+// pages of the sheet: rendered sharp for the zoom it's shown at, but never more than about 28 million pixels in all (phones run out of memory)
+async function qcDoc(src){ if(src&&(/pdf/.test(src.type||'')||!/image/.test(src.type||''))){ if(!window.pdfjsLib) throw new Error('The PDF viewer didn\'t load — check the internet');
+    const doc=await pdfjsLib.getDocument(src.url).promise, n=Math.min(doc.numPages,8), pg=[]; for(let p=1;p<=n;p++) pg.push(await doc.getPage(p)); return {pdf:true,pg}; }
+  if(src){ const im=await new Promise(r=>{ const i=new Image(); i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src.url; }); if(!im) throw new Error('Couldn\'t open the picture'); return {pdf:false,im}; }
+  return null; }
+async function qcDraw(d,W){ const out=[];
+  if(d.pdf){ const asp=d.pg.reduce((a,p)=>{ const v=p.getViewport({scale:1}); return a+v.height/v.width; },0); W=Math.max(300,Math.min(W,Math.floor(Math.sqrt(28e6/asp))));
+    for(const pg of d.pg){ const v0=pg.getViewport({scale:1}), vp=pg.getViewport({scale:W/v0.width}); const c=document.createElement('canvas'); c.width=Math.round(vp.width); c.height=Math.round(vp.height); const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); await pg.render({canvasContext:x,viewport:vp}).promise; out.push(c); } }
+  else { const im=d.im; W=Math.max(300,Math.min(W,Math.floor(Math.sqrt(28e6*im.naturalWidth/im.naturalHeight)))); const c=document.createElement('canvas'); c.width=W; c.height=Math.round(W*im.naturalHeight/im.naturalWidth); const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height); out.push(c); }
   return out; }
-async function qcSheetLoad(){ const q=QW; if(!q) return; q.sheetRef=qcSheetSrc(q.oid); q.sheetKey=q.sheetRef.key; const box=document.createElement('div'); box.className='qc-sheet'; box.innerHTML='<div class="qc-none">⏳ Opening the job sheet…</div>'; q.sheet=box;
+async function qcPages(src,W){ const d=await qcDoc(src); return d?qcDraw(d,W):[]; }
+function qcBaseW(){ return Math.max(280,Math.min(window.innerWidth,640)-22); }
+async function qcSheetLoad(){ const q=QW; if(!q) return; q.sheetRef=qcSheetSrc(q.oid); q.sheetKey=q.sheetRef.key; q.z=q.z||1; const box=document.createElement('div'); box.className='qc-sheet'; box.innerHTML='<div class="qc-none">⏳ Opening the job sheet…</div>'; q.sheet=box;
   try{ const src=await qcSrc(q.oid,q.sheetRef); if(!src) throw new Error('The job sheet isn\'t on SashDash for this job');
-    const pages=await qcPages(src,Math.min(1600,Math.round((Math.min(window.innerWidth,640)-22)*Math.max(2,window.devicePixelRatio||1))));
+    q.doc=await qcDoc(src); const pages=await qcDraw(q.doc,Math.round(qcBaseW()*Math.max(2,window.devicePixelRatio||1)*q.z)); q.pgW=pages[0]?pages[0].width:0;
     if(!pages.length) throw new Error('The job sheet is empty'); box.innerHTML=''; pages.forEach(c=>{ c.className='pg'; box.appendChild(c); });
     const ink=document.createElement('canvas'); ink.className='qc-ink'; box.appendChild(ink); qcInk(ink); }
   catch(e){ q.sheetWhy=e.message||'Couldn\'t open the job sheet'; box.innerHTML=`<div class="qc-none">📄 ${esc(q.sheetWhy)}.<br>Write a note and add a photo instead.</div>`; }
   if(QW===q&&$('qc-slot')) qcSheetPlace(); }
-function qcSheetPlace(){ const s=$('qc-slot'); if(!s||!QW||!QW.sheet) return; if(QW.sheet.parentNode!==s) s.appendChild(QW.sheet); setTimeout(qcInkSize,0); }
-function qcSheetPark(){ if(QW&&QW.sheet&&QW.sheet.parentNode) QW.sheet.parentNode.removeChild(QW.sheet); }
-function qcInkSize(){ const b=QW&&QW.sheet, c=b&&b.querySelector('.qc-ink'); if(!c) return; const r=b.getBoundingClientRect(), d=window.devicePixelRatio||1; if(!r.width) return; c.width=Math.round(r.width*d); c.height=Math.round(r.height*d); qcInkDraw(); }
-function qcDrawMarks(x,W,H,marks){ marks.forEach(m=>{ const P=m.pts||[]; if(!P.length) return; x.save(); x.globalAlpha=.42; x.globalCompositeOperation='multiply'; x.strokeStyle=m.col; x.lineCap='round'; x.lineJoin='round'; x.lineWidth=(m.w||.045)*W; x.beginPath(); P.forEach((p,i)=>i?x.lineTo(p[0]*W,p[1]*H):x.moveTo(p[0]*W,p[1]*H)); if(P.length===1) x.lineTo(P[0][0]*W+.5,P[0][1]*H); x.stroke(); x.restore(); }); }
+// sharper pages once the zoom has settled
+let qcHiT=null;
+function qcHiRes(){ clearTimeout(qcHiT); qcHiT=setTimeout(async()=>{ const q=QW; if(!q||!q.doc||!q.sheet) return; const want=Math.round(qcBaseW()*q.z*Math.min(3,Math.max(2,window.devicePixelRatio||1)));
+    if(want<=q.pgW*1.15&&want>=q.pgW*.6) return; const pages=await qcDraw(q.doc,want); if(QW!==q||!pages.length) return; q.pgW=pages[0].width;
+    const old=[...q.sheet.querySelectorAll('canvas.pg')], ink=q.sheet.querySelector('.qc-ink'); old.forEach(c=>c.remove()); pages.forEach(c=>{ c.className='pg'; q.sheet.insertBefore(c,ink); }); },350); }
+// the zoom bar and the scroller the sheet sits in
+function qcSheetPlace(){ const s=$('qc-slot'); if(!s||!QW||!QW.sheet) return; const z=QW.z||1;
+  if(!s.querySelector('.qc-scroll')) s.innerHTML=`<div class="qc-zb"><button class="qc-tool" onclick="qcZoom(-1)" ${z<=1?'disabled style="opacity:.4"':''}>－</button><span class="qc-zp">${Math.round(z*100)}%</span><button class="qc-tool" onclick="qcZoom(1)" ${z>=4?'disabled style="opacity:.4"':''}>＋</button>${z>1?'<button class="qc-tool" onclick="qcZoom(0)">Fit</button>':''}<small>two fingers: zoom &amp; move</small></div><div class="qc-scroll"></div>`;
+  const sc=s.querySelector('.qc-scroll'); QW.sheet.style.width=(z*100)+'%'; if(QW.sheet.parentNode!==sc) sc.appendChild(QW.sheet); if(QW.sl) sc.scrollLeft=QW.sl; setTimeout(qcInkSize,0); }
+function qcZoom(k){ if(!QW) return; const sc=document.querySelector('#qc-slot .qc-scroll'), z0=QW.z||1, z=k===0?1:Math.max(1,Math.min(4,z0+(k>0?.5:-.5))); if(z===z0) return;
+  const mid=sc?(sc.scrollLeft+sc.clientWidth/2)/z0:0; QW.z=z; QW.sl=sc?Math.max(0,mid*z-sc.clientWidth/2):0; const s=$('qc-slot'); if(s) s.innerHTML=''; qcSheetPlace(); qcHiRes(); }
+function qcSheetPark(){ if(QW&&QW.sheet){ const sc=QW.sheet.parentNode; if(sc&&sc.classList&&sc.classList.contains('qc-scroll')) QW.sl=sc.scrollLeft; if(sc) sc.removeChild(QW.sheet); } }
+function qcInkSize(){ const b=QW&&QW.sheet, c=b&&b.querySelector('.qc-ink'); if(!c) return; const r=b.getBoundingClientRect(); if(!r.width) return; const s=Math.min(window.devicePixelRatio||1,4096/r.width,12000/r.height); c.width=Math.round(r.width*s); c.height=Math.round(r.height*s); qcInkDraw(); }
+function qcDrawMarks(x,W,H,marks){ marks.forEach(m=>{ const P=m.pts||[]; if(!P.length) return; x.save(); x.globalAlpha=.42; x.globalCompositeOperation='multiply'; x.strokeStyle=m.col; x.lineCap='round'; x.lineJoin='round'; x.lineWidth=Math.max(1,(m.w||.045)*W); x.beginPath(); P.forEach((p,i)=>i?x.lineTo(p[0]*W,p[1]*H):x.moveTo(p[0]*W,p[1]*H)); if(P.length===1) x.lineTo(P[0][0]*W+.5,P[0][1]*H); x.stroke(); x.restore(); }); }
 function qcInkDraw(){ const c=QW&&QW.sheet&&QW.sheet.querySelector('.qc-ink'); if(!c) return; const x=c.getContext('2d'); x.clearRect(0,0,c.width,c.height); qcDrawMarks(x,c.width,c.height,QW.marks.concat(QW.cur?[QW.cur]:[])); }
+// the highlighter is about 9 px wide on the screen, whatever the zoom — zoom in for finer marks
+const QC_PEN=9;
 function qcInk(c){ const pt=e=>{ const r=c.getBoundingClientRect(); return [Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))]; };
-  const can=()=>{ const l=QW&&QW.lines[QW.i]; return l&&qcBad(l)&&l.pdf; };
-  c.addEventListener('pointerdown',e=>{ if(!QW||!can()) return; QW.ptrs.add(e.pointerId); if(QW.ptrs.size>1){ QW.cur=null; qcInkDraw(); return; } if(e.pointerType==='mouse'&&e.button) return;
-    const l=QW.lines[QW.i]; if(!QW.col) QW.col=qcColFor(l.id); QW.cur={li:l.id,col:QW.col,w:.055,pts:[pt(e)]}; try{ c.setPointerCapture(e.pointerId); }catch(x){} e.preventDefault(); });
-  c.addEventListener('pointermove',e=>{ if(!QW||!QW.cur||QW.ptrs.size>1) return; e.preventDefault(); const p=pt(e), P=QW.cur.pts, q=P[P.length-1]; if(Math.hypot(p[0]-q[0],p[1]-q[1])<.003) return; P.push(p); qcInkDraw(); });
-  const up=e=>{ if(!QW) return; QW.ptrs.delete(e.pointerId); const m=QW.cur; QW.cur=null; if(!m||e.type==='pointercancel'){ qcInkDraw(); return; }
-    m.pts=m.pts.map(p=>[+p[0].toFixed(4),+p[1].toFixed(4)]); QW.marks.push(m); qcDraftSave(); qcRender(); };
+  const can=()=>{ const l=QW&&QW.lines[QW.i]; return l&&qcBad(l)&&l.pdf; }, P=new Map(); let g=null;
+  const startG=()=>{ const [a,b]=[...P.values()], sc=c.closest('.qc-scroll'), bd=c.closest('.qc-body'); if(!sc||!bd) return;
+    const sr=sc.getBoundingClientRect(), br=bd.getBoundingClientRect(), shTop=QW.sheet.getBoundingClientRect().top-br.top+bd.scrollTop;
+    g={d0:Math.hypot(a.x-b.x,a.y-b.y)||1,z0:QW.z||1,mx:(a.x+b.x)/2,my:(a.y+b.y)/2,sl0:sc.scrollLeft,st0:bd.scrollTop,sc,bd,sr,br,shTop}; };
+  const moveG=()=>{ if(!g) return; const [a,b]=[...P.values()], d=Math.hypot(a.x-b.x,a.y-b.y), mx=(a.x+b.x)/2, my=(a.y+b.y)/2, z=Math.max(1,Math.min(4,g.z0*d/g.d0)), f=z/g.z0;
+    QW.z=z; QW.sheet.style.width=(z*100)+'%';
+    const cx=g.sl0+(g.mx-g.sr.left), cy=g.st0+(g.my-g.br.top)-g.shTop;
+    g.sc.scrollLeft=cx*f-(mx-g.sr.left); g.bd.scrollTop=g.shTop+cy*f-(my-g.br.top);
+    const zp=document.querySelector('#qc-slot .qc-zp'); if(zp) zp.textContent=Math.round(z*100)+'%'; };
+  const endG=()=>{ if(!g) return; g=null; QW.sl=(c.closest('.qc-scroll')||{}).scrollLeft||0; const s=$('qc-slot'); if(s){ const keep=QW.sl, bt=(c.closest('.qc-body')||{}).scrollTop; s.innerHTML=''; qcSheetPlace(); const bd=document.querySelector('#qc-root .qc-body'); if(bd&&bt!=null) bd.scrollTop=bt; } qcHiRes(); };
+  c.addEventListener('pointerdown',e=>{ if(!QW||!can()) return; if(e.pointerType==='mouse'&&e.button) return; P.set(e.pointerId,{x:e.clientX,y:e.clientY}); try{ c.setPointerCapture(e.pointerId); }catch(x){} e.preventDefault();
+    if(P.size===2){ QW.cur=null; qcInkDraw(); startG(); return; } if(P.size>2) return;
+    const l=QW.lines[QW.i]; if(!QW.col) QW.col=qcColFor(l.id); const r=c.getBoundingClientRect(); QW.cur={li:l.id,col:QW.col,w:+(QC_PEN/Math.max(1,r.width)).toFixed(5),pts:[pt(e)]}; });
+  c.addEventListener('pointermove',e=>{ if(!QW||!P.has(e.pointerId)) return; e.preventDefault(); P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(P.size>=2){ moveG(); return; } if(!QW.cur) return; const p=pt(e), L=QW.cur.pts, q=L[L.length-1]; if(Math.hypot(p[0]-q[0],p[1]-q[1])<.002) return; L.push(p); qcInkDraw(); });
+  const up=e=>{ if(!QW) return; const had=P.size; P.delete(e.pointerId); if(had>=2){ if(P.size<2) endG(); QW.cur=null; return; }
+    const m=QW.cur; QW.cur=null; if(!m||e.type==='pointercancel'){ qcInkDraw(); return; }
+    m.pts=m.pts.map(p=>[+p[0].toFixed(4),+p[1].toFixed(4)]); QW.marks.push(m); qcDraftSave(); qcInkDraw(); qcBits(); };
   c.addEventListener('pointerup',up); c.addEventListener('pointercancel',up); }
+// after a highlight or an undo: only the Undo button, the colour key and Continue change — the sheet stays where it is
+function qcBits(){ if(!QW||QW.i>=qcN()) return; const l=QW.lines[QW.i], mine=QW.marks.some(m=>m.li===l.id), u=$('qc-undo'); if(u){ u.disabled=!mine; u.style.opacity=mine?'':'.45'; }
+  const k=$('qc-legend'); if(k) k.innerHTML=qcLegend(l); const g=document.querySelector('#qc-root .qc-foot .go'); if(g){ const ok=qcCanGo(l); g.classList.toggle('dis',ok!==true); g.textContent=ok===true?(QW.i+1<qcN()?`Continue → ${QW.i+2} of ${qcN()}`:'Continue → Sign-off'):ok; } }
+function qcLegend(l){ const ids=[...new Set(QW.marks.map(m=>m.li))]; return ids.length?`<div class="qc-keys">${ids.map(id=>{ const x=QW.lines.findIndex(q=>q.id===id), m=QW.marks.find(q=>q.li===id); return `<span><i class="qc-sw" style="background:${m.col}"></i>${x+1} · ${esc((QW.lines[x]||{}).t||'')}${id===l.id?' — this question':' (locked)'}</span>`; }).join('')}</div>`:''; }
 window.addEventListener('resize',()=>{ if(QW&&QW.sheet&&QW.sheet.parentNode) qcInkSize(); });
 
 // ── sign-off: summary, comments, client's + fitter's signatures ──
@@ -11904,7 +11942,7 @@ function qcFinish(){ const q=QW; if(!q) return; const miss=q.lines.findIndex(l=>
   j.qc={v:1,at:now,by:fitWho(true),k:q.k,lines:L.map(l=>({id:l.id,t:l.t,flag:l.flag,req:l.req,pdf:l.pdf,ans:l.ans||null,note:(l.note||'').trim(),photos:l.photos||[],extra:!!l.extra})),
     marks:q.marks,sheet:q.sheetKey,sheetV:q.sheetRef?q.sheetRef.v:1,sheetBlob:q.sheetRef?q.sheetRef.blob:null,comments:(q.comments||'').trim(),fsig,set:q.set};
   j.chat.push({who:'',at:now,text:`✅ Quality check by ${fitWho(true)} — ${req.filter(l=>l.ans).length} of ${req.length} required answered${bad.length?' · ⚑ '+bad.length+' to check: '+bad.map(l=>l.t+' ('+qcAnsTxt(l.ans)+(l.note?' — '+l.note:'')+')').join('; '):' · nothing flagged'}`,evt:true});
-  qcDraftDrop(q.oid); qcSheetPark(); $('qc-root')&&$('qc-root').remove(); QW=null; fitOutSave(sig); }
+  qcDraftDrop(q.oid); qcSheetPark(); $('qc-root')&&$('qc-root').remove(); document.documentElement.classList.remove('qc-open'); QW=null; fitOutSave(sig); }
 
 // ════ 🖨 the report: QC grid, flagged lines, sign-off and the marked job sheet ════
 const qcImg={};
