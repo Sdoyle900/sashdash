@@ -2263,7 +2263,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-06-1430';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-06-1500';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -2279,7 +2279,6 @@ async function checkForUpdate(){
   }catch(e){}
 }
 function uuid(){return (crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return (c==='x'?r:(r&3|8)).toString(16);}));}
-function sashIcon(size,colour){return `<svg width="${size}" height="${size}" style="color:${colour}"><use href="#sash"/></svg>`;}
 
 // ── Boot ───────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
@@ -2487,6 +2486,8 @@ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('messa
 
 // ── Data ───────────────────────────────────────────────────────────
 async function loadData(){
+  ownPatchRpc();   // 🔔 Update 56 — each office login's own New
+  const r=await (async()=>{
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
@@ -2525,6 +2526,18 @@ async function loadData(){
   }
   if(job){ const fresh=jobs.find(j=>j.id===job.id); if(fresh){ job={...job,...fresh}; updateJobHeader();
     if((fresh.comments||[]).filter(c=>c.kind==='message').length>shownMsgs) syncOpenChat(); } }
+  })();
+  // 🧩 Update 45/47 — load the planner, the customers' cancel messages and the crews with everything else
+  try{ const before=JSON.stringify([planItems,planCfg,planDayOk,planSent,plMatOnly,crewHelp,crewRemote]), cb=waCantFor; await Promise.all([loadPlan(), loadCantNotes(), loadCrew()]);
+    if((JSON.stringify([planItems,planCfg,planDayOk,planSent,plMatOnly,crewHelp,crewRemote])!==before || waCantFor!==cb) && me){ if(jaOpen) renderAlloc(); else if(!$('view-portal').classList.contains('hidden')) renderPortal(); else rerenderCurrent(); } }catch(e){ console.warn(e); }
+  // 🔔 Update 56 — each office login's own New
+  if(ownSeenOn()){ try{
+      const since=new Date(Date.now()-120*864e5).toISOString();
+      const [nw, sn]=await Promise.all([ sb.from('jobs').select('id,admin_news_at').gte('admin_news_at',since), sb.from('job_seen').select('job_id,seen_at').eq('user_id',realMe.id) ]);
+      if(nw.error||sn.error){ hasOwnSeen=false; }
+      else { ownNews=new Map((nw.data||[]).map(x=>[x.id,new Date(x.admin_news_at).getTime()])); ownSeen.clear(); (sn.data||[]).forEach(x=>ownSeen.set(x.job_id,new Date(x.seen_at).getTime())); ownApply(); }
+    }catch(e){ hasOwnSeen=false; } }
+  return r;
 }
 function scheduleReload(){
   clearTimeout(reloadTimer);
@@ -3590,7 +3603,6 @@ function scRow(c={}){ return `<div class="sc-row"><input class="sc-name" placeho
 function normEir(s){ const t=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); return t.length===7 ? t.slice(0,3)+' '+t.slice(3) : String(s||'').toUpperCase().trim(); }
 function eirValid(s){ return /^[ACDEFHKNPRTVWXY](\d\d|6W) [0-9ACDEFHKNPRTVWXY]{4}$/.test(normEir(s)); }
 function hm2min(s){ const m=/^(\d{1,2}):(\d{2})/.exec(s||''); return m? (+m[1])*60+(+m[2]) : null; }
-function min2hm(m){ m=Math.round(m); const h=Math.floor(m/60)%24, mm=m%60; return `${h}:${String(mm).padStart(2,'0')}`; }
 function ampm(m){ m=Math.round(m); let h=Math.floor(m/60)%24; const mm=m%60, s=h>=12?'pm':'am'; h=h%12||12; return mm?`${h}:${String(mm).padStart(2,'0')}${s}`:`${h}${s}`; }
 
 // ── When the customer is in: '' any time · 'am' 8–12 · 'pm' 12–5 · 'after:15:00' · 'before:11:00' ──
@@ -4117,15 +4129,22 @@ async function printDay(siteId){
 function jobNo(j){ const m=/^job\s*(\d+)/i.exec(j.title||''); return m?+m[1]:null; }
 function nextJobNo(siteId){ const sj=jobs.filter(j=>j.site_id===siteId); return Math.max(sj.length, ...sj.map(j=>jobNo(j)||0))+1; }
 function slotCard(j,n){
+  // 🔴 Update 45 — a job the customer cancelled is drawn as the red card instead
+  if(deptOf(j)==='calls'&&jobOutcome(j)==='cancelled') return cancelCard(j,n);
   const u=unreadForMe(j), c=msgCount(j);
   const extra=(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'');
-  return `<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'} ${manLocked(j)?'locked':''}" data-job="${j.id}" onclick="openJob('${j.id}')">
+  const h=`<div class="slot ${j.completed?'done':''} ${u?'unread':''} oc-${jobOutcome(j)||'none'} ${manLocked(j)?'locked':''}" data-job="${j.id}" onclick="openJob('${j.id}')">
     <div class="slot-top"><span class="slot-no">JOB ${n}</span>${u?'<span class="tag new">New</span>':''}${outcomeTag(j)}${crewBadge(j)}</div>
     <div class="slot-pdf">📄${(manNotes(j).notes||manNotes(j).photos)?'<span class="pdf-dot" title="Has notes">💬</span>':''}</div>
     <div class="slot-title">${extra?esc(extra):'Work sheet'}</div>${j.ref_no?`<div class="slot-ref">Job no. ${esc(j.ref_no)}</div>`:''}${coverTag(j)?`<div class="slot-cov">${coverTag(j)}</div>`:''}${j.customer_phone||j.customer_phone2||j.eircode||j.avail?`<div class="slot-cc">${contactChips(j,true)}${eirChip(j)}${slotTown(j)}${isOffice?availChip(j):''}</div>`:''}${j.est_minutes?`<div class="slot-cc">${estChip(j)}</div>`:''}
     ${j.sig_at?`<div class="slot-cc">${sigChip(j)}</div>`:''}${histBadge(j)}${notesBadge(j)}${waBadges(j,n)}
     ${isOffice?`<div class="slot-actions"><button class="ja-btn" onclick="event.stopPropagation();printJob('${j.id}')" title="Print job, mark-ups &amp; conversation">🖨</button><button class="ja-btn" onclick="event.stopPropagation();openReschedule('${j.id}')" title="Reschedule to another day">📅</button>${hasShares?`<button class="ja-btn" onclick="event.stopPropagation();openShareModal({kind:'job',jobId:'${j.id}'})" title="Share with another service man">🤝</button>`:''}<button class="ja-btn" onclick="event.stopPropagation();editJob('${j.id}')" title="Rename / replace PDF">✎</button><button class="ja-btn red" onclick="event.stopPropagation();deleteJob('${j.id}')" title="Delete">🗑</button></div>`:''}
   </div>`;
+  // 📦 Update 44 — Material ready / Will be ready boxes on open jobs
+  if(!matOn(j)) return h;
+  if(j.completed||jobOutcome(j)) return h;
+  const box=isOffice?matBoxes(j.id,{compact:true, day:jobDay(j)}):matBadge(j.id), k=isOffice?h.lastIndexOf('<div class="slot-actions">'):-1, at=k>=0?k:h.lastIndexOf('</div>');
+  return h.slice(0,at)+box+h.slice(at);
 }
 // ── Drag a job box to change the order: Job 8 dropped after Job 3 becomes Job 4, the rest move up one ──
 let dragJobId=null;
@@ -4528,40 +4547,7 @@ async function hcFiles(keepDoc){
 let impJobId=null, impKey=null, impFound=[];
 // 🗑 the office can remove a previous call from the history for good (and any imported copy of it)
 // ⤵ move an imported old call's chat + photos into the job's own chat (nothing is lost), then drop the import
-async function mergeImportIntoJob(j, imp){
-  const used=new Set(); let n=0;
-  const add=async(row, at)=>{ let r=await sb.from('comments').insert({...row, created_at:at||undefined}); if(r.error && at) r=await sb.from('comments').insert(row); if(r.error) throw r.error; n++; };
-  for(const m of (imp.convo||[])){
-    const at=m.at?new Date(m.at).toISOString():null, who=m.who||'', when=m.when||'';
-    if(m.kind==='event'){ await add({job_id:j.id, author_id:me.id, kind:'event', body:`${who?who+' · ':''}${m.body||''} (from backup${when?' · '+when:''})`}, at); continue; }
-    if(m.photo){ used.add(m.photo); await add({job_id:j.id, author_id:me.id, body:`📷 ${who||'Photo'}${m.body?': '+m.body:''} (from backup)`, photo_path:m.photo}, at); continue; }
-    if(String(m.body||'').trim()) await add({job_id:j.id, author_id:me.id, body:`${who?who+': ':''}${m.body} (from backup${when?' · '+when:''})`}, at);
-  }
-  for(const p of (imp.photos||[])) if(!used.has(p)){ await add({job_id:j.id, author_id:me.id, body:`📷 Photo from the backup (${niceDate(imp.work_date)})`, photo_path:p}, imp.work_date?new Date(`${imp.work_date}T16:00:00`).toISOString():null); }
-  const upd={}; if(!j.marked_path && imp.marked_path) upd.marked_path=imp.marked_path; if(!j.pdf_path && imp.sheet_path) upd.pdf_path=imp.sheet_path;
-  if(Object.keys(upd).length){ const { error }=await sb.from('jobs').update(upd).eq('id',j.id); if(error) throw error; Object.assign(j,upd); }
-  const spare=[imp.sheet_path, imp.marked_path].filter(p=>p && p!==upd.marked_path && p!==upd.pdf_path);
-  const { error }=await sb.from('call_imports').delete().eq('id',imp.id); if(error) throw error;
-  if(spare.length) await sb.storage.from(BUCKET).remove(spare);
-  callImports=callImports.filter(x=>x.id!==imp.id);
-  return n; }
-function lostImports(j){ const keys=new Set(pastCalls(j).map(c=>c.key)); return callImports.filter(i=>i.job_id===j.id && !keys.has(i.call_key)); }
-async function ecMerge(impId, alsoRemoveKey){ const j=jobs.find(x=>x.id===job.id); const imp=callImports.find(x=>x.id===impId); if(!j||!imp) return;
-  try{ const n=await mergeImportIntoJob(j, imp);
-    if(alsoRemoveKey && hasHist){ const c=pastCalls(j).find(x=>x.key===alsoRemoveKey); if(c && c.src==='hist') await sb.from('call_history').delete().eq('id',alsoRemoveKey); callHist=callHist.filter(h=>h.id!==alsoRemoveKey); }
-    await sb.from('comments').insert({job_id:j.id, author_id:me.id, kind:'event', body:`⤵ Chat & photos from the ${niceDate(imp.work_date)} call put into this job's chat by ${firstName(me.full_name)}`});
-    hcSel='cur'; hcRender(); hcShowCur(); loadComments(); if(pdfDoc) renderPdf(); rerenderCurrent(); toast(`⤵ ${n} message${n===1?'':'s'} / photo${n===1?'':'s'} put into the job's chat`,5000); openEditCalls();
-  }catch(e){ toast('Could not move them: '+(e.message||e),7000); } }
 // 🗂 Edit calls (Office full access only): remove any call tab. Removing the Current call makes the last earlier call the current one again.
-function openEditCalls(){ if(!isAdmin || previewing || !job) return;
-  const j=jobs.find(x=>x.id===job.id)||job, all=pastCalls(j), st=siteOf(j)||{};
-  const row=(lbl, c, act)=>`<div class="ec-row"><div><b>${lbl}</b> · ${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}${c.note?`<div class="ec-note">“${esc(c.note)}”</div>`:''}${c.src==='live'&&c.job?'<div class="ec-note">a separate job in SashDash</div>':''}</div>${act}</div>`;
-  const cur={date:st.work_date||jobDay(j), man:prof(j.serviceman_id).full_name, outcome:jobOutcome(j), note:''};
-  openModal(`<h2>🗂 Edit calls — ${esc(custLabel(j))}</h2>
-    <p class="ec-p">Remove a call that shouldn't be here. The calls renumber themselves, and files imported from the backup are always kept (as a 📎 Backup tab). Removing the <b>Current call</b> makes the last earlier call the current one again — the job goes back to that day and man with that result.</p>
-    <div class="ec-list">${all.map((c,i)=>row(`${ordN(i+1)} call`, c, `<button class="btn-outline red" onclick="ecRemove('${c.key}')">🗑 Remove</button>`)).join('')}
-      ${row('Current call', cur, all.length?`<button class="btn-outline red" onclick="ecRemoveCurrent()">🗑 Remove</button>`:'<span class="ec-note">only call — use 🗑 Delete job</span>')}</div>
-    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button></div>`); }
 async function ecRemove(key){ const j=jobs.find(x=>x.id===job.id); if(!j) return; const all=pastCalls(j), i=all.findIndex(c=>c.key===key), c=all[i]; if(!c) return;
   const ok=await confirmBox({icon:'🗑', title:`Remove the ${ordN(i+1)} call?`, body:`<b>${esc(niceDate(c.date))} · ${esc(firstName(c.man||''))} · ${ocText(c.outcome)}</b><br>${c.src==='live'?'It\'s a separate job — that job is kept, it just stops showing as a call on this one.':'It\'s removed from this customer\'s call history.'} The other calls renumber.${c.imp?'<br>📎 Its backup files (sheet, mark-ups, photos, chat) stay on the job as a <b>📎 Backup</b> tab.':''}`, ok:'🗑 Remove', okClass:'btn-danger'}); if(!ok) return;
   try{
@@ -5679,34 +5665,6 @@ async function jaTargetSite(tid, day, putBack){
   t=sites.find(x=>x.serviceman_id===tid&&deptOf(x)==='calls'&&x.work_date===day); if(!t) throw new Error('Could not create the day'); return t; }
 // ↩ Change status (Office full access only): put a job back as it was — e.g. a call sent back to Job allocations, or allocated by mistake, back to 🔁 Unfinished / 🚪 Not home on its day
 let jaSt=null;
-async function jaStatus(id){ if(!isAdmin || previewing) return; if(jaMap) jaMap.closePopup();
-  const x=jaItems().find(y=>y.id===id); if(!x) return;
-  const src=x.j||x.nc, ph=[...new Set([src.ref_no,src.customer_phone,src.customer_phone2].map(phoneKey).filter(Boolean))], ek=eirKey(src.eircode);
-  let rows=[];
-  if(hasHist){ const qs=[]; if(x.kind==='booked') qs.push(sb.from('call_history').select(HIST_COLS).eq('source_job_id',x.id));
-    else { ph.forEach(p=>{ qs.push(sb.from('call_history').select(HIST_COLS).eq('phone_key',p)); }); if(ek) qs.push(sb.from('call_history').select(HIST_COLS).eq('eir_key',ek)); }
-    for(const r of await Promise.all(qs)) (r.data||[]).forEach(h=>{ if(!rows.some(z=>z.id===h.id)) rows.push(h); }); }
-  if(x.kind==='new') rows=rows.filter(h=>!jobs.some(j=>j.id===h.source_job_id));          // visits whose job was taken away (sent back)
-  rows.sort((a,b)=>a.work_date<b.work_date?1:-1);
-  const was=rows.find(h=>['rebook','not_home'].includes(h.outcome))||rows[0]||null;
-  const cur=x.j?{tid:x.j.serviceman_id, day:jobDay(x.j), o:jobOutcome(x.j), note:x.note}:null;
-  const pre=x.kind==='new'||x.kind==='booked' ? (was?{tid:was.serviceman_id, day:was.work_date, o:['rebook','not_home'].includes(was.outcome)?was.outcome:'rebook', note:String(was.note||'').replace(/^\d+ visits? — /,'')}:{tid:null, day:todayYmd(), o:'rebook', note:''}) : cur;
-  jaSt={id, kind:x.kind, hist:was&&(x.kind==='new'||x.kind==='booked')?was:null};
-  const K=JA_KIND[x.kind], men=profiles.filter(p=>p.role==='serviceman');
-  const lead=x.kind==='new' ? (was?`Before it was sent back to Job allocations it was <b>${was.outcome==='not_home'?'🚪 Not home':'🔁 Unfinished'}</b> on <b>${esc(dayLong(was.work_date))}</b> with <b>${esc(was.serviceman_name||firstName(prof(was.serviceman_id).full_name))}</b>.`:'No earlier visit found for this customer — pick the status, day and man.')
-    : x.kind==='booked' ? (was?`Before it was allocated it was <b>${was.outcome==='not_home'?'🚪 Not home':'🔁 Unfinished'}</b> on <b>${esc(dayLong(was.work_date))}</b> with <b>${esc(was.serviceman_name||firstName(prof(was.serviceman_id).full_name))}</b>. It comes off ${esc(dayLabel(jobDay(x.j)))} and goes back there.`:'No earlier visit found — pick where it goes back to.')
-    : `Now <b>${K.ico} ${K.short}</b> on ${esc(dayLong(cur.day))} with ${esc(firstName(prof(cur.tid).full_name))}.`;
-  openModal(`<h2>↩ Change status — ${esc(x.name)}</h2>
-    <div class="st-now">${jaPill(x.kind)} ${lead}</div>
-    <div class="field-group"><label>Put it back as</label><div class="st-opts">
-      <label><input type="radio" name="st-o" value="rebook" ${pre.o!=='not_home'?'checked':''}> 🔁 Unfinished (re-book)</label>
-      <label><input type="radio" name="st-o" value="not_home" ${pre.o==='not_home'?'checked':''}> 🚪 Customer not home</label></div></div>
-    <div class="st-row"><div class="field-group"><label>Day of that visit</label><input type="date" id="st-day" value="${esc(pre.day||'')}"></div>
-      <div class="field-group"><label>Service man</label><select id="st-man">${men.map(p=>`<option value="${p.id}" ${p.id===pre.tid?'selected':''}>${esc(p.full_name)}${noJobs(p.id)?' (no new jobs)':''}</option>`).join('')}</select></div></div>
-    <div class="field-group"><label>Site report <span class="optional">(the man's note)</span></label><textarea id="st-note" rows="2">${esc(pre.note||'')}</textarea></div>
-    <p class="st-hint">It goes back into 📋 Job allocations as ${'<b>'}Unfinished / Not home${'</b>'} with its sheet${x.kind==='new'?', details and notes':', mark-ups, photos and chat'}. ${x.kind==='new'?'The new call is removed. ':''}Nothing is sent to the man or the customer.</p>
-    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="m-save" onclick="jaStatusSave()">↩ Put back</button></div>`);
-}
 async function jaMoveJobTo(j, tid, day){   // move a job onto a man's day (made if needed), files follow the man
   const target=await jaTargetSite(tid, day, true), n=nextJobNo(target.id), rest=(j.title||'').replace(/^job\s*\d+\s*[-–·:]?\s*/i,'').trim();
   const upd={site_id:target.id, title:/^job\s*\d+/i.test(j.title||'')?`Job ${n}${rest?' – '+rest:''}`:j.title};
@@ -5714,45 +5672,6 @@ async function jaMoveJobTo(j, tid, day){   // move a job onto a man's day (made 
     const mv=async p=>{ if(!p||!p.startsWith(oldPre)) return p; const np=newPre+p.slice(oldPre.length); const r=await sb.storage.from(BUCKET).move(p,np); if(r.error) throw r.error; return np; };
     upd.serviceman_id=tid; upd.pdf_path=await mv(j.pdf_path); upd.marked_path=await mv(j.marked_path); }
   return upd; }
-async function jaMarkEvent(jobId, o, note, day){   // the Site report line, dated on the visit day
-  const body=(o==='rebook'?'🔁 Marked Re-book unfinished — put back — ':'🚪 Marked Customer not home — ')+(note||'—');
-  const at=new Date(`${day}T17:00:00`).toISOString();
-  let r=await sb.from('comments').insert({job_id:jobId, author_id:me.id, kind:'event', body, created_at:at});
-  if(r.error) await sb.from('comments').insert({job_id:jobId, author_id:me.id, kind:'event', body}); }
-async function jaStatusSave(){ if(!jaSt || !isAdmin) return;
-  const x=jaItems().find(y=>y.id===jaSt.id); if(!x) return closeModal();
-  const o=(document.querySelector('input[name=st-o]:checked')||{}).value||'rebook', day=$('st-day').value, tid=$('st-man').value, note=$('st-note').value.trim();
-  if(!day) return toast('Pick the day of that visit.'); if(parseYmd(day).getDay()===0) return toast('Sunday isn\'t a working day.');
-  const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Putting back…';
-  const lbl=(o==='rebook'?'🔁 Unfinished':'🚪 Not home')+` on ${dayLabel(day)} (${firstName(prof(tid).full_name)})`;
-  try{
-    if(x.kind==='new'){
-      const c=x.nc, newId=uuid(), target=await jaTargetSite(tid, day, true), n=nextJobNo(target.id), dest=`${filePrefix('calls',tid)}/${newId}/original.pdf`;
-      if(c.pdf_path){ const f=await sb.storage.from(BUCKET).download(c.pdf_path); if(f.error) throw f.error; const u=await sb.storage.from(BUCKET).upload(dest, f.data, {contentType:'application/pdf'}); if(u.error) throw u.error; }
-      const parts=String(c.notes||'').split(/\n*From the chat \(/), ownNote=parts[0].trim()||null, chat=parts.length>1?'From the chat ('+parts.slice(1).join('From the chat ('):'';
-      const row={id:newId, site_id:target.id, serviceman_id:tid, department:'calls', title:`Job ${n}${c.title?' – '+c.title:''}`, ref_no:c.ref_no||c.customer_phone||null, notes:ownNote,
-        pdf_path:c.pdf_path?dest:null, pdf_bytes:c.pdf_bytes||0, customer_phone:c.customer_phone||null, customer_phone2:c.customer_phone2||null, customer_email:c.customer_email||null, eircode:c.eircode||null, avail:c.avail||null,
-        ...matCopy(c), est_minutes:c.est_minutes||null, crew:c.crew||null, hist_skip:Array.isArray(c.hist_skip)?c.hist_skip:[], outcome:o, completed:false, completed_at:null, tech_unread:false, admin_unread:false, last_activity_at:new Date(`${day}T17:00:00`).toISOString(), created_by:me.id};
-      const ins=await sb.from('jobs').insert(row); if(ins.error){ if(c.pdf_path) await sb.storage.from(BUCKET).remove([dest]); throw ins.error; }
-      await jaMarkEvent(newId, o, note, day);
-      if(chat) await sb.from('comments').insert({job_id:newId, author_id:me.id, kind:'event', body:'💬 '+chat.trim()});
-      await sb.from('comments').insert({job_id:newId, author_id:me.id, kind:'event', body:`↩ Put back as ${lbl} by ${firstName(me.full_name)} (it had been sent back to Job allocations)`});
-      if(jaSt.hist){ const u=await sb.from('call_history').update({source_job_id:newId}).eq('id',jaSt.hist.id); if(u.error) await sb.from('call_history').delete().eq('id',jaSt.hist.id); }   // that visit IS this job again
-      if(hasONotes && officeNotes[c.id]){ await sb.from('office_notes').update({item_id:newId}).eq('item_id',c.id); officeNotes[newId]={...officeNotes[c.id], item_id:newId}; delete officeNotes[c.id]; }
-      await sb.from('new_calls').delete().eq('id',c.id); if(c.pdf_path) await sb.storage.from(BUCKET).remove([c.pdf_path]);
-    } else {
-      const j=x.j, moveIt=x.kind==='booked' || tid!==j.serviceman_id || day!==jobDay(j);
-      const upd=moveIt?await jaMoveJobTo(j, tid, day):{};
-      Object.assign(upd,{outcome:o, completed:false, completed_at:null});
-      const { error }=await sb.from('jobs').update(upd).eq('id',j.id); if(error) throw error;
-      if(x.kind==='booked' && jaSt.hist) await sb.from('call_history').delete().eq('id',jaSt.hist.id);   // the job is that visit again (saved again if it's re-allocated)
-      if(x.kind==='booked' || o!==x.kind || note!==(x.note||'')) await jaMarkEvent(j.id, o, note, day);
-      await sb.from('comments').insert({job_id:j.id, author_id:me.id, kind:'event', body:`↩ Put back as ${lbl} by ${firstName(me.full_name)}${x.kind==='booked'?' (allocation undone)':''}`});
-    }
-    closeModal(); jaSt=null; await loadData(); await loadNewCalls(); jaNotesFor=''; await jaLoadNotes(); renderAlloc();
-    toast(`↩ ${x.name} is back as ${lbl}`,5000);
-  }catch(e){ btn.disabled=false; btn.textContent='↩ Try again'; toast('Could not put it back: '+(e.message||e),7000); }
-}
 async function jaDoAllocate(){ return jaDoAllocate2(); }
 async function jaDoAllocate2(){
   const {ids, tid, day}=jaAlloc;
@@ -6443,7 +6362,7 @@ async function openNewsList(){
       :'<div class="nw-empty">✅ No news — you\'ve seen everything.</div>'}
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button></div>`);
 }
-function newsOpen(id){ const j=jobs.find(x=>x.id===id); newsBack=true; closeModal(); openJob(id); if(j) j.admin_unread=false; }
+function newsOpen(id){ ownMarkSeen(id);   /* 🔔 Update 56 */ const j=jobs.find(x=>x.id===id); newsBack=true; closeModal(); openJob(id); if(j) j.admin_unread=false; }
 function closeModal(){ if(window._confirmResolve){ const r=window._confirmResolve; window._confirmResolve=null; r(false); } $('modal-root').innerHTML=''; mdOff=null; }
 function mdPlace(x,y){ const m=document.querySelector('#modal-root .modal'); if(!m) return; m.style.transform=`translate(${x}px,${y}px)`; }
 function mdReset(){ mdOff=null; const m=document.querySelector('#modal-root .modal'); if(m) m.style.transform=''; }
@@ -6702,7 +6621,9 @@ async function saveJobEdit(){
   }catch(e){ btn.disabled=false; btn.textContent='Save'; toast('Error: '+(e.message||e),6000); }
 }
 
-function openTeamModal(){ if(blockPreview()) return;
+async function openTeamModal(){
+  const pending=(async()=>{
+    const r=(()=>{ if(blockPreview()) return;
   openModal(`<h2>👥 Manage team</h2>
     ${profiles.map(p=>`<div class="team-row" data-id="${p.id}">
       <input type="color" value="${esc(p.colour||'#4f46e5')}" title="Card colour">
@@ -6727,6 +6648,14 @@ function openTeamModal(){ if(blockPreview()) return;
       <b>🚫 No new jobs</b> (click <i>✅ Taking new jobs</i> to switch): for a man who has left. He can't be given new jobs, days or orders, but all his old jobs stay under his name. Click again to undo.<br><br>
       <b>Reset a password:</b> same Users screen → ⋯ next to him → <i>Change password</i> (or delete and re-add).</div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button><button class="btn-primary" id="m-save" onclick="saveTeam()">Save changes</button></div>`);
+    })();
+    // 🔐 Update 51 — login details under each person
+    const fix=()=>document.querySelectorAll('.tr-login').forEach(el=>{ const row=el.closest('.team-row'); if(row&&el.parentNode!==row) row.appendChild(el); }); fix();
+  if(isAdmin&&!previewing&&hasLogins){ const ok=await loadLogins(); if(ok&&document.querySelector('.team-row')) document.querySelectorAll('.team-row').forEach(row=>{ const p=profiles.find(x=>x.id===row.dataset.id), old=row.querySelector('.tr-login'); if(!p||!old) return; old.outerHTML=loginRow(p); }); fix(); }
+    return r;
+  })();
+  teamGroup(); const v=await pending; teamGroup();   // 👥 Update 52 — grouped by division
+  return v;
 }
 async function saveTeam(){
   $('m-save').disabled=true;
@@ -6763,6 +6692,7 @@ function lockBannerHtml(){ const u=unmarkedJobs(me.id); if(!u.length) return '';
     <div class="lock-s">Mark each of these <b>✅ All done</b>, <b><span class="ico-blue"><svg class="ico-rb" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4" /><path d="M3 11V9a3 3 0 0 1 3-3h15" /><path d="M7 22l-4-4 4-4" /><path d="M21 13v2a3 3 0 0 1-3 3H3" /></svg></span> Re-book unfinished</b> or <b>🚪 Customer not home</b> — then today's jobs open.</div>
     <div class="lock-list">${u.map(j=>`<button class="lock-job" onclick="openJob('${j.id}')"><b>${esc(dayLabel(jobDay(j)))}</b> · ${esc((j.title||'').split(' – ')[0])} – ${esc(custLabel(j))} <span>Open →</span></button>`).join('')}</div></div>`; }
 async function openJob(id, hcTab){
+  const r=await (async()=>{
   const j=jobs.find(x=>x.id===id); if(!j) return;
   if(manLocked(j)){ const u=unmarkedJobs(me.id); toast(`🔒 Finish your earlier jobs first — ${u.length} still to mark (${u.slice(0,3).map(x=>dayLabel(jobDay(x))+' '+(x.title||'').split(' – ')[0]).join(', ')}${u.length>3?'…':''})`,7000); return; }
   job={...j}; hcSel='cur'; hcShowCur(); strokes=[]; dirty=false; origBytes=null; pdfDoc=null; pageViews=[]; zoomLevel=1;
@@ -6787,8 +6717,12 @@ async function openJob(id, hcTab){
     pdfDoc=await pdfjsLib.getDocument({data:origBytes.slice()}).promise;
     await renderPdf();
   }catch(e){ $('pdf-pages').innerHTML=`<div class="loading">Couldn't open the sheet: ${esc(e.message||e)}</div>`; }
+  })();
+  try{ matJv(); }catch(e){ console.warn(e); }   // 📦 Update 44 — material boxes in the job
+  return r;
 }
 function updateJobHeader(){
+  const r=(()=>{
   if(!job) return; try{ promptBtnRefresh(); }catch(e){}
   const s=sites.find(x=>x.id===job.site_id)||{}, t=prof(job.serviceman_id);
   $('jv-title').textContent=job.title;
@@ -6799,6 +6733,9 @@ function updateJobHeader(){
   $('dl-marked').classList.toggle('hidden',!job.marked_path);
   $('mi-resched').classList.toggle('hidden', !(isOffice && s.work_date));
   { const mi=$('mi-import'); if(mi) mi.classList.toggle('hidden', !(isOffice && hasHist && deptOf(job)==='calls')); }
+  })();
+  try{ matJv(); }catch(e){}   // 📦 Update 44 — material boxes in the job header
+  return r;
 }
 function closeJob(fromPop){
   if(!job) return;
@@ -6823,7 +6760,10 @@ const OUTCOME={ done:{label:'All done',tag:'green',icon:'✅'}, rebook:{label:'R
 function jobOutcome(j){ return j.outcome || (j.completed?'done':null); }
 function outcomeTag(j){ const o=jobOutcome(j); return o?`<span class="tag ${OUTCOME[o].tag}">${o==='rebook'?'<span class="ico-blue"><svg class="ico-rb" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4" /><path d="M3 11V9a3 3 0 0 1 3-3h15" /><path d="M7 22l-4-4 4-4" /><path d="M21 13v2a3 3 0 0 1-3 3H3" /></svg></span>':OUTCOME[o].icon} ${OUTCOME[o].label}</span>`:''; }
 function outcomeText(j){ const o=jobOutcome(j); return o==='done'?'All done':o==='rebook'?'Re-book — unfinished':o==='not_home'?'Customer not home':'Open'; }
-async function setOutcome(o){ if(blockPreview()) return;
+async function setOutcome(o){
+  // 📦 Update 44 — remember the material state before the result changes
+  const id=job&&job.id, j0=jobs.find(x=>x.id===id), had=hasMat&&j0&&(j0.mat_ready||j0.mat_due), was=j0&&jobOutcome(j0);
+  const r=await (async()=>{ if(blockPreview()) return;
   const cur=jobOutcome(job), want = cur===o ? null : o;   // tapping the ticked one again clears it
   let note=null, sig=null;
   if(want==='done' && !isOffice && hasSig && deptOf(job)==='calls'){
@@ -6849,9 +6789,14 @@ async function setOutcome(o){ if(blockPreview()) return;
   if(sig){ try{ await sigSave(job, sig); }catch(e){ toast('Job done, but the signature didn\'t save: '+(e.message||e),7000); } }
   updateJobHeader();
   toast(want?`${OUTCOME[want].icon} ${outcomeText(job)}`:'Status cleared'); scheduleReload();
+  })();
+  // 📦 Update 44 — 🔁 Re-book takes the Material ready tick off
+  const j=jobs.find(x=>x.id===id);
+  if(had && j && job && job.id===id && job.outcome==='rebook' && was!=='rebook'){ Object.assign(j,{mat_ready:false, mat_due:null, mat_what:null, mat_cleared_at:new Date().toISOString()}); try{ matJv(); }catch(e){} toast('🔁 Re-booked — 📦 Material ready taken off',5000); }
+  return r;
 }
 function outcomeNoteBox(o){
-  return new Promise(res=>{
+  const p=new Promise(res=>{
     const t = o==='rebook' ? 'Re-book — job unfinished?' : 'Customer not home?';
     const ph = o==='rebook' ? 'e.g. need 2 more hinges, back Tuesday' : 'e.g. called twice, left a card';
     openModal(`<div style="text-align:center"><div style="font-size:40px">${OUTCOME[o].icon}</div><h2 style="margin:6px 0 4px">${t}</h2>
@@ -6861,20 +6806,19 @@ function outcomeNoteBox(o){
     window._confirmResolve=v=>res(v===false?null:v);
     $('oc-ok').onclick=()=>{ const n=$('oc-note').value.trim(); window._confirmResolve=null; $('modal-root').innerHTML=''; res(n); };
   });
-}
-async function toggleComplete(){ if(blockPreview()) return;
-  const want=!job.completed;
-  if(want){
-    const ok=await confirmBox({icon:'✅', title:'Mark this job complete?',
-      body:`Do you want to proceed with this, as it will remove the file from the dashboard?<br><span style="font-size:12px">It moves to the <b>Done</b> tab — nothing is deleted.</span>`,
-      ok:'✓ Yes, mark complete', okClass:'btn-primary'});
-    if(!ok) return;
-    if(dirty) await saveMarkup();     // don't lose any unsaved marks
-  }
-  const { error }=await sb.rpc('set_job_complete',{p_job:job.id,p_done:want});
-  if(error) return toast('Error: '+error.message,5000);
-  job.completed=want; job.completed_at=want?new Date().toISOString():null; updateJobHeader();
-  toast(want?'Job marked complete ✓':'Job re-opened'); scheduleReload();
+  // 📦 Update 44 — Re-book: tell the man the Material ready tick comes off and ask what's needed
+  try{ if(o==='rebook' && matOn(job)){ const m=matOf(job.id), fg=$('oc-note').closest('.field-group');
+    if(m.ready||m.due) fg.insertAdjacentHTML('beforebegin',`<div class="mat-rb">📦 This takes off the <b>Material ready</b> tick — the office ticks it again when the extra material is in. Say what's needed below.</div>`);
+    $('oc-note').placeholder='e.g. need 2 more hinges + 1 sealed unit 900 x 1200'; fg.querySelector('label').innerHTML='What material is needed? <span class="optional">(goes to the office)</span>'; } }catch(e){ console.warn(e); }
+  // ✍️ Update 64 — the men must write a note (3+ letters) for Re-book / Not home
+  try{ if(!isOffice && (o==='rebook'||o==='not_home')){ const ta=$('oc-note'), ok=$('oc-ok'), fg=ta.closest('.field-group'), lab=fg.querySelector('label');
+    lab.innerHTML=lab.innerHTML.replace(/<span class="optional">[^<]*<\/span>/,'')+' <span class="oc-req">required</span>';
+    if(o==='not_home') ta.placeholder='e.g. rang twice, no answer, left a card in the door';
+    fg.insertAdjacentHTML('beforeend',`<div class="oc-need">✍️ Write a note to continue — say ${o==='rebook'?"what's needed to finish the job":'what happened (rang, knocked, left a card…)'}.</div>`);
+    const go=ok.onclick, chk=()=>{ const v=ta.value.trim().length>=3; ok.disabled=!v; fg.classList.toggle('oc-ok',v); };
+    ok.onclick=()=>{ if(ta.value.trim().length<3){ fg.classList.add('oc-bad'); ta.focus(); return; } go(); };
+    ta.addEventListener('input',()=>{ fg.classList.remove('oc-bad'); chk(); }); chk(); setTimeout(()=>ta.focus(),50); } }catch(e){ console.warn(e); }
+  return p;
 }
 async function deleteJob(id){ if(blockPreview()) return;
   $('jv-menu').classList.add('hidden');
@@ -7993,22 +7937,6 @@ function matDash(){ if(!hasMat) return ''; const it=jaItems(), r=it.filter(x=>ma
   return `<br><span class="ja-c" style="--c:#15803d">📦 ${r} material ready</span> <span class="ja-c" style="--c:#b45309">⏳ ${d} coming</span> <span class="ja-c" style="--c:#64748b">❓ ${it.length-r-d} not confirmed</span>`; }
 
 // on the day cards: office ticks the boxes, the man sees a badge
-const _slotCardMat=slotCard; slotCard=function(j,n){ const h=_slotCardMat(j,n); if(!matOn(j)) return h;
-  if(j.completed||jobOutcome(j)) return h;
-  const box=isOffice?matBoxes(j.id,{compact:true, day:jobDay(j)}):matBadge(j.id), k=isOffice?h.lastIndexOf('<div class="slot-actions">'):-1, at=k>=0?k:h.lastIndexOf('</div>');
-  return h.slice(0,at)+box+h.slice(at); };
-const _ujhMat=updateJobHeader; updateJobHeader=function(){ const r=_ujhMat.apply(this,arguments); try{ matJv(); }catch(e){} return r; };
-const _openJobMat=openJob; openJob=async function(){ const r=await _openJobMat.apply(this,arguments); try{ matJv(); }catch(e){ console.warn(e); } return r; };
-// 🔁 Re-book: tell the man the tick comes off and ask what's needed
-const _ocNoteMat=outcomeNoteBox; outcomeNoteBox=function(o){ const p=_ocNoteMat(o);
-  try{ if(o==='rebook' && matOn(job)){ const m=matOf(job.id), fg=$('oc-note').closest('.field-group');
-    if(m.ready||m.due) fg.insertAdjacentHTML('beforebegin',`<div class="mat-rb">📦 This takes off the <b>Material ready</b> tick — the office ticks it again when the extra material is in. Say what's needed below.</div>`);
-    $('oc-note').placeholder='e.g. need 2 more hinges + 1 sealed unit 900 x 1200'; fg.querySelector('label').innerHTML='What material is needed? <span class="optional">(goes to the office)</span>'; } }catch(e){ console.warn(e); }
-  return p; };
-const _setOutMat=setOutcome; setOutcome=async function(o){ const id=job&&job.id, j0=jobs.find(x=>x.id===id), had=hasMat&&j0&&(j0.mat_ready||j0.mat_due), was=j0&&jobOutcome(j0);
-  const r=await _setOutMat.apply(this,arguments); const j=jobs.find(x=>x.id===id);
-  if(had && j && job && job.id===id && job.outcome==='rebook' && was!=='rebook'){ Object.assign(j,{mat_ready:false, mat_due:null, mat_what:null, mat_cleared_at:new Date().toISOString()}); try{ matJv(); }catch(e){} toast('🔁 Re-booked — 📦 Material ready taken off',5000); }
-  return r; };
 // ══ 🧩 PROPOSED DAYS — the office plans days from Job allocations before anything goes live (update-45) ══
 let plMatOnly=true; let planCfg={}, planItems=[], planSel={}, planNotices=[], planSent={}, planMap=null, planDayOk={}, hasPlan=true, planWeek=null;
 const PL_DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -8350,12 +8278,6 @@ function cancelCard(j,n){ const off=isOffice;
     <div class="sc-b">${off?'↩ Back in 📋 Job allocations with ⭐ priority':'Don\'t call — the office will re-book it'}</div>${off&&!previewing&&jobDay(j)>=todayYmd()?`<button class="btn-primary sc-fwd" onclick="event.stopPropagation();bfOpen('${j.id}')">⏩ Bring a later job forward</button>`:''}</div>`; }
 
 // 🔴 a cancelled job keeps its place on the day as a red card
-const _slotCardCx=slotCard; slotCard=function(j,n){ return deptOf(j)==='calls'&&jobOutcome(j)==='cancelled'?cancelCard(j,n):_slotCardCx(j,n); };
-// load the planner + the customers' cancel messages with everything else
-const _loadDataPl=loadData; loadData=async function(){ const r=await _loadDataPl.apply(this,arguments);
-  try{ const before=JSON.stringify([planItems,planCfg,planDayOk,planSent,plMatOnly,crewHelp,crewRemote]), cb=waCantFor; await Promise.all([loadPlan(), loadCantNotes(), loadCrew()]);
-    if((JSON.stringify([planItems,planCfg,planDayOk,planSent,plMatOnly,crewHelp,crewRemote])!==before || waCantFor!==cb) && me){ if(jaOpen) renderAlloc(); else if(!$('view-portal').classList.contains('hidden')) renderPortal(); else rerenderCurrent(); } }catch(e){ console.warn(e); }
-  return r; };
 
 // 🔐 Login details (update-51) — Office (full access) only, never for Office (full access) logins (Sean, Kenny)
 let staffLogins={}, hasLogins=true;   // id → {login, pw}
@@ -8373,9 +8295,6 @@ async function loginSave(id,inp){ const v=inp.value.trim(); const r=v?await sb.f
   if(r.error) return toast('Not saved: '+r.error.message+(/staff_login/i.test(r.error.message)?' — run update-51 in Supabase':''),7000);
   (staffLogins[id]=staffLogins[id]||{login:''}).pw=v; toast(v?'🔐 Password note saved':'Password note removed',2500); }
 function loginCopy(id,btn){ const L=staffLogins[id]||{}, pw=btn.parentNode.querySelector('.tl-pw').value; try{ navigator.clipboard.writeText(`Login: ${L.login||''}\nPassword: ${pw}`); toast('📋 Login and password copied'); }catch(e){ toast('Could not copy'); } }
-const _otmL=openTeamModal; openTeamModal=async function(){ const r=_otmL.apply(this,arguments); const fix=()=>document.querySelectorAll('.tr-login').forEach(el=>{ const row=el.closest('.team-row'); if(row&&el.parentNode!==row) row.appendChild(el); }); fix();
-  if(isAdmin&&!previewing&&hasLogins){ const ok=await loadLogins(); if(ok&&document.querySelector('.team-row')) document.querySelectorAll('.team-row').forEach(row=>{ const p=profiles.find(x=>x.id===row.dataset.id), old=row.querySelector('.tr-login'); if(!p||!old) return; old.outerHTML=loginRow(p); }); fix(); }
-  return r; };
 
 // 👥 Divisions in Manage team (update-52): Office admin · Service team · Fitting team — drag people between them
 let hasDivision=true;
@@ -8400,7 +8319,6 @@ function teamGroup(){ if(document.querySelector('#modal-root .td-wrap')||documen
   wrap.addEventListener('drop',e=>{ if(!drag) return; e.preventDefault(); const sec=drag.closest('.td-sec'); const sel=drag.querySelector('.td-sel'); if(sel&&sec) sel.value=sec.dataset.div; teamCounts(); });
   teamCounts(); }
 function teamCounts(){ document.querySelectorAll('.td-sec').forEach(s=>{ const n=s.querySelectorAll('.team-row').length; s.querySelector('.td-n').textContent=n; s.classList.toggle('empty',!n); }); }
-const _otmD=openTeamModal; openTeamModal=async function(){ const r=_otmD.apply(this,arguments); teamGroup(); const v=await r; teamGroup(); return v; };
 
 // ── 🔔 Each office login has its own "New" (update-56) ─────────────────────────
 // jobs.admin_unread is shared by the whole office: whoever opened a job first cleared "New" for everyone.
@@ -8418,17 +8336,7 @@ async function ownMarkSeen(id){ if(!ownSeenOn()||!id) return; ownSeenLocal.set(r
     if(r.data){ ownSeen.set(id, new Date(r.data).getTime()); ownSeenLocal.delete(realMe.id+'|'+id); } }catch(e){} }   // server time wins once saved
 function ownPatchRpc(){ if(!sb||sb._ownPatched) return; const rpc=sb.rpc.bind(sb);
   sb.rpc=function(name,args){ if(name==='mark_job_seen' && args && args.p_job) ownMarkSeen(args.p_job); return rpc(name,args); }; sb._ownPatched=true; }
-const _ownLoadData=loadData; loadData=async function(){ ownPatchRpc();
-  const r=await _ownLoadData.apply(this,arguments);
-  if(ownSeenOn()){ try{
-      const since=new Date(Date.now()-120*864e5).toISOString();
-      const [nw, sn]=await Promise.all([ sb.from('jobs').select('id,admin_news_at').gte('admin_news_at',since), sb.from('job_seen').select('job_id,seen_at').eq('user_id',realMe.id) ]);
-      if(nw.error||sn.error){ hasOwnSeen=false; }
-      else { ownNews=new Map((nw.data||[]).map(x=>[x.id,new Date(x.admin_news_at).getTime()])); ownSeen.clear(); (sn.data||[]).forEach(x=>ownSeen.set(x.job_id,new Date(x.seen_at).getTime())); ownApply(); }
-    }catch(e){ hasOwnSeen=false; } }
-  return r; };
 // the "Jobs with news" list sets admin_unread=false itself when you open one — record it as seen by you too
-const _ownNewsOpen=newsOpen; newsOpen=function(id){ ownMarkSeen(id); return _ownNewsOpen.apply(this,arguments); };
 
 // 🏠 / 🏁 each man's own start and finish (🧩 Planner settings) — used instead of the depot on his live day too
 function manBase(siteId){ const s=sites.find(x=>x.id===siteId)||{}, c=(typeof planCfg!=='undefined'&&planCfg[s.serviceman_id])||{}, dep=(routeCfg&&routeCfg.depot_eircode)||'';
@@ -8501,7 +8409,8 @@ function sdBrandHtml(div){ const p=div==='prod';   // Update 72 — SashDash Ser
 let stP=28, stHist={};
 async function stLoadHist(from,today){ const k=from+'|'+today; if(stHist[k]) return stHist[k]; if(!hasHist) return [];
   try{ const r=await sb.from('call_history').select(HIST_COLS).gte('work_date',from).lte('work_date',today).limit(20000); if(r.error) return []; return stHist[k]=r.data||[]; }catch(e){ return []; } }
-async function openStats(){ if(!isOffice) return; const today=todayYmd(), from=ymd(addDays(parseYmd(today),-stP)), cj=jobs.filter(j=>deptOf(j)==='calls');
+async function openStats(){
+  const r=await (async()=>{ if(!isOffice) return; const today=todayYmd(), from=ymd(addDays(parseYmd(today),-stP)), cj=jobs.filter(j=>deptOf(j)==='calls');
   if(!stHist[from+'|'+today]) openModal(`<div class="st"><h2>📊 Statistics — Service Department</h2><div class="empty"><span class="spin"></span> Adding up the visits…</div></div>`);
   const hist=await stLoadHist(from,today);
   const live=cj.filter(j=>{ const d=jobDay(j); return d&&d>=from&&d<=today&&(j.completed||jobOutcome(j)); }).map(j=>({id:j.id, man:j.serviceman_id, day:jobDay(j), o:jobOutcome(j), j, name:custName(j), key:phoneKey(j.customer_phone||j.ref_no)}));
@@ -8542,7 +8451,12 @@ async function openStats(){ if(!isOffice) return; const today=todayYmd(), from=y
     <h3>📅 Week by week</h3><table class="s-table st-t"><thead><tr><th>Week</th><th>✅ Done</th><th>🔁 Re-book</th><th>🚪 Not home</th><th>Fixed first time</th></tr></thead><tbody>${weeks.map(w=>`<tr><td>${esc(w.l)}</td><td>${w.d}</td><td>${w.r}</td><td>${w.n}</td><td><b>${pct(w.d,w.d+w.r+w.n)}</b></td></tr>`).join('')}</tbody></table>
     <div class="st-2"><div><h3>📲 WhatsApp</h3>${bars([['🟢 Confirmed',wOk,pct(wOk,wSent)],['📵 No reply',wNr,pct(wNr,wSent)],['🔴 Can\'t make it',wCant,pct(wCant,wSent)]])}</div>
       <div><h3>🕘 Customers visited most</h3>${repeat.length?bars(repeat.map(r=>[r.name,r.n,'visits'])):'<div class="s-sub">No customer with 3 or more visits in this period.</div>'}</div></div>
-    <div class="modal-actions"><button class="btn-primary" onclick="closeModal()">Close</button></div></div>`); }
+    <div class="modal-actions"><button class="btn-primary" onclick="closeModal()">Close</button></div></div>`);
+  })();
+  // 📈 Update 66/68 — How SashDash is helping (month by month)
+  try{ const h=await stImpactHtml(), st=document.querySelector('#modal-root .st'), first=st&&st.querySelector('.st-tiles'); if(first) first.insertAdjacentHTML('afterend',h); }catch(e){ console.warn('impact',e); }
+  return r;
+}
 
 // 🖨 Statistics — a proper A4 report with the Sean Doyle Windows logo (Update 64)
 async function stPrint(){ const src=document.querySelector('#modal-root .st'); if(!src) return;
@@ -8558,15 +8472,6 @@ async function stPrint(){ const src=document.querySelector('#modal-root .st'); i
   $('toast').classList.add('hidden'); document.body.classList.add('printing'); setTimeout(()=>window.print(),50); }
 
 // ✍️ Re-book unfinished / Customer not home: the service man must write a note before he can continue (Update 64)
-const _ocNoteReq=outcomeNoteBox; outcomeNoteBox=function(o){ const p=_ocNoteReq(o);
-  try{ if(!isOffice && (o==='rebook'||o==='not_home')){ const ta=$('oc-note'), ok=$('oc-ok'), fg=ta.closest('.field-group'), lab=fg.querySelector('label');
-    lab.innerHTML=lab.innerHTML.replace(/<span class="optional">[^<]*<\/span>/,'')+' <span class="oc-req">required</span>';
-    if(o==='not_home') ta.placeholder='e.g. rang twice, no answer, left a card in the door';
-    fg.insertAdjacentHTML('beforeend',`<div class="oc-need">✍️ Write a note to continue — say ${o==='rebook'?"what's needed to finish the job":'what happened (rang, knocked, left a card…)'}.</div>`);
-    const go=ok.onclick, chk=()=>{ const v=ta.value.trim().length>=3; ok.disabled=!v; fg.classList.toggle('oc-ok',v); };
-    ok.onclick=()=>{ if(ta.value.trim().length<3){ fg.classList.add('oc-bad'); ta.focus(); return; } go(); };
-    ta.addEventListener('input',()=>{ fg.classList.remove('oc-bad'); chk(); }); chk(); setTimeout(()=>ta.focus(),50); } }catch(e){ console.warn(e); }
-  return p; };
 
 // 📈 How SashDash is helping (Update 66): before SashDash (old calls imported into 🕘 call history) vs since, and what each SashDash feature changes
 let stAll=null;
@@ -8605,9 +8510,6 @@ async function stImpactHtml(){ const today=todayYmd(), all=await stLoadAll(), cj
     <div class="si-key"><span><i style="background:#16a34a"></i>Fixed first time %</span><span><i style="background:#2563eb"></i>Re-book unfinished %</span><span><i style="background:#dc2626"></i>Not home %</span><span>— the green should go up, the blue and red down</span></div>`;
   return `<div class="si"><h3 style="margin-top:0">📈 How SashDash is helping</h3>
     <h4 style="margin-top:4px">Month by month — last 12 months</h4>${mHtml}</div>`; }
-const _openStatsImp=openStats; openStats=async function(){ const r=await _openStatsImp.apply(this,arguments);
-  try{ const h=await stImpactHtml(), st=document.querySelector('#modal-root .st'), first=st&&st.querySelector('.st-tiles'); if(first) first.insertAdjacentHTML('afterend',h); }catch(e){ console.warn('impact',e); }
-  return r; };
 
 // 📅 WhatsApp log / No reply / Can't make it: tap the day → that man's diary on that day, with the job lit up (Update 69)
 function waGoDay(id){ const j=jobs.find(x=>x.id===id); if(!j) return toast('That job is no longer in SashDash.');
