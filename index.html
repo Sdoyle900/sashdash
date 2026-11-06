@@ -2263,7 +2263,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-06-1020';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-06-1410';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -11675,6 +11675,280 @@ const _u113FR=fitRender; fitRender=function(){ const r=_u113FR.apply(this,argume
 
 // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
 const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
+
+// ════════ Update 106 — ✅ Quality control checklist for the fitting teams ════════
+// The list lives in prod_state "qc" (fitting manager + Office full access edit it on Fitting → ✅ QC checklist).
+// When a team ticks ✅ All done it goes through it one question per screen; a flagged line can open the job sheet to
+// highlight what's wrong (highlighter, 4 colours, undo). The marks stay on the sheet for later lines. Saved on the job as j.qc.
+const QC_DEF=[['Windows missing','yes',1,1],['Doors missing','yes',1,1],['Plastic on glass (doors)','',1,0],['Plastic on glass (windows)','',1,0],
+  ['Tapon needed','yes',1,1],['Timber batton fitted OK','no',1,0],['Cill ends OK','no',1,1],['Vents OK','no',1,1],['Glass missing','yes',1,1],
+  ['Glass broken / scratched','yes',1,1],['Handles OK','no',1,1],['Rubber gaskets OK on windows & doors','no',1,1],['Knocker / letterbox / knob missing','yes',1,1],
+  ['Floors covered','no',1,0],['Alarm / blinds down (replacement works)','no',0,0],['Check finished floor level','',1,0],['Sign at front entrance','no',0,0],
+  ['Any cladding needed','yes',1,1],['All fitted OK','no',1,0]];
+const QC_COLS=['#facc15','#f472b6','#4ade80','#60a5fa'];
+function qcDefault(){ return {lines:QC_DEF.map((x,i)=>({id:'q'+(i+1),t:x[0],flag:x[1],req:!!x[2],pdf:!!x[3]})),comments:true,client:true,fitter:true,snag:false,at:null,by:''}; }
+PROD_STATE_KEYS.push('qc');
+const _qcEmpty=prodEmptyFit; prodEmptyFit=function(){ const f=_qcEmpty.apply(this,arguments); f.qc=qcDefault(); return f; };
+function qcT(){ const q=fitData&&fitData.qc; return (q&&Array.isArray(q.lines))?q:qcDefault(); }
+function qcCanEdit(){ const r=realMe&&realMe.role; return r==='admin'||r==='prod_fit'; }
+function qcBad(l){ return !!l.ans&&((l.flag==='yes'&&l.ans==='yes')||(l.flag==='no'&&l.ans==='no')); }
+function qcAnsTxt(a){ return a==='yes'?'Yes':a==='no'?'No':a==='na'?'N/A':'—'; }
+
+document.head.insertAdjacentHTML('beforeend',`<style>
+#qc-root{position:fixed;inset:0;z-index:9000;background:#f1f5f9;display:flex;flex-direction:column;font-family:inherit;color:#0f172a}
+#qc-root .qc-top{background:#0f766e;color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:10px}
+#qc-root .qc-top small{display:block;opacity:.85;font-size:12.5px}#qc-root .qc-top b{font-size:17px}#qc-root .qc-x{margin-left:auto;background:#ffffff26;border:0;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800;font-size:13px;cursor:pointer}
+#qc-root .qc-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:16px}
+#qc-root .qc-wrap{max-width:640px;margin:0 auto}
+#qc-root .qc-qn{display:flex;align-items:center;gap:8px;padding:10px 14px 4px;flex-wrap:wrap}#qc-root .qc-b{background:#0f766e;color:#fff;font-weight:800;border-radius:99px;padding:3px 11px;font-size:13.5px}#qc-root .qc-qn .t{font-size:12.5px;color:#64748b}#qc-root .qc-qn .t.f{color:#c2410c;font-weight:800}
+#qc-root .qc-dots{display:flex;gap:3px;padding:3px 14px 8px}#qc-root .qc-dots i{flex:1;height:7px;border-radius:9px;background:#cbd5e1;cursor:pointer}#qc-root .qc-dots i.d{background:#14b8a6}#qc-root .qc-dots i.f{background:#f97316}#qc-root .qc-dots i.c{background:#0f172a}#qc-root .qc-dots i.x{cursor:default}
+#qc-root .qc-q{font-size:21px;font-weight:800;padding:6px 14px 12px;line-height:1.25}#qc-root .qc-q .r{color:#dc2626}#qc-root .qc-q small{display:block;font-size:12.5px;font-weight:600;color:#64748b;margin-top:3px}
+#qc-root .qc-abs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 14px}
+#qc-root .qc-ab{font:inherit;font-weight:800;font-size:17px;padding:16px 0;border-radius:11px;border:2px solid #cbd5e1;background:#fff;color:#334155;cursor:pointer}
+#qc-root .qc-ab.on{background:#16a34a;border-color:#16a34a;color:#fff}#qc-root .qc-ab.on.bad{background:#f97316;border-color:#f97316}#qc-root .qc-ab.on.na{background:#64748b;border-color:#64748b}
+#qc-root .qc-hint{margin:12px 14px 0;font-size:13px;color:#475569}#qc-root .qc-hint.f{color:#9a3412;font-weight:700}
+#qc-root .qc-tools{position:sticky;top:0;z-index:3;display:flex;gap:8px;align-items:center;padding:8px 12px;background:#fff;border-bottom:1px solid #e2e8f0;margin-top:10px}
+#qc-root .qc-tool{display:flex;align-items:center;gap:5px;padding:9px 12px;border-radius:9px;font-weight:800;font-size:14px;border:1.5px solid #cbd5e1;background:#fff;color:#0f172a;cursor:pointer;font-family:inherit}#qc-root .qc-tool.on{background:#0f172a;color:#fff;border-color:#0f172a}
+#qc-root .qc-dot{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px #cbd5e1;cursor:pointer;padding:0}#qc-root .qc-dot.on{box-shadow:0 0 0 3px #0f172a}
+#qc-root .qc-sheetbox{margin:8px 10px 0}#qc-root .qc-sheet{position:relative;background:#fff;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden}#qc-root .qc-sheet img,#qc-root .qc-sheet canvas.pg{display:block;width:100%}
+#qc-root .qc-ink{position:absolute;left:0;top:0;width:100%;height:100%;touch-action:pinch-zoom}#qc-root .qc-ink.off{pointer-events:none}
+#qc-root .qc-keys{display:flex;gap:6px;flex-wrap:wrap;margin:8px 12px 0;font-size:12px;color:#475569}#qc-root .qc-keys span{background:#fff;border:1px solid #e2e8f0;border-radius:99px;padding:3px 9px}#qc-root .qc-sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+#qc-root .qc-np{margin:10px 12px 0;display:grid;gap:8px}#qc-root textarea{width:100%;box-sizing:border-box;font:inherit;font-size:15px;padding:10px;border:1.5px solid #cbd5e1;border-radius:10px;min-height:70px;background:#fff}#qc-root textarea.f{border-color:#fdba74}
+#qc-root .qc-phs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}#qc-root .qc-phs img{width:70px;height:58px;object-fit:cover;border-radius:7px}#qc-root .qc-phs .rm{position:relative}#qc-root .qc-phs .rm b{position:absolute;top:-6px;right:-6px;background:#0f172a;color:#fff;border-radius:50%;width:20px;height:20px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#qc-root .qc-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 14px;border-radius:10px;border:1.5px solid #cbd5e1;background:#fff;font:inherit;font-weight:800;font-size:14.5px;color:#0f172a;cursor:pointer}
+#qc-root .qc-row{display:flex;gap:8px;margin:10px 12px 0}#qc-root .qc-row .qc-btn{flex:1}
+#qc-root .qc-add{display:block;margin:18px auto 0;background:none;border:0;color:#0f766e;font:inherit;font-weight:800;font-size:14px;text-decoration:underline;cursor:pointer}
+#qc-root .qc-foot{background:#fff;border-top:1px solid #e2e8f0;padding:10px 12px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px}
+#qc-root .qc-foot .qc-btn{flex:1;padding:14px 8px;font-size:15.5px}#qc-root .qc-foot .go{flex:1.7;background:#0f766e;border-color:#0f766e;color:#fff}#qc-root .qc-foot .go.dis{background:#94a3b8;border-color:#94a3b8}
+#qc-root .qc-sum{margin:12px 12px 0;background:#fff7ed;border:1.5px solid #fdba74;border-radius:12px;padding:10px 12px;font-size:14px}#qc-root .qc-sum a{display:block;color:#9a3412;cursor:pointer;margin-top:3px}#qc-root .qc-sum.ok{background:#f0fdf4;border-color:#86efac}
+#qc-root .qc-lbl{font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin:16px 14px 6px}
+#qc-root .qc-pad{display:block;width:calc(100% - 24px);margin:0 12px;height:150px;border:2px dashed #94a3b8;border-radius:12px;background:#fff;touch-action:none}
+#qc-root .qc-padf{display:flex;justify-content:space-between;font-size:12.5px;color:#64748b;margin:4px 14px 0}#qc-root .qc-padf a{cursor:pointer;font-weight:700}
+#qc-root input.qc-in,#qc-root select.qc-in{width:calc(100% - 24px);margin:0 12px 6px;box-sizing:border-box;font:inherit;font-size:15px;padding:10px;border:1.5px solid #cbd5e1;border-radius:10px;background:#fff}
+#qc-root .qc-none{margin:10px 12px 0;background:#fff;border:1px dashed #94a3b8;border-radius:10px;padding:12px;font-size:13.5px;color:#475569;text-align:center}
+.qced .qct{border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#fff}
+.qced .qcr{display:grid;grid-template-columns:26px 30px minmax(180px,1fr) 118px 96px 104px 34px 34px;align-items:center;gap:6px;padding:7px 10px;font-size:14px;border-top:1px solid #f1f5f9}
+.qced .qcr.h{background:#f8fafc;font-size:11.5px;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:.4px;border-top:0}
+.qced .qcr.drag-over{box-shadow:inset 0 3px 0 #14b8a6}.qced .qcr .hd{color:#94a3b8;cursor:grab;user-select:none}.qced .qcr .n{color:#94a3b8;font-size:12px}
+.qced .qcr input{width:100%;font:inherit;padding:6px 8px;border:2px solid #14b8a6;border-radius:6px;box-sizing:border-box}
+.qced .pill2{font-size:12.5px;font-weight:800;padding:5px 8px;border-radius:99px;background:#f1f5f9;color:#64748b;text-align:center;cursor:pointer;border:0;font-family:inherit}.qced .pill2.on{background:#ccfbf1;color:#0f766e}
+.qced .fl2{font-size:12px;font-weight:800;padding:5px 6px;border-radius:6px;text-align:center;cursor:pointer;border:0;font-family:inherit}.qced .fl2.y{background:#fef3c7;color:#92400e}.qced .fl2.n{background:#ffedd5;color:#9a3412}.qced .fl2.o{background:#f1f5f9;color:#94a3b8}
+.qced .tg{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:#94a3b8;cursor:pointer;background:none;border:0;font-family:inherit}.qced .tg.on{color:#0f766e}.qced .tg.dis{opacity:.4;cursor:not-allowed}
+.qced .sw{width:30px;height:17px;border-radius:99px;background:#cbd5e1;position:relative;flex:none}.qced .sw:after{content:'';position:absolute;left:3px;top:3px;width:11px;height:11px;border-radius:50%;background:#fff}.qced .on>.sw,.qced .sw.on{background:#14b8a6}.qced .on>.sw:after,.qced .sw.on:after{left:auto;right:3px}
+.qced .ic{background:none;border:0;cursor:pointer;font-size:15px;padding:2px}
+.qced .side{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:18px;align-items:start}@media (max-width:1000px){.qced .side{grid-template-columns:1fr}}
+.qced .card{border:1px solid #e2e8f0;border-radius:10px;padding:13px;font-size:13.5px;margin-bottom:12px;background:#fff}.qced .card h3{margin:0 0 8px;font-size:15px}.qced .card .opt{display:flex;gap:8px;align-items:center;margin:8px 0;cursor:pointer}
+.qced .bar{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}.qced .dirty{color:#b45309;font-weight:800;font-size:13px}
+.qc-strip{margin:8px 0;padding:9px 12px;border-radius:9px;background:#f0fdf4;border:1px solid #86efac;font-size:13.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.qc-strip.w{background:#fff7ed;border-color:#fdba74}
+</style>`);
+
+// ════ 🖥 Office: Fitting → ✅ QC checklist ════
+let qcEd=null, qcEdDirty=false, qcEdit=-1, qcDragI=-1;
+const _qcNavI=FX_NAV.findIndex(x=>x[0]==='stats'); FX_NAV.splice(_qcNavI<0?FX_NAV.length:_qcNavI,0,['qc','✅ QC checklist']);
+function qcEdLoad(){ qcEd=JSON.parse(JSON.stringify(qcT())); qcEdDirty=false; qcEdit=-1; }
+function qcEdHtml(){ if(!qcCanEdit()) return '<div class="oa-warn">✅ The QC checklist is set by the fitting manager and Office (full access).</div>';
+  if(!qcEd) qcEdLoad(); const E=qcEd, T=qcT();
+  const row=(l,i)=>{ const ed=qcEdit===i;
+    return `<div class="qcr" draggable="${ed?'false':'true'}" data-i="${i}"><span class="hd" title="Drag to move">⠿</span><span class="n">${i+1}</span>
+     <span>${ed?`<input id="qc-in" value="${esc(l.t)}" placeholder="What does the team check?" onkeydown="if(event.key==='Enter')qcEdOk(${i});if(event.key==='Escape')qcEdCancel(${i})">`:esc(l.t)}</span>
+     <button class="pill2 ${l.req?'on':''}" onclick="qcEdSet(${i},'req')" title="Required: the team can't finish until it's answered">${l.req?'● Required':'○ Optional'}</button>
+     <button class="fl2 ${l.flag==='yes'?'y':l.flag==='no'?'n':'o'}" onclick="qcEdSet(${i},'flag')" title="The answer that means a problem — click to change">${l.flag==='yes'?'⚑ if Yes':l.flag==='no'?'⚑ if No':'no flag'}</button>
+     <button class="tg ${l.pdf&&l.flag?'on':''} ${l.flag?'':'dis'}" onclick="qcEdSet(${i},'pdf')" title="${l.flag?'When the flag answer is picked, the job sheet opens to highlight what\'s wrong':'Pick a flag answer first'}"><span class="sw"></span>${l.pdf&&l.flag?'On':'Off'}</button>
+     ${ed?`<button class="ic" style="color:#0f766e;font-weight:800;font-size:12px" onclick="qcEdOk(${i})">✓ OK</button><button class="ic" onclick="qcEdCancel(${i})">✕</button>`
+        :`<button class="ic" title="Rename" onclick="qcEdit=${i};fitRender();setTimeout(()=>{const x=$('qc-in');if(x){x.focus();x.select();}},0)">✎</button><button class="ic" title="Remove" onclick="qcEdDel(${i})">🗑</button>`}</div>`; };
+  const sw=(k,lab)=>`<div class="opt ${E[k]?'on':''}" onclick="qcEd.${k}=!qcEd.${k};qcEdDirty=true;fitRender()"><span class="sw"></span>${lab}</div>`;
+  return `<div class="qced" style="margin-top:12px"><div class="side"><div>
+   <h2 style="margin:0 0 4px">✅ Quality control checklist</h2><div class="sub" style="color:var(--slate);margin-bottom:12px">The fitting team goes through this on the phone, one question per screen, when they tick <b>✅ All done</b>. It prints on the fitting report.</div>
+   <div class="qct"><div class="qcr h"><span></span><span>#</span><span>Item to check</span><span>Required?</span><span>Flag when</span><span>📄 Show PDF</span><span></span><span></span></div>${E.lines.map(row).join('')||'<div style="padding:16px;color:#64748b">No lines — the team won\'t be asked anything. Press ＋ Add line.</div>'}</div>
+   <div class="bar"><button class="btn-outline" onclick="qcEdAdd()">＋ Add line</button><button class="btn-outline" onclick="qcEdPaper()">↺ Back to the paper sheet list</button><span class="spacer" style="flex:1"></span>
+    ${qcEdDirty?'<span class="dirty">● Not saved yet</span><button class="btn-outline" onclick="qcEdLoad();fitRender()">Undo changes</button>':`<span style="font-size:12.5px;color:#64748b">${T.at?'Changed by '+esc(T.by||'')+' · '+oaDT(T.at):'The paper sheet list — not changed yet'}</span>`}
+    <button class="btn-primary" style="background:#0f766e" ${qcEdDirty?'':'disabled'} onclick="qcEdSave()">Save changes</button></div></div>
+   <div><div class="card"><h3>How it works</h3><b>● Required</b> — the team can't finish the job until it's answered Yes, No or N/A.<br><br><b>○ Optional</b> — shown, but they can skip it.<br><br><b>⚑ Flag when</b> — the answer that means a problem. It goes orange and the team must say what's wrong (a note, or highlights on the sheet). It shows as ⚑ on the job and the report.<br><br><b>📄 Show PDF</b> — when the flag answer is picked, the job sheet opens so the team can highlight what's wrong (e.g. which windows are missing). Highlights from earlier lines stay on the sheet. Then <b>Continue → n of ${E.lines.length}</b>.</div>
+   <div class="card"><h3>Sign-off</h3>${sw('comments','Comments box')}${sw('client',"Client's signature")}${sw('fitter',"Fitter's signature (team leader)")}</div>
+   <div class="card" style="background:#f8fafc"><h3>Older jobs</h3>Jobs already signed off keep the checklist they were done with — changing it here only affects quality checks started from now on. Teams can also add a line for one job on the phone.</div></div></div></div>`; }
+function qcEdSet(i,k){ const l=qcEd.lines[i]; if(!l) return;
+  if(k==='req') l.req=!l.req; else if(k==='flag'){ l.flag=l.flag==='yes'?'no':l.flag==='no'?'':'yes'; if(!l.flag) l.pdf=false; } else if(k==='pdf'){ if(!l.flag) return toast('Pick the flag answer first (⚑ if Yes / ⚑ if No)'); l.pdf=!l.pdf; }
+  qcEdDirty=true; fitRender(); }
+function qcEdOk(i){ const x=$('qc-in'), v=x?x.value.trim():''; if(!v){ toast('Type what the team checks'); if(x) x.focus(); return; } qcEd.lines[i].t=v; delete qcEd.lines[i]._new; qcEdit=-1; qcEdDirty=true; fitRender(); }
+function qcEdCancel(i){ if(qcEd.lines[i]&&qcEd.lines[i]._new) qcEd.lines.splice(i,1); qcEdit=-1; fitRender(); }
+function qcEdAdd(){ if(qcEdit>=0) qcEdCancel(qcEdit); qcEd.lines.push({id:'q'+Date.now().toString(36),t:'',flag:'no',req:true,pdf:false,_new:1}); qcEdit=qcEd.lines.length-1; qcEdDirty=true; fitRender(); setTimeout(()=>{ const x=$('qc-in'); if(x){ x.focus(); x.scrollIntoView({block:'center'}); } },0); }
+function qcEdDel(i){ const l=qcEd.lines[i]; if(!l||!confirm(`Remove "${l.t}" from the checklist?`)) return; qcEd.lines.splice(i,1); qcEdDirty=true; fitRender(); }
+function qcEdPaper(){ if(!confirm('Put the checklist back to the paper sheet list (19 lines)? Your own lines and changes are removed when you save.')) return; const d=qcDefault(); qcEd.lines=d.lines; qcEdDirty=true; fitRender(); }
+function qcEdSave(){ if(!qcCanEdit()) return; if(qcEdit>=0){ const x=$('qc-in'); if(x&&x.value.trim()) qcEdOk(qcEdit); else qcEdCancel(qcEdit); }
+  qcEd.lines=qcEd.lines.filter(l=>l.t&&l.t.trim()).map(l=>{ const c=Object.assign({},l); delete c._new; if(!c.flag) c.pdf=false; return c; });
+  qcEd.at=new Date().toISOString(); qcEd.by=prodWho(); fitData.qc=JSON.parse(JSON.stringify(qcEd)); qcEdDirty=false; fitSave(); fitRender(); toast('✅ QC checklist saved — the teams get it on their next quality check'); }
+// drag ⠿ to reorder
+document.addEventListener('dragstart',e=>{ const r=e.target.closest&&e.target.closest('.qced .qcr[data-i]'); if(!r) return; qcDragI=+r.dataset.i; e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain','qc'); }catch(x){} });
+document.addEventListener('dragover',e=>{ const r=e.target.closest&&e.target.closest('.qced .qcr[data-i]'); if(!r||qcDragI<0) return; e.preventDefault(); document.querySelectorAll('.qced .drag-over').forEach(x=>x.classList.remove('drag-over')); r.classList.add('drag-over'); });
+document.addEventListener('drop',e=>{ const r=e.target.closest&&e.target.closest('.qced .qcr[data-i]'); if(!r||qcDragI<0) return; e.preventDefault(); const to=+r.dataset.i, from=qcDragI; qcDragI=-1; if(to===from){ fitRender(); return; }
+  const [m]=qcEd.lines.splice(from,1); qcEd.lines.splice(to,0,m); qcEdDirty=true; fitRender(); });
+document.addEventListener('dragend',()=>{ qcDragI=-1; document.querySelectorAll('.qced .drag-over').forEach(x=>x.classList.remove('drag-over')); });
+
+const _qcDiary=fxDiaryHtml; fxDiaryHtml=function(){ if(fitView==='qc') return qcEdHtml(); return _qcDiary.apply(this,arguments); };
+const _qcGo=fitGo; fitGo=function(v){ if(v==='qc'&&!qcCanEdit()) v='diary'; if(fitView==='qc'&&v!=='qc'&&qcEdDirty&&!confirm('The QC checklist has changes that aren\'t saved. Leave without saving?')) return; if(v==='qc'&&fitView!=='qc') qcEdLoad(); return _qcGo.apply(this,[v].concat([].slice.call(arguments,1))); };
+const _qcFR=fitRender; fitRender=function(){ if(fitView==='qc'&&!qcCanEdit()) fitView='diary'; const r=_qcFR.apply(this,arguments);
+  try{ const v=$('view-fit'); if(v&&!qcCanEdit()) v.querySelectorAll('.ft-nav button').forEach(b=>{ if(/fitGo\('qc'\)/.test(b.getAttribute('onclick')||'')) b.remove(); });
+    if(v&&fitView==='job'&&fitJobId&&!fitQ.trim()) qcStripIn(v,fitJobId); }catch(e){ console.warn(e); } return r; };
+function qcStripIn(v,oid){ const q=fitFJ(oid).qc; if(!q||v.querySelector('.qc-strip')) return; const h=v.querySelector('.fx-h'); if(!h) return;
+  const L=q.lines||[], bad=L.filter(qcBad), req=L.filter(l=>l.req), ans=req.filter(l=>l.ans).length;
+  h.insertAdjacentHTML('afterend',`<div class="qc-strip ${bad.length?'w':''}"><b>✅ Quality check</b><span>${ans} of ${req.length} required answered · ${esc(q.by||'')} · ${oaDT(q.at)}</span>${bad.length?`<b style="color:#9a3412">⚑ ${bad.length} to check: ${bad.map(l=>esc(l.t)).join(', ')}</b>`:'<span style="color:#166534;font-weight:700">Nothing flagged</span>'}<span style="flex:1"></span><button class="btn-outline ft-sm" onclick="fitReport('${oid}')">🖨 Report</button></div>`); }
+
+// ════ 📱 Team phone: the quality check ════
+let QW=null;
+function qcOn(k){ const T=qcT(); return (T.lines||[]).length>0&&(k==='done'||(k==='snag'&&T.snag)); }
+const _qcSig=fitSigForm; fitSigForm=function(){ if(fitOut&&qcOn(fitOut.k)) return qcStart(); return _qcSig.apply(this,arguments); };
+const _qcOutc=fitOutcome; fitOutcome=function(oid,k){ const had=fitFJ(oid).outcome; const r=_qcOutc.apply(this,arguments);
+  try{ const j=fitData.jobs[oid]; if(had&&j&&!j.outcome&&j.qc){ delete j.qc; fitSave(); } }catch(e){} return r; };
+function qcKey(oid){ return 'sd-qc-'+oid; }
+function qcDraftSave(){ if(!QW) return; try{ localStorage.setItem(qcKey(QW.oid),JSON.stringify({k:QW.k,i:QW.i,max:QW.max,lines:QW.lines,marks:QW.marks,comments:QW.comments,at:Date.now()})); }catch(e){} }
+function qcDraftDrop(oid){ try{ localStorage.removeItem(qcKey(oid)); }catch(e){} }
+function qcStart(){ const f=fitOut, o=oaFind(f.oid); if(!o) return; const T=qcT(); let d=null;
+  try{ d=JSON.parse(localStorage.getItem(qcKey(f.oid))||'null'); }catch(e){}
+  if(d&&(Date.now()-(d.at||0)>14*864e5)) d=null;
+  QW={oid:f.oid,k:f.k,i:0,max:0,lines:T.lines.map(l=>({id:l.id,t:l.t,flag:l.flag||'',req:!!l.req,pdf:!!(l.pdf&&l.flag),ans:null,note:'',photos:[]})),marks:[],comments:'',
+    set:{comments:T.comments!==false,client:T.client!==false,fitter:T.fitter!==false},col:null,sheet:null,sheetKey:null,sheetWhy:'',cur:null,ptrs:new Set()};
+  if(d&&Array.isArray(d.lines)&&d.lines.length){ Object.assign(QW,{i:Math.min(d.i||0,d.lines.length),max:d.max||0,lines:d.lines,marks:d.marks||[],comments:d.comments||''}); toast('Carrying on from where you left off'); }
+  closeModal(); qcRender(); qcSheetLoad(); }
+function qcClose(){ if(!confirm('Stop the quality check for now?\n\nYour answers are kept on this phone. The job isn\'t finished until you sign off.')) return; qcDraftSave(); qcSheetPark(); $('qc-root')&&$('qc-root').remove(); QW=null; fitRender(); }
+function qcN(){ return QW.lines.length; }
+function qcColFor(li){ const used=[]; QW.marks.forEach(m=>{ if(m.li!==li&&!used.includes(m.li)) used.push(m.li); }); const own=QW.marks.find(m=>m.li===li); if(own) return own.col; return QC_COLS[used.length%QC_COLS.length]; }
+function qcRender(){ if(!QW) return; let root=$('qc-root'); if(!root){ document.body.insertAdjacentHTML('beforeend','<div id="qc-root"></div>'); root=$('qc-root'); }
+  qcSheetPark(); const o=oaFind(QW.oid), N=qcN(), i=QW.i; QW.max=Math.max(QW.max,i);
+  const dots=`<div class="qc-dots">${QW.lines.map((l,x)=>`<i class="${x===i?'c':qcBad(l)?'f':l.ans?'d':''} ${x>QW.max?'x':''}" title="${x+1}. ${esc(l.t)}" onclick="qcJump(${x})"></i>`).join('')}</div>`;
+  const top=`<div class="qc-top"><div><small>${esc(fitWho(true))} · ${esc(o?oaTitle(o):'')}</small><b>✅ Quality check</b></div><button class="qc-x" onclick="qcClose()">✕ Stop</button></div>`;
+  let body='', foot='';
+  if(i<N){ const l=QW.lines[i], bad=qcBad(l), sh=bad&&l.pdf, mine=QW.marks.filter(m=>m.li===l.id).length;
+    if(sh&&!QW.col) QW.col=qcColFor(l.id);
+    const ab=(a,lab)=>`<button class="qc-ab ${l.ans===a?'on':''} ${l.ans===a&&bad?'bad':''} ${a==='na'?'na':''}" onclick="qcAns('${a}')">${lab}</button>`;
+    const legend=()=>{ const ids=[...new Set(QW.marks.map(m=>m.li))]; return ids.length?`<div class="qc-keys">${ids.map(id=>{ const x=QW.lines.findIndex(q=>q.id===id), m=QW.marks.find(q=>q.li===id); return `<span><i class="qc-sw" style="background:${m.col}"></i>${x+1} · ${esc((QW.lines[x]||{}).t||'')}${id===l.id?' — this question':' (locked)'}</span>`; }).join('')}</div>`:''; };
+    body=`<div class="qc-qn"><span class="qc-b">${i+1} of ${N}</span><span class="t ${bad?'f':''}">${bad?'⚑ '+esc(l.t)+' — '+qcAnsTxt(l.ans):l.req?'Required':'Optional — can be skipped'}${l.extra?' · added for this job':''}</span></div>${dots}
+     <div class="qc-q">${esc(l.t)}${l.req?' <span class="r">*</span>':''}</div><div class="qc-abs">${ab('yes','Yes')}${ab('no','No')}${ab('na','N/A')}</div>
+     ${bad?`<div class="qc-hint f">⚑ ${sh?'Highlight it on the job sheet, and/or say what\'s wrong below.':'Say what\'s wrong below — add a photo if it helps.'}</div>`:l.ans?'<div class="qc-hint">✔ Note and photo are optional.</div>':''}
+     ${sh?`<div class="qc-tools"><span class="qc-tool on" title="Highlighter">▮ Highlighter</span>${QC_COLS.map(c=>`<button class="qc-dot ${QW.col===c?'on':''}" style="background:${c}" onclick="qcCol('${c}')" title="Colour"></button>`).join('')}<span style="flex:1"></span><button class="qc-tool" onclick="qcUndo()" ${mine?'':'disabled style="opacity:.45"'}>↶ Undo</button></div>
+       <div class="qc-sheetbox" id="qc-slot"></div>${legend()}<div class="qc-hint" style="margin-top:6px">📄 ${QW.sheetRef&&QW.sheetRef.v>1?'Job sheet v'+QW.sheetRef.v+' (the latest)':'Job sheet'} · one finger highlights · two fingers move and zoom</div>`:(!bad&&QW.marks.length?legend().replace('class="qc-keys"','class="qc-keys" title="Marked on the job sheet so far"'):'')}
+     ${l.ans?`<div class="qc-np"><textarea class="${bad?'f':''}" placeholder="${bad?'What\'s wrong? e.g. which window, what\'s needed':'Note (optional)'}" oninput="qcNote(this.value)">${esc(l.note||'')}</textarea>
+       <div class="qc-phs">${(l.photos||[]).map((p,x)=>`<span class="rm"><img src="${p}"><b onclick="qcPhDel(${x})">✕</b></span>`).join('')}<label class="qc-btn" for="qc-pf">📷 ${(l.photos||[]).length?'Add another':'Add photo'}</label><input type="file" id="qc-pf" accept="image/*" multiple style="display:none" onchange="qcPhotos(this.files)"></div></div>`:''}
+     <button class="qc-add" onclick="qcAddLine()">＋ Add a line for this job</button>`;
+    const ok=qcCanGo(l), lab=i+1<N?`Continue → ${i+2} of ${N}`:'Continue → Sign-off';
+    foot=`<button class="qc-btn" ${i?`onclick="qcJump(${i-1})"`:'disabled style="opacity:.4"'}>← ${i?i+' of '+N:'Back'}</button><button class="qc-btn go ${ok===true?'':'dis'}" onclick="qcNext()">${ok===true?(!l.ans&&!l.req?'Skip → '+(i+1<N?(i+2)+' of '+N:'Sign-off'):lab):ok}</button>`;
+  } else body=qcSignHtml(), foot=`<button class="qc-btn" onclick="qcJump(${N-1})">← ${N} of ${N}</button><button class="qc-btn go" onclick="qcFinish()">✅ Finish — ${QW.k==='snag'?'fitted with a snag':'All done'}</button>`;
+  const ob=root.querySelector('.qc-body'), keepTop=(ob&&QW._ri===i)?ob.scrollTop:0; QW._ri=i;
+  root.innerHTML=`${top}<div class="qc-body"><div class="qc-wrap">${body}</div></div><div class="qc-foot"><div class="qc-wrap" style="display:flex;gap:8px;width:100%">${foot}</div></div>`;
+  if($('qc-slot')) qcSheetPlace(); if(keepTop){ const nb=root.querySelector('.qc-body'); if(nb) nb.scrollTop=keepTop; } if(i>=N) setTimeout(qcPads,30); }
+function qcCanGo(l){ if(l.req&&!l.ans) return 'Answer to continue'; if(qcBad(l)&&!(l.note||'').trim()&&!QW.marks.some(m=>m.li===l.id)) return l.pdf?'Highlight or add a note':'Add a note to continue'; return true; }
+function qcNext(){ const l=QW.lines[QW.i], ok=qcCanGo(l); if(ok!==true){ toast(ok==='Answer to continue'?'Pick Yes, No or N/A':l.pdf?'Highlight on the sheet, or write a note to say what\'s wrong':'Write a note to say what\'s wrong'); return; } QW.col=null; QW.i++; qcDraftSave(); qcRender(); const b=document.querySelector('#qc-root .qc-body'); if(b) b.scrollTop=0; }
+function qcJump(x){ if(x>QW.max||x<0) return; QW.col=null; QW.i=x; qcDraftSave(); qcRender(); const b=document.querySelector('#qc-root .qc-body'); if(b) b.scrollTop=0; }
+function qcAns(a){ const l=QW.lines[QW.i], was=qcBad(l)&&l.pdf; if(l.ans===a) return; const before=l.ans; l.ans=a;
+  if(was&&!(qcBad(l)&&l.pdf)&&QW.marks.some(m=>m.li===l.id)){ if(!confirm('Take the highlights for this question off the sheet?')){ l.ans=before; return; } QW.marks=QW.marks.filter(m=>m.li!==l.id); }
+  qcDraftSave(); qcRender(); }
+function qcNote(v){ const l=QW.lines[QW.i]; l.note=v; qcDraftSave(); const g=document.querySelector('#qc-root .qc-foot .go'); if(g){ const ok=qcCanGo(l); g.classList.toggle('dis',ok!==true); g.textContent=ok===true?(QW.i+1<qcN()?`Continue → ${QW.i+2} of ${qcN()}`:'Continue → Sign-off'):ok; } }
+async function qcPhotos(fl){ const l=QW.lines[QW.i]; const ps=(await Promise.all([...fl].slice(0,3).map(f=>fitShrink(f,800)))).filter(Boolean); l.photos=(l.photos||[]).concat(ps).slice(0,4); qcDraftSave(); qcRender(); }
+function qcPhDel(x){ const l=QW.lines[QW.i]; l.photos.splice(x,1); qcDraftSave(); qcRender(); }
+function qcAddLine(){ const t=(prompt('What else needs checking on this job?')||'').trim(); if(!t) return;
+  const bad=confirm(`"${t}"\n\nIs this something that should be OK?\n\nOK = it's a problem when the answer is No (e.g. "Sills sealed")\nCancel = it's a problem when the answer is Yes (e.g. "Trims missing")`);
+  QW.lines.push({id:'x'+Date.now().toString(36),t,flag:bad?'no':'yes',req:true,pdf:true,ans:null,note:'',photos:[],extra:true}); QW.max=Math.max(QW.max,qcN()-1); qcDraftSave(); qcRender(); toast(`Added as line ${qcN()} of ${qcN()}`); }
+function qcCol(c){ QW.col=c; const l=QW.lines[QW.i]; QW.marks.forEach(m=>{ if(m.li===l.id) m.col=c; }); qcDraftSave(); qcRender(); }
+function qcUndo(){ const l=QW.lines[QW.i]; for(let x=QW.marks.length-1;x>=0;x--) if(QW.marks[x].li===l.id){ QW.marks.splice(x,1); break; } qcDraftSave(); qcRender(); }
+
+// ── the job sheet: rendered once per check, every page, kept in a holder and moved onto each question that needs it ──
+function qcSheetSrc(oid){ const L=(typeof u88Latest==='function')?u88Latest(oid):{key:'scan',v:1}; return {key:L.key,v:L.v||1,blob:L.blob||null}; }   // the same latest job sheet the team sees on the phone — never cutting lists
+async function qcSrc(oid,ref){ return u86Src(oid,ref&&ref.blob?ref.blob:'scan'); }
+async function qcPages(src,W){ const out=[];
+  if(src&&(/pdf/.test(src.type||'')||!/image/.test(src.type||''))){ if(!window.pdfjsLib) throw new Error('The PDF viewer didn\'t load — check the internet');
+    const doc=await pdfjsLib.getDocument(src.url).promise; for(let p=1;p<=Math.min(doc.numPages,8);p++){ const pg=await doc.getPage(p), v0=pg.getViewport({scale:1}), vp=pg.getViewport({scale:W/v0.width}); const c=document.createElement('canvas'); c.width=Math.round(vp.width); c.height=Math.round(vp.height); const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); await pg.render({canvasContext:x,viewport:vp}).promise; out.push(c); } }
+  else if(src){ const im=await new Promise(r=>{ const i=new Image(); i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src.url; }); if(!im) throw new Error('Couldn\'t open the picture'); const c=document.createElement('canvas'); c.width=W; c.height=Math.round(W*im.naturalHeight/im.naturalWidth); const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height); out.push(c); }
+  return out; }
+async function qcSheetLoad(){ const q=QW; if(!q) return; q.sheetRef=qcSheetSrc(q.oid); q.sheetKey=q.sheetRef.key; const box=document.createElement('div'); box.className='qc-sheet'; box.innerHTML='<div class="qc-none">⏳ Opening the job sheet…</div>'; q.sheet=box;
+  try{ const src=await qcSrc(q.oid,q.sheetRef); if(!src) throw new Error('The job sheet isn\'t on SashDash for this job');
+    const pages=await qcPages(src,Math.min(1600,Math.round((Math.min(window.innerWidth,640)-22)*Math.max(2,window.devicePixelRatio||1))));
+    if(!pages.length) throw new Error('The job sheet is empty'); box.innerHTML=''; pages.forEach(c=>{ c.className='pg'; box.appendChild(c); });
+    const ink=document.createElement('canvas'); ink.className='qc-ink'; box.appendChild(ink); qcInk(ink); }
+  catch(e){ q.sheetWhy=e.message||'Couldn\'t open the job sheet'; box.innerHTML=`<div class="qc-none">📄 ${esc(q.sheetWhy)}.<br>Write a note and add a photo instead.</div>`; }
+  if(QW===q&&$('qc-slot')) qcSheetPlace(); }
+function qcSheetPlace(){ const s=$('qc-slot'); if(!s||!QW||!QW.sheet) return; if(QW.sheet.parentNode!==s) s.appendChild(QW.sheet); setTimeout(qcInkSize,0); }
+function qcSheetPark(){ if(QW&&QW.sheet&&QW.sheet.parentNode) QW.sheet.parentNode.removeChild(QW.sheet); }
+function qcInkSize(){ const b=QW&&QW.sheet, c=b&&b.querySelector('.qc-ink'); if(!c) return; const r=b.getBoundingClientRect(), d=window.devicePixelRatio||1; if(!r.width) return; c.width=Math.round(r.width*d); c.height=Math.round(r.height*d); qcInkDraw(); }
+function qcDrawMarks(x,W,H,marks){ marks.forEach(m=>{ const P=m.pts||[]; if(!P.length) return; x.save(); x.globalAlpha=.42; x.globalCompositeOperation='multiply'; x.strokeStyle=m.col; x.lineCap='round'; x.lineJoin='round'; x.lineWidth=(m.w||.045)*W; x.beginPath(); P.forEach((p,i)=>i?x.lineTo(p[0]*W,p[1]*H):x.moveTo(p[0]*W,p[1]*H)); if(P.length===1) x.lineTo(P[0][0]*W+.5,P[0][1]*H); x.stroke(); x.restore(); }); }
+function qcInkDraw(){ const c=QW&&QW.sheet&&QW.sheet.querySelector('.qc-ink'); if(!c) return; const x=c.getContext('2d'); x.clearRect(0,0,c.width,c.height); qcDrawMarks(x,c.width,c.height,QW.marks.concat(QW.cur?[QW.cur]:[])); }
+function qcInk(c){ const pt=e=>{ const r=c.getBoundingClientRect(); return [Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))]; };
+  const can=()=>{ const l=QW&&QW.lines[QW.i]; return l&&qcBad(l)&&l.pdf; };
+  c.addEventListener('pointerdown',e=>{ if(!QW||!can()) return; QW.ptrs.add(e.pointerId); if(QW.ptrs.size>1){ QW.cur=null; qcInkDraw(); return; } if(e.pointerType==='mouse'&&e.button) return;
+    const l=QW.lines[QW.i]; if(!QW.col) QW.col=qcColFor(l.id); QW.cur={li:l.id,col:QW.col,w:.055,pts:[pt(e)]}; try{ c.setPointerCapture(e.pointerId); }catch(x){} e.preventDefault(); });
+  c.addEventListener('pointermove',e=>{ if(!QW||!QW.cur||QW.ptrs.size>1) return; e.preventDefault(); const p=pt(e), P=QW.cur.pts, q=P[P.length-1]; if(Math.hypot(p[0]-q[0],p[1]-q[1])<.003) return; P.push(p); qcInkDraw(); });
+  const up=e=>{ if(!QW) return; QW.ptrs.delete(e.pointerId); const m=QW.cur; QW.cur=null; if(!m||e.type==='pointercancel'){ qcInkDraw(); return; }
+    m.pts=m.pts.map(p=>[+p[0].toFixed(4),+p[1].toFixed(4)]); QW.marks.push(m); qcDraftSave(); qcRender(); };
+  c.addEventListener('pointerup',up); c.addEventListener('pointercancel',up); }
+window.addEventListener('resize',()=>{ if(QW&&QW.sheet&&QW.sheet.parentNode) qcInkSize(); });
+
+// ── sign-off: summary, comments, client's + fitter's signatures ──
+function qcSignHtml(){ const o=oaFind(QW.oid), b=fitBk(QW.oid), crew=b?(b.crew||fitTeam(b.team)):null, L=QW.lines, bad=L.filter(qcBad), req=L.filter(l=>l.req), N=L.length;
+  return `<div class="qc-qn"><span class="qc-b">Sign-off</span><span class="t">${req.filter(l=>l.ans).length} of ${req.length} required answered ✓</span></div>
+   <div class="qc-dots">${L.map((l,x)=>`<i class="${qcBad(l)?'f':l.ans?'d':''}" title="${x+1}. ${esc(l.t)}" onclick="qcJump(${x})"></i>`).join('')}</div>
+   <div class="qc-sum ${bad.length?'':'ok'}">${bad.length?`<b>⚑ ${bad.length} line${bad.length>1?'s':''} flagged</b>${bad.map(l=>{ const x=L.indexOf(l); return `<a onclick="qcJump(${x})">${x+1} · ${esc(l.t)}: <b>${qcAnsTxt(l.ans)}</b>${QW.marks.some(m=>m.li===l.id)?' 📄':''}${l.note?' — '+esc(l.note.slice(0,60))+(l.note.length>60?'…':''):''}</a>`; }).join('')}`:'<b>✔ Nothing flagged</b> — all '+N+' lines checked.'}</div>
+   ${QW.set.comments?`<div class="qc-lbl">Comments</div><div style="margin:0 12px"><textarea placeholder="Anything else the office should know (optional)" oninput="QW.comments=this.value;qcDraftSave()">${esc(QW.comments||'')}</textarea></div>`:''}
+   ${QW.set.client?`<div class="qc-lbl">Client's signature</div><input class="qc-in" id="qc-cname" placeholder="Customer's name" value="${esc(o&&o.type==='private'?o.name:'')}"><canvas class="qc-pad" id="qc-cpad"></canvas>
+     <div class="qc-padf"><a onclick="qcPadClr('qc-cpad')">Clear</a><a style="color:#b45309" onclick="$('qc-cant').classList.toggle('hidden')">Customer can't sign?</a></div>
+     <div id="qc-cant" class="hidden" style="margin-top:6px"><select class="qc-in" id="qc-why"><option>Not there (job done outside)</option><option>Refused</option><option>Unable to sign</option></select></div>`:''}
+   ${QW.set.fitter?`<div class="qc-lbl">Fitter's signature</div><input class="qc-in" id="qc-fname" placeholder="Team leader's name" value="${esc(crew&&crew.leader||'')}"><canvas class="qc-pad" id="qc-fpad"></canvas><div class="qc-padf"><a onclick="qcPadClr('qc-fpad')">Clear</a><span>Team leader signs</span></div>`:''}
+   <div style="height:10px"></div>`; }
+function qcPads(){ ['qc-cpad','qc-fpad'].forEach(id=>{ const c=$(id); if(!c) return; c.width=c.offsetWidth; c.height=c.offsetHeight; const x=c.getContext('2d'); x.lineWidth=2.5; x.lineCap='round'; x.lineJoin='round'; x.strokeStyle=id==='qc-cpad'?'#1e3a8a':'#0f172a'; let d=false; c._ink=false;
+  c.onpointerdown=e=>{ d=true; try{ c.setPointerCapture(e.pointerId); }catch(z){} x.beginPath(); x.moveTo(e.offsetX,e.offsetY); }; c.onpointermove=e=>{ if(!d) return; x.lineTo(e.offsetX,e.offsetY); x.stroke(); c._ink=true; }; c.onpointerup=()=>d=false; }); }
+function qcPadClr(id){ const c=$(id); if(!c) return; c.getContext('2d').clearRect(0,0,c.width,c.height); c._ink=false; }
+function qcFinish(){ const q=QW; if(!q) return; const miss=q.lines.findIndex(l=>qcCanGo(l)!==true); if(miss>=0){ toast(`Line ${miss+1} still needs an answer`); q.max=Math.max(q.max,miss); return qcJump(miss); }
+  let sig=null, fsig=null; const now=new Date().toISOString();
+  if(q.set.client){ const c=$('qc-cpad'), cant=!$('qc-cant').classList.contains('hidden'), name=($('qc-cname').value||'').trim();
+    if(cant) sig={name:'',reason:$('qc-why').value,at:now};
+    else { if(!(c&&c._ink)) return toast('The customer needs to sign — or tap "Customer can\'t sign?"'); if(!name){ $('qc-cname').focus(); return toast('Enter the customer\'s name'); } sig={name,img:c.toDataURL('image/png'),at:now}; } }
+  if(q.set.fitter){ const c=$('qc-fpad'), name=($('qc-fname').value||'').trim(); if(!(c&&c._ink)) return toast('The team leader needs to sign'); if(!name){ $('qc-fname').focus(); return toast('Enter the team leader\'s name'); } fsig={name,img:c.toDataURL('image/png'),at:now}; }
+  const j=fitFJw(q.oid), L=q.lines, bad=L.filter(qcBad), req=L.filter(l=>l.req);
+  j.qc={v:1,at:now,by:fitWho(true),k:q.k,lines:L.map(l=>({id:l.id,t:l.t,flag:l.flag,req:l.req,pdf:l.pdf,ans:l.ans||null,note:(l.note||'').trim(),photos:l.photos||[],extra:!!l.extra})),
+    marks:q.marks,sheet:q.sheetKey,sheetV:q.sheetRef?q.sheetRef.v:1,sheetBlob:q.sheetRef?q.sheetRef.blob:null,comments:(q.comments||'').trim(),fsig,set:q.set};
+  j.chat.push({who:'',at:now,text:`✅ Quality check by ${fitWho(true)} — ${req.filter(l=>l.ans).length} of ${req.length} required answered${bad.length?' · ⚑ '+bad.length+' to check: '+bad.map(l=>l.t+' ('+qcAnsTxt(l.ans)+(l.note?' — '+l.note:'')+')').join('; '):' · nothing flagged'}`,evt:true});
+  qcDraftDrop(q.oid); qcSheetPark(); $('qc-root')&&$('qc-root').remove(); QW=null; fitOutSave(sig); }
+
+// ════ 🖨 the report: QC grid, flagged lines, sign-off and the marked job sheet ════
+const qcImg={};
+function qcHasSheet(j){ return !!(j&&j.qc&&(j.qc.marks||[]).length); }
+function qcImgKey(oid){ const q=fitFJ(oid).qc; return oid+'|'+(q?q.at:'')+'|'+(q?(q.marks||[]).length:0); }
+async function qcEnsure(oid){ const j=fitFJ(oid); if(!qcHasSheet(j)) return; const k=qcImgKey(oid); if(qcImg[k]) return;
+  try{ const src=await qcSrc(oid,{blob:j.qc.sheetBlob||null}); if(!src) throw new Error('The job sheet isn\'t on SashDash'); const pages=await qcPages(src,1200); if(!pages.length) throw new Error('empty');
+    const H=pages.reduce((a,c)=>a+c.height,0), c=document.createElement('canvas'); c.width=1200; c.height=H; const x=c.getContext('2d'); let y=0; pages.forEach(p=>{ x.drawImage(p,0,y); y+=p.height; });
+    qcDrawMarks(x,c.width,c.height,j.qc.marks); qcImg[k]={url:c.toDataURL('image/jpeg',.86)}; }
+  catch(e){ qcImg[k]={why:e.message||'Couldn\'t draw the job sheet'}; } }
+function qcReportHtml(oid){ const j=fitFJ(oid), q=j.qc; if(!q) return ''; const L=q.lines||[], bad=L.filter(qcBad), req=L.filter(l=>l.req);
+  const colOf=id=>{ const m=(q.marks||[]).find(x=>x.li===id); return m?m.col:null; };
+  const grid=`<table><tr><th>Item checked</th><th style="width:52px;text-align:center">Yes</th><th style="width:52px;text-align:center">No</th><th style="width:52px;text-align:center">N/A</th></tr>${L.map((l,i)=>{ const b=qcBad(l), c=colOf(l.id), st=b?'background:#fff7ed;color:#9a3412;font-weight:bold':'';
+      return `<tr><td style="${st}">${c?`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${c};margin-right:5px"></span>`:''}${i+1}. ${esc(l.t)}${b?' ⚑':''}${c?' 📄':''}${l.extra?' <span style="color:#64748b;font-weight:normal">(added for this job)</span>':''}${!b&&l.note?`<div style="font-size:11.5px;color:#475569">${esc(l.note)}</div>`:''}</td>${['yes','no','na'].map(a=>`<td style="text-align:center;font-weight:bold;${st}">${l.ans===a?'✔':''}</td>`).join('')}</tr>`; }).join('')}</table>`;
+  const flags=bad.length?`<h2>⚑ Flagged lines</h2>${bad.map(l=>{ const c=colOf(l.id); return `<div class="box" style="border-color:#fdba74;background:#fff7ed;margin-bottom:6px;display:flex;gap:10px;align-items:flex-start"><div style="flex:1"><b>${c?`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${c};margin-right:5px"></span>`:''}${L.indexOf(l)+1}. ${esc(l.t)} — ${qcAnsTxt(l.ans)}</b><br>${esc(l.note||'')}${c?`${l.note?'<br>':''}<span style="color:#64748b">Highlighted on the job sheet.</span>`:''}</div>${(l.photos||[]).map(p=>`<img src="${p}" style="width:130px;height:96px;object-fit:cover;border-radius:5px">`).join('')}</div>`; }).join('')}`:'';
+  const others=L.filter(l=>!qcBad(l)&&(l.photos||[]).length);
+  const oph=others.length?`<h2>📷 Other photos from the check</h2>${others.map(l=>`<div style="font-size:12px;margin:4px 0">${L.indexOf(l)+1}. ${esc(l.t)}</div>${l.photos.map(p=>`<img class="photo" src="${p}">`).join('')}`).join('')}`:'';
+  return `<h2>✅ Quality control</h2><div style="font-size:12.5px;margin:0 0 6px"><b style="color:#166534">${req.filter(l=>l.ans).length} of ${req.length} required answered</b> · ${bad.length?`<b style="color:#9a3412">⚑ ${bad.length} to check</b>`:'<b style="color:#166534">nothing flagged</b>'} · checked by ${esc(q.by||'')} · ${oaDT(q.at)}</div>${grid}${flags}${oph}
+   ${q.comments?`<h2>Comments</h2><div class="box">${esc(q.comments)}</div>`:''}<!--QC-SIGN-->`; }
+function qcSignBlock(j){ const s=j.sig, f=j.qc&&j.qc.fsig; if(!s&&!f) return '';
+  const cell=(t,x,img)=>`<div class="box" style="flex:1"><b>${t}</b><br>${img?`<img src="${img}" style="height:80px;margin:4px 0;max-width:100%">`:''}<br>${x}</div>`;
+  return `<h2>Sign-off</h2><div style="display:flex;gap:12px">${s?cell("Client's signature",s.name?esc(s.name)+' · '+oaDT(s.at):'Not signed — '+esc(s.reason||'')+' · '+oaDT(s.at),s.img):''}${f?cell("Fitter's signature",esc(f.name)+' · '+oaDT(f.at),f.img):''}</div>`; }
+function qcSheetPage(oid){ const j=fitFJ(oid); if(!qcHasSheet(j)) return ''; const q=j.qc, r=qcImg[qcImgKey(oid)]||{why:'Still drawing the job sheet — print again in a moment'};
+  const ids=[...new Set(q.marks.map(m=>m.li))], L=q.lines||[];
+  return `<div style="page-break-before:always"><h2>📄 Job sheet${q.sheetV>1?' v'+q.sheetV:''} — marked up during the quality check</h2><div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;margin:4px 0 8px">${ids.map(id=>{ const x=L.findIndex(l=>l.id===id), m=q.marks.find(z=>z.li===id); return `<span><span style="display:inline-block;width:11px;height:11px;border-radius:2px;background:${m.col};margin-right:4px;vertical-align:-1px"></span>${x+1}. ${esc((L[x]||{}).t||'')}</span>`; }).join('')}</div>
+   ${r.url?`<img src="${r.url}" style="width:100%;border:1px solid #cbd5e1">`:`<div class="box">⚠ ${esc(r.why)}</div>`}<div style="font-size:11px;color:#64748b;margin-top:4px">The job sheet itself is never changed — the highlights are saved separately.</div></div>`; }
+const _qcRep=fitReport; fitReport=function(oid){ const j=fitFJ(oid);
+  if(j&&j.qc&&qcHasSheet(j)&&!qcImg[qcImgKey(oid)]&&!qcCapturing){ const w=window.open('','_blank'); if(!w){ toast('Allow pop-ups to see the report'); return; }
+    w.document.write('<p style="font-family:Arial;padding:20px">⏳ Getting the report ready — drawing the job sheet with the team\'s highlights…</p>');
+    qcEnsure(oid).then(()=>{ const keep=window.open; window.open=()=>w; try{ w.document.open(); fitReport(oid); }finally{ window.open=keep; } }); return; }
+  if(!j||!j.qc) return _qcRep.apply(this,arguments);
+  const keep=fyPrint; fyPrint=function(div,title,sub,body){ let b=body; const qh=qcReportHtml(oid), sg=qcSignBlock(j);
+      b=b.replace(/<h2>Customer sign-off<\/h2><div class="box">[\s\S]*?<\/div>/,'');
+      const at=b.search(/<h2>(Photos|Conversation)<\/h2>/); b=(at>=0?b.slice(0,at)+qh+b.slice(at):b+qh).replace('<!--QC-SIGN-->',sg); b+=qcSheetPage(oid);
+      return keep.call(this,div,title,sub,b); };
+  try{ return _qcRep.apply(this,arguments); }finally{ fyPrint=keep; } };
+let qcCapturing=false;
+const _qcU86=u86Report; u86Report=async function(oid){ const j=fitFJ(oid); if(qcHasSheet(j)&&!qcImg[qcImgKey(oid)]){ const w=window.open('','_blank'); if(!w){ toast('Allow pop-ups to print'); return; }
+    w.document.write('<p style="font-family:Arial;padding:20px">⏳ Getting the report ready…</p>'); await qcEnsure(oid); const keep=window.open; window.open=()=>w; try{ qcCapturing=true; return await _qcU86.apply(this,arguments); }finally{ window.open=keep; qcCapturing=false; } }
+  qcCapturing=true; try{ return await _qcU86.apply(this,arguments); }finally{ qcCapturing=false; } };
+
+// ════════ Update 107 — 📱 team phone: only ✅ All done (the QC checklist flags everything) ════════
+// ⟲ Unfinished and ⚠ Snag are left off the team's job screen; they only show on an older job that already has one ticked, so it can be cleared.
+const _q107Ph=fitPhJobHtml; fitPhJobHtml=function(){ const h=_q107Ph.apply(this,arguments); try{ return h.replace(/<button class="ft-oc (?:unf|snag) "[^>]*>[\s\S]*?<\/button>/g,''); }catch(e){ return h; } };
 </script>
 </body>
 </html>
