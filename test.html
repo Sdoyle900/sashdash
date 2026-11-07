@@ -2,6 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <script>
+  /* 🛡 Start-up guard (tidy-up Stage 3). Each time SashDash starts properly, this device keeps a copy of that version.
+     If a new version can't start (its code doesn't load, or it errors before it has started), open the kept copy instead. */
+  (function(){
+    if(/[?&]lastgood=1/.test(location.search)) return;            // already on the kept copy
+    var errs=0; window.addEventListener('error',function(){ if(!window.__sdStarted) errs++; });
+    function goBack(){
+      if(window.__sdStarted||!window.caches||!navigator.serviceWorker||!navigator.serviceWorker.controller) return;
+      caches.open('sashdash-lastgood').then(function(c){ return c.match('lastgood'); })
+        .then(function(r){ if(r&&!window.__sdStarted) location.replace('./?lastgood=1'); }).catch(function(){});
+    }
+    window.addEventListener('load',function(){
+      if(typeof APP_BUILD==='undefined') return goBack();           // the main code didn't load at all
+      setTimeout(function(){ if(!window.__sdStarted&&errs) goBack(); },20000);   // it errored and never finished starting
+    });
+  })();
+  </script>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>SashDash</title>
@@ -2041,6 +2058,7 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .wa-day span{font-size:12px;color:#4f46e5;font-weight:600}.wa-day:hover{background:#eef2ff;border-color:#c7d2fe}.wa-day:hover span,.wa-day:hover b{text-decoration:underline}
 .wa-flash{animation:waFlash 2.4s ease}@keyframes waFlash{0%,60%{box-shadow:0 0 0 4px #818cf8,0 0 0 9px rgba(129,140,248,.35)}100%{box-shadow:none}}
 .ja-go{cursor:pointer}.ja-man.ja-go:hover{background:#eef2ff;border-color:#a5b4fc}.s-sub.ja-go{color:#4f46e5;font-weight:600}.s-sub.ja-go:hover{text-decoration:underline}
+.sd-keptcopy{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#f97316;color:#fff;font:600 14px/1.35 system-ui,sans-serif;padding:10px 14px;text-align:center;box-shadow:0 -2px 10px rgba(0,0,0,.2)}
 </style>
 </head>
 <body>
@@ -2188,6 +2206,35 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
+/* ═══════════════════════════════════════════════════════════════════════════════════════════════
+   SASHDASH — CONTENTS (tidy-up, 6 Nov 2026)
+   The code is in the order the updates were written, so an area can appear in several places.
+   Find an area by its function names (search "function <name>"):
+
+   CORE · login, start-up, auto-update ......... SUPABASE_URL, APP_BUILD, checkForUpdate, startApp, applyIdentity,
+                                                 loadData, setDept, renderDeptBar, openModal / closeModal, toast, esc
+   VIEW AS ..................................... renderViewAsMenu, enterViewAs / exitViewAs, u84Enter / u84Exit (Production)
+   SITES + SERVICE DEPARTMENT .................. renderDashboard(For), openPortal, renderPortal, slotCard, cancelCard,
+                                                 openJob, updateJobHeader, setOutcome, outcomeNoteBox, openDayHistory
+   JOB ALLOCATIONS / PLANNER ................... openAlloc, ja*, plSettings, plProposeBox, plOpen, pl*
+   MATERIAL (📦) ................................ mat*, matJv
+   WHATSAPP .................................... wa*, waSetView
+   OFFICE CHAT ................................. oc*, ocSetView
+   BACKUPS / CALL HISTORY ...................... openBackupPanel, bk*, openCustHistory, hc*
+   STATISTICS .................................. openStats, st*
+   MANAGE TEAM ................................. openTeamModal, teamGroup, staff logins (u85*)
+   OFFICE ADMINISTRATION (OA) .................. oa*  (oaOpen, oaRender, oaOpenOrder, oaNew)
+   FITTING ..................................... fit*, fx*, fy*  (fitOpen, fitGo, fitRender, fitOpenJob, fitAllocate, fitPhOpen)
+   PRODUCTION DATABASE ......................... prod*  (prodLoad, prodSync, prodQueue, prodGate)
+   QUALITY CHECK (✅ QC) ........................ qc*   (qcStart, qcRender, qcEd* = the office's checklist editor)
+   LATER PRODUCTION UPDATES .................... u83* … u113*  (numbered by the update that added them)
+
+   HOW TO CHANGE THINGS (from the tidy-up on):
+   • Change a function where it is. Don't add "const _x=F; F=function(){…}" wrappers any more.
+   • A function marked "N parts, folded in the tidy-up" holds its old layers as part0, part1, … in the order they run;
+     change the part that owns the behaviour.
+   • Before handing over a build, run the checks (project: claude/sashdash-checks) — screens, job order and saved data.
+   ═══════════════════════════════════════════════════════════════════════════════════════════════ */
 // ══════════════════════════════════════════════════════════════════
 //  SETTINGS — paste your Supabase project URL and anon key here
 //  (Supabase → Project Settings → API). Same as RackTrack.
@@ -2263,13 +2310,16 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-06-1800';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-06-2100';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
   try{
     const r=await fetch('index.html?v='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
-    const m=/const APP_BUILD='([^']+)'/.exec(await r.text()); if(!m || m[1]<=APP_BUILD) return;   // only ever move forward
+    const txt=await r.text(); const m=/const APP_BUILD='([^']+)'/.exec(txt); if(!m || m[1]<=APP_BUILD) return;   // only ever move forward
+    if(m[1]<=sdBadBuild()) return;                                   // 🛡 that version didn't start on this device
+    if(!sdWholeFile(txt)){ console.warn('SashDash: new version '+m[1]+' is not complete or its code does not load — staying on '+APP_BUILD); return; }
+    if(sdOnKeptCopy()){ updating=true; location.replace('./'); return; }   // 🛡 a newer, working version is up: leave the kept copy
     try{ if(sessionStorage.getItem('sd-upd')===m[1]) return; sessionStorage.setItem('sd-upd',m[1]); }catch(e){}   // one try per new version
     updating=true;
     if(navigator.serviceWorker){ const reg=await navigator.serviceWorker.getRegistration(); if(reg) await reg.update().catch(()=>{}); }
@@ -2277,6 +2327,28 @@ async function checkForUpdate(){
     if(!busy()){ toast('🔄 Updating SashDash…',2000); setTimeout(()=>location.reload(),900); }
     else { const b=document.createElement('button'); b.className='update-pill'; b.textContent='🔄 New version — tap to update'; b.onclick=()=>location.reload(); document.body.appendChild(b); }
   }catch(e){}
+}
+// ── 🛡 Safe releases (tidy-up Stage 3) ──
+function sdOnKeptCopy(){ return /[?&]lastgood=1/.test(location.search); }
+function sdBadBuild(){ try{ return localStorage.getItem('sd-bad-build')||''; }catch(e){ return ''; } }
+function sdWholeFile(txt){   // the whole file arrived and its main code loads (checked without running it)
+  if(!/<\/html>\s*$/i.test(txt)) return false;
+  const k=txt.indexOf("const APP_BUILD='"), a=txt.lastIndexOf('<script>',k), b=txt.indexOf('</'+'script>',k);
+  if(k<0||a<0||b<0) return false;
+  try{ new Function(txt.slice(a+8,b)); return true; }catch(e){ return false; }
+}
+function sdStarted(){   // called once start-up has finished
+  window.__sdStarted=true;
+  const main=/\/(index\.html)?$/.test(location.pathname);
+  if(sdOnKeptCopy()){
+    const bar=document.createElement('div'); bar.className='sd-keptcopy';
+    bar.innerHTML='⚠ The new version of SashDash didn\'t start on this device — using the previous version. Tell the office.';
+    document.body.appendChild(bar);
+    fetch('index.html?v='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{ const m=/const APP_BUILD='([^']+)'/.exec(t);
+      if(m&&m[1]>APP_BUILD&&m[1]>sdBadBuild()) try{ localStorage.setItem('sd-bad-build',m[1]); }catch(e){} }).catch(()=>{});
+  } else if(main&&navigator.serviceWorker&&navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({sd:'good',build:APP_BUILD});   // keep this version as the one to go back to
+  }
 }
 function uuid(){return (crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return (c==='x'?r:(r&3|8)).toString(16);}));}
 
@@ -2308,6 +2380,7 @@ document.addEventListener('click', e=>{ if(!e.target.closest('.menu-wrap')){ $('
     const { data:{ session } } = await sb.auth.getSession();
     if (session && session.user) await startApp(session.user);
   } catch(e){ console.error(e); }
+  sdStarted();   // 🛡 started properly
 });
 
 // ── Auth ───────────────────────────────────────────────────────────
@@ -2325,7 +2398,8 @@ async function signIn(){
   }catch(e){ showAuthError(e.message==='Invalid login credentials'?'Wrong username or password.':('Could not sign in: '+e.message)); }
   btn.disabled=false; btn.textContent='Sign In';
 }
-async function signOut(){
+function signOut(){   // 2 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=async function(){
   if(dirty && !confirm('You have unsaved mark-up. Sign out anyway?')) return;
   dirty=false; if(realtime) sb.removeChannel(realtime); realtime=null;
   try{ const s0=pushSupported && await currentSub(); if(s0) await sb.from('push_subscriptions').delete().eq('endpoint',s0.endpoint); }catch(e){}   // signed out → this phone stops getting their pings
@@ -2333,9 +2407,13 @@ async function signOut(){
   me=null; realMe=null; previewing=false; $('bell-btn').classList.add('hidden'); $('push-banner').classList.add('hidden'); document.body.classList.remove('previewing'); $('preview-banner').classList.add('hidden'); job=null; $('job-view').classList.add('hidden');
   $('app').classList.add('hidden'); $('auth-screen').classList.remove('hidden');
   $('auth-password').value=''; $('auth-password').type='password'; document.querySelectorAll('.pw-eye').forEach(b=>b.classList.remove('on'));
+};
+  const part1=function(){ prodAs=null; try{ u84Classes(); }catch(e){} return part0.apply(this,arguments); };
+  return part1.apply(this,arguments);
 }
 // Who the screen is drawn for. Normally you; in "View as" it's the person picked.
-function applyIdentity(p){
+function applyIdentity(){   // 6 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=function(p){
   me=p; isAdmin = p.role==='admin'; isCallsOffice = p.role==='service_office'; isOffice = isAdmin||isCallsOffice;
   dept = (isCallsOffice || realMe.role==='service_office') ? 'calls' : (p.role==='serviceman' && p.on_sites===false ? 'calls' : 'sites');
   currentTechId=null; currentSiteId=null; calWeek=null; jobFilter='all';
@@ -2351,6 +2429,16 @@ function applyIdentity(p){
   if(previewing){ bn.classList.remove('hidden');
     bn.innerHTML=`<span>👁 Viewing as <b>${esc(p.full_name)}</b> — ${p.role==='serviceman'?(realMe.role==='service_office'?'what he sees in Service Department on his phone':'exactly what he sees on his phone'):p.role==='service_office'?'what the service department sees':'their view'}. View-only.</span><button onclick="exitViewAs()">✕ Exit</button>`;
   } else bn.classList.add('hidden');
+};
+  const part1=function(){ oaOff(); return part0.apply(this,arguments); };
+  const part2=function(){ fitOff(); return part1.apply(this,arguments); };
+  const part3=function(){ const r=part2.apply(this,arguments); try{ const R=u83R(), b=document.body;
+    b.classList.toggle('prod-role',!!R); b.classList.toggle('prod-dept',!!R&&R.kind==='dept'); b.classList.toggle('prod-tablet',!!R&&R.kind==='tab');
+    if(R){ const rb=$('role-badge'); rb.classList.remove('hidden'); rb.textContent=R.badge; $('viewas-wrap').classList.add('hidden'); $('admin-nav').classList.add('hidden'); } }catch(e){ console.warn(e); } return r; };
+  const part4=function(){ const r=part3.apply(this,arguments); try{ const R=u83R(); document.body.classList.toggle('prod-team',!!R&&R.kind==='team'); }catch(e){} return r; };
+  // while viewing: 👁 Switch ▾ on the orange banner, like Production
+  const part5=function(){ const r=part4.apply(this,arguments); try{ const bn=$('preview-banner'); if(previewing&&bn&&!bn.querySelector('.u103btn')){ const x=bn.querySelector('button'); if(x) x.insertAdjacentHTML('beforebegin',`<span class="u84wrap u103wrap"><button class="u103btn u103sw" onclick="u103Menu(this,event)">👁 Switch ▾</button></span>`); } }catch(e){} return r; };
+  return part5.apply(this,arguments);
 }
 // ── "View as" (office only) ───────────────────────────────────────
 function toggleViewAs(e){ e.stopPropagation(); const m=$('viewas-menu');
@@ -2364,7 +2452,8 @@ function renderViewAsMenu(){
     ${men.length?`<div class="va-sub">Service men</div>${men.map(item).join('')}`:''}
     ${offices.length?`<div class="va-sub">Service department</div>${offices.map(item).join('')}`:''}`;
 }
-async function enterViewAs(id){
+function enterViewAs(){   // 2 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=async function(id){
   $('viewas-menu').classList.add('hidden');
   const p=profiles.find(x=>x.id===id); if(!p) return;
   if(job){ dirty=false; closeJob(); }
@@ -2372,6 +2461,10 @@ async function enterViewAs(id){
   await loadData(); renderDeptBar();
   if(isOffice) showDashboard(); else openPortal(me.id);
   window.scrollTo(0,0);
+};
+  // the Service "View as" and signing out always end it
+  const part1=function(){ if(prodAs){ prodAs=null; u84Classes(); } return part0.apply(this,arguments); };
+  return part1.apply(this,arguments);
 }
 async function exitViewAs(){
   $('viewas-menu').classList.add('hidden');
@@ -2597,9 +2690,15 @@ document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState=
 // ── Navigation ─────────────────────────────────────────────────────
 function setNav(v){ document.querySelectorAll('#admin-nav .tab').forEach(b=>b.classList.toggle('active', b.dataset.v===v)); }
 function goHome(){ if(!me) return; if(isOffice) showDashboard(); else openPortal(me.id); }
-function showDashboard(){
+function showDashboard(){   // 4 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=function(){
   $('view-portal').classList.add('hidden'); $('view-dashboard').classList.remove('hidden');
   setNav('dashboard'); renderDashboard(); window.scrollTo(0,0);
+};
+  const part1=function(){ oaOff(); return part0.apply(this,arguments); };
+  const part2=function(){ fitOff(); return part1.apply(this,arguments); };
+  const part3=function(){ if(u83Home()){ window.scrollTo(0,0); return; } return part2.apply(this,arguments); };
+  return part3.apply(this,arguments);
 }
 
 // ── Department switch: Sites / Private Calls ─────────────────────
@@ -2610,7 +2709,8 @@ function deptsForMe(){
   if((me.on_calls!==false&&(sites.some(s=>deptOf(s)==='calls')||me.on_calls===true))||coverJobsFor(me.id,'calls').length) d.push('calls');
   return d.length?d:['sites'];
 }
-function renderDeptBar(){
+function renderDeptBar(){   // 8 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=function(){
   const bar=$('dept-bar'); if(!bar||!me) return;
   const ds=deptsForMe(); if(!ds.includes(dept)) dept=ds[0];
   if(ds.length<2 && !isOffice){ bar.classList.add('hidden'); return; }
@@ -2618,8 +2718,30 @@ function renderDeptBar(){
   bar.innerHTML=`<div class="dept-inner">${ds.map(d=>{
     const dj=dJobs(d).filter(j=>isOffice||j.serviceman_id===me.id||coverOf(j).includes(me.id)), open=dj.filter(j=>!j.completed).length, news=dj.some(unreadForMe);
     return `<button class="dept-btn ${d===dept?'on':''} d-${d}" onclick="setDept('${d}')" title="${isOffice?'Go to the '+DEPT[d].label+' main page':DEPT[d].label}">${news?'<span class="dot"></span>':''}<span class="di">${DEPT[d].icon}</span>${DEPT[d].label}<span class="dc">${open}</span></button>`;}).join('')}</div>`;
+};
+  const part1=function(){ const r=part0.apply(this,arguments); try{ oaBtn(); }catch(e){ console.warn(e); } return r; };
+  const part2=function(){ const r=part1.apply(this,arguments); try{ fitBtn(); }catch(e){ console.warn(e); } return r; };
+  const part3=function(){ const r=part2.apply(this,arguments); try{ fySplitBar(); }catch(e){ console.warn(e); } try{ fyBrandHeader(); }catch(e){ console.warn(e); } return r; };
+  const part4=function(){ const r=part3.apply(this,arguments); try{ if(prodSt==='idle'&&(oaAllowed()||fitAllowed())) setTimeout(()=>prodLoad(),0); }catch(e){} return r; };
+  // ── the department bar: only their own button (tablets: no bar at all) ──
+  const part5=function(){ const R=u83R(); if(!R) return part4.apply(this,arguments);
+  const bar=$('dept-bar'); if(!bar||!me) return;
+  if(prodSt==='idle') setTimeout(()=>prodLoad(),0);
+  if(R.kind==='tab'){ bar.classList.add('hidden'); bar.innerHTML=''; return; }
+  bar.classList.remove('hidden'); bar.innerHTML='<div class="dept-inner"></div>';
+  try{ if(R.kind==='oa') oaBtn(); else fitBtn(); }catch(e){ console.warn(e); }
+  if(R.kind==='dept'){ const b=bar.querySelector('.d-fit'); if(b){ const n=prodSt==='ready'?u83DeptOpen():null; b.innerHTML=`<span class="di">🏭</span>${R.btn}${n!=null?`<span class="dc">${n}</span>`:''}`; b.setAttribute('onclick',"fitOpen('alloc')"); b.title=R.lab.replace(/^\S+\s/,''); } }
+  try{ fySplitBar(); }catch(e){ console.warn(e); } try{ fyBrandHeader(); }catch(e){} };
+  // department bar: a team login has none (just its phone); the yard has one button
+  const part6=function(){ const r=part5.apply(this,arguments), R=u83R(); if(!R) return r; const bar=$('dept-bar'); if(!bar) return r;
+  if(R.kind==='team'){ bar.classList.add('hidden'); bar.innerHTML=''; }
+  if(R.kind==='yard'){ const b=bar.querySelector('.d-fit'); if(b){ b.innerHTML='<span class="di">📦</span>Yard loading'; b.setAttribute('onclick',"fitOpen('load')"); b.title='Yard loading'; } }
+  return r; };
+  const part7=function(){ const r=part6.apply(this,arguments); u112Draw(); return r; };
+  return part7.apply(this,arguments);
 }
-function setDept(d){
+function setDept(){   // 4 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=function(d){
   if(jaOpen){ document.body.classList.remove('ja-wide'); jaOpen=false; jaSel.clear(); if(jaMap){ jaMap.remove(); jaMap=null; jaMarkers.clear(); } }
   if(job){ if(dirty && !confirm('You have unsaved mark-up on this sheet. Leave without saving?')) return; dirty=false; closeJob(); }
   const changed=d!==dept;
@@ -2628,6 +2750,11 @@ function setDept(d){
   if(isOffice) showDashboard();                 // Sites / Private Calls button = that department's main page
   else openPortal(me.id);
   window.scrollTo(0,0);
+};
+  const part1=function(){ oaOff(); return part0.apply(this,arguments); };
+  const part2=function(){ fitOff(); return part1.apply(this,arguments); };
+  const part3=function(){ if(u83Home()) return; return part2.apply(this,arguments); };
+  return part3.apply(this,arguments);
 }
 
 // ── Dashboard (office) ────────────────────────────────────────────
@@ -2640,7 +2767,8 @@ function _renderDashboard(){
   if(openFolder && $('folder-panel')) setTimeout(renderFolderPanel,0);   // an open box is filled in again after every refresh
   return r;
 }
-function renderDashboardFor(jobs, sites, allJobs){
+function renderDashboardFor(){   // 2 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=function(jobs, sites, allJobs){
   const D=DEPT[dept];
   const open=jobs.filter(j=>!j.completed).length;
   const weekAgo=Date.now()-7*864e5;
@@ -2685,6 +2813,12 @@ function renderDashboardFor(jobs, sites, allJobs){
     ${team.length?`<div class="team-grid" id="team-grid">${cards}</div>`:`<div class="empty" style="margin-bottom:24px"><div class="big">👷</div>No men in ${D.label} yet.${isAdmin?' Click <b>Manage team</b> to add them.':' Ask the office to add them.'}</div>`}
     <div class="section-h">Latest activity</div>
     ${recent.length?`<div class="activity">${act}</div>`:`<div class="empty">Nothing yet — upload a job to get started.</div>`}`;
+};
+  // the button on the Sites / Service Department page, beside 👥 Manage team
+  const part1=function(){ const r=part0.apply(this,arguments); try{ const h=$('dash-head'), row=h&&h.querySelector('.row');
+    if(row&&u103Can()&&!previewing&&!row.querySelector('.u103btn')){ const w=`<span class="u84wrap u103wrap"><button class="btn-outline u103btn" onclick="u103Menu(this,event)">👁 View as ▾</button></span>`;
+      const mt=[...row.querySelectorAll('button')].find(b=>/Manage team/.test(b.textContent)); if(mt) mt.insertAdjacentHTML('beforebegin',w); else row.insertAdjacentHTML('beforeend',w); } }catch(e){ console.warn(e); } return r; };
+  return part1.apply(this,arguments);
 }
 
 // ✥ drag a team card to a new place — saved for this login only
@@ -3446,12 +3580,18 @@ function goToJob(id){
 }
 
 // ── Portal (one service man's jobs, split into site tabs) ──────────
-function openPortal(techId, siteId){
+function openPortal(){   // 4 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=function(techId, siteId){
   if(!techId){ if(isOffice){ toast('Add a service man first.'); } return; }
   if(techId!==currentTechId){ currentSiteId=null; calMonth=null; }
   currentTechId=techId; if(siteId) currentSiteId=siteId;
   $('view-dashboard').classList.add('hidden'); $('view-portal').classList.remove('hidden');
   setNav('portal'); renderPortal(); window.scrollTo(0,0);
+};
+  const part1=function(){ oaOff(); return part0.apply(this,arguments); };
+  const part2=function(){ fitOff(); return part1.apply(this,arguments); };
+  const part3=function(){ if(u83Home()){ window.scrollTo(0,0); return; } return part2.apply(this,arguments); };
+  return part3.apply(this,arguments);
 }
 function setSite(id){ currentSiteId=id; renderPortal(); }
 function setFilter(f){ jobFilter=f; renderPortal(); }
@@ -6339,10 +6479,17 @@ async function deleteWeek(){ if(blockPreview()) return;
 // ── Modals ─────────────────────────────────────────────────────────
 // pop-up boxes can be dragged by their top bar (they stay where you put them until closed)
 let mdOff=null;
-function openModal(html){ if(!$('modal-root').innerHTML.trim()) mdOff=null;   // a fresh box starts in the middle; a box that redraws stays put
+function openModal(){   // 4 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=function(html){ if(!$('modal-root').innerHTML.trim()) mdOff=null;   // a fresh box starts in the middle; a box that redraws stays put
   $('modal-root').innerHTML=`<div class="modal-back" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="md-grip" title="Drag to move this box · double-click to put it back" onpointerdown="mdDrag(event)" ondblclick="mdReset()"><span></span></div>${html}</div></div>`;
   if(mdOff) mdPlace(mdOff.x, mdOff.y);
-  const f=$('modal-root').querySelector('input,textarea'); if(f&&window.innerWidth>720) f.focus(); }
+  const f=$('modal-root').querySelector('input,textarea'); if(f&&window.innerWidth>720) f.focus(); };
+  const part1=function(){ const r=part0.apply(this,arguments); try{ if(oaOn||fitOn) f6Fix(document.querySelector('#modal-root .modal')); }catch(e){} return r; };
+  const part2=function(){ const r=part1.apply(this,arguments); try{ if(fitOn) u95Dom(document.querySelector('#modal-root .modal')); }catch(e){} return r; };
+  // every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
+  const part3=function(){ const r=part2.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
+  return part3.apply(this,arguments);
+}
 // 🔴 Jobs with news — click the box on the dashboard; each job drops off once you've opened it
 let newsBack=false;
 async function openNewsList(){
@@ -6621,7 +6768,8 @@ async function saveJobEdit(){
   }catch(e){ btn.disabled=false; btn.textContent='Save'; toast('Error: '+(e.message||e),6000); }
 }
 
-async function openTeamModal(){
+function openTeamModal(){   // 2 parts, folded in the tidy-up (Stage 3) — each part runs the one before it
+  const part0=async function(){
   const pending=(async()=>{
     const r=(()=>{ if(blockPreview()) return;
   openModal(`<h2>👥 Manage team</h2>
@@ -6656,6 +6804,13 @@ async function openTeamModal(){
   })();
   teamGroup(); const v=await pending; teamGroup();   // 👥 Update 52 — grouped by division
   return v;
+};
+  // ════ 👥 Manage team — SashDash Service: Production logins are not listed; any person can be given a Production type ════
+  const part1=function(){ const all=profiles; let r;
+  try{ profiles=all.filter(p=>!PROD_ROLES[p.role]); r=part0.apply(this,arguments); } finally { profiles=all; }
+  try{ document.querySelectorAll('.team-row .tr-role').forEach(s=>{ if(s.querySelector('[value="prod_oa"]')) return; s.insertAdjacentHTML('beforeend',`<optgroup label="SashDash Production — moves them to Production → 👥 Manage team">${U83_TYPES[2][1].map(([k,t])=>`<option value="${k}">${t}</option>`).join('')}</optgroup>`); }); }catch(e){ console.warn(e); }
+  return r; };
+  return part1.apply(this,arguments);
 }
 async function saveTeam(){
   $('m-save').disabled=true;
@@ -8574,11 +8729,6 @@ function oaBtn(){
   oaLoad(); const open=oaOrders.filter(o=>oaStageOf(o)!=='paid').length;
   inner.insertAdjacentHTML('beforeend', `<button class="dept-btn d-oa ${oaOn?'on':''}" onclick="oaOpen()" title="Office Administration (preview, only Office full access can see this)"><span class="di">🧾</span>Office Administration<span class="dc">${open}</span></button>`);
 }
-const _oaRenderDeptBar=renderDeptBar; renderDeptBar=function(){ const r=_oaRenderDeptBar.apply(this,arguments); try{ oaBtn(); }catch(e){ console.warn(e); } return r; };
-const _oaSetDept=setDept; setDept=function(){ oaOff(); return _oaSetDept.apply(this,arguments); };
-const _oaShowDash=showDashboard; showDashboard=function(){ oaOff(); return _oaShowDash.apply(this,arguments); };
-const _oaOpenPortal=openPortal; openPortal=function(){ oaOff(); return _oaOpenPortal.apply(this,arguments); };
-const _oaApplyId=applyIdentity; applyIdentity=function(){ oaOff(); return _oaApplyId.apply(this,arguments); };
 
 // ── The OA main page ──
 function oaRender(){   // 6 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
@@ -8949,11 +9099,6 @@ function fitBtn(){ const bar=$('dept-bar'); if(!bar||!fitAllowed()) return; cons
   if(fitOn) inner.querySelectorAll('.dept-btn.on').forEach(b=>b.classList.remove('on'));
   fitLoad(); const nNew=fitOrders().filter(o=>['new','unf','snag'].includes(fitStatus(o))).length, open=fitOrders().filter(o=>!['fitted','sd'].includes(fitStatus(o))).length;
   inner.insertAdjacentHTML('beforeend', `<button class="dept-btn d-fit ${fitOn?'on':''}" onclick="fitOpen('diary')" title="Fitting — Office (full access) only">${nNew?'<span class="dot" style="background:#facc15"></span>':''}<span class="di">🔧</span>Fitting<span class="dc">${open}</span></button>`); }
-const _fitRDB=renderDeptBar; renderDeptBar=function(){ const r=_fitRDB.apply(this,arguments); try{ fitBtn(); }catch(e){ console.warn(e); } return r; };
-const _fitSetDept=setDept; setDept=function(){ fitOff(); return _fitSetDept.apply(this,arguments); };
-const _fitShowDash=showDashboard; showDashboard=function(){ fitOff(); return _fitShowDash.apply(this,arguments); };
-const _fitOpenPortal=openPortal; openPortal=function(){ fitOff(); return _fitOpenPortal.apply(this,arguments); };
-const _fitApplyId=applyIdentity; applyIdentity=function(){ fitOff(); return _fitApplyId.apply(this,arguments); };
 function fitGo(v){   // 3 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(v,extra){ fitView=v; if(extra) Object.assign(window,extra); fitRender(); window.scrollTo(0,0); };
   const part1=function(v){ if(v==='stats'&&!u101Can()) v='diary'; return part0.apply(this,[v].concat([].slice.call(arguments,1))); };
@@ -10407,7 +10552,6 @@ function fySplitBar(){ const inner=document.querySelector('#dept-bar .dept-inner
   const g=(cls,lab,list)=>{ const d=document.createElement('div'); d.className='fy-grp '+cls; d.innerHTML=`<div class="fy-glab">SASH<b>DASH</b> <span>${lab}</span></div><div class="fy-gbtns"></div>`; list.forEach(x=>d.querySelector('.fy-gbtns').appendChild(x)); return d; };
   inner.classList.add('fy-split'); if(svc.length) inner.appendChild(g('svc','SERVICE',svc));
   if(prod.length){ const s=document.createElement('div'); s.className='fy-gsep'; inner.appendChild(s); inner.appendChild(g('prod','PRODUCTION',prod)); } }
-const _fyRDB=renderDeptBar; renderDeptBar=function(){ const r=_fyRDB.apply(this,arguments); try{ fySplitBar(); }catch(e){ console.warn(e); } try{ fyBrandHeader(); }catch(e){ console.warn(e); } return r; };
 try{ fyBrandHeader(); }catch(e){}
 
 // ── data: vans, a small 2nd job, order types, floor date example (sample data, added once) ──
@@ -10463,7 +10607,6 @@ function prodGate(el){ if(prodSt==='ready') return false; if(prodSt==='idle') se
     :prodSt==='error'?`<div class="prod-gate"><div style="font-size:40px">⚠️</div><h2>Couldn't load Office Administration / Fitting</h2><p class="sub">${esc(prodErr)}</p><button class="btn-outline" onclick="prodSt='idle';prodLoad()">↻ Try again</button></div>`
     :`<div class="prod-gate"><div class="prod-spin"></div><h2>Loading…</h2></div>`;
   return true; }
-const _prodRDB=renderDeptBar; renderDeptBar=function(){ const r=_prodRDB.apply(this,arguments); try{ if(prodSt==='idle'&&(oaAllowed()||fitAllowed())) setTimeout(()=>prodLoad(),0); }catch(e){} return r; };
 
 // ── saving: only orders / settings that changed, a version check per order ──
 function prodDoc(id,o,fd){ fd=fd||fitData; return {data:o, fit:(fd&&fd.jobs&&fd.jobs[id])||null, bookings:(fd?fd.bookings:[]).filter(b=>b.oid===id)}; }
@@ -10625,7 +10768,6 @@ function f6None(){ return (fitData&&fitData.bookings||[]).filter(b=>b.team===0&&
 // every "Team 0" on screen reads "❓ No team yet"
 function f6Fix(root){ if(!root) return; const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); const hit=[]; let n; while((n=w.nextNode())) if(/Team 0(?!\d)|\bT0 · /.test(n.nodeValue)) hit.push(n);
   hit.forEach(t=>{ t.nodeValue=t.nodeValue.replace(/Team 0(?!\d)/g,F6_LAB).replace(/\bT0 · /g,'❓ '); }); }
-const _f6Open=openModal; openModal=function(){ const r=_f6Open.apply(this,arguments); try{ if(oaOn||fitOn) f6Fix(document.querySelector('#modal-root .modal')); }catch(e){} return r; };
 
 let f6Geo=false;
 
@@ -10763,15 +10905,6 @@ function u83Can(what){   // 2 parts, folded in the tidy-up (Stage 2) — each pa
 // ── who may open what ──
 const _u83OaA=oaAllowed; oaAllowed=function(){ const r=u83Role(); if(r) return r==='prod_oa'; return _u83OaA.apply(this,arguments); };
 
-// ── the department bar: only their own button (tablets: no bar at all) ──
-const _u83RDB=renderDeptBar; renderDeptBar=function(){ const R=u83R(); if(!R) return _u83RDB.apply(this,arguments);
-  const bar=$('dept-bar'); if(!bar||!me) return;
-  if(prodSt==='idle') setTimeout(()=>prodLoad(),0);
-  if(R.kind==='tab'){ bar.classList.add('hidden'); bar.innerHTML=''; return; }
-  bar.classList.remove('hidden'); bar.innerHTML='<div class="dept-inner"></div>';
-  try{ if(R.kind==='oa') oaBtn(); else fitBtn(); }catch(e){ console.warn(e); }
-  if(R.kind==='dept'){ const b=bar.querySelector('.d-fit'); if(b){ const n=prodSt==='ready'?u83DeptOpen():null; b.innerHTML=`<span class="di">🏭</span>${R.btn}${n!=null?`<span class="dc">${n}</span>`:''}`; b.setAttribute('onclick',"fitOpen('alloc')"); b.title=R.lab.replace(/^\S+\s/,''); } }
-  try{ fySplitBar(); }catch(e){ console.warn(e); } try{ fyBrandHeader(); }catch(e){} };
 function u83DeptOpen(){ const R=u83R(); return fxRowOrders().filter(o=>fitFJ(o.id).lines.some(l=>R.depts.includes(fxDept(l))&&!l.ready)).length; }
 
 // ── home page for each login ──
@@ -10781,12 +10914,6 @@ function u83Home(){   // 2 parts, folded in the tidy-up (Stage 2) — each part 
   const part1=function(){ const R=u83R(); if(R&&R.kind==='team'){ fitPhJob=null; fitPhTeam=R.team; fitOpen('phone'); return true; } if(R&&R.kind==='yard'){ fitOpen('load'); return true; } return part0.apply(this,arguments); };
   return part1.apply(this,arguments);
 }
-const _u83Portal=openPortal; openPortal=function(){ if(u83Home()){ window.scrollTo(0,0); return; } return _u83Portal.apply(this,arguments); };
-const _u83Dash=showDashboard; showDashboard=function(){ if(u83Home()){ window.scrollTo(0,0); return; } return _u83Dash.apply(this,arguments); };
-const _u83SetDept=setDept; setDept=function(){ if(u83Home()) return; return _u83SetDept.apply(this,arguments); };
-const _u83Id=applyIdentity; applyIdentity=function(){ const r=_u83Id.apply(this,arguments); try{ const R=u83R(), b=document.body;
-    b.classList.toggle('prod-role',!!R); b.classList.toggle('prod-dept',!!R&&R.kind==='dept'); b.classList.toggle('prod-tablet',!!R&&R.kind==='tab');
-    if(R){ const rb=$('role-badge'); rb.classList.remove('hidden'); rb.textContent=R.badge; $('viewas-wrap').classList.add('hidden'); $('admin-nav').classList.add('hidden'); } }catch(e){ console.warn(e); } return r; };
 
 
 // ── the bar at the top of Office Administration / Fitting ──
@@ -10898,11 +11025,6 @@ async function u83Save(){ const bt=$('pm-save'); if(bt) bt.disabled=true;
     if(error){ if(bt) bt.disabled=false; return toast('Not saved: '+error.message+(/check|enum|invalid input/i.test(error.message)?' — run update-83-production-logins.sql in Supabase first':''),9000); } }
   closeModal(); await loadData(); renderDeptBar(); if(oaOn) oaRender(); if(fitOn) fitRender(); toast('Team updated'); }
 
-// ════ 👥 Manage team — SashDash Service: Production logins are not listed; any person can be given a Production type ════
-const _u83STeam=openTeamModal; openTeamModal=function(){ const all=profiles; let r;
-  try{ profiles=all.filter(p=>!PROD_ROLES[p.role]); r=_u83STeam.apply(this,arguments); } finally { profiles=all; }
-  try{ document.querySelectorAll('.team-row .tr-role').forEach(s=>{ if(s.querySelector('[value="prod_oa"]')) return; s.insertAdjacentHTML('beforeend',`<optgroup label="SashDash Production — moves them to Production → 👥 Manage team">${U83_TYPES[2][1].map(([k,t])=>`<option value="${k}">${t}</option>`).join('')}</optgroup>`); }); }catch(e){ console.warn(e); }
-  return r; };
 
 
 // ════════ Update 84 — 👁 View as on SashDash Production (Office full access only) — see exactly what a Production login sees, and still make changes ════════
@@ -10945,9 +11067,6 @@ const _u84Bar=FX_BAR; FX_BAR=function(){ let h=_u84Bar.apply(this,arguments);
   if(prodAs&&u83R()) return u84Banner()+h.replace('logged in as '+esc(prodWho()),'logged in as '+esc(prodAs.full_name));
   if(realMe&&realMe.role==='admin'&&!previewing) h=h.replace('<button class="btn-outline pm-btn"','<span class="u84wrap"><button class="btn-outline pm-btn u84btn" onclick="u84Menu(this)">👁 View as ▾</button></span><button class="btn-outline pm-btn"');
   return h; };
-// the Service "View as" and signing out always end it
-const _u84EVA=enterViewAs; enterViewAs=function(){ if(prodAs){ prodAs=null; u84Classes(); } return _u84EVA.apply(this,arguments); };
-const _u84Out=signOut; signOut=function(){ prodAs=null; try{ u84Classes(); }catch(e){} return _u84Out.apply(this,arguments); };
 
 
 // ════════ Update 85 — 👥 two more Production sections: 🚚 Fitting teams (one login per team, named Team 1 … Team 20 — the team's phone; the fitting manager sets who is in each team on 👥 Teams) · 📦 Yard loading (the 🚚 Loading page) ════════
@@ -10957,11 +11076,6 @@ U83_TYPES[2][1].push(['prod_yard',PROD_ROLES.prod_yard.lab]);
 U83_TYPES.push(['🚚 Fitting teams',Array.from({length:20},(_,i)=>['prod_team'+(i+1),PROD_ROLES['prod_team'+(i+1)].lab])]);
 U83_GRPS.push(['team','🚚 Fitting teams','One login per team (team1 … team20) on the leader\'s phone — that team\'s jobs only, never prices. Who is in each team is set by the fitting manager on 👥 Teams',r=>/^prod_team\d+$/.test(r)],
   ['yard','📦 Yard loading','The 🚚 Loading page only — vans going out, tick lines loaded, print the loading list',r=>r==='prod_yard']);
-// department bar: a team login has none (just its phone); the yard has one button
-const _u85RDB=renderDeptBar; renderDeptBar=function(){ const r=_u85RDB.apply(this,arguments), R=u83R(); if(!R) return r; const bar=$('dept-bar'); if(!bar) return r;
-  if(R.kind==='team'){ bar.classList.add('hidden'); bar.innerHTML=''; }
-  if(R.kind==='yard'){ const b=bar.querySelector('.d-fit'); if(b){ b.innerHTML='<span class="di">📦</span>Yard loading'; b.setAttribute('onclick',"fitOpen('load')"); b.title='Yard loading'; } }
-  return r; };
 // what they can't do
 const u85K=()=>{ const R=u83R(); return R&&(R.kind==='team'||R.kind==='yard')?R.kind:null; };
 const _u85Bar=FX_BAR; FX_BAR=function(){ const R=u83R(); if(!R||R.kind!=='yard') return _u85Bar.apply(this,arguments);
@@ -11161,7 +11275,6 @@ let u88Z=1;
 function u88Fix(oid,k,r1){ const j=fitData&&fitData.jobs&&fitData.jobs[oid]; if(!j||!(r1>0&&r1<0.999)) return; j.mkv=j.mkv||{}; if(j.mkv[k]) return;
   const L=(j.marks||{})[k]; j.mkv[k]=2; if(!L||!L.length){ return; } L.forEach(m=>(m.pts||[]).forEach(p=>{ p[1]=p[1]*r1; })); if(j._draft) delete j._draft[k]; fitSave(); }
 
-const _u88Id=applyIdentity; applyIdentity=function(){ const r=_u88Id.apply(this,arguments); try{ const R=u83R(); document.body.classList.toggle('prod-team',!!R&&R.kind==='team'); }catch(e){} return r; };
 
 
 
@@ -11275,7 +11388,6 @@ function u95Dom(root){ if(!root) return;
   root.querySelectorAll('[onclick*="f10Stage("]').forEach(el=>{ const m=(el.getAttribute('onclick')||'').match(/f10Stage\((\d+),'(\w+)'\)/); if(!m||!fitJobId) return; const l=fitFJ(fitJobId).lines[+m[1]]; if(!l) return; const off=!l[m[2]]&&((m[2]==='made'&&!l.saw)||(m[2]==='ready'&&!l.made)); el.classList.toggle('u95off',off); if(off) el.title=m[2]==='made'?U95_SAW:U95_MADE; });
   root.querySelectorAll('[onclick*="f8Prod("],[onclick*="fxReady("],[onclick*="f8Ready("]').forEach(el=>{ const m=(el.getAttribute('onclick')||'').match(/(f8Prod|fxReady|f8Ready)\('([^']+)','([^']+)'(?:,(\d+))?\)/); if(!m) return; const l=fxLine(m[2],m[3]); if(!l) return;
     const off=m[1]==='f8Prod'?(!l.made&&!l.ready&&!(+m[4])&&!l.saw):(!l.ready&&!l.made); el.classList.toggle('u95off',off); if(off) el.title=m[1]==='f8Prod'?U95_SAW:(m[1]==='f8Ready'?'Tap ⚙ In production first':U95_MADE); }); }
-const _u95Open=openModal; openModal=function(){ const r=_u95Open.apply(this,arguments); try{ if(fitOn) u95Dom(document.querySelector('#modal-root .modal')); }catch(e){} return r; };
 
 
 // ════════ Update 95 — 🧾 Office Administration: one stamp "👤🏭 Account made · sent to manufacturing" instead of two ════════
@@ -11379,12 +11491,6 @@ function u103Menu(btn,e){ if(e) e.stopPropagation(); if(document.querySelector('
   m.innerHTML=$('viewas-menu').innerHTML.replace('View SashDash as…',`View SashDash ${realMe.role==='service_office'?'Service Department':'Sites &amp; Service Department'} as…`)+'<div class="u84note">You see exactly what that login sees. View-only — nothing can be changed in their name.</div>';
   m.addEventListener('click',()=>setTimeout(u103Close,0)); btn.parentNode.appendChild(m); }
 document.addEventListener('click',e=>{ if(!e.target.closest('.u103menu,.u103btn')) u103Close(); });
-// the button on the Sites / Service Department page, beside 👥 Manage team
-const _u103Dash=renderDashboardFor; renderDashboardFor=function(){ const r=_u103Dash.apply(this,arguments); try{ const h=$('dash-head'), row=h&&h.querySelector('.row');
-    if(row&&u103Can()&&!previewing&&!row.querySelector('.u103btn')){ const w=`<span class="u84wrap u103wrap"><button class="btn-outline u103btn" onclick="u103Menu(this,event)">👁 View as ▾</button></span>`;
-      const mt=[...row.querySelectorAll('button')].find(b=>/Manage team/.test(b.textContent)); if(mt) mt.insertAdjacentHTML('beforebegin',w); else row.insertAdjacentHTML('beforeend',w); } }catch(e){ console.warn(e); } return r; };
-// while viewing: 👁 Switch ▾ on the orange banner, like Production
-const _u103Id=applyIdentity; applyIdentity=function(){ const r=_u103Id.apply(this,arguments); try{ const bn=$('preview-banner'); if(previewing&&bn&&!bn.querySelector('.u103btn')){ const x=bn.querySelector('button'); if(x) x.insertAdjacentHTML('beforebegin',`<span class="u84wrap u103wrap"><button class="u103btn u103sw" onclick="u103Menu(this,event)">👁 Switch ▾</button></span>`); } }catch(e){} return r; };
 
 
 // ════════ Update 102 — taking ✔ READY off a line (or adding a new line) takes the job back out of "Ready to fit" ════════
@@ -11598,7 +11704,6 @@ function u112Draw(){ try{ const t=document.querySelector('#dept-bar .dept-btn.d-
     if(!s){ s=document.createElement('button'); s.className='u112new'; s.onclick=e=>{ e.stopPropagation(); u112Go(); }; t.parentElement.appendChild(s); }
     const on=fitOn&&((I.k==='dept'&&fitView==='alloc'&&fxSt==='new')||(I.k==='fit'&&fitView==='toalloc'));
     s.className='u112new'+(I.n?' lit':'')+(on?' on':''); s.innerHTML=I.lab(I.n); s.title=I.k==='dept'&&I.n?Object.entries(I.by).filter(([,v])=>v).map(([d,v])=>fxDeptName(d)+': '+v).join(' · '):''; }catch(e){ console.warn(e); } }
-const _u112RDB=renderDeptBar; renderDeptBar=function(){ const r=_u112RDB.apply(this,arguments); u112Draw(); return r; };
 
 
 // ════════ Update 105 — 🏭 Manufacturing for the fitting manager / office: each job starts folded to a one-line summary per department, ▾ Show details opens it ════════
@@ -11616,8 +11721,6 @@ function u113Sum(o){ const j=fitFJ(o.id), L=j.lines||[]; if(!L.length) return nu
   const r=L.filter(l=>l.ready).length, all=r===L.length;
   return `<div class="u113">${chips}<div class="u113f"><span class="u113sh">📄 Job sheet v${v}${sh?' · '+esc(fxDeptShort(sh.dept)||''):''}</span>${all?`<span class="u113all">🚚 ALL READY TO FIT · ${L.length} of ${L.length}</span>`:`<span class="u113pc">All departments: <b>${r} of ${L.length}</b> ready</span>`}<span class="spacer"></span><button class="u113b" onclick="event.stopPropagation();u113Tog('${o.id}')">▾ Show details</button></div></div>`; }
 
-// every pop-up opened while Office Administration or Fitting is on screen gets .fxm, so their styles never reach other screens
-const _fxOpenModal=openModal; openModal=function(){ const r=_fxOpenModal.apply(this,arguments); try{ if((typeof oaOn!=='undefined'&&oaOn)||(typeof fitOn!=='undefined'&&fitOn)){ const m=document.querySelector('#modal-root .modal'); if(m) m.classList.add('fxm'); } }catch(e){} return r; };
 
 // ════════ Update 106 — ✅ Quality control checklist for the fitting teams ════════
 // The list lives in prod_state "qc" (fitting manager + Office full access edit it on Fitting → ✅ QC checklist).

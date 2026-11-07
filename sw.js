@@ -1,6 +1,7 @@
 // SashDash service worker — caches the app shell so it opens instantly on site
 // and survives a weak signal. Live data and PDFs (Supabase) always go to the network.
 const CACHE_NAME = 'sashdash-shell-v3';
+const GOOD_CACHE = 'sashdash-lastgood';   // 🛡 the last version that started properly on this device (tidy-up Stage 3)
 const SHELL_FILES = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './sdwindows-logo.png'];
 
 self.addEventListener('install', (event) => {
@@ -10,7 +11,7 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(caches.keys().then((keys) =>
-    Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))));
+    Promise.all(keys.filter((k) => k !== CACHE_NAME && k !== GOOD_CACHE).map((k) => caches.delete(k)))));
   self.clients.claim();
 });
 
@@ -19,6 +20,11 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;          // never touch Supabase
+  if (url.searchParams.get('lastgood') === '1') {           // 🛡 open the kept copy
+    event.respondWith(caches.open(GOOD_CACHE).then((c) => c.match(new URL('lastgood', self.registration.scope).href))
+      .then((r) => r || fetch(req)));
+    return;
+  }
   const isShell = SHELL_FILES.some((f) => url.pathname.endsWith(f.replace('./', '/'))) || url.pathname.endsWith('/');
   if (!isShell) return;
   event.respondWith(
@@ -28,6 +34,24 @@ self.addEventListener('fetch', (event) => {
       return res;
     }).catch(() => caches.match(req).then((r) => r || caches.match('./index.html')))
   );
+});
+
+// ── 🛡 Keep the version that just started properly ─────────────────
+self.addEventListener('message', (event) => {
+  const d = event.data || {};
+  if (d.sd !== 'good' || !d.build || !event.source) return;
+  event.waitUntil((async () => {
+    const shell = await caches.open(CACHE_NAME);
+    const tries = [await shell.match(event.source.url), await shell.match(event.source.url, { ignoreSearch: true }), await shell.match('./index.html')];
+    for (const r of tries) {
+      if (!r) continue;
+      const txt = await r.clone().text();
+      if (!txt.includes("const APP_BUILD='" + d.build + "'")) continue;   // only the exact version that started
+      const good = await caches.open(GOOD_CACHE);
+      await good.put(new URL('lastgood', self.registration.scope).href, new Response(txt, { headers: { 'Content-Type': 'text/html; charset=utf-8' } }));
+      return;
+    }
+  })());
 });
 
 // ── Phone notifications ─────────────────────────────────────────────

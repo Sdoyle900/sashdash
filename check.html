@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SashDash Release check</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--ink:#0f172a;--mute:#64748b;--line:#e2e8f0;--navy:#0f172a;--brand:#4f46e5;--ok:#16a34a;--okbg:#dcfce7;--bad:#dc2626;--badbg:#fee2e2;--warn:#b45309;--warnbg:#fef3c7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--navy);color:#fff;padding:14px 16px}
+header b{font-weight:800;letter-spacing:.5px}
+header span{color:#a5b4fc}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:6px 0 2px}
+.sub{color:var(--mute);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.drop{border:2px dashed #a5b4fc;border-radius:12px;padding:22px 14px;text-align:center;cursor:pointer;color:var(--mute)}
+.drop.on{background:#eef2ff;border-color:var(--brand)}
+.drop b{color:var(--ink)}
+.live{font-size:14px;color:var(--mute)}
+.live code,.row code{background:#f1f5f9;border-radius:6px;padding:1px 6px;color:var(--ink)}
+.row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.ic{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px}
+.ok .ic{background:var(--okbg);color:var(--ok)} .bad .ic{background:var(--badbg);color:var(--bad)} .warn .ic{background:var(--warnbg);color:var(--warn)}
+.row small{display:block;color:var(--mute);margin-top:2px;word-break:break-word}
+.verdict{border-radius:12px;padding:14px 16px;font-weight:800;font-size:17px;margin:0 0 12px}
+.verdict.ok{background:var(--okbg);color:#166534} .verdict.bad{background:var(--badbg);color:#991b1b} .verdict.warn{background:var(--warnbg);color:#92400e}
+.verdict small{display:block;font-weight:500;font-size:14px;margin-top:3px}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:10px 16px;background:var(--brand);color:#fff;cursor:pointer}
+button[disabled]{opacity:.5;cursor:default}
+ol{margin:8px 0 0 18px;padding:0} li{margin:3px 0}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header><b>SASH<span>DASH</span></b> · 🛡 Release check</header>
+<main>
+  <h1>🛡 Release check</h1>
+  <p class="sub">Drop a new <b>index.html</b> here <b>before</b> uploading it to GitHub. It's compared with the version that's live now. Nothing is uploaded or changed from this page.</p>
+
+  <div class="card">
+    <div class="live" id="live">Reading the live version…</div>
+  </div>
+
+  <div class="card">
+    <div class="drop" id="drop">📄 <b>Drop the new index.html here</b><br>or tap to pick it</div>
+    <input type="file" id="pick" accept=".html,text/html" class="hidden">
+  </div>
+
+  <div id="result" class="hidden">
+    <div id="verdict" class="verdict"></div>
+    <div class="card" id="rows"></div>
+  </div>
+
+  <div class="card">
+    <h1 style="font-size:17px">🔙 Roll back</h1>
+    <p class="sub" style="margin-bottom:10px">If an update goes wrong: pick the older index.html you want back (e.g. from GitHub → Releases → <code>stable-…</code> → Source code). This gives it a new, higher build number, so every phone moves back to it, and saves it as <b>index.html</b> for you to upload.</p>
+    <div class="drop" id="rbdrop">📄 <b>Pick the older index.html</b></div>
+    <input type="file" id="rbpick" accept=".html,text/html" class="hidden">
+    <div id="rbinfo" class="live" style="margin-top:10px"></div>
+    <div style="margin-top:10px"><button id="rbgo" disabled>Make roll-back file</button></div>
+    <ol id="rbsteps" class="hidden">
+      <li>The file <b>index.html</b> is in your Downloads.</li>
+      <li>Drop it on the Release check above if you like (it should pass).</li>
+      <li>GitHub → <b>Add file → Upload files</b> → drag in index.html → <b>Commit changes</b>.</li>
+      <li>Phones and computers move back to it within about 15 minutes.</li>
+    </ol>
+  </div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let LIVE = null;
+const buildOf = t => (/const APP_BUILD='([^']+)'/.exec(t) || [])[1] || null;
+const whole = t => /<\/html>\s*$/i.test(t);
+function mainCode(t){ const k=t.indexOf("const APP_BUILD='"); if(k<0) return null; const a=t.lastIndexOf('<script>',k), b=t.indexOf('</'+'script>',k); return (a<0||b<0)?null:t.slice(a+8,b); }
+function compiles(code){ try{ new Function(code); return ''; }catch(e){ return e.message; } }
+function inlineScripts(t){ const out=[]; const re=/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g; let m; while((m=re.exec(t))) out.push(m[1]); return out; }
+const fnNames = t => new Set((t.match(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)||[]).map(x=>x.replace(/^function\s+|\s*\($/g,'')));
+const defNames = t => new Set([...fnNames(t), ...(t.match(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/g)||[]).map(x=>x.replace(/^(?:const|let|var)\s+|\s*=$/g,'')), ...(t.match(/\bwindow\.([A-Za-z_$][\w$]*)\s*=/g)||[]).map(x=>x.replace(/^window\.|\s*=$/g,''))]);
+const JS_WORDS = /^(if|for|while|return|typeof|new|void|await|delete|event|this|window|document|location|history|alert|confirm|prompt|setTimeout|clearTimeout|navigator|console|Number|String|parseInt|encodeURIComponent)$/;
+const clickNames = t => new Set((t.match(/on(?:click|change|input|keydown)="([A-Za-z_$][\w$]*)\(/g)||[]).map(x=>x.replace(/^on\w+="|\($/g,'')));
+const sbOf = t => [(/const SUPABASE_URL\s*=\s*["']([^"']+)/.exec(t)||[])[1], (/const SUPABASE_ANON\s*=\s*["']([^"']+)/.exec(t)||[])[1]];
+const kb = n => (n/1024).toFixed(0)+' KB';
+const stamp = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'-'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0');
+
+fetch('index.html?v='+Date.now(), {cache:'no-store'}).then(r=>r.text()).then(t=>{
+  LIVE = t; $('live').innerHTML = `Live now: build <code>${esc(buildOf(t)||'?')}</code> · ${kb(t.length)} · ${fnNames(t).size} functions`;
+}).catch(()=>{ $('live').textContent = 'Couldn\'t read the live version — check the internet and reload this page.'; });
+
+function readFile(f, cb){ const r=new FileReader(); r.onload=()=>cb(String(r.result), f.name); r.readAsText(f); }
+function wireDrop(drop, input, cb){
+  drop.onclick = () => input.click();
+  input.onchange = () => input.files[0] && readFile(input.files[0], cb);
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add('on'); };
+  drop.ondragleave = () => drop.classList.remove('on');
+  drop.ondrop = e => { e.preventDefault(); drop.classList.remove('on'); const f=e.dataTransfer.files[0]; if(f) readFile(f, cb); };
+}
+
+function check(t, name){
+  if(!LIVE){ alert('The live version hasn\'t loaded yet — wait a moment and try again.'); return; }
+  const rows=[]; const add=(lvl,txt,more)=>rows.push({lvl,txt,more});
+  const nb=buildOf(t), lb=buildOf(LIVE);
+  if(!/^index\.html$/i.test(name)) add('warn', `The file is called <code>${esc(name)}</code>`, 'Upload it to GitHub as index.html for it to go live (or test.html to try it first).');
+  if(!nb) add('bad','No build number in the file','This doesn\'t look like a SashDash index.html.');
+  else if(nb<=lb) add('bad',`Build <code>${esc(nb)}</code> isn't newer than live <code>${esc(lb)}</code>`,'Phones only move to a higher build number, so this would never reach them. Is this an old copy? (To go back to an old version, use 🔙 Roll back below.)');
+  else add('ok',`Newer build: <code>${esc(nb)}</code> (live is <code>${esc(lb)}</code>)`);
+  if(!whole(t)) add('bad','The file is cut off — it doesn\'t end with </html>','Download it again from the chat.');
+  else add('ok','The whole file is there');
+  const scripts=inlineScripts(t); const errs=scripts.map(compiles).filter(Boolean);
+  if(!mainCode(t)) add('bad','The main code wasn\'t found');
+  else if(errs.length) add('bad','The code doesn\'t load',esc(errs[0]));
+  else add('ok',`The code loads (${scripts.length} script block${scripts.length===1?'':'s'})`);
+  const [lu,lk]=sbOf(LIVE), [nu,nk]=sbOf(t);
+  if(nu!==lu||nk!==lk) add('bad','Different Supabase project or key','It would connect to a different database. Don\'t upload unless that\'s intended.');
+  else add('ok','Same Supabase project and key');
+  const lf=fnNames(LIVE), nf=fnNames(t); const gone=[...lf].filter(n=>!nf.has(n)); const added=[...nf].filter(n=>!lf.has(n));
+  if(gone.length) add('warn',`${gone.length} function${gone.length===1?'':'s'} from the live version ${gone.length===1?'is':'are'} gone`,`Only OK if the update says it removed them: ${gone.slice(0,40).map(esc).join(', ')}${gone.length>40?' …':''}`);
+  else add('ok',`Nothing from the live version is missing (${added.length} new function${added.length===1?'':'s'})`);
+  const nd=defNames(t); const nc=[...clickNames(t)].filter(n=>!nd.has(n) && !JS_WORDS.test(n));
+  if(nc.length) add('bad',`${nc.length} button${nc.length===1?'':'s'} call${nc.length===1?'s':''} something that doesn't exist`,nc.slice(0,30).map(esc).join(', '));
+  else add('ok','Every button points at code that exists');
+  const ratio=t.length/LIVE.length;
+  if(ratio<0.9) add('warn',`Much smaller than live: ${kb(t.length)} vs ${kb(LIVE.length)}`,'A big drop can mean a part was lost. Check the update notes say why.');
+  else add('ok',`Size ${kb(t.length)} (live ${kb(LIVE.length)})`);
+  const bad=rows.filter(r=>r.lvl==='bad').length, warn=rows.filter(r=>r.lvl==='warn').length;
+  const v=$('verdict'); v.className='verdict '+(bad?'bad':warn?'warn':'ok');
+  v.innerHTML = bad ? '❌ Don\'t upload this file<small>Fix the red items first (or ask in the chat).</small>'
+              : warn ? '⚠ Check the yellow items, then it\'s OK to upload<small>Red items: none.</small>'
+              : '✅ Safe to upload<small>Upload it as test.html to try it, then as index.html to go live.</small>';
+  $('rows').innerHTML = rows.map(r=>`<div class="row ${r.lvl}"><div class="ic">${r.lvl==='ok'?'✓':r.lvl==='bad'?'✕':'!'}</div><div>${r.txt}${r.more?`<small>${r.more}</small>`:''}</div></div>`).join('');
+  $('result').classList.remove('hidden'); $('result').scrollIntoView({behavior:'smooth'});
+}
+wireDrop($('drop'), $('pick'), check);
+
+let RB=null;
+wireDrop($('rbdrop'), $('rbpick'), (t)=>{
+  const b=buildOf(t);
+  if(!b||!whole(t)){ RB=null; $('rbinfo').innerHTML='❌ That doesn\'t look like a complete SashDash index.html.'; $('rbgo').disabled=true; return; }
+  RB=t; $('rbinfo').innerHTML=`Picked build <code>${esc(b)}</code>${LIVE?` · live is <code>${esc(buildOf(LIVE))}</code>`:''}.`; $('rbgo').disabled=false;
+});
+$('rbgo').onclick=()=>{
+  if(!RB) return; const live=buildOf(LIVE)||'';
+  let nb=stamp(new Date()); if(nb<=live){ const d=new Date(); d.setMinutes(d.getMinutes()+1); nb=stamp(d); while(nb<=live){ d.setMinutes(d.getMinutes()+1); nb=stamp(d); } }
+  const out=RB.replace(/const APP_BUILD='[^']+'/, `const APP_BUILD='${nb}'`);
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([out],{type:'text/html'})); a.download='index.html'; a.click();
+  $('rbinfo').innerHTML=`✅ Saved <b>index.html</b> — build <code>${esc(buildOf(RB))}</code> given the new number <code>${esc(nb)}</code>.`; $('rbsteps').classList.remove('hidden');
+};
+</script>
+</body>
+</html>
