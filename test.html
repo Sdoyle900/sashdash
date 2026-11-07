@@ -2310,7 +2310,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-06-2100';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-07-2120';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -8860,7 +8860,7 @@ function oaSaveNew(){   // 2 parts, folded in the tidy-up (Stage 2) — each par
   const dep=+v('oa-dep').replace(/[^\d.]/g,'')||0; if(dep>0) o.payments.push({amt:dep,method:'Deposit',at:now,by:oaWho()});
   if(v('oa-note')) o.notes.push({at:now,by:oaWho(),text:v('oa-note')});
   if(oaScans._new){ o.scan={name:oaScans._new.files.length===1?oaScans._new.files[0].name:oaScans._new.files.length+' files'}; oaScans[o.id]=oaScans._new; delete oaScans._new; }
-  oaOrders.unshift(o); oaSave(); closeModal(); oaRender(); toast('Order logged — 📥 Order received stamped');
+  oaOrders.unshift(o); oaSave(); closeModal(); oaRender(); oaOpenOrder(o.id); toast('Order logged — 📥 Order received stamped');   // opens the new order straight away
 };
   const part1=function(){ try{ if(oaFormType==='private'){ const v=id=>($(id)?$(id).value.trim():''), M=u110Match(v('oa-name'),v('oa-phone'),v('oa-eir'));
       if(M.length&&!(u110Ok&&M.every(o=>u110Ok.includes(o.id)))){ u110Check(); const w=$('u110w'); if(w){ w.scrollIntoView({block:'center',behavior:'smooth'}); w.classList.add('u110shake'); setTimeout(()=>w.classList.remove('u110shake'),600); } toast('This customer already has an open order — add to it, or say it\'s a separate order'); return; } } }catch(e){ console.warn(e); }
@@ -9683,6 +9683,7 @@ function fxProdOptions(sel,dept){ const ks=dept&&FX_GROUPS[dept]?FX_GROUPS[dept]
   return ks.map(k=>{ const p=fitProd(k); return `<option value="${k}" ${k===sel?'selected':''}>${p[1]} ${p[2]}</option>`; }).join('')+`<option value="custom" ${sel==='custom'?'selected':''}>✏️ Custom…</option>`; }
 
 // ── state ──
+let fxList=false;   // 📋 List tab in Manufacturing: one row per item, with a search
 let fxSub='all', fxSt='all', fxHL=null, fxTaSel=null, fxDV='week', fxDTab='diary', fxTP=0, fxAfter='all', fxTabFilter='todo', fxStretch=null, fxDrag=null;
 function fxNow(){ return new Date().toISOString(); }
 function fxDaysTo(v){ return Math.round((parseYmd(v)-parseYmd(todayYmd()))/864e5); }
@@ -9850,8 +9851,9 @@ function fxMfHtml(){   // 4 parts, folded in the tidy-up (Stage 2) — each part
   let list=os.filter(inSub);
   if(fxSub!=='all'&&FIT_PRODS.some(p=>p[0]===fitFilter)&&FX_GROUPS[fxSub].includes(fitFilter)) list=list.filter(o=>fitFJ(o.id).lines.some(l=>l.prod===fitFilter)); else if(fxSub!=='all') fitFilter='all';
   const f8in=l=>fxSub==='all'||fxDept(l)===fxSub, f8ip=o=>fitFJ(o.id).lines.some(l=>l.made&&!l.ready&&f8in(l)), f8sw=o=>fitFJ(o.id).lines.some(l=>l.saw&&!l.made&&!l.ready&&f8in(l)), f8f=(o,k)=>k==='ip'?f8ip(o):k==='sw'?f8sw(o):fitStatus(o)===k, stc=k=>list.filter(o=>k==='all'||f8f(o,k)).length;
-  const shown=list.filter(o=>fxSt==='all'||f8f(o,fxSt)).sort((a,b)=>new Date(a.stamps.factory.at)-new Date(b.stamps.factory.at));
-  const subs=`<div class="mfsubs">${FX_SUBS.map(([k,ic,lab])=>`<button class="${fxSub===k?'on':''}" onclick="fxSub='${k}';fitFilter='all';fxHL=null;fitRender()"><span>${ic}</span>${lab}<em>${cntSub(k)}</em></button>`).join('')}</div>`;
+  const shown=list.filter(o=>fxSt==='all'||f8f(o,fxSt)).sort((a,b)=>new Date(b.stamps.factory.at)-new Date(a.stamps.factory.at));   // newest sent to manufacturing at the top
+  const subs=`<div class="mfsubs"><button class="fxl-b ${fxList?'on':''}" onclick="fxList=true;fxHL=null;fitRender()"><span>📋</span>List</button>${FX_SUBS.map(([k,ic,lab])=>`<button class="${fxSub===k&&!fxList?'on':''}" onclick="fxList=false;fxSub='${k}';fitFilter='all';fxHL=null;fitRender()"><span>${ic}</span>${lab}<em>${cntSub(k)}</em></button>`).join('')}</div>`;
+  if(fxList) return `<div class="fx-h"><h2>🏭 Manufacturing</h2><span class="ft-pill" style="background:#e0e7ff;color:#3730a3;font-size:14px">📋 List</span><span class="spacer"></span></div>${subs}${fxListHtml()}`;
   const heads= fxSub!=='all'&&FX_GROUPS[fxSub].length>1 ? `<div class="mfheads"><span class="lbl">${fxDeptName(fxSub)} ›</span><button class="${FX_GROUPS[fxSub].includes(fitFilter)?'':'on'}" onclick="fitFilter='all';fitRender()">All</button>${FX_GROUPS[fxSub].map(k=>{ const p=fitProd(k), n=os.filter(o=>fitFJ(o.id).lines.some(l=>l.prod===k)).length; return `<button class="${fitFilter===k?'on':''}" onclick="fitFilter='${k}';fitRender()">${p[1]} ${p[2]}<em>${n}</em></button>`; }).join('')}</div>`:'';
   const f=(k,lab)=>`<button class="${fxSt===k?'on':''}" onclick="fxSt='${k}';fitRender()">${lab} ${stc(k)}</button>`;
   const al=fxNs(), A=fxAl(), a1=al.filter(x=>!x.nf), a2=al.filter(x=>x.nf);
@@ -9874,7 +9876,7 @@ function fxMfHtml(){   // 4 parts, folded in the tidy-up (Stage 2) — each part
   h=h.replace(/(<div class="fx-filters">)(<button class=")(on)?("[^>]*onclick="fxSt='all')/,(m,a,b,on,c)=>a+btn+b+(isNew?'':(on||''))+c);
   if(isNew&&!n) h=h.replace('<div class="oa-empty">Nothing here.</div>','<div class="oa-empty">✔ Nothing new — every line has gone to the saw.</div>');
   // a 🆕 count on each department page button
-  h=h.replace(/<button class="(on)?" onclick="fxSub='(\w+)';fitFilter='all';fxHL=null;fitRender\(\)">([\s\S]*?)<\/button>/g,(m,on,k,inner)=>{ const c=u111NewIn(k); return c&&k!=='all'?m.replace('</button>',`<i class="u111dot" title="${c} new to process">🆕 ${c}</i></button>`):m; });
+  h=h.replace(/<button class="(on)?" onclick="fxList=false;fxSub='(\w+)';fitFilter='all';fxHL=null;fitRender\(\)">([\s\S]*?)<\/button>/g,(m,on,k,inner)=>{ const c=u111NewIn(k); return c&&k!=='all'?m.replace('</button>',`<i class="u111dot" title="${c} new to process">🆕 ${c}</i></button>`):m; });
   return h; };
   // the button in the filter row goes — while showing new only, a small "✕" chip says so
   const part2=function(){ let h=part1.apply(this,arguments); h=h.replace(/<button class="u111b[^"]*"[^>]*>[\s\S]*?<\/button>/,fxSt==='new'?`<button class="u112chip" onclick="fxSt='all';fitRender()">🆕 New to process only ✕</button>`:''); return h; };
@@ -9883,6 +9885,19 @@ function fxMfHtml(){   // 4 parts, folded in the tidy-up (Stage 2) — each part
   return h.replace(/(<div class="fx-filters">[\s\S]*?)(<\/div>\s*<div class="fx-legend">)/,(m,a,b)=>a+`<span class="spacer"></span><button class="u113all-b" onclick="u113All=!u113All;u113Open.clear();fitRender()">${u113All?'⊟ Fold every job':'⊞ Show every job in full'}</button>`+b); };
   return part3.apply(this,arguments);
 }
+// 📋 List — every item made, one row each: job, page numbers, department, item, quantity, job numbers, stage, fitting date. The search filters as you type.
+function fxListHtml(){ const R=u83Dept(), mine=l=>!R||R.depts.includes(fxDept(l));
+  const os=fitOrders().filter(o=>(fitFJ(o.id).lines||[]).some(mine)).sort((a,b)=>new Date(b.stamps.factory.at)-new Date(a.stamps.factory.at));
+  const rows=os.map(o=>{ const j=fitFJ(o.id), b=fitBk(o.id), st=fitStatus(o), L=(j.lines||[]).filter(mine), pages=(o.pages||[]).join(' · ');
+    const fit=st==='fitted'&&j.out&&j.out.at?`✅ Fitted ${oaDate(j.out.at)}`:b?`${fitDL(fxDates(b)[0])}${fxDates(b).length>1?' · '+fxDates(b).length+' days':''}`:'<span class="sub">Not booked</span>';
+    const items=L.map(l=>`<div class="fxl-it"><span class="fxl-nm">${fxProdTxt(l)}${(l.qty||1)>1?' ×'+l.qty:''}</span>${l.nums.length?l.nums.map(x=>`<span class="fxl-no">${esc(x)}</span>`).join(''):'<span class="sub">no job no. yet</span>'}</div>`).join('');
+    const txt=[oaTitle(o),pages,...L.map(l=>fxProdTxt(l)+' '+l.nums.join(' '))].join(' ').toLowerCase();
+    return `<tr class="fxl-r" data-s="${esc(txt)}" onclick="fxList=false;fxHL='${o.id}';fxSub='all';fxSt='all';fitRender()"><td><b>${esc(oaTitle(o))}</b><div class="sub">Pg ${esc(pages)}</div></td><td>${items}</td><td>${fit}</td></tr>`; }).join('');
+  return `<div class="fxl-top"><input id="fxl-q" placeholder="🔍 Search — customer, page no., item, job no.…" oninput="fxListFind(this.value)"><span class="fxl-n" id="fxl-n" data-all="${os.length} job${os.length===1?'':'s'}">${os.length} job${os.length===1?'':'s'}</span></div>
+   <table class="oa-table fxl"><thead><tr><th>Job</th><th>Items · job numbers</th><th>Fitting</th></tr></thead><tbody>${rows||'<tr><td colspan="3" class="oa-empty">Nothing in manufacturing yet.</td></tr>'}</tbody></table>`; }
+function fxListFind(q){ const w=String(q||'').toLowerCase().split(/\s+/).filter(Boolean); let n=0;
+  document.querySelectorAll('#view-fit tr.fxl-r').forEach(tr=>{ const ok=w.every(x=>tr.dataset.s.includes(x)); tr.style.display=ok?'':'none'; if(ok) n++; });
+  const c=$('fxl-n'); if(c) c.textContent=w.length?`${n} job${n===1?'':'s'} found`:c.dataset.all; }
 function fxLine(oid,lid){ return fitFJw(oid).lines.find(l=>l.id===lid); }
 function fxNumAdd(oid,lid){ const inp=$('fxn-'+lid), v=(inp&&inp.value||'').trim(); if(!v){ if(inp) inp.focus(); return; } const l=fxLine(oid,lid); if(!l) return;
   v.split(/[,\s]+/).filter(Boolean).forEach(n=>{ if(!l.nums.includes(n)) l.nums.push(n); }); fxLog(oid,'🔢',oaWho()+' · '+fxDeptName(fxDept(l)),fxProdTxt(l)+' — job no. '+l.nums.join(', ')); fitSave(); fitRender(); const n=$('fxn-'+lid); if(n) n.focus(); }
@@ -10074,6 +10089,7 @@ function fxTabScreen(t){   // 2 parts, folded in the tidy-up (Stage 2) — each 
 }
 function fxTabShow(n){   // 2 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(n){ const t=fxTabs().find(x=>x.n===n); if(!t) return;
+  try{ fitRender(); }catch(e){ console.warn(e); }   // the page behind the tablet window (Manufacturing, the 🆕 strip) shows the change straight away too
   openModal(`<div class="tframe"><div class="tcam"></div>${fxTabScreen(t)}</div><div class="tfoot2"><span>👁 This is what <b>📱 Tablet ${n} · ${esc(t.name)}</b> shows right now. Until the tablet logins come, you can tap ⚙ In production / ✔ READY here for them.</span><span class="spacer"></span>${fxTabs().map(x=>`<button class="btn-outline ft-sm" style="${x.n===n?'background:'+x.col+';color:#fff;border-color:'+x.col:''}" onclick="fxTabShow(${x.n})">${x.n}</button>`).join('')}<button class="btn-primary ft-sm" style="background:#0f766e" onclick="closeModal()">Close</button></div>`); fxModal('tmodal'); };
   const part1=function(n){ const R=u83R(); if(R&&R.kind==='tab'){ fitRender(); return; } return part0.apply(this,arguments); };
   return part1.apply(this,arguments);
@@ -10932,7 +10948,7 @@ const u83No=()=>{ toast('The fitting manager does that'); };
 
 function u83DeptDom(R){ const v=$('view-fit'); if(!v) return;
   v.querySelectorAll('.ft-nav button').forEach(b=>{ if(!/Manufacturing/.test(b.textContent)) b.remove(); });
-  v.querySelectorAll('.mfsubs button').forEach(b=>{ const m=(b.getAttribute('onclick')||'').match(/fxSub='(\w+)'/); if(!m||!R.depts.includes(m[1])) b.remove(); });
+  v.querySelectorAll('.mfsubs button').forEach(b=>{ if(b.classList.contains('fxl-b')) return; const m=(b.getAttribute('onclick')||'').match(/fxSub='(\w+)'/); if(!m||!R.depts.includes(m[1])) b.remove(); });   // 📋 List stays
   v.querySelectorAll('.achips .ac').forEach(b=>{ if(!/\ba[12]\b/.test(b.className)) b.remove(); });
   v.querySelectorAll('.tsh button').forEach(b=>{ if(/fitGo\('tablets'\)/.test(b.getAttribute('onclick')||'')) b.remove(); });
   v.querySelectorAll('.fromd button').forEach(b=>{ if(/diary/.test(b.getAttribute('onclick')||'')) b.remove(); });
@@ -11693,10 +11709,11 @@ function u112Info(){ const k=u112Kind(); if(!k||typeof prodSt==='undefined'||pro
   if(k==='dept'){ const R=u83R(), ds=(R&&R.depts)||[], by={}; ds.forEach(d=>by[d]=0);
     const os=fitOrders().filter(o=>{ let hit=false; (fitFJ(o.id).lines||[]).forEach(l=>{ const d=fxDept(l); if(!l.saw&&!l.ready&&ds.includes(d)){ hit=true; } }); return hit; });
     ds.forEach(d=>by[d]=fitOrders().filter(o=>(fitFJ(o.id).lines||[]).some(l=>!l.saw&&!l.ready&&fxDept(l)===d)).length);
-    return {k,n:os.length,by,lab:n=>n?`🆕 ${n} new job${n===1?'':'s'} to process`:'✓ Nothing new to process'}; }
+    const per=ds.length>1?ds.filter(d=>by[d]).map(d=>fxDeptName(d)+' '+by[d]).join(' · '):'';   // PVC & Comp: say which page the new jobs are on
+    return {k,n:os.length,by,lab:n=>n?(per?`🆕 New to process: ${per}`:`🆕 ${n} new job${n===1?'':'s'} to process`):'✓ Nothing new to process'}; }
   const n=fitOrders().filter(o=>fitStatus(o)==='new').length; return {k,n,lab:n=>n?`🆕 ${n} new job${n===1?'':'s'} to allocate`:'✓ Nothing new to allocate'}; }
 function u112Go(){ const I=u112Info(); if(!I) return;
-  if(I.k==='dept'){ const first=Object.keys(I.by).find(d=>I.by[d])||fxSub; if(first&&first!=='all') fxSub=first; fxSt=I.n?'new':'all'; fitFilter='all'; fitQ=''; fitOpen('alloc'); }
+  if(I.k==='dept'){ const first=(I.by[fxSub]?fxSub:Object.keys(I.by).find(d=>I.by[d]))||fxSub; if(first&&first!=='all') fxSub=first; fxSt=I.n?'new':'all'; fitFilter='all'; fitQ=''; fitOpen('alloc'); }
   else { fitQ=''; fitOpen('toalloc'); } }
 function u112Draw(){ try{ const t=document.querySelector('#dept-bar .dept-btn.d-fit'); const I=u112Info(); let s=document.querySelector('#dept-bar .u112new');
     if(!t||!I){ if(s) s.remove(); return; }
@@ -11788,6 +11805,11 @@ html.qc-open,html.qc-open body{overflow:hidden!important}
 .qced .card{border:1px solid #e2e8f0;border-radius:10px;padding:13px;font-size:13.5px;margin-bottom:12px;background:#fff}.qced .card h3{margin:0 0 8px;font-size:15px}.qced .card .opt{display:flex;gap:8px;align-items:center;margin:8px 0;cursor:pointer}
 .qced .bar{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}.qced .dirty{color:#b45309;font-weight:800;font-size:13px}
 .qc-strip{margin:8px 0;padding:9px 12px;border-radius:9px;background:#f0fdf4;border:1px solid #86efac;font-size:13.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.qc-strip.w{background:#fff7ed;border-color:#fdba74}
+.mfsubs .fxl-b{border-style:dashed}.mfsubs .fxl-b.on{background:#4338ca;border-color:#4338ca;color:#fff;border-style:solid}
+.fxl-top{display:flex;align-items:center;gap:12px;margin:4px 0 10px}.fxl-top input{flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit}.fxl-n{color:var(--slate);font-weight:700;font-size:13px;white-space:nowrap}
+table.fxl td{vertical-align:top;font-size:14px}table.fxl tr.fxl-r{cursor:pointer}table.fxl tr.fxl-r:hover td{background:#f8fafc}table.fxl td:first-child{width:28%}table.fxl td:last-child{width:16%;white-space:nowrap}
+.fxl-it{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:2px 0}.fxl-nm{min-width:190px}
+.fxl-no{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:6px;padding:1px 8px;font-weight:800;font-size:13px}
 </style>`);
 
 // ════ 🖥 Office: Fitting → ✅ QC checklist ════
