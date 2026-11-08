@@ -2059,6 +2059,13 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .wa-flash{animation:waFlash 2.4s ease}@keyframes waFlash{0%,60%{box-shadow:0 0 0 4px #818cf8,0 0 0 9px rgba(129,140,248,.35)}100%{box-shadow:none}}
 .ja-go{cursor:pointer}.ja-man.ja-go:hover{background:#eef2ff;border-color:#a5b4fc}.s-sub.ja-go{color:#4f46e5;font-weight:600}.s-sub.ja-go:hover{text-decoration:underline}
 .sd-keptcopy{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#f97316;color:#fff;font:600 14px/1.35 system-ui,sans-serif;padding:10px 14px;text-align:center;box-shadow:0 -2px 10px rgba(0,0,0,.2)}
+.wa-pill.wa-prob{background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b;font-weight:800}
+.wa-probbar{margin:6px 0 0;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:10px;padding:10px 12px;font-size:13px;color:#78350f;line-height:1.45;text-align:left}
+.wa-probbar .s-sub{display:block;margin-top:4px;font-size:11px;color:#92400e;word-break:break-word}
+.wa-probbtn{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.wa-probbtn button{padding:7px 12px;font-size:13px;border-radius:8px;cursor:pointer;font-weight:700}
+.wa-probbtn .btn-primary{background:#4f46e5;color:#fff;border:0}.wa-probbtn .btn-outline{background:#fff;color:#334155;border:1px solid #cbd5e1}
+.wa-probtxt{font-style:normal;color:#b45309;font-weight:700}
 </style>
 </head>
 <body>
@@ -2310,7 +2317,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-08-0840';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-08-1900';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -2610,7 +2617,7 @@ async function loadData(){
   try{ await loadTabMeta(); }catch(e){ hasTabMeta=false; }
   try{ if(isOffice) await loadNewCalls(); }catch(e){}
   try{ await ocLoadSummary(); }catch(e){ hasOc=false; }
-  if(hasWa) await waLoadSettings();
+  if(hasWa){ await waLoadSettings(); await waLoadProblems(); }
   await loadBackups(); if(hasBk && bkAccount() && !previewing){ bkDev=await bkDevice(); bkLocalLast=await kvGet('bkLast'); }
   if(previewing){   // show only what that person's own login is allowed to see
     if(me.role==='serviceman'){ const cov=coverJobsFor(me.id); sites=sites.filter(x=>x.serviceman_id===me.id||cov.some(j=>j.site_id===x.id)); jobs=jobs.filter(x=>x.serviceman_id===me.id||cov.includes(x)); shares=shares.filter(s=>s.cover_id===me.id||s.owner_id===me.id); }
@@ -7576,6 +7583,25 @@ const WA_KIND={booking:'Booking message', reminder3:'3-day reminder', daybefore:
   sdw_booking_confirm:'Booking', sdw_booking_reminder:'Reminder', sdw_visit_reminder:'Reminder', sdw_day_before:'Day before',
   sdw_time_update:'Time update', sdw_on_my_way:'On my way', sdw_office_followup:'Follow-up', text:'Office reply', auto_reply:'Automatic reply'};
 
+// ⚠ WhatsApp problem (Update 111): a customer's reply that the database refused to save on the job.
+// rapid-processor marks that reply status 'problem' (error = the reason); the office fixes it or marks it dealt with.
+let waProb={};
+async function waLoadProblems(){ if(!hasWa || !isOffice) { waProb={}; return; }
+  try{ const r=await sb.from('wa_messages').select('id,job_id,body,error,created_at').eq('status','problem').order('created_at'); if(r.error) return;
+    const p={}; for(const m of (r.data||[])) if(m.job_id) p[m.job_id]=m; waProb=p; }catch(e){} }
+function waProbWhat(m){ const b=String((m&&m.body)||''); return /can.?t make/i.test(b)?'cant':/confirm/i.test(b)?'ok':''; }
+function waProbText(m){ const w=waProbWhat(m); return w==='cant'?"tapped “I can't make it”":w==='ok'?'tapped “Confirm”':'replied'; }
+async function waProbFix(msgId){ if(blockPreview()) return;
+  const m=Object.values(waProb).find(x=>x.id===msgId); if(!m) return; const w=waProbWhat(m);
+  const upd=w==='cant'?{wa_status:'cant', wa_unread:true}:w==='ok'?{wa_status:'confirmed'}:null; if(!upd) return waProbDone(msgId);
+  const { error }=await sb.from('jobs').update(upd).eq('id',m.job_id);
+  if(error) return toast('⚠ Still not saved: '+error.message+' — send this to Claude',9000);
+  await waProbDone(msgId, true); toast(w==='cant'?"🔴 Marked can't make it":'🟢 Marked confirmed'); }
+async function waProbDone(msgId, fixed){ if(blockPreview()) return;
+  const { error }=await sb.rpc('wa_problem_done',{p_msg:msgId, p_fixed:!!fixed});
+  if(error) return toast('Could not clear the warning: '+error.message+(/function|wa_problem_done/i.test(error.message)?' (run update-111 SQL)':''),8000);
+  await loadData(); rerenderCurrent(); if(job){ waLoadJob(); } if(openFolder) setTimeout(renderFolderPanel,0); }
+async function waRebook(id){ const j=jobs.find(x=>x.id===id); jaKinds=new Set(['cancelled']); jaQ=j?(waShowNum(j.wa_mobile)||'').replace(/\s/g,''):''; await openAlloc(); }
 async function waLoadSettings(){ if(!hasWa) return; try{ const r=await sb.from('wa_settings').select('*').eq('id',1).maybeSingle(); if(!r.error&&r.data) waCfg=r.data; }catch(e){} }
 function waMorningN(){ return Math.max(1, +waCfg.morning_jobs||3); }
 
@@ -7665,6 +7691,7 @@ function waBadges(j,n){
   if(!waUI()) return '';
   const s=waState(j,n); if(!s) return '';
   let h=`<span class="wa-pill wa-${s.c}" title="WhatsApp">${s.t}</span>`;
+  if(waProb[j.id]) h=`<span class="wa-pill wa-prob" title="The customer ${waProbText(waProb[j.id])} but SashDash couldn't save it — open the job's WhatsApp tab">⚠ WhatsApp problem</span>`+h;
   if(s.changed) h+=`<span class="wa-pill wa-orange" title="Told ${esc(j.wa_time)} — now ${esc(s.win)}">⚠ Time changed</span>`;
   if(j.wa_unread) h+=`<span class="wa-pill wa-indigo">💬 Replied</span>`;
   if(waMode==='one' && !previewing){
@@ -7795,17 +7822,17 @@ function waWarnHtml(){
 
 // ── dashboard folders: 📲 Can't make it · 📵 No reply ──
 function waFolderLists(list){ if(!waUI()) return {cant:[], nr:[]};
-  return { cant:list.filter(j=>j.wa_status==='cant' && !waIsClosed(j)), nr:list.filter(j=>j.wa_status==='noreply' && !waIsClosed(j)) }; }
+  return { cant:list.filter(j=>j.wa_status==='cant' && (!waIsClosed(j) || (jobOutcome(j)==='cancelled'&&!j.followed_by))), nr:list.filter(j=>j.wa_status==='noreply' && !waIsClosed(j)) }; }
 function waTick(st){ return st==='read'?' · ✓✓ read':st==='delivered'?' · ✓✓':st==='sent'?' · ✓':st==='failed'?' · ⚠ not delivered':''; }
 async function waFolderPanel(el, key){
   const want=key==='wa_cant'?'cant':'noreply';
-  const list=dJobs('calls').filter(j=>j.wa_status===want && !waIsClosed(j))
+  const list=dJobs('calls').filter(j=>j.wa_status===want && (!waIsClosed(j) || (want==='cant'&&jobOutcome(j)==='cancelled'&&!j.followed_by)))
     .sort((a,b)=>((siteOf(a)||{}).work_date||'')<((siteOf(b)||{}).work_date||'')?-1:1);
   const msgs={};
   if(list.length){ const { data }=await sb.from('wa_messages').select('job_id,direction,kind,body,status,created_at').in('job_id',list.map(j=>j.id)).order('created_at');
     for(const m of (data||[])) (msgs[m.job_id]=msgs[m.job_id]||[]).push(m); }
   if(openFolder!==key) return; el=$('folder-panel'); if(!el) return;
-  el.innerHTML=`<div class="fp-head">${key==='wa_cant'?"📲 Can't make it (WhatsApp)":'📵 No reply (WhatsApp)'} <span>— ${key==='wa_cant'?'the customer tapped "I can\'t make it": ring them and 📅 reschedule':'no answer to the booking message or the 3-day reminder: ring them'}. ✅ or 📅 takes the job out of this folder.</span></div>
+  el.innerHTML=`<div class="fp-head">${key==='wa_cant'?"📲 Can't make it (WhatsApp)":'📵 No reply (WhatsApp)'} <span>— ${key==='wa_cant'?'the customer tapped "I can\'t make it": ring them and 📅 reschedule. 🔴 Cancelled ones are waiting in 📋 Job allocations: 📋 Re-book':'no answer to the booking message or the 3-day reminder: ring them'}. ✅ or 📅 takes the job out of this folder.</span></div>
     <div class="s-table-wrap"><table class="s-table"><thead><tr><th>Customer</th><th>Service man</th><th>Booked for</th><th>WhatsApp</th><th></th></tr></thead><tbody>
     ${list.map(j=>{ const st=siteOf(j)||{}, t=prof(j.serviceman_id), ms=msgs[j.id]||[];
       const outs=ms.filter(m=>m.direction==='out' && /^sdw_/.test(m.kind)).slice(-3).map(m=>`${esc(WA_KIND[m.kind]||m.kind)} ${esc(fmtWhen(m.created_at))}${waTick(m.status)}`).join('<br>');
@@ -7814,7 +7841,7 @@ async function waFolderPanel(el, key){
         <td><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(t.full_name)}</td>
         <td>${st.work_date?`<button class="wa-day" onclick="event.stopPropagation();waGoDay('${j.id}')" title="Open ${esc(firstName(t.full_name))}'s diary on ${esc(dayLabel(st.work_date))}"><b>📅 ${esc(dayLabel(st.work_date))}</b>${j.wa_time?`<span>${esc(j.wa_time)}</span>`:''}</button>`:(j.wa_time?`<div class="s-sub">${esc(j.wa_time)}</div>`:'')}</td>
         <td class="fp-note">${outs||'—'}${lastIn?`<div class="s-sub">💬 “${esc(lastIn.body)}”</div>`:''}</td>
-        <td class="fp-act"><a class="btn-outline" href="tel:+${esc(j.wa_mobile)}" onclick="event.stopPropagation()">📞 Call</a><button class="btn-outline" onclick="waPhoneOk('${j.id}')">✅ Confirmed by phone</button><button class="btn-primary" onclick="openReschedule('${j.id}')">📅 Reschedule</button><button class="btn-outline" onclick="goToJob('${j.id}')">Open</button></td></tr>`; }).join('')}
+        <td class="fp-act">${jobOutcome(j)==='cancelled'?`<span class="wa-pill wa-red" title="Cancelled by the customer — it's in 📋 Job allocations as 🔴 Cancelled">🔴 Cancelled · in Job allocations</span><a class="btn-outline" href="tel:+${esc(j.wa_mobile)}" onclick="event.stopPropagation()">📞 Call</a><button class="btn-primary" onclick="waRebook('${j.id}')">📋 Re-book</button>`:`<a class="btn-outline" href="tel:+${esc(j.wa_mobile)}" onclick="event.stopPropagation()">📞 Call</a><button class="btn-outline" onclick="waPhoneOk('${j.id}')">✅ Confirmed by phone</button><button class="btn-primary" onclick="openReschedule('${j.id}')">📅 Reschedule</button>`}<button class="btn-outline" onclick="goToJob('${j.id}')">Open</button></td></tr>`; }).join('')}
     </tbody></table></div>`; }
 async function waPhoneOk(id){ if(blockPreview()) return;
   const { error }=await sb.from('jobs').update({wa_status:'phone_ok', wa_unread:false}).eq('id',id);
@@ -7864,7 +7891,7 @@ function waRenderPane(){
   const list = waMsgs.map((m,i)=>{ const out=m.direction==='out';
     const who = out ? (m.author_id ? esc(firstName(prof(m.author_id).full_name)) : m.kind==='auto_reply' ? 'Automatic reply' : 'SashDash (automatic)')
                     : esc(waFirst(j)||'Customer')+' · WhatsApp';
-    return `<div class="wa-msg ${out?'out':'in'} ${m.status==='failed'?'failed':''} ${i>=firstNewIn&&firstNewIn>=0&&!out?'new':''}"><div class="who">${who}${out&&WA_KIND[m.kind]?' · '+esc(WA_KIND[m.kind]):''}</div><div class="bub">${esc(m.body||'')}</div><div class="when">${esc(fmtWhen(m.created_at))}${out?waTick(m.status):''}</div>${m.status==='failed'&&m.error&&isOffice?`<div class="err">⚠ ${esc(m.error)}</div>`:''}</div>`; }).join('')
+    return `<div class="wa-msg ${out?'out':'in'} ${m.status==='failed'?'failed':''} ${i>=firstNewIn&&firstNewIn>=0&&!out?'new':''}"><div class="who">${who}${out&&WA_KIND[m.kind]?' · '+esc(WA_KIND[m.kind]):''}</div><div class="bub">${esc(m.body||'')}</div><div class="when">${esc(fmtWhen(m.created_at))}${out?waTick(m.status):''}</div>${m.status==='failed'&&m.error&&isOffice?`<div class="err">⚠ ${esc(m.error)}</div>`:''}${m.status==='problem'&&isOffice?`<div class="wa-probbar"><b>⚠ SashDash couldn't save this</b> — the job was not changed, so it still shows as before.${m.error?`<span class="s-sub">${esc(m.error)}</span>`:''}<div class="wa-probbtn">${waProbWhat(m)==='cant'?`<button class="btn-primary" onclick="waProbFix('${m.id}')">🔴 Mark can't make it</button>`:waProbWhat(m)==='ok'?`<button class="btn-primary" onclick="waProbFix('${m.id}')">🟢 Mark confirmed</button>`:''}<button class="btn-outline" onclick="waProbDone('${m.id}')">✓ Dealt with</button></div></div>`:''}</div>`; }).join('')
     || `<div class="loading">${isOffice?'No WhatsApp messages yet.':'No WhatsApp replies today.'}</div>`;
   const next = isOffice && waQueue.length ? `<div class="evt">Next automatic: ${waQueue.map(q=>`${esc(WA_KIND[q.kind]||q.kind)} · ${esc(waShort(q.send_at))} ${esc(new Date(q.send_at).toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'}))}`).join(' · ')}</div>` : '';
   let tail='';
@@ -7957,6 +7984,7 @@ function waSubscribe(){
   if(!hasWa) return;
   waChan=sb.channel('sashdash-wa')
     .on('postgres_changes',{event:'*',schema:'public',table:'wa_messages'}, p=>{ const r=p.new||p.old||{};
+      if(isOffice && (r.status==='problem' || waProb[r.job_id])) waLoadProblems().then(()=>{ rerenderCurrent(); if(openFolder) setTimeout(renderFolderPanel,0); });
       if(job && r.job_id===job.id){ if(waView==='wa') waLoadJob(); else if(r.direction==='in'){ const t=document.querySelector('.wa-tb.wa'); if(t && !t.querySelector('.n')) t.insertAdjacentHTML('beforeend',' <span class="n">new</span>'); } waOmw(); } })
     .on('postgres_changes',{event:'*',schema:'public',table:'wa_messages'}, ()=>{ if(openFolder==='wa_log'){ clearTimeout(waLogT); waLogT=setTimeout(()=>{ const el=$('folder-panel'); if(el&&openFolder==='wa_log') waLogPanel(el); },800); } })
     .subscribe(); }
@@ -7964,9 +7992,9 @@ function waSubscribe(){
 // ══ 💬 WhatsApp log — every WhatsApp sent and received, newest first ══
 let waLogF={who:'all', range:'today', q:''}, waLogT=null;
 function waLogBox(list){
-  const n=list.filter(j=>j.wa_unread).length;
+  const n=list.filter(j=>j.wa_unread).length, np=Object.keys(waProb).length;
   return `<button class="folder-box f-blue ${openFolder==='wa_log'?'open':''} ${n?'':'empty'}" onclick="toggleFolder('wa_log')">
-      <span class="f-ico">💬</span><span class="f-txt"><b>WhatsApp log</b><small>${n?`${n} job${n===1?'':'s'} with new replies`:'Every WhatsApp sent and received'}</small></span>
+      <span class="f-ico">💬</span><span class="f-txt"><b>WhatsApp log</b><small>${n?`${n} job${n===1?'':'s'} with new replies`:'Every WhatsApp sent and received'}${np?`<em class="wa-probtxt"> · ⚠ ${np} repl${np===1?'y':'ies'} couldn't be saved</em>`:''}</small></span>
       <span class="f-n" style="${n?'background:var(--indigo)':''}">${n}</span><span class="f-arrow">${openFolder==='wa_log'?'▴':'▾'}</span></button>`; }
 function waLogSet(k,v){ waLogF[k]=v; const el=$('folder-panel'); if(el) waLogPanel(el); }
 function waLogWhat(m){   // → {ic, t, c, line}
@@ -7978,6 +8006,7 @@ function waLogWhat(m){   // → {ic, t, c, line}
     const lbl={sdw_booking_confirm:'Booking sent', sdw_booking_reminder:'Reminder sent', sdw_visit_reminder:'Reminder sent', sdw_day_before:'Day-before sent', sdw_time_update:'Time update sent', sdw_on_my_way:'On my way sent', sdw_on_the_way:'On my way sent', sdw_office_followup:'Follow-up sent'}[m.kind]||'Sent';
     return {ic:'📲', t:lbl, c:'blue', line:`${esc(WA_KIND[m.kind]||m.kind)}${tk?' · '+tk:''}`}; }
   const b=String(m.body||'');
+  if(m.status==='problem') return {ic:'⚠', t:'Not saved', c:'red', line:`Customer ${waProbText(m)} — SashDash couldn't save it, the job wasn't changed · open the job to fix`};
   if(m.kind!=='text' && /confirm/i.test(b)) return {ic:'🟢', t:'Confirmed', c:'green', line:'Tapped “Confirm”'};
   if(m.kind!=='text' && /can.?t make/i.test(b)) return {ic:'🔴', t:"Can't make it", c:'red', line:'Tapped “I can\'t make it”'};
   if(/^\s*(stop|unsubscribe|stop messages)\s*[.!]*\s*$/i.test(b)) return {ic:'🔕', t:'STOP', c:'grey', line:'Replied “'+esc(b.trim())+'” — no more WhatsApps to this number'};
@@ -7991,9 +8020,9 @@ async function waLogPanel(el){
   // a reply is "new" until someone opens the job's WhatsApp tab (or the office answers after it)
   const lastOffice={}; for(const m of all) if(m.direction==='out' && m.author_id && !lastOffice[m.job_id]) lastOffice[m.job_id]=m.created_at;
   const isNew=m=>{ if(m.direction!=='in') return false; const j=jobs.find(x=>x.id===m.job_id); return !!(j&&j.wa_unread&&(!lastOffice[m.job_id]||m.created_at>lastOffice[m.job_id])); };
-  const nIn=all.filter(m=>m.direction==='in').length, nBad=all.filter(m=>m.status==='failed').length;
+  const nIn=all.filter(m=>m.direction==='in').length, nBad=all.filter(m=>m.status==='failed'||m.status==='problem').length;
   const q=waLogF.q.trim().toLowerCase(), qd=q.replace(/[^\d]/g,'');
-  const rows=all.filter(m=> waLogF.who==='in'?m.direction==='in' : waLogF.who==='out'?m.direction==='out' : waLogF.who==='bad'?m.status==='failed' : true)
+  const rows=all.filter(m=> waLogF.who==='in'?m.direction==='in' : waLogF.who==='out'?m.direction==='out' : waLogF.who==='bad'?(m.status==='failed'||m.status==='problem') : true)
     .filter(m=>{ if(!q) return true; const j=jobs.find(x=>x.id===m.job_id)||{}; return (waCustName(j)||'').toLowerCase().includes(q) || (qd.length>=3 && (String(m.phone).includes(qd) || ('0'+String(m.phone).slice(3)).includes(qd))); });
   const rng=m=>{ const d=new Date(m.created_at), t=d.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'});
     if(d.toDateString()===new Date().toDateString()) return t; if(d.toDateString()===addDays(new Date(),-1).toDateString()) return 'Yesterday '+t; return esc(waShort(d))+' '+t; };
