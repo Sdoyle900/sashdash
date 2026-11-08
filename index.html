@@ -2310,7 +2310,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-07-2120';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-08-0840';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -9155,11 +9155,11 @@ function fitRender(){   // 23 parts, folded in the tidy-up (Stage 2) — each pa
   const part7=function(){ const r=part6.apply(this,arguments); try{ if(fitOn&&fitView==='teams'&&u85CanLogins()){ if(u85L===null) u85Load(); u85TeamsDom(); } }catch(e){ console.warn(e); } return r; };
   // ── 🔧 After install: the two buttons on every job ──
   const part8=function(){ const r=part7.apply(this,arguments); try{ const v=$('view-fit'); if(fitOn&&(fitView==='after'||u93Aft())&&v&&!fitQ.trim()){
-    v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/), td=tr.lastElementChild; if(!m||!td||td.querySelector('.u86b')) return; const oid=m[1], n=u86Sheets(oid).reduce((a,s)=>a+s.n,0);
+    v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=fyRowM(tr), td=tr.lastElementChild; if(!m||!td||td.querySelector('.u86b')) return; const oid=m[1], n=u86Sheets(oid).reduce((a,s)=>a+s.n,0);
       td.querySelectorAll('button[onclick^="fitReport"]').forEach(b=>{ const nx=b.nextSibling; b.remove(); if(nx&&nx.nodeName==='BR') nx.remove(); });
       td.insertAdjacentHTML('afterbegin',`<div class="u86b"><button class="btn-outline ft-sm" onclick="u86Open('${oid}')">📄 Job sheet${n?` <em>✏️ ${n}</em>`:''}</button><button class="btn-outline ft-sm" onclick="u86Report('${oid}')">🖨 Print report</button></div>`); }); } }catch(e){ console.warn(e); } return r; };
   const part9=function(){ const r=part8.apply(this,arguments); try{ const v=$('view-fit'); if(!fitOn||!v) return r;
-    if((fitView==='after'||u93Aft())&&!fitQ.trim()) v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/); if(!m) return; const oid=m[1];
+    if((fitView==='after'||u93Aft())&&!fitQ.trim()) v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=fyRowM(tr); if(!m) return; const oid=m[1];
         tr.querySelectorAll('button').forEach(bt=>{ if(/Re-book team/.test(bt.textContent)) bt.setAttribute('onclick',`event.stopPropagation();u87Start('${oid}')`); });
         const rc=tr.children[3]; if(rc&&!rc.querySelector('.u87m')){ const bd=u87Badge(oid,true); if(bd) rc.insertAdjacentHTML('beforeend',`<div style="margin-top:5px">${bd}</div>`); } });
     if(u87Pick&&fitView==='diary'&&!fitQ.trim()){ if(!oaFind(u87Pick.oid)){ u87Pick=null; return r; } const top=v.querySelector('.topbar9'); (top||v.firstElementChild).insertAdjacentHTML('afterend',u87Bar()); v.classList.add('u87on');
@@ -9179,7 +9179,7 @@ function fitRender(){   // 23 parts, folded in the tidy-up (Stage 2) — each pa
     if(u92HL){ const el=v.querySelector(`[data-bid="${u92HL}"]`); u92HL=null; if(el){ el.classList.add('u92hl'); setTimeout(()=>el.scrollIntoView({block:'center',behavior:'smooth'}),60); setTimeout(()=>el.classList.remove('u92hl'),4000); } } }
   if((fitView==='after'||u93Aft())&&!fitQ.trim()){ const os=fyAfterList(), n=os.filter(o=>fyAfterSt(o)==='rebooked').length, fb=v.querySelector('.fx-filters');
     if(fb&&!fb.querySelector('.u92f')){ const sn=[...fb.children].find(x=>/Snag/.test(x.textContent)); const h=`<button class="u92f ${fxAfter==='rebooked'?'on':''}" onclick="fxAfter='rebooked';fitRender()">↩ Re-booked ${n}</button>`; if(sn) sn.insertAdjacentHTML('afterend',h); else fb.insertAdjacentHTML('beforeend',h); }
-    v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/); if(!m) return; const oid=m[1], o=oaFind(oid); if(!o) return; const st=fyAfterSt(o), td=tr.children, b=fitBk(oid);
+    v.querySelectorAll('table.oa-table tr.r').forEach(tr=>{ const m=fyRowM(tr); if(!m) return; const oid=m[1], o=oaFind(oid); if(!o) return; const st=fyAfterSt(o), td=tr.children, b=fitBk(oid);
       if(st==='rebooked'){ tr.classList.add('u92row'); if(td[3]) td[3].innerHTML=`<span class="ft-pill u92pill">↩ Re-booked</span>${b?`<div class="sub" style="margin-top:4px;font-weight:700;color:#92400e">👷 Team ${b.team} · ${fxDates(b).map(fitDL).join(', ')}</div>`:''}${u92Prev(oid)}${typeof u87Badge==='function'?`<div style="margin-top:5px">${u87Badge(oid,true)}</div>`:''}`;
         const a=td[td.length-1]; if(a){ a.querySelectorAll('button').forEach(x=>{ if(/Re-book team|Mark for service/.test(x.textContent)){ const nx=x.nextSibling; x.remove(); if(nx&&nx.nodeName==='BR') nx.remove(); } }); a.insertAdjacentHTML('beforeend',`<div class="u92acts"><button class="btn-primary ft-sm" style="background:#b45309" onclick="event.stopPropagation();u92Cal('${oid}')">📅 Open in calendar</button><button class="btn-outline ft-sm" onclick="event.stopPropagation();fyNewDate('${b?b.id:''}')">📅 Change date / team</button></div>`); } }
       else if(b&&(st==='unf'||st==='snag'||st==='fitted')){ const a=td[td.length-1]; if(a&&!a.querySelector('.u92cal')) a.insertAdjacentHTML('beforeend',`<div class="u92acts"><button class="btn-outline ft-sm u92cal" onclick="event.stopPropagation();u92Cal('${oid}')">📅 Open in calendar</button></div>`);
@@ -9203,13 +9203,13 @@ function fitRender(){   // 23 parts, folded in the tidy-up (Stage 2) — each pa
     v.querySelectorAll('.fx-cell[data-day]').forEach(c=>c.classList.add('u87cell')); }catch(e){ console.warn(e); } return r; };
   // 🏭 Manufacturing / 📥 To allocate: a job that has another open order for the same customer says so
   const part19=function(){ const r=part18.apply(this,arguments); try{ if(!['alloc','toalloc'].includes(fitView)) return r; const v=$('view-fit');
-    v.querySelectorAll('tr.r, .ta-item').forEach(el=>{ const m=(el.getAttribute('onclick')||'').match(/(?:fitOpenJob\('|fxTaSel=')([^']+)'/); if(!m||el.querySelector('.u110tag')) return; const o=oaFind(m[1]); if(!o||o.type!=='private') return;
+    v.querySelectorAll('tr.r, .ta-item').forEach(el=>{ const m=(el.dataset.oid?[0,el.dataset.oid]:(el.getAttribute('onclick')||'').match(/(?:fitOpenJob\('|fxTaSel=')([^']+)'/)); if(!m||el.querySelector('.u110tag')) return; const o=oaFind(m[1]); if(!o||o.type!=='private') return;
       const M=u110Match(o.name,o.phone,o.eir,o.id).filter(x=>x.stamps&&x.stamps.factory); if(!M.length) return;
       const tgt=el.matches('.ta-item')?el.querySelector('div'):el.querySelector('td'); if(tgt) tgt.insertAdjacentHTML('beforeend',`<div class="u110tag" title="Another open order for the same customer">👥 Also Pg ${esc(M.map(x=>(x.pages||[]).join('·')).join(' / '))} — same customer</div>`); }); }catch(e){ console.warn(e); } return r; };
   const part20=function(){ const r=part19.apply(this,arguments); u112Draw(); return r; };
   // folded: the order-type boxes only show the ticked ones
   const part21=function(){ const r=part20.apply(this,arguments); try{ if(fitView!=='alloc'||!u113On()) return r;
-    document.querySelectorAll('#view-fit tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/); if(m) tr.classList.toggle('u113row',u113Is(m[1])&&!!tr.querySelector('.u113')); }); }catch(e){} return r; };
+    document.querySelectorAll('#view-fit tr.r').forEach(tr=>{ const m=fyRowM(tr); if(m) tr.classList.toggle('u113row',u113Is(m[1])&&!!tr.querySelector('.u113')); }); }catch(e){} return r; };
   const part22=function(){ if(fitView==='qc'&&!qcCanEdit()) fitView='diary'; const r=part21.apply(this,arguments);
   try{ const v=$('view-fit'); if(v&&!qcCanEdit()) v.querySelectorAll('.ft-nav button').forEach(b=>{ if(/fitGo\('qc'\)/.test(b.getAttribute('onclick')||'')) b.remove(); });
     if(v&&fitView==='job'&&fitJobId&&!fitQ.trim()) qcStripIn(v,fitJobId); }catch(e){ console.warn(e); } return r; };
@@ -9840,7 +9840,7 @@ function fxTable(list,search){
       : (st==='unf'||st==='snag')?`<button class="btn-outline ft-sm" onclick="event.stopPropagation();fitAllocate('${o.id}')">🗓 Re-book team</button>`
       : ['fitted','sd'].includes(st)?`<button class="btn-outline ft-sm" onclick="event.stopPropagation();fitOpenJob('${o.id}')">Open</button>`
       : `<button class="btn-outline ft-sm" onclick="event.stopPropagation();fitAllocate('${o.id}')">🗓 ${b?'Move':'Book a team'}</button> <button class="btn-outline ft-sm" onclick="event.stopPropagation();fitOpenJob('${o.id}')">Open</button>`;
-    return `<tr class="r ft-${st} ${allR?'ft-allready':''} ${fxHL===o.id?'fx-hl':''}" onclick="if(!event.target.closest('button,input,a'))fitOpenJob('${o.id}')"><td><span class="oa-tbar" style="background:${t.col}"></span><span style="display:inline-block;vertical-align:middle;max-width:230px"><b>${esc(oaTitle(o))}</b> ${fitPill(st)}<div class="sub">${t.icon} ${t.label.replace(/s$/,'')} · Pg ${esc((o.pages||[]).join(' · '))}</div><div class="sub">${esc(pl||oaWhere(o))}</div>${fxMoney(o.id)?'<div class="sub" style="color:#15803d;font-weight:800">✔ Money collected</div>':''}${fyCancelTag(o)}${fyOtBoxes(o.id)}</span></td>
+    return `<tr class="r ft-${st} ${allR?'ft-allready':''} ${fxHL===o.id?'fx-hl':''}" data-oid="${o.id}"><td><span class="oa-tbar" style="background:${t.col}"></span><span style="display:inline-block;vertical-align:middle;max-width:230px"><b>${esc(oaTitle(o))}</b> ${fitPill(st)}<div class="sub">${t.icon} ${t.label.replace(/s$/,'')} · Pg ${esc((o.pages||[]).join(' · '))}</div><div class="sub">${esc(pl||oaWhere(o))}</div>${fxMoney(o.id)?'<div class="sub" style="color:#15803d;font-weight:800">✔ Money collected</div>':''}${fyCancelTag(o)}${fyOtBoxes(o.id)}</span></td>
       <td><div class="age ${d>=21?'a3':d>=14?'a2':d>=7?'a1':''}">🏭 ${fxAge(sa)}</div><div class="sub">${oaDate(sa)}</div></td>
       <td>${rep}</td><td>⏱ ${fitDaysTxt(j.days)}<div class="sub">👷 ${j.men}-man</div></td>
       <td>${b?`📅 Team ${b.team}<div class="sub">${fitDL(b.start)}${fxDates(b).length>1?' – '+fitDL(fxDates(b).slice(-1)[0]):''}</div>${sec.map(x=>`<div class="sub">🔗 + Team ${x.team} on ${fxDates(x).map(v=>parseYmd(v).toLocaleDateString('en-IE',{weekday:'short'})).join(', ')}</div>`).join('')}${fxCount(o)}${fyFloorTxt(b)}`:'<span class="sub">Not booked</span>'}</td><td>${acts}</td></tr>`; }).join('')}</tbody></table>`; }
@@ -10069,6 +10069,7 @@ function fxTabStrip(){ return `<div class="tstrip"><div class="tsh"><b>📱 Fact
    return `<div class="tsc" style="--tc:${t.col}"><div class="t1"><b>📱 ${t.n} · ${esc(t.name)}</b>${al?`<span class="tal">🚨 ${al}</span>`:''}</div><div class="t2">${t.see.map(k=>fitProd(k)[1]).join(' ')} · ${t.see.length} item type${t.see.length===1?'':'s'}</div><div class="t3"><span title="waiting to start">⏳ ${w}</span><span title="in production">⚙ ${p}</span><span class="g" title="ready">✔ ${r}</span></div><button class="btn-primary ft-sm" style="background:${t.col}" onclick="fxTabShow(${t.n})">👁 Show tablet</button></div>`; }).join('')}</div></div>`; }
 function fxTabScreen(t){   // 2 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(t){ const all=fxTabLines(t), todo=all.filter(x=>!x.l.made), prod=all.filter(x=>x.l.made&&!x.l.ready), rdy=all.filter(x=>x.l.ready).sort((a,b)=>new Date(b.l.readyAt)-new Date(a.l.readyAt));
+  const hist=fxTabHist(t);
   const list={todo,made:prod,ready:rdy}[fxTabFilter]||todo, ns=all.filter(x=>x.ns).length, nf=all.filter(x=>x.nf).length, A=fxAl();
   const card=(x,i)=>{ const n=x.b?fxDaysTo(x.fl):null;
     if(fxTabFilter==='ready') return `<div class="tcard rd" style="grid-template-columns:1.3fr 1.1fr 1fr!important"><div class="tc1"><div class="tjob">${esc(oaTitle(x.o))}</div><div class="tnums">${x.l.nums.map(n=>`<span>${esc(n)}</span>`).join('')}</div><div class="tprod2">${esc(fxProdTxt(x.l))} × ${x.l.qty||1}</div></div><div class="twho"><div class="tw1">✔ READY</div><div class="tw2">👤 ${esc(x.l.readyBy||'')}</div><div class="tw3">${x.l.readyAt?oaDT(x.l.readyAt):''}</div>${x.l.madeBy?`<div class="tw4">⚙ In production: ${esc(x.l.madeBy)}${x.l.madeAt?' · '+oaDT(x.l.madeAt):''}</div>`:''}</div><div class="tc3"><button class="tpdf" style="margin:0">📄 Cutting list</button><button class="tfiles">📁 Job files</button></div></div>`;
@@ -10077,9 +10078,9 @@ function fxTabScreen(t){   // 2 parts, folded in the tidy-up (Stage 2) — each 
       <div class="tc3"><button class="tbig prod ${x.l.made?'on':''}" onclick="f8Prod('${x.o.id}','${x.l.id}',${t.n})">${x.l.made?'⚙ In production ✓':'⚙ In production'}</button><button class="tbig ready2" onclick="f8Ready('${x.o.id}','${x.l.id}',${t.n})">✔ READY</button></div></div>`; };
   return `<div class="tabscreen"><div class="tbar" style="background:${t.col}">${fyLogo('prod','tab')}<span class="tbsep"></span><span class="tbname">Tablet ${t.n} · <b>${esc(t.name)}</b></span><span class="tclock">${new Date().toLocaleDateString('en-IE',{weekday:'short',day:'numeric',month:'short'})} · ${new Date().toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'})}</span></div>
     ${ns?`<div class="nsban">🚨 <b>${ns} not started</b> — to be fitted within ${A.ns} days. Start ${ns>1?'these':'this'} first.</div>`:''}${nf?`<div class="nfban">⏰ <b>${nf} not finished</b> — to be fitted within ${A.nf} days. Finish ${nf>1?'these':'this'} and tap ✔ READY.</div>`:''}
-    <div class="ttabs">${[['todo','Waiting to start',todo.length],['made','⚙ In production',prod.length],['ready','✔ Ready',rdy.length]].map(([k,l,n])=>`<button class="${fxTabFilter===k?'on':''}" onclick="fxTabFilter='${k}';fxTabShow(${t.n})">${l} <em>${n}</em></button>`).join('')}</div>
-    <div class="tlist">${list.map(card).join('')||'<div class="tempty">Nothing here 👍</div>'}</div>
-    <div class="tfootbar">${fxTabFilter==='ready'?'Newest first · who marked it ready and when':'Longest in first · tap ⚙ In production when you start · tap ✔ READY when it\'s finished'}</div></div>`; };
+    <div class="ttabs">${[['todo','Waiting to start',todo.length],['made','⚙ In production',prod.length],['ready','✔ Ready',rdy.length],['hist','📜 History',hist.length]].map(([k,l,n])=>`<button class="${fxTabFilter===k?'on':''}" onclick="fxTabFilter='${k}';fxTabShow(${t.n})">${l} <em>${n}</em></button>`).join('')}</div>
+    <div class="tlist">${fxTabFilter==='hist'?fxTabHistHtml(hist):list.map(card).join('')||'<div class="tempty">Nothing here 👍</div>'}</div>
+    <div class="tfootbar">${fxTabFilter==='hist'?'Everything this tablet has made · only this tablet\'s job numbers · newest first':fxTabFilter==='ready'?'Newest first · who marked it ready and when':'Longest in first · tap ⚙ In production when you start · tap ✔ READY when it\'s finished'}</div></div>`; };
   const part1=function(t){ f12On=true; let h; try{ h=part0.apply(this,arguments); } finally { f12On=false; }
   const box=`<div class="f12s"><input id="f12q" value="${esc(f12Q)}" placeholder="🔍 Search this tablet — job, site, page no. or job no. (e.g. 1235)" oninput="f12Q=this.value;fxTabShow(${t.n});const i=$('f12q');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}">${f12Q?`<button onclick="f12Q='';fxTabShow(${t.n})">✕</button>`:''}</div>`;
   h=h.replace('<div class="ttabs">',box+'<div class="ttabs">');
@@ -10473,7 +10474,7 @@ function fyMapInit(){   // 2 parts, folded in the tidy-up (Stage 2) — each par
 }
 
 // ── 🚚 Loading (the yard) ──
-let fyLD=null, fyLV='day', fyLOpen=null, fyYN=null;
+let fyLD=null, fyLV='day', fyLOpen=null, fyYN=null, fyHQ='';   // fyLV: 'day' | 'week' | 'hist' (📜 History)
 const FY_STORES=[['🔩','Fixings & packers','1 box'],['🧴','Silicone (white / anthracite)','6 tubes'],['🫧','Expanding foam','3 cans'],['🪵','Sills','as per sheet'],['📏','Trims / architrave','as per sheet'],['🛠','Tool box + drill','team kit']];
 function fyLoadDay(){ if(!fyLD) fyLD=fxWd(1); return fyLD; }
 function fyY(){ return fitData.yard||(fitData.yard={t:{},done:{}}); }
@@ -10499,7 +10500,8 @@ function fyLCard(b,v){   // 2 parts, folded in the tidy-up (Stage 2) — each pa
 }
 function fyLT(k){ const Y=fyY(); if(Y.t[k]) delete Y.t[k]; else Y.t[k]=1; fitSave(); fitRender(); }
 function fyLDone(key,all,nr){ if(!all){ toast('Tick everything that\'s READY first'); return; } if(nr&&!confirm(nr+' line'+(nr>1?'s are':' is')+' still at the factory and not on the van. Mark the van loaded anyway?')) return;
-  fyY().done[key]={by:oaWho(),at:fxNow()}; fitSave(); fitRender(); toast('✔ Van loaded'); }
+  const [bid,day]=key.split('|'), b=fitData.bookings.find(x=>x.id===bid);   // kept for 📜 History even after the booking goes
+  fyY().done[key]=Object.assign({by:oaWho(),at:fxNow()},b?{oid:b.oid,team:b.team,van:fyVanTxt(b.team),day}:{}); fitSave(); fitRender(); toast('✔ Van loaded'); }
 function fyYNForm(b,v){ const s=fyYN, it=fyItems(b,v).filter(x=>!x.x);
   return `<div class="fy-ynb"><div class="fy-ynh">📝 <b>Missing or damaged items</b></div>
    <div class="fy-lrow"><span>What's wrong</span><div class="fy-lpick">${['🪟 Glass broken','❓ Item missing','💥 Frame damaged','✏️ Other'].map(x=>`<button class="${s.what===x?'on':''}" onclick="fyYN.what='${x}';fitRender()">${x}</button>`).join('')}</div></div>
@@ -10519,14 +10521,28 @@ function fyLoadHtml(){ const v=fyLoadDay(), d=parseYmd(v), mon=mondayOf(d);
   const lab=fyLV==='day'?`<b>${d.toLocaleDateString('en-IE',{weekday:'long',day:'numeric',month:'long'})}</b><span>${v===fxWd(1)?'tomorrow · ':v===todayYmd()?'today · ':''}what goes out on the vans</span>`:`<b>Week of ${mon.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</b><span>Mon – Sat</span>`;
   const step=n=>`fyLD=ymd(addDays(parseYmd(fyLoadDay()),${n}));if(parseYmd(fyLD).getDay()===0)fyLD=ymd(addDays(parseYmd(fyLD),${n<0?-1:1}));fitRender()`;
   return `<div class="fx-h" style="margin-top:0"><h2>🚚 Loading</h2><span class="sub" style="color:var(--slate)">For the yard — what each van takes out</span></div>
-  <div class="week-bar" style="margin-top:0;margin-bottom:12px"><button class="wk-nav" onclick="${step(fyLV==='day'?-1:-7)}">‹</button><div class="wk-label">${lab}</div><button class="wk-nav" onclick="${step(fyLV==='day'?1:7)}">›</button><button class="btn-outline" onclick="fyLD=fxWd(1);fitRender()">Tomorrow</button><button class="btn-outline" onclick="fyLD=ymd(oaWorkDay(new Date()));fitRender()">Today</button><span class="spacer"></span><div class="dvsw"><button class="${fyLV==='day'?'on':''}" onclick="fyLV='day';fitRender()">Day</button><button class="${fyLV==='week'?'on':''}" onclick="fyLV='week';fitRender()">Week</button></div>${fyLV==='day'?`<button class="btn-primary" style="background:#0f766e" onclick="fyLPrintDay('${v}')">🖨 Print day</button>`:''}</div>
-  ${fyLV==='day'?fyLDayHtml(v):fyLWeekHtml(v)}`; }
+  <div class="week-bar" style="margin-top:0;margin-bottom:12px"><button class="wk-nav" onclick="${step(fyLV==='day'?-1:-7)}">‹</button><div class="wk-label">${lab}</div><button class="wk-nav" onclick="${step(fyLV==='day'?1:7)}">›</button><button class="btn-outline" onclick="fyLD=fxWd(1);fitRender()">Tomorrow</button><button class="btn-outline" onclick="fyLD=ymd(oaWorkDay(new Date()));fitRender()">Today</button><span class="spacer"></span><div class="dvsw"><button class="${fyLV==='day'?'on':''}" onclick="fyLV='day';fitRender()">Day</button><button class="${fyLV==='week'?'on':''}" onclick="fyLV='week';fitRender()">Week</button><button class="${fyLV==='hist'?'on':''}" onclick="fyLV='hist';fitRender()">📜 History</button></div>${fyLV==='day'?`<button class="btn-primary" style="background:#0f766e" onclick="fyLPrintDay('${v}')">🖨 Print day</button>`:''}</div>
+  ${fyLV==='hist'?fyLHistHtml():fyLV==='day'?fyLDayHtml(v):fyLWeekHtml(v)}`; }
 function fyLDayHtml(v){ const bs=fyLoadBk(v), Y=fyY(), done=bs.filter(b=>Y.done[b.id+'|'+v]).length, warn=bs.filter(b=>fyItems(b,v).some(x=>!x.rd)).length;
   return `<div class="fy-lsum"><div><b>${bs.length}</b>vans going out</div><div class="g"><b>${done}</b>loaded</div><div class="a"><b>${bs.length-done}</b>still to load</div><div class="r"><b>${warn}</b>with lines not READY</div></div>${bs.map(b=>fyLCard(b,v)).join('')||'<div class="oa-empty">Nothing going out this day.</div>'}`; }
 function fyLWeekHtml(v){ const mon=mondayOf(parseYmd(v)), days=[0,1,2,3,4,5].map(i=>ymd(addDays(mon,i))), Y=fyY();
   return `<div class="fy-lwk">${days.map(d=>{ const bs=fyLoadBk(d);
     return `<div class="fy-lwd ${d===v?'sel':''} ${d===todayYmd()?'td':''}" onclick="fyLD='${d}';fyLV='day';fitRender()"><div class="fy-lwh"><b>${parseYmd(d).toLocaleDateString('en-IE',{weekday:'long'})}</b><span>${parseYmd(d).toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</span><em>${bs.length} van${bs.length===1?'':'s'}</em></div>
      ${bs.map(b=>{ const o=oaFind(b.oid), T=fitTeam(b.team)||{col:'#64748b'}, nr=fyItems(b,d).some(x=>!x.rd), dn=Y.done[b.id+'|'+d]; return `<div class="fy-lwj" style="--tc:${T.col}"><b>Team ${b.team}</b> · ${esc(oaTitle(o))}<span>${dn?'<i class="fy-lok">✔ loaded</i>':nr?'<i class="fy-lno">⚠ not READY</i>':'<i class="fy-lw">⏳ to load</i>'}</span></div>`; }).join('')||'<div class="sub" style="padding:8px">Nothing going out</div>'}</div>`; }).join('')}</div>`; }
+// 📜 Loading history — every van marked loaded: the day, job, page numbers, job numbers, team and van. Search as you type.
+function fyLHistHtml(){ const Y=fyY(), rows=Object.entries(Y.done).map(([key,d])=>{ const [bid,day]=key.split('|'), b=fitData.bookings.find(x=>x.id===bid), oid=d.oid||(b&&b.oid), o=oid&&oaFind(oid); if(!o) return null;
+    const team=d.team!=null?d.team:b?b.team:null, nums=(fitFJ(oid).lines||[]).flatMap(l=>l.nums), pages=(o.pages||[]).join(' · ');
+    return {day:d.day||day,at:d.at,by:d.by,o,team,van:d.van||(team!=null?fyVanTxt(team):''),nums,pages}; }).filter(Boolean).sort((a,b)=>(b.day||'').localeCompare(a.day||'')||String(b.at).localeCompare(String(a.at)));
+  const tr=r=>{ const txt=[oaTitle(r.o),r.pages,r.nums.join(' '),r.team!=null?'team '+r.team:'',r.van,r.day?fitDL(r.day):''].join(' ').toLowerCase();
+    return `<tr class="fyh-r" data-s="${esc(txt)}"><td><b>${r.day?fitDL(r.day):'—'}</b><div class="sub">${r.at?oaDT(r.at):''}${r.by?' · '+esc(r.by):''}</div></td><td><b>${esc(oaTitle(r.o))}</b><div class="sub">Pg ${esc(r.pages)}</div></td><td>${r.nums.length?r.nums.map(n=>`<span class="fxl-no">${esc(n)}</span>`).join(' '):'<span class="sub">—</span>'}</td><td>${r.team?'Team '+r.team:r.team===0?'❓ No team':'—'}</td><td>${esc(r.van)||'<span class="sub">—</span>'}</td></tr>`; };
+  return `<div class="fxl-top"><input id="fyh-q" value="${esc(fyHQ)}" placeholder="🔍 Search the history — customer, page no., job no., team, van…" oninput="fyHQ=this.value;fyHFind('fyh')"><span class="fxl-n" id="fyh-n" data-all="${rows.length} van${rows.length===1?'':'s'} loaded">${rows.length} van${rows.length===1?'':'s'} loaded</span></div>
+   <table class="oa-table fxl"><thead><tr><th>Loaded</th><th>Job</th><th>Job numbers</th><th>Team</th><th>Van</th></tr></thead><tbody>${rows.map(tr).join('')||'<tr><td colspan="5" class="oa-empty">Nothing loaded yet — vans appear here when they\'re marked ✔ Van loaded.</td></tr>'}</tbody></table>`; }
+// shared by the 📜 History pages: hide the rows that don't match every word typed
+// which job a table row is: data-oid (Manufacturing) or the fitOpenJob('…') it opens
+function fyRowM(tr){ return tr.dataset&&tr.dataset.oid?[0,tr.dataset.oid]:(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/); }
+function fyHFind(p){ const q=($(p+'-q')||{}).value||'', w=q.toLowerCase().split(/\s+/).filter(Boolean); let n=0;
+  document.querySelectorAll('tr.'+p+'-r').forEach(tr=>{ const ok=w.every(x=>tr.dataset.s.includes(x)); tr.style.display=ok?'':'none'; if(ok) n++; });
+  const c=$(p+'-n'); if(c) c.textContent=w.length?`${n} found`:c.dataset.all; }
 function fyLListHtml(b,v){ const o=oaFind(b.oid), T=fitTeam(b.team), it=fyItems(b,v);
   return `<div class="kv"><div>Team</div><div>Team ${b.team} · ⭐ ${esc(T.leader)}${fyVanTxt(b.team)?' · '+esc(fyVanTxt(b.team)):''}</div><div>Job</div><div>${esc(oaTitle(o))} · ${esc(oaWhere(o))}</div><div>Job sheet</div><div>v${fxSheetV(b.oid)}</div></div>
    <table><tr><th style="width:30px">✔</th><th>What</th><th>Qty</th><th>Job no.</th></tr>${it.map(x=>`<tr><td>☐</td><td>${esc(x.t)}${x.rd?'':' <b>(NOT READY)</b>'}</td><td>${esc(x.q)}</td><td>${esc(x.n)}</td></tr>`).join('')}</table>
@@ -10890,6 +10906,14 @@ function f11Set(n){ f11N=n; try{ localStorage.setItem('fitMonths',String(n)); }c
 // ════════ Update 82 — 📱 tablets: the job list scrolls + 🔍 search · 🚚 Loading shows ❓ no-team jobs ════════
 // 🔍 search on each tablet (only the lines on that tablet; all three tabs follow it)
 let f12Q='', f12On=false;
+// 📜 a tablet's history: every job it has made a line for (READY), with only this tablet's job numbers — Hardwood never sees PVC numbers
+function fxTabHist(t){ const mine=l=>t.see.includes(l.prod)||(l.prod==='custom'&&u102TabFor(l)===t.n), q=f12Q.trim().toLowerCase(), out=[];
+  fitOrders().forEach(o=>{ const L=(fitFJ(o.id).lines||[]).filter(l=>mine(l)&&l.ready); if(!L.length) return;
+    const last=L.map(l=>l.readyAt||'').sort().pop(), txt=[oaTitle(o),(o.pages||[]).join(' '),...L.map(l=>fxProdTxt(l)+' '+l.nums.join(' '))].join(' ').toLowerCase();
+    if(!q||txt.includes(q)) out.push({o,L,last}); });
+  return out.sort((a,b)=>String(b.last).localeCompare(String(a.last))); }
+function fxTabHistHtml(H){ if(!H.length) return `<div class="tempty">${f12Q.trim()?'Nothing matches “'+esc(f12Q.trim())+'”':'Nothing made yet'}</div>`;
+  return `<table class="thist"><thead><tr><th>Job</th><th>Pages</th><th>Job numbers</th><th>Ready</th></tr></thead><tbody>${H.map(h=>`<tr><td><b>${esc(oaTitle(h.o))}</b></td><td>Pg ${esc((h.o.pages||[]).join(' · '))}</td><td>${h.L.map(l=>`<div class="thl">${esc(fxProdTxt(l))}${(l.qty||1)>1?' ×'+l.qty:''} ${l.nums.map(n=>`<span class="fxl-no">${esc(n)}</span>`).join(' ')}</div>`).join('')}</td><td>${h.last?oaDate(h.last):'—'}</td></tr>`).join('')}</tbody></table>`; }
 function f12Match(x,q){ const o=x.o, l=x.l; return [oaTitle(o),o.name,o.siteName,o.unitNo,o.block,(o.pages||[]).join(' '),l.nums.join(' '),fxProdTxt(l),l.custom].join(' ').toLowerCase().includes(q); }
 
 
@@ -10952,7 +10976,7 @@ function u83DeptDom(R){ const v=$('view-fit'); if(!v) return;
   v.querySelectorAll('.achips .ac').forEach(b=>{ if(!/\ba[12]\b/.test(b.className)) b.remove(); });
   v.querySelectorAll('.tsh button').forEach(b=>{ if(/fitGo\('tablets'\)/.test(b.getAttribute('onclick')||'')) b.remove(); });
   v.querySelectorAll('.fromd button').forEach(b=>{ if(/diary/.test(b.getAttribute('onclick')||'')) b.remove(); });
-  v.querySelectorAll('.fx-mft tr.r').forEach(tr=>{ const m=(tr.getAttribute('onclick')||'').match(/fitOpenJob\('([^']+)'\)/), td=tr.lastElementChild; if(m&&td) td.innerHTML=`<button class="btn-outline ft-sm" onclick="event.stopPropagation();fxJS('${m[1]}')">📄 Job sheet</button>`; });
+  v.querySelectorAll('.fx-mft tr.r').forEach(tr=>{ const m=fyRowM(tr), td=tr.lastElementChild; if(m&&td) td.innerHTML=`<button class="btn-outline ft-sm" onclick="event.stopPropagation();fxJS('${m[1]}')">📄 Job sheet</button>`; });
   v.querySelectorAll('.fx-mft .sub').forEach(s=>{ if(/Money collected/.test(s.textContent)) s.remove(); });
   v.querySelectorAll('.fx-mft th:last-child').forEach(th=>th.style.width='120px'); }
 function u83TabRender(){   // 3 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
@@ -11810,6 +11834,7 @@ html.qc-open,html.qc-open body{overflow:hidden!important}
 table.fxl td{vertical-align:top;font-size:14px}table.fxl tr.fxl-r{cursor:pointer}table.fxl tr.fxl-r:hover td{background:#f8fafc}table.fxl td:first-child{width:28%}table.fxl td:last-child{width:16%;white-space:nowrap}
 .fxl-it{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:2px 0}.fxl-nm{min-width:190px}
 .fxl-no{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:6px;padding:1px 8px;font-weight:800;font-size:13px}
+table.thist{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;font-size:16px}table.thist th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;padding:10px 12px;border-bottom:2px solid #e2e8f0}table.thist td{padding:10px 12px;border-bottom:1px solid #f1f5f9;vertical-align:top}.thl{padding:2px 0}
 </style>`);
 
 // ════ 🖥 Office: Fitting → ✅ QC checklist ════
