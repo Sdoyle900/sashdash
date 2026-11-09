@@ -2066,6 +2066,11 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .wa-probbtn button{padding:7px 12px;font-size:13px;border-radius:8px;cursor:pointer;font-weight:700}
 .wa-probbtn .btn-primary{background:#4f46e5;color:#fff;border:0}.wa-probbtn .btn-outline{background:#fff;color:#334155;border:1px solid #cbd5e1}
 .wa-probtxt{font-style:normal;color:#b45309;font-weight:700}
+.wa-pill.wa-sms{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd}
+.wa-msg.out.sms .bub{background:#dbeafe;border-color:#93c5fd}
+.btn-wa.sms{background:#2563eb}.btn-wa.sms:hover{background:#1d4ed8}
+.wa-sms-off{background:#fef2f2;border:1.5px solid #fca5a5;border-radius:14px;padding:14px 18px;margin:0 0 14px;color:#7f1d1d}
+.wa-sms-off b{font-size:15px}.wa-sms-off p{margin:6px 0 0;font-size:13px;line-height:1.45;color:#991b1b}
 </style>
 </head>
 <body>
@@ -2317,7 +2322,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-08-1900';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-09-1200';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -2591,8 +2596,9 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+(hasWa?WA_COLS:'')+(hasSig?',sig_path,sig_name,sig_at,sig_note':'')+(hasCrew?',est_minutes,crew':'')+(hasFollow?',followed_by':'')+(hasMat?MAT_COLS:'')+(hasWait?',wait_since,cancel_at':'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+(hasWa?WA_COLS:'')+(hasWa&&hasSms?',wa_via':'')+(hasSig?',sig_path,sig_name,sig_at,sig_note':'')+(hasCrew?',est_minutes,crew':'')+(hasFollow?',followed_by':'')+(hasMat?MAT_COLS:'')+(hasWait?',wait_since,cancel_at':'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
   ]);
+  if(jo.error && hasSms && /wa_via/i.test(jo.error.message)){ hasSms=false; return loadData(); }   // database not updated yet (update-112)
   if(jo.error && hasWa && /wa_/i.test(jo.error.message)){ hasWa=false; return loadData(); }   // database not updated yet (update-21)
   if(jo.error && hasContact && /customer_/i.test(jo.error.message)){ hasContact=false; return loadData(); }
   if(jo.error && hasHist && /hist_skip/i.test(jo.error.message)){ hasHist=false; return loadData(); }
@@ -2618,6 +2624,7 @@ async function loadData(){
   try{ if(isOffice) await loadNewCalls(); }catch(e){}
   try{ await ocLoadSummary(); }catch(e){ hasOc=false; }
   if(hasWa){ await waLoadSettings(); await waLoadProblems(); }
+  try{ await waSmsCheck(); if(!window.__waSmsT) window.__waSmsT=setInterval(()=>waSmsCheck().catch(()=>{}),5*60e3); }catch(e){}
   await loadBackups(); if(hasBk && bkAccount() && !previewing){ bkDev=await bkDevice(); bkLocalLast=await kvGet('bkLast'); }
   if(previewing){   // show only what that person's own login is allowed to see
     if(me.role==='serviceman'){ const cov=coverJobsFor(me.id); sites=sites.filter(x=>x.serviceman_id===me.id||cov.some(j=>j.site_id===x.id)); jobs=jobs.filter(x=>x.serviceman_id===me.id||cov.includes(x)); shares=shares.filter(s=>s.cover_id===me.id||s.owner_id===me.id); }
@@ -6748,7 +6755,7 @@ async function saveJobEdit(){
   if(hasRoute && $('m-eir')){ const r=readAvail(); if(r===false) return; Object.assign(row,r); }
   const waRow=waReadForm(); if(waRow) Object.assign(row,waRow);
   let waReset=false;
-  if(hasWa && j.wa_mobile && deptOf(j)==='calls'){ const nm=waMobileOf({...j, ...row}); if(nm!==j.wa_mobile){ waReset=true; Object.assign(row,{wa_status:null, wa_mobile:null, wa_go:null, wa_for:null, wa_time:null, wa_unread:false}); } }
+  if(hasWa && j.wa_mobile && deptOf(j)==='calls'){ const nm=waMobileOf({...j, ...row}); if(nm!==j.wa_mobile){ waReset=true; Object.assign(row,{wa_status:null, wa_mobile:null, wa_go:null, wa_for:null, wa_time:null, wa_unread:false}); if(hasSms) row.wa_via=null; } }
   const btn=$('m-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Saving…';
   try{
     if(pendingFiles.length){
@@ -7577,19 +7584,23 @@ const WA_FN='smart-service';
 // 📲 Send to all (whole day) or Send individually (a 📲 Send button on each job box) — remembered on this computer
 let waMode=(()=>{ const d=WA_TEST?'one':'all'; try{ return localStorage.getItem('waMode')||d; }catch(e){ return d; } })();
 function waSetMode(m){ waMode=m; try{ localStorage.setItem('waMode',m); }catch(e){} rerenderCurrent(); }   // the wa-send Edge Function (Supabase named it smart-service)
-const WA_COLS=',wa_on,wa_name,wa_extra,wa_mobile,wa_status,wa_time,wa_for,wa_go,wa_last_in,wa_unread,wa_man_unread'; let hasWa=true;
+const WA_COLS=',wa_on,wa_name,wa_extra,wa_mobile,wa_status,wa_time,wa_for,wa_go,wa_last_in,wa_unread,wa_man_unread'; let hasWa=true, hasSms=true;
 let waCfg={morning_jobs:3}, waView='team', waMsgs=[], waQueue=[], waChan=null, waLoadTok=0, waFormCtx=null, waEta=0;
 const WA_KIND={booking:'Booking message', reminder3:'3-day reminder', daybefore:'Day-before reminder', time_update:'Time update',
   sdw_booking_confirm:'Booking', sdw_booking_reminder:'Reminder', sdw_visit_reminder:'Reminder', sdw_day_before:'Day before',
-  sdw_time_update:'Time update', sdw_on_my_way:'On my way', sdw_office_followup:'Follow-up', text:'Office reply', auto_reply:'Automatic reply'};
+  sdw_time_update:'Time update', sdw_on_my_way:'On my way', sdw_office_followup:'Follow-up', text:'Office reply', auto_reply:'Automatic reply',
+  sms_booking:'Booking (text)', sms_reminder:'Reminder (text)', sms_day_before:'Day before (text)', sms_time_update:'Time update (text)',
+  sms_on_my_way:'On my way (text)', sms_followup:'Follow-up (text)', sms_text:'Office reply (text)', sms_auto:'Automatic reply (text)'};
 
 // ⚠ WhatsApp problem (Update 111): a customer's reply that the database refused to save on the job.
 // rapid-processor marks that reply status 'problem' (error = the reason); the office fixes it or marks it dealt with.
 let waProb={};
 async function waLoadProblems(){ if(!hasWa || !isOffice) { waProb={}; return; }
-  try{ const r=await sb.from('wa_messages').select('id,job_id,body,error,created_at').eq('status','problem').order('created_at'); if(r.error) return;
+  try{ const r=await sb.from('wa_messages').select('id,job_id,kind,body,error,created_at').eq('status','problem').order('created_at'); if(r.error) return;
     const p={}; for(const m of (r.data||[])) if(m.job_id) p[m.job_id]=m; waProb=p; }catch(e){} }
-function waProbWhat(m){ const b=String((m&&m.body)||''); return /can.?t make/i.test(b)?'cant':/confirm/i.test(b)?'ok':''; }
+function waProbWhat(m){ const b=String((m&&m.body)||'');
+  if(m&&m.kind==='sms'){ const w=b.toLowerCase().replace(/[’`]/g,"'").replace(/[.!,?]+/g,' ').replace(/\s+/g,' ').trim(); return WA_SMS_NO.test(w)?'cant':WA_SMS_YES.test(w)?'ok':''; }
+  return /can.?t make/i.test(b)?'cant':/confirm/i.test(b)?'ok':''; }
 function waProbText(m){ const w=waProbWhat(m); return w==='cant'?"tapped “I can't make it”":w==='ok'?'tapped “Confirm”':'replied'; }
 async function waProbFix(msgId){ if(blockPreview()) return;
   const m=Object.values(waProb).find(x=>x.id===msgId); if(!m) return; const w=waProbWhat(m);
@@ -7602,6 +7613,21 @@ async function waProbDone(msgId, fixed){ if(blockPreview()) return;
   if(error) return toast('Could not clear the warning: '+error.message+(/function|wa_problem_done/i.test(error.message)?' (run update-111 SQL)':''),8000);
   await loadData(); rerenderCurrent(); if(job){ waLoadJob(); } if(openFolder) setTimeout(renderFolderPanel,0); }
 async function waRebook(id){ const j=jobs.find(x=>x.id===id); jaKinds=new Set(['cancelled']); jaQ=j?(waShowNum(j.wa_mobile)||'').replace(/\s/g,''):''; await openAlloc(); }
+// ── ✉ texts (Update 112) ──
+const WA_SMS_YES=/^(y|ye|yes|yeah|yea|yep|yup|ok|okay|k|confirm|confirmed|grand|perfect|great|fine|sound|yes please|yes thanks|yes thank you|thanks yes|yes confirmed|yes that's fine|yes thats fine|👍)$/;
+const WA_SMS_NO=/^(n|no|nope|no sorry|sorry no|cant|can't|cannot|can not|cant make it|can't make it|i cant make it|i can't make it|cannot make it|not available|no can't make it|no cant make it|👎)$/;
+let waSmsStuck=0;   // texts waiting more than 15 minutes for the 086 phone
+function waSmsOffline(){ return waSmsStuck>0; }
+async function waSmsCheck(){
+  if(!hasWa || !hasSms || !isOffice) return;
+  const from=new Date(Date.now()-48*3600e3).toISOString(), to=new Date(Date.now()-15*60e3).toISOString();
+  const r=await sb.from('wa_messages').select('id').like('kind','sms_%').eq('status','pending').gte('created_at',from).lte('created_at',to).limit(50);
+  const n=r.error?0:(r.data||[]).length; if(n!==waSmsStuck){ waSmsStuck=n; const el=$('wa-sms-off'); if(el) el.outerHTML=waSmsBox(); } }
+function waSmsBox(){
+  if(!waSmsStuck) return '<div id="wa-sms-off"></div>';
+  const seen=waCfg&&waCfg.sms_seen?` — last check-in ${esc(fmtWhen(waCfg.sms_seen))}`:'';
+  return `<div id="wa-sms-off" class="wa-sms-off"><b>✉ The text phone is offline</b>${seen}<p>${waSmsStuck} text${waSmsStuck>1?'s are':' is'} waiting to go. Check the 086 phone is switched on, charged and on Wi-Fi, and that the SMS Gateway app is open. They'll send by themselves when it's back.</p></div>`; }
+
 async function waLoadSettings(){ if(!hasWa) return; try{ const r=await sb.from('wa_settings').select('*').eq('id',1).maybeSingle(); if(!r.error&&r.data) waCfg=r.data; }catch(e){} }
 function waMorningN(){ return Math.max(1, +waCfg.morning_jobs||3); }
 
@@ -7691,6 +7717,7 @@ function waBadges(j,n){
   if(!waUI()) return '';
   const s=waState(j,n); if(!s) return '';
   let h=`<span class="wa-pill wa-${s.c}" title="WhatsApp">${s.t}</span>`;
+  if(j.wa_via==='sms' && s.k!=='stopped') h+=`<span class="wa-pill wa-sms" title="No WhatsApp on this phone — the messages go by text from 086 239 2430">✉ By text</span>`;
   if(waProb[j.id]) h=`<span class="wa-pill wa-prob" title="The customer ${waProbText(waProb[j.id])} but SashDash couldn't save it — open the job's WhatsApp tab">⚠ WhatsApp problem</span>`+h;
   if(s.changed) h+=`<span class="wa-pill wa-orange" title="Told ${esc(j.wa_time)} — now ${esc(s.win)}">⚠ Time changed</span>`;
   if(j.wa_unread) h+=`<span class="wa-pill wa-indigo">💬 Replied</span>`;
@@ -7811,6 +7838,8 @@ async function waSendJob(id, which){ if(blockPreview()) return;
 // ── dashboard: ⚠ days under a week away not sent ──
 function waWarnHtml(){
   if(WA_TEST || !hasWa || !isOffice || dept!=='calls' || previewing) return '';
+  return waSmsBox()+waWarnDays(); }
+function waWarnDays(){
   const t=todayYmd(), lim=ymd(addDays(parseYmd(t),7)), days=[];
   for(const s of sites){ if(deptOf(s)!=='calls' || !s.work_date || s.work_date<t || s.work_date>=lim) continue;
     const n=waDayList(s).filter(({j,n})=>{ const x=waState(j,n); return x&&x.k==='new'; }).length; if(n) days.push({s,n}); }
@@ -7823,7 +7852,7 @@ function waWarnHtml(){
 // ── dashboard folders: 📲 Can't make it · 📵 No reply ──
 function waFolderLists(list){ if(!waUI()) return {cant:[], nr:[]};
   return { cant:list.filter(j=>j.wa_status==='cant' && (!waIsClosed(j) || (jobOutcome(j)==='cancelled'&&!j.followed_by))), nr:list.filter(j=>j.wa_status==='noreply' && !waIsClosed(j)) }; }
-function waTick(st){ return st==='read'?' · ✓✓ read':st==='delivered'?' · ✓✓':st==='sent'?' · ✓':st==='failed'?' · ⚠ not delivered':''; }
+function waTick(st){ return st==='read'?' · ✓✓ read':st==='delivered'?' · ✓✓':st==='sent'?' · ✓':st==='pending'?' · ⏳ waiting for the text phone':st==='failed'?' · ⚠ not delivered':''; }
 async function waFolderPanel(el, key){
   const want=key==='wa_cant'?'cant':'noreply';
   const list=dJobs('calls').filter(j=>j.wa_status===want && (!waIsClosed(j) || (want==='cant'&&jobOutcome(j)==='cancelled'&&!j.followed_by)))
@@ -7884,14 +7913,16 @@ function waRenderPane(){
   const wp=$('wa-pane'); if(!wp || !job) return;
   const j={...(jobs.find(x=>x.id===job.id)||{}), ...job};
   const lastIn=j.wa_last_in?new Date(j.wa_last_in):null, open=!!(lastIn && Date.now()-lastIn<24*3600e3-60e3);
-  const info = j.wa_mobile
+  const sms=j.wa_via==='sms', smsOff=sms&&waSmsOffline();
+  const info = sms ? `<span>⚠ No WhatsApp — texting <b>${esc(waShowNum(j.wa_mobile))}</b> from the office phone (086 239 2430)</span>${isOffice?(smsOff?'<span class="shut">✉ Text phone offline</span>':'<span class="ok">✉ By text · reply any time</span>'):''}`
+    : j.wa_mobile
     ? `<span>To <b>${esc(waShowNum(j.wa_mobile))}</b> · from the office WhatsApp</span>${isOffice?(open?`<span class="ok">Free reply until ${esc(fmtWhen(lastIn.getTime()+24*3600e3))}</span>`:`<span class="shut">Reply window closed</span>`):''}`
     : `<span>${isOffice?'Nothing sent yet — use 📲 Send on the day page.':'No WhatsApp on this job.'}</span>`;
   const firstNewIn=j.wa_unread?waMsgs.findIndex(m=>m.direction==='in' && new Date(m.created_at)>Date.now()-48*3600e3):-1;
   const list = waMsgs.map((m,i)=>{ const out=m.direction==='out';
     const who = out ? (m.author_id ? esc(firstName(prof(m.author_id).full_name)) : m.kind==='auto_reply' ? 'Automatic reply' : 'SashDash (automatic)')
-                    : esc(waFirst(j)||'Customer')+' · WhatsApp';
-    return `<div class="wa-msg ${out?'out':'in'} ${m.status==='failed'?'failed':''} ${i>=firstNewIn&&firstNewIn>=0&&!out?'new':''}"><div class="who">${who}${out&&WA_KIND[m.kind]?' · '+esc(WA_KIND[m.kind]):''}</div><div class="bub">${esc(m.body||'')}</div><div class="when">${esc(fmtWhen(m.created_at))}${out?waTick(m.status):''}</div>${m.status==='failed'&&m.error&&isOffice?`<div class="err">⚠ ${esc(m.error)}</div>`:''}${m.status==='problem'&&isOffice?`<div class="wa-probbar"><b>⚠ SashDash couldn't save this</b> — the job was not changed, so it still shows as before.${m.error?`<span class="s-sub">${esc(m.error)}</span>`:''}<div class="wa-probbtn">${waProbWhat(m)==='cant'?`<button class="btn-primary" onclick="waProbFix('${m.id}')">🔴 Mark can't make it</button>`:waProbWhat(m)==='ok'?`<button class="btn-primary" onclick="waProbFix('${m.id}')">🟢 Mark confirmed</button>`:''}<button class="btn-outline" onclick="waProbDone('${m.id}')">✓ Dealt with</button></div></div>`:''}</div>`; }).join('')
+                    : esc(waFirst(j)||'Customer')+(m.kind==='sms'?' · ✉ Text':' · WhatsApp');
+    return `<div class="wa-msg ${out?'out':'in'} ${/^sms_/.test(m.kind)?'sms':''} ${m.status==='failed'?'failed':''} ${i>=firstNewIn&&firstNewIn>=0&&!out?'new':''}"><div class="who">${who}${out&&WA_KIND[m.kind]?' · '+esc(WA_KIND[m.kind]):''}</div><div class="bub">${esc(m.body||'')}</div><div class="when">${esc(fmtWhen(m.created_at))}${out?waTick(m.status):''}</div>${m.status==='failed'&&m.error&&isOffice?`<div class="err">⚠ ${esc(m.error)}</div>`:''}${m.status==='problem'&&isOffice?`<div class="wa-probbar"><b>⚠ SashDash couldn't save this</b> — the job was not changed, so it still shows as before.${m.error?`<span class="s-sub">${esc(m.error)}</span>`:''}<div class="wa-probbtn">${waProbWhat(m)==='cant'?`<button class="btn-primary" onclick="waProbFix('${m.id}')">🔴 Mark can't make it</button>`:waProbWhat(m)==='ok'?`<button class="btn-primary" onclick="waProbFix('${m.id}')">🟢 Mark confirmed</button>`:''}<button class="btn-outline" onclick="waProbDone('${m.id}')">✓ Dealt with</button></div></div>`:''}</div>`; }).join('')
     || `<div class="loading">${isOffice?'No WhatsApp messages yet.':'No WhatsApp replies today.'}</div>`;
   const next = isOffice && waQueue.length ? `<div class="evt">Next automatic: ${waQueue.map(q=>`${esc(WA_KIND[q.kind]||q.kind)} · ${esc(waShort(q.send_at))} ${esc(new Date(q.send_at).toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'}))}`).join(' · ')}</div>` : '';
   let tail='';
@@ -7899,10 +7930,11 @@ function waRenderPane(){
     const okd=['confirmed','phone_ok'].includes(j.wa_status);
     tail+=`<div class="wa-acts">${j.wa_mobile&&!okd&&j.wa_status!=='stopped'?`<button class="btn-outline" onclick="waPhoneOk('${j.id}')">✅ Mark confirmed</button>`:''}${(siteOf(j)||{}).work_date?`<button class="btn-outline" onclick="openReschedule('${j.id}')">📅 Reschedule</button>`:''}<button class="btn-outline" onclick="waToggle()">${j.wa_on===false?'🔔 Turn reminders on':'🔕 Turn reminders off'}</button></div>`;
     if(j.wa_mobile && j.wa_status!=='stopped'){
-      tail+= open
+      tail+= sms ? `<div class="wa-compose"><textarea id="wa-input" rows="2" placeholder="Reply to ${esc(waFirst(j)||'the customer')} by text…" oninput="autoGrow(this)"></textarea><button class="btn-wa sms" style="padding:10px 16px" onclick="waSendText()">✉ Send text</button></div>`
+        : open
         ? `<div class="wa-compose"><textarea id="wa-input" rows="2" placeholder="Reply to ${esc(waFirst(j)||'the customer')} on WhatsApp…" oninput="autoGrow(this)"></textarea><button class="btn-wa" style="padding:10px 16px" onclick="waSendText()">Send</button></div>`
         : `<div class="wa-lock">The free 24-hour reply window is closed. <button class="btn-wa" style="padding:6px 12px;margin-left:6px" onclick="waFollowup()">📲 Send follow-up</button><br><span style="font-size:11px">Sends: "Hi ${esc(waFirst(j)||'there')}, this is Sean Doyle Windows about your service call on ${esc((siteOf(j)||{}).work_date?waDay(siteOf(j).work_date):'…')}. Please reply to this message." When they answer, you can reply freely again.</span></div>`;
-    } else if(j.wa_status==='stopped') tail+=`<div class="wa-lock">🔕 This customer replied STOP — no more WhatsApps can be sent to them.</div>`;
+    } else if(j.wa_status==='stopped') tail+=`<div class="wa-lock">🔕 This customer replied STOP — no more WhatsApps or texts can be sent to them.</div>`;
   } else tail=`<div class="wa-lock">Only the office can reply on WhatsApp — ring the customer from your phone if you need to.</div>`;
   wp.innerHTML=`<div class="wa-info">${info}</div><div class="wa-list" id="wa-list">${list}${next}</div>${tail}`;
   const l=$('wa-list'); if(l) l.scrollTop=l.scrollHeight; }
@@ -8001,12 +8033,19 @@ function waLogWhat(m){   // → {ic, t, c, line}
   const q=s=>'“'+esc(String(s||'').slice(0,160))+'”', tk=waTick(m.status).replace(/^ · /,'');
   if(m.direction==='out'){
     if(m.status==='failed') return {ic:'⚠', t:'Not delivered', c:'red', line:`${esc(WA_KIND[m.kind]||m.kind)}${m.error?' · '+esc(String(m.error).slice(0,120)):''}`};
-    if(m.kind==='auto_reply') return {ic:'🤖', t:'Auto reply', c:'grey', line:q(m.body)};
+    if(m.kind==='auto_reply'||m.kind==='sms_auto') return {ic:'🤖', t:m.kind==='sms_auto'?'Auto reply (text)':'Auto reply', c:'grey', line:q(m.body)};
+    if(m.kind==='sms_text') return {ic:'✍', t:'Office reply (text)', c:'indigo', line:q(m.body)+(tk?' · '+tk:'')};
+    if(/^sms_/.test(m.kind)) return {ic:'✉', t:(WA_KIND[m.kind]||'Text').replace(' (text)','')+' sent by text', c:'blue', line:q(m.body)+(tk?' · '+tk:'')};
     if(m.kind==='text') return {ic:'✍', t:'Office reply', c:'indigo', line:q(m.body)+(tk?' · '+tk:'')};
     const lbl={sdw_booking_confirm:'Booking sent', sdw_booking_reminder:'Reminder sent', sdw_visit_reminder:'Reminder sent', sdw_day_before:'Day-before sent', sdw_time_update:'Time update sent', sdw_on_my_way:'On my way sent', sdw_on_the_way:'On my way sent', sdw_office_followup:'Follow-up sent'}[m.kind]||'Sent';
     return {ic:'📲', t:lbl, c:'blue', line:`${esc(WA_KIND[m.kind]||m.kind)}${tk?' · '+tk:''}`}; }
   const b=String(m.body||'');
   if(m.status==='problem') return {ic:'⚠', t:'Not saved', c:'red', line:`Customer ${waProbText(m)} — SashDash couldn't save it, the job wasn't changed · open the job to fix`};
+  if(m.kind==='sms'){ const w=b.toLowerCase().replace(/[’`]/g,"'").replace(/[.!,?]+/g,' ').replace(/\s+/g,' ').trim();
+    if(/^(stop|stop texts|stop messages|unsubscribe|stopall|stop all)$/.test(w)) return {ic:'🔕', t:'STOP', c:'grey', line:'Texted “'+esc(b.trim())+'” — no more messages to this number'};
+    if(WA_SMS_YES.test(w)) return {ic:'🟢', t:'Confirmed', c:'green', line:'Texted '+q(b)};
+    if(WA_SMS_NO.test(w)) return {ic:'🔴', t:"Can't make it", c:'red', line:'Texted '+q(b)};
+    return {ic:'💬', t:'Replied by text', c:'indigo', line:q(b)}; }
   if(m.kind!=='text' && /confirm/i.test(b)) return {ic:'🟢', t:'Confirmed', c:'green', line:'Tapped “Confirm”'};
   if(m.kind!=='text' && /can.?t make/i.test(b)) return {ic:'🔴', t:"Can't make it", c:'red', line:'Tapped “I can\'t make it”'};
   if(/^\s*(stop|unsubscribe|stop messages)\s*[.!]*\s*$/i.test(b)) return {ic:'🔕', t:'STOP', c:'grey', line:'Replied “'+esc(b.trim())+'” — no more WhatsApps to this number'};
