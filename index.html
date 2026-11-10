@@ -1019,6 +1019,7 @@
     @media (max-width:720px){ .slot-grid{grid-template-columns:repeat(2,1fr)} .slot,.slot-new{min-height:160px} }
     .site-tabs{display:flex;gap:10px;overflow-x:auto;padding:6px 6px 16px;margin:0 -6px -8px;scrollbar-width:none}
     .site-tabs::-webkit-scrollbar{display:none}
+    @media (min-width:721px){ .site-tabs.wrap{flex-wrap:wrap;overflow:visible} }   /* Update 113: Sites wrap onto a second row, nothing cut off */
     .site-tab{position:relative;background:#fff;border:2px solid var(--border);border-radius:12px;padding:12px 18px;font-weight:800;font-size:16px;color:var(--navy);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:10px;min-height:54px;box-shadow:0 1px 2px rgba(15,23,42,.05);transition:border-color .12s,background .12s,transform .12s}
     .site-tab:hover{border-color:#a5b4fc;transform:translateY(-1px)}
     .site-tab .pin{font-size:18px}
@@ -2322,7 +2323,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-10-0830';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-10-1715';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -3663,7 +3664,7 @@ function renderPortal(){
     if(calOpen()) html+=monthCalendar(mySites, tJobs, site);
   }
   if(!isOffice && dept==='sites') html+=`<button class="order-req-btn" onclick="openOrderRequest()"><span>📋</span>Order request<small>Scan an order and send it to the office</small></button>`+myOrdersBar();
-  html+=`<div class="site-label">${dept==='calls'?'Days':D.many}</div><div class="site-tabs">${visible.map(s=>{const sj=tabJobs(s);const o=sj.filter(j=>!j.completed).length;const u=sj.some(unreadForMe);const shd=s.serviceman_id!==currentTechId, cov=!shd&&s.work_date&&cJobs.some(j=>{const x=siteOf(j);return x&&x.work_date===s.work_date;});
+  html+=`<div class="site-label">${dept==='calls'?'Days':D.many}</div><div class="site-tabs ${dept==='calls'?'':'wrap'}">${visible.map(s=>{const sj=tabJobs(s);const o=sj.filter(j=>!j.completed).length;const u=sj.some(unreadForMe);const shd=s.serviceman_id!==currentTechId, cov=!shd&&s.work_date&&cJobs.some(j=>{const x=siteOf(j);return x&&x.work_date===s.work_date;});
       return `<button class="site-tab ${s.id===currentSiteId?'active':''} ${shd?'shared':''}" onclick="setSite('${s.id}')" title="${o} open job${o===1?'':'s'}${shd?' — shared from '+esc(firstName(prof(s.serviceman_id).full_name)):''}${cov?' — includes jobs you are covering':''}">${u?'<span class="dot"></span>':''}${cov?'<span class="cov-dot" title="Covering">🤝</span>':''}${s.work_date?`<span class="day-tab"><b>${parseYmd(s.work_date).toLocaleDateString('en-IE',{weekday:'short'})}</b><small>${parseYmd(s.work_date).toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</small></span>${s.work_date===todayYmd()?'<span class="today">TODAY</span>':''}`:`<span class="pin">${shd?'🤝':D.pin}</span>${esc(s.name)}${shd?`<small class="cov-of">${esc(firstName(prof(s.serviceman_id).full_name))}'s</small>`:''}`} <span class="cnt">${o}</span></button>`;}).join('')}
     ${isOffice&&dept!=='calls'?`<button class="site-tab add" onclick="openSiteModal()">＋ New ${D.one}</button>`:''}</div>`;
 
