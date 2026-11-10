@@ -2322,7 +2322,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-09-1200';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-10-0830';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -4975,6 +4975,8 @@ function memFolder(){ const files=[]; const mk=pre=>({ file:(n,data)=>{ if(data!
 function bkCustFolder(j, idx){ const pk=jobKeys(j).phones[0]||'', name=custLabel(j)||'Customer';
   const ex=pk && Object.values(idx.calls).find(e=>e.phone_key===pk && e.dept==='calls'); if(ex) return ex.path.split('/').slice(0,2).join('/');
   return `Private Calls/${safeName(`${pk||'no number'} - ${name}`)}`; }
+function bkSkipLine(list){ if(!list||!list.length) return '';   // jobs a backup couldn't save (Update 112) — they stay in SashDash and are tried again next time
+  return `<div class="bk-a-s" style="color:#b45309">⚠ <b>${list.length} job${list.length===1?'':'s'} couldn't be saved</b> and will be tried again next backup (${list.length===1?'it stays':'they stay'} in SashDash, nothing is cleared):<br>${list.slice(0,5).map(x=>esc(x.path.split('/').slice(-2).join(' › '))+' — '+esc(x.why)).join('<br>')}${list.length>5?`<br>…and ${list.length-5} more (see backup-log.txt)`:''}</div>`; }
 function bkResult(o){ return o==='done'?'All done':o==='rebook'?'Re-booked':o==='not_home'?'Not home':'Open'; }
 function bkPathFor(j, idx){
   if(deptOf(j)==='calls'){ const n=pastCalls(j).length+1, t=prof(j.serviceman_id);
@@ -5075,14 +5077,16 @@ async function runBackup(opts={}){
     else show(`<h2>💾 Backing up…</h2><div class="sub">Saving to <b>${esc(dir.name)}</b> on this computer</div><div class="bk-prog"><i id="bk-bar" style="width:0%"></i></div><div id="bk-now" style="font-size:13.5px">Getting ready…</div>
       <div class="sub" style="margin-top:10px">You can keep working in another tab. Don't close SashDash until it's finished.</div>`);
     const allC=[]; for(let i=0;i<todo.length;i+=100){ const { data }=await sb.from('comments').select('*').in('job_id',todo.slice(i,i+100).map(j=>j.id)).order('created_at'); allC.push(...(data||[])); }
-    let nNew=0, nUpd=0, done=0; const saved=[];
+    let nNew=0, nUpd=0, done=0; const saved=[], bkSkipped=[];
     for(const j of todo){
       const s=sites.find(x=>x.id===j.site_id)||{}, t=prof(j.serviceman_id), path=bkPathFor(j,idx), was=idx.calls[j.id];
       $('bk-now') && ($('bk-now').innerHTML=`<b>${done+1} of ${todo.length}</b> — ${esc(path.split('/').slice(0,2).join(' › '))}`);
-      const mf=memFolder(); await writeJobFiles(mf, j, s, t, allC, {oldCalls:false});
-      if(was) await bkRemove(dir, was.path); await bkRemove(dir, path);
-      for(const f of mf._files) await bkWriteFile(dir, `${path}/${f.path}`, f.data);
-      idx.calls[j.id]=bkEntry(j, path); was?nUpd++:nNew++; saved.push({job_id:j.id, account:a, version:jobVersion(j), device_id:bkDev.id, backed_at:new Date().toISOString()});
+      try{   // one job that can't be saved is skipped (and listed) instead of stopping the whole backup — Update 112
+        const mf=memFolder(); await writeJobFiles(mf, j, s, t, allC, {oldCalls:false});
+        if(was) await bkRemove(dir, was.path); await bkRemove(dir, path);
+        for(const f of mf._files) await bkWriteFile(dir, `${path}/${f.path}`, f.data);
+        idx.calls[j.id]=bkEntry(j, path); was?nUpd++:nNew++; saved.push({job_id:j.id, account:a, version:jobVersion(j), device_id:bkDev.id, backed_at:new Date().toISOString()});
+      }catch(e){ console.warn('backup skipped', path, e); delete idx.calls[j.id]; bkSkipped.push({id:j.id, path, why:e.message||String(e)}); }
       done++; $('bk-bar') && ($('bk-bar').style.width=Math.round(done/todo.length*100)+'%'); $('bk-pct') && ($('bk-pct').textContent=Math.round(done/todo.length*100)+'%');
     }
     for(const j of mark) saved.push({job_id:j.id, account:a, version:jobVersion(j), device_id:bkDev.id, backed_at:new Date().toISOString()});
@@ -5092,21 +5096,21 @@ async function runBackup(opts={}){
     const calls=Object.values(idx.calls), info={sashdash:'archive', account:a, device_name:bkDev.name||(a==='office'?'Office PC':'Service PC'), last_at:at, calls:calls.filter(e=>e.dept==='calls').length, sites:calls.filter(e=>e.dept==='sites').length};
     await bkWriteFile(dir,'backup-info.json', JSON.stringify(info,null,1));
     const log=(await bkReadText(dir,'backup-log.txt'))||`SashDash backups on this computer (${info.device_name})\r\nFolder: ${dir.name}\r\n\r\n`;
-    const pc=todo.filter(j=>deptOf(j)==='calls').length, st=todo.length-pc;
-    await bkWriteFile(dir,'backup-log.txt', log+`${new Date(at).toLocaleString('en-IE',{weekday:'short',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}   ${todo.length} jobs   (${nNew} new, ${nUpd} updated)${a==='office'?`   Service Department ${pc} · Sites ${st}`:''}\r\n`);
+    const pc=todo.filter(j=>deptOf(j)==='calls' && !bkSkipped.some(x=>x.id===j.id)).length, st=nNew+nUpd-pc;
+    await bkWriteFile(dir,'backup-log.txt', log+`${new Date(at).toLocaleString('en-IE',{weekday:'short',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}   ${todo.length} jobs   (${nNew} new, ${nUpd} updated)${a==='office'?`   Service Department ${pc} · Sites ${st}`:''}${bkSkipped.length?`   NOT SAVED ${bkSkipped.length}: ${bkSkipped.map(x=>x.path).join(' | ')}`:''}\r\n`);
     for(let i=0;i<saved.length;i+=200){ const r=await sb.from('job_backups').upsert(saved.slice(i,i+200),{onConflict:'job_id,account'}); if(r.error) throw r.error; }
     await sb.from('backups').insert({account:a, device_id:bkDev.id, device_name:info.device_name, folder_name:dir.name, jobs:todo.length, new_jobs:nNew, updated:nUpd, made_by:me.id, at});
     if(!bkDevs.find(x=>x.account===a)) await sb.from('backup_devices').upsert({account:a, device_id:bkDev.id, device_name:info.device_name, set_by:me.id},{onConflict:'account'});
     bkLocalLast=at; await kvSet('bkLast',at); await loadBackups();
     const {ready, waiting, need}=bkClearable(), miss=need.filter(x=>x!==a && waiting.some(j=>!bkHas(j,x)));
     if(auto){ show(`<div class="bk-a-h">✅ <b>Automatic backup done</b><button class="bk-a-x" onclick="bkPopClose()" aria-label="Close">✕</button></div>
-      <div class="bk-a-s"><b>${todo.length} job${todo.length===1?'':'s'}</b> saved to 📁 ${esc(dir.name)} · ${esc(bkWhen(at))}<br>${nNew} new · ${nUpd} brought up to date · nothing deleted${ocBkLine(ocRes)}</div>
+      <div class="bk-a-s"><b>${nNew+nUpd} job${nNew+nUpd===1?'':'s'}</b> saved to 📁 ${esc(dir.name)} · ${esc(bkWhen(at))}<br>${nNew} new · ${nUpd} brought up to date · nothing deleted${ocBkLine(ocRes)}</div>${bkSkipLine(bkSkipped)}
       ${ready.length?`<div class="bk-a-s" style="color:#0f172a">🧹 <b>${ready.length} All done job${ready.length===1?'':'s'}</b> ${ready.length===1?'is':'are'} now on ${need.length>1?'both backups':'the backup'} and can be cleared.</div><div class="bk-a-b"><button class="btn-outline" onclick="bkPopClose()">Later</button><button class="btn-primary" onclick="bkPopClose();bkClearNow()">🧹 Clear ${ready.length}</button></div>`
         :waiting.length&&miss.length?`<div class="bk-a-s">⏳ ${waiting.length} job${waiting.length===1?'':'s'} will be cleared once the <b>${miss.map(bkSideName).join(' and ')} PC</b> has backed up too.</div>`:''}`, 'done');
       if(!ready.length) setTimeout(()=>{ const p=$('bk-auto'); if(p && p.classList.contains('done')) bkPopClose(); }, 20000);
       rerenderCurrent(); return; }
     show(`<div style="text-align:center;font-size:40px">✅</div><h2 style="text-align:center">Backed up — ${esc(bkWhen(at))}</h2>
-      <div class="sub" style="text-align:center"><b>${todo.length} job${todo.length===1?'':'s'}</b> saved to ${esc(dir.name)}${a==='office'&&todo.length?` (${pc} Service Department · ${st} Sites)`:''}<br>${nNew} new folder${nNew===1?'':'s'} · ${nUpd} brought up to date · nothing deleted${ocBkLine(ocRes)}</div>
+      <div class="sub" style="text-align:center"><b>${nNew+nUpd} job${nNew+nUpd===1?'':'s'}</b> saved to ${esc(dir.name)}${a==='office'&&todo.length?` (${pc} Service Department · ${st} Sites)`:''}<br>${nNew} new folder${nNew===1?'':'s'} · ${nUpd} brought up to date · nothing deleted${ocBkLine(ocRes)}</div>${bkSkipLine(bkSkipped)}
       ${ready.length?`<div class="bk-box">🧹 <b>${ready.length} All done job${ready.length===1?'':'s'}</b> ${ready.length===1?'is':'are'} now on ${need.length>1?'<b>both</b> backups':'the backup'} and older than 3 weeks. <b>Clear ${ready.length===1?'it':'them'} from SashDash now?</b> Re-book and Not home jobs stay until they're rescheduled.</div>`:''}
       ${waiting.length&&miss.length?`<div class="bk-box">⏳ <b>${waiting.length} All done job${waiting.length===1?'':'s'}</b> ${waiting.length===1?'is':'are'} ready to clear, but the <b>${miss.map(bkSideName).join(' and ')} PC</b> hasn't backed ${waiting.length===1?'it':'them'} up yet (last backup <b>${esc(bkWhen((bkLastFor(miss[0])||{}).at))}</b>). They'll be cleared once it has.</div>`:''}
       <div class="modal-actions" style="justify-content:center">${ready.length?`<button class="btn-outline" onclick="closeModal()">Later</button><button class="btn-primary" onclick="bkClearNow()">🧹 Clear ${ready.length} job${ready.length===1?'':'s'}</button>`:'<button class="btn-primary" onclick="closeModal()">Done</button>'}</div>`);
@@ -6020,7 +6024,10 @@ async function sigReportHtml(jid){
     <table class="p-info"><tr><td>Signed by</td><td><b>${esc(s.sig_name||'')}</b></td><td>Date</td><td>${esc(when)}</td></tr></table></div>`;
 }
 
-function safeName(t){ return String(t||'').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim().slice(0,80)||'untitled'; }
+function safeName(t){   // a folder / file name Windows and Edge/Chrome accept (Update 112: no ending dot or space, no hidden characters, no CON/NUL/COM1…)
+  let n=String(t||'').replace(/[\u0000-\u001f\u007f]+/g,' ').replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim().slice(0,80).replace(/[\s.]+$/,'');
+  if(/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i.test(n)) n='_'+n;
+  return n||'untitled'; }
 
 // tiny key-value store in the browser (remembers the chosen archive folder)
 function idb(){ return new Promise((res,rej)=>{ const r=indexedDB.open('sashdash',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
