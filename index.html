@@ -2323,7 +2323,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-10-1715';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-12-1740';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -3740,7 +3740,7 @@ function siteContacts(st){ const c=Array.isArray(st&&st.contacts)?st.contacts.fi
 function telHref(p){ return 'tel:'+String(p||'').replace(/[^0-9+]/g,''); }
 function siteDetailsHtml(st){
   const eir=st.eircode?normEir(st.eircode):'', cs=siteContacts(st);
-  const where=(st.address||eir)?`<div class="sd-where">📍 ${esc(st.address||'')}${st.address&&eir?' · ':''}${eir?`<a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(eir+', Ireland')}&travelmode=driving" target="_blank" rel="noopener" title="Directions">${esc(eir)}</a>${siteTownHtml(eir)}`:''}</div>`:'';
+  const where=(st.address||eir)?`<div class="sd-where">📍 ${esc(st.address||'')}${st.address&&eir?' · ':''}${eir?`<a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(navDest(eir))}&travelmode=driving" target="_blank" rel="noopener" title="Directions">${esc(eir)}</a>${siteTownHtml(eir)}`:''}</div>`:'';
   const ppl=cs.length?`<div class="sd-ppl">${cs.map(c=>`<span class="sd-p">👤 <b>${esc(c.name||'')}</b>${c.position?` <i>${esc(c.position)}</i>`:''}${c.phone?` <a href="${telHref(c.phone)}">📞 ${esc(c.phone)}</a>`:''}</span>`).join('')}</div>`:'';
   return where||ppl?`<div class="site-meta">${where}${ppl}</div>`:''; }
 // 📍 town · county for a site's Eircode (instant from the area code, then the exact town, looked up once and remembered)
@@ -3755,6 +3755,11 @@ function siteEirHint(){ const i=$('m-site-eir'), b=$('m-site-eir-town'); if(!i||
   if(eirValid(n) && !eirTowns.has(n) && hasEirTown){ b.innerHTML+=' <span class="eir-look">· finding the town…</span>';
     siteEirHint.t=setTimeout(async()=>{ await eirTownLookup(n); if($('m-site-eir') && normEir($('m-site-eir').value)===n) $('m-site-eir-town').innerHTML=`📍 ${esc(eirPlaceText(n,true))}`; }, 500); } }
 function scRow(c={}){ return `<div class="sc-row"><input class="sc-name" placeholder="Name" value="${esc(c.name||'')}"><input class="sc-pos" placeholder="Position, e.g. Site manager" value="${esc(c.position||'')}"><input class="sc-ph" type="tel" placeholder="Phone" value="${esc(c.phone||'')}"><button type="button" class="sc-x" title="Remove this contact" onclick="this.closest('.sc-row').remove()">✕</button></div>`; }
+// 📍 What Google Maps is sent for an Eircode (Update 114): the exact spot when SashDash knows the house (office pin or exact match),
+// otherwise the Eircode on its own. Never "<Eircode>, Ireland" — Google then goes to the middle of the postal area (H53 → Ballinasloe).
+function navDest(s){ const e=normEir(s);
+  if(!eirValid(e)) return String(s||'').trim()+', Ireland';                 // an address, not an Eircode
+  const g=geoCache.get(e); return g&&(g.manual||!g.approx)?`${g.lat},${g.lng}`:e; }
 function normEir(s){ const t=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); return t.length===7 ? t.slice(0,3)+' '+t.slice(3) : String(s||'').toUpperCase().trim(); }
 function eirValid(s){ return /^[ACDEFHKNPRTVWXY](\d\d|6W) [0-9ACDEFHKNPRTVWXY]{4}$/.test(normEir(s)); }
 function hm2min(s){ const m=/^(\d{1,2}):(\d{2})/.exec(s||''); return m? (+m[1])*60+(+m[2]) : null; }
@@ -3793,7 +3798,7 @@ function eirTownsQueue(list){ if(!isOffice || previewing || !hasEirTown) return;
     for(const n of todo){ const v=await eirTownLookup(n); if(v&&v.town) got++; }
     if(got && !$('modal-root').innerHTML.trim() && !job) rerenderCurrent(); }, 800); }
 function eirChip(j){ if(!j.eircode) return '';
-  return `<a class="cc eir" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(j.eircode+', Ireland')}&travelmode=driving" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Directions in Google Maps">📍 ${esc(j.eircode)}</a>`; }
+  return `<a class="cc eir" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(navDest(j.eircode))}&travelmode=driving" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Directions in Google Maps">📍 ${esc(j.eircode)}</a>`; }
 
 // ── Settings (office): depot Eircode, TomTom key, start time, minutes per job ──
 async function loadRouteData(force){
@@ -4112,9 +4117,9 @@ async function openDayRoute(siteId){
   await loadRouteData();
   const open=dayJobsOrdered(siteId).filter(x=>isOpenJob(x.j) && x.j.eircode && eirValid(x.j.eircode));
   if(!open.length) return toast('No open jobs with an Eircode on this day.');
-  const loc=x=>{ const g=geoCache.get(normEir(x.j.eircode)); return g?`${g.lat},${g.lng}`:x.j.eircode+', Ireland'; };
+  const loc=x=>navDest(x.j.eircode);
   let stops=open.map(loc);
-  { const B=manBase(siteId); if(B.custom||(routeCfg&&routeCfg.round_trip)) { const f=B.finish||B.start; if(f) stops.push(f+', Ireland'); } }
+  { const B=manBase(siteId); if(B.custom||(routeCfg&&routeCfg.round_trip)) { const f=B.finish||B.start; if(f) stops.push(navDest(f)); } }
   if(stops.length>10){ toast('Google Maps takes 10 stops at a time — opening the first 10',4000); stops=stops.slice(0,10); }
   const dest=stops.pop();
   const url=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}${stops.length?'&waypoints='+encodeURIComponent(stops.join('|')):''}&travelmode=driving`;
