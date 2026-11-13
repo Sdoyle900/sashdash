@@ -1967,6 +1967,7 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .ja-mtag{font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;white-space:nowrap}.ja-mtag.b{background:#dcfce7;color:#14532d}.ja-mtag.p{background:#f5f3ff;color:#5b21b6}.ja-mtag.l{background:#e0e7ff;color:#3730a3}
 
 .sc-fwd{margin-top:6px;font-size:12.5px;padding:6px 10px}
+.sc-live{margin-top:8px;font-size:12.5px;padding:6px 10px;background:#16a34a;border-color:#16a34a}.sc-live:hover{background:#15803d}   /* Update 117 */
 .bf-wa{font-size:12.5px;font-weight:700;margin-top:4px}.bf-free .bf-wa{color:#15803d}.bf-sent .bf-wa{color:#b45309}.bf-ok .bf-wa{color:#b91c1c}
 .pj-row.bf-ok{border-color:#fca5a5;background:#fff7f7}
 .modal:has(.pl-chips button:nth-child(6)){max-width:860px}
@@ -2324,7 +2325,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-13-1000';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-13-1130';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -8541,7 +8542,17 @@ function cancelCard(j,n){ const off=isOffice;
   return `<div class="slot slot-cancel" data-job="${j.id}" onclick="openJob('${j.id}')" title="Cancelled by the customer — open the job">
     <div class="slot-top"><span class="slot-no" style="background:#be123c">JOB ${n}</span></div><div class="sc-ico">🔴</div><div class="slot-title">${esc(custName(j)||'Job')}</div>
     <div class="sc-t">Cancelled by the customer</div><div class="sc-m">💬 “${esc(cantMsg(j))}”${cantWhen(j)?`<br><small>WhatsApp · ${esc(cantWhen(j))}</small>`:''}</div>
-    <div class="sc-b">${off?'↩ Back in 📋 Job allocations with ⭐ priority':'Don\'t call — the office will re-book it'}</div>${off&&!previewing&&jobDay(j)>=todayYmd()?`<button class="btn-primary sc-fwd" onclick="event.stopPropagation();bfOpen('${j.id}')">⏩ Bring a later job forward</button>`:''}</div>`; }
+    <div class="sc-b">${off?'↩ Back in 📋 Job allocations with ⭐ priority':'Don\'t call — the office will re-book it'}</div>${off&&!previewing&&jobDay(j)>=todayYmd()?`<button class="btn-primary sc-live" onclick="event.stopPropagation();cancelUndo('${j.id}')" title="The customer didn't mean to cancel — the job goes back to booked in this same slot">↩ Proceed — make it live again</button><button class="btn-primary sc-fwd" onclick="event.stopPropagation();bfOpen('${j.id}')">⏩ Bring a later job forward</button>`:''}</div>`; }
+// ↩ The customer tapped "I can't make it" by mistake: the office makes the job live again, in the same slot (Update 117)
+async function cancelUndo(id){ const j=jobs.find(x=>x.id===id); if(!j||!isOffice||blockPreview()) return;
+  const ok=await confirmBox({icon:'↩️', title:`Make ${esc(custName(j)||'this job')} live again?`,
+    body:`The customer didn't mean to cancel. The job goes back to <b>booked</b> as Job ${esc(jobNo(j))} on ${esc(dayLabel(jobDay(j)))} with ${esc(firstName(prof(j.serviceman_id).full_name))} — the same slot, nothing else on the day moves.<br><span style="font-size:12px">WhatsApp is marked ✅ confirmed. Nothing is sent to the customer.</span>`,
+    ok:'↩ Yes, make it live', okClass:'btn-primary'}); if(!ok) return;
+  let { error }=await sb.rpc('set_job_outcome',{p_job:id, p_outcome:null, p_note:null});
+  if(!error){ const r=await sb.from('jobs').update({outcome:null, completed:false, completed_at:null, cancel_at:null, wa_status:'confirmed'}).eq('id',id); error=r.error; }
+  if(error) return toast('Not changed: '+error.message,7000);
+  Object.assign(j,{outcome:null, completed:false, completed_at:null, cancel_at:null, wa_status:'confirmed'});
+  toast(`↩ ${custName(j)||'The job'} is live again — Job ${jobNo(j)}, ${dayLabel(jobDay(j))}`,6000); rerenderCurrent(); }
 
 // 🔴 a cancelled job keeps its place on the day as a red card
 
