@@ -1820,6 +1820,7 @@
 .pl-men{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pl-man{display:flex;gap:7px;align-items:center;border:1.5px solid #c7d2fe;background:#eef2ff;border-radius:10px;padding:8px 10px;font-size:14px}
 .pl-man small{display:block;color:var(--slate);font-size:11.5px;margin-left:auto;text-align:right}
 .pl-rules{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.7;color:#334155;margin-top:6px}
+.pl-why{margin:10px 0;padding:10px 12px;border:1px solid #fcd34d;background:#fffbeb;border-radius:12px;font-size:13.5px}.pl-why>b{display:block;margin-bottom:6px;color:#92400e}.pl-why-r{display:flex;gap:8px;align-items:flex-start;margin-top:6px}.pl-why-r>div>div{color:#78350f}   /* Update 115 */
 .pl-done{display:flex;flex-direction:column;gap:8px;margin:4px 0 12px}.pl-done-r{display:flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:14px}.pl-done-r button{margin-left:auto}
 .pl-banner{background:#f5f3ff;border:1.5px dashed #a78bfa;border-radius:12px;padding:10px 14px;color:#4c1d95;font-size:13.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.pl-banner button{margin-left:auto}
 .pl-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}
@@ -2323,7 +2324,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-12-1740';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-12-1815';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -8202,26 +8203,37 @@ function plStats(tid,day){ const cfg=plCfg(tid), it=plItemsFor(tid,day), pool=ne
 // ✨ the proposal: longest waiting first, then the nearest jobs around it, until the day is full
 // 👷👷 crew: a 2-man / 3-man job is only proposed on a day that has all of that man's 2-man (or 3-man) jobs together
 const plCrew=x=>Math.max(1,+((x&&(x.j||x.nc)||{}).crew)||1);
-function plPropose(tids, days, maxKm){ maxKm=maxKm||30; const used=new Set(planItems.map(p=>p.id)); let placed=0, crewDone={};
+let plWhyNot={};   // 'tid|day' → why nothing was proposed (Update 115)
+function plPropose(tids, days, maxKm){ maxKm=maxKm||30; const used=new Set(planItems.map(p=>p.id)); let placed=0, crewDone={}; plWhyNot={};
   // crew days already in a proposal count as done
   planItems.forEach(p=>{ const x=plPool().find(y=>y.id===p.id); const c=plCrew(x); if(c>1) crewDone[p.tid+c]=true; });
   for(const day of days){ const dow=parseYmd(day).getDay();
-    for(const tid of tids){ const cfg=plCfg(tid); if(!cfg.calls||!cfg.days.includes(dow)||noJobs(tid)) continue; if(plItemsFor(tid,day).length||chHelping(tid,day).length) continue;
+    for(const tid of tids){ const cfg=plCfg(tid), why=s=>{ plWhyNot[tid+'|'+day]=s; };
+      if(!cfg.calls||noJobs(tid)) continue; if(!cfg.days.includes(dow)){ why(`doesn't work ${PL_DOW[dow]}s (🧩 Planner settings)`); continue; }
+      if(plItemsFor(tid,day).length){ why('already has a proposal that day'); continue; } if(chHelping(tid,day).length){ why('is the extra man on someone else\'s day'); continue; }
       const all=plPool().filter(x=>!used.has(x.id) && x.eircode && plPos(x.eircode) && cfg.counties.includes((eirPlace(x.eircode)||{}).county) && (x.kind!=='new'||x.nc.pdf_path) && (!plMatOnly || matOkFor(x.id,day)))
         .sort((a,b)=>((b.kind==='cancelled')-(a.kind==='cancelled'))||jaDays(b.since)-jaDays(a.since));
       // which kind of day: a 2-man or 3-man day if he still has those jobs waiting (the one waiting longest goes first), otherwise a normal 1-man day
       const crewOpts=[2,3].filter(c=>!crewDone[tid+c] && all.some(x=>plCrew(x)===c)).sort((a,b)=>jaDays(all.find(x=>plCrew(x)===b).since)-jaDays(all.find(x=>plCrew(x)===a).since));
       const crew=plForceCrew?Math.max(...plForceCrew):(crewOpts[0]||1), cand=all.filter(x=>plForceCrew?plForceCrew.has(plCrew(x)):plCrew(x)===crew), km=crew>1?60:maxKm;
-      if(!cand.length) continue; if(crew>1) crewDone[tid+crew]=true;
+      if(!cand.length){ const free=plPool().filter(x=>!used.has(x.id)), inA=free.filter(x=>x.eircode&&cfg.counties.includes((eirPlace(x.eircode)||{}).county));
+        why(!cfg.counties.length?'has no areas ticked (🧩 Planner settings)':!inA.length?`no waiting jobs in his areas (${cfg.counties.join(', ')})`
+          :inA.every(x=>!plPos(x.eircode))?`${inA.length} waiting job${inA.length===1?'':'s'} in his areas, but none could be found on the map`
+          :plMatOnly&&inA.filter(x=>plPos(x.eircode)).every(x=>!matOkFor(x.id,day))?`${inA.length} waiting in his areas, but 📦 material isn't ready for ${dayLabel(day)}`
+          :`${inA.length} waiting in his areas, but none can go yet (no sheet on a new call, or ${crew}-man jobs only)`); continue; }
       const cap=cfg.hours*60-plLive(tid,day).reduce((a,j)=>a+(+j.est_minutes||60),0), home=plPos(cfg.home), fin=plPos(plEnd(cfg))||home;
-      const seed=cand[0], pick=[seed]; let mins=plEst(seed)+plDrive(plKm(home,plPos(seed.eircode)));
-      if(mins+plDrive(plKm(plPos(seed.eircode),fin))>cap){ if(crew>1) crewDone[tid+crew]=false; continue; }   // 📅 the day is already full of live jobs
+      if(!home){ why(cfg.home?`🏠 his Start-from Eircode ${cfg.home} couldn't be found on the map — check it in 🧩 Planner settings`:'has no 🏠 Start-from Eircode (🧩 Planner settings)'); continue; }
+      // ⭐ the longest-waiting job that fits the day (there and back from his base, plus anything live) — not just the very first one
+      const fitsDay=s=>plEst(s)+plDrive(plKm(home,plPos(s.eircode)))+plDrive(plKm(plPos(s.eircode),fin))<=cap, seed=cand.find(fitsDay);
+      if(!seed){ why(cap<=60?`the day is already full of live jobs`:`all ${cand.length} waiting job${cand.length===1?' is':'s are'} too far from his base (${(eirPlace(cfg.home)||{}).town||cfg.home}) to fit in a ${cfg.hours}-hour day${plLive(tid,day).length?' with what\'s already live':''}`); continue; }
+      if(crew>1) crewDone[tid+crew]=true;
+      const pick=[seed]; let mins=plEst(seed)+plDrive(plKm(home,plPos(seed.eircode)));
       while(true){ const last=pick[pick.length-1], lp=plPos(last.eircode);
         const nxt=cand.filter(x=>!pick.includes(x)).map(x=>({x, km:Math.min(...pick.map(p=>plKm(plPos(p.eircode),plPos(x.eircode))))})).filter(o=>o.km<=km).sort((a,b)=>a.km-b.km||jaDays(b.x.since)-jaDays(a.x.since))[0];
         if(!nxt) break; const add=plEst(nxt.x)+plDrive(plKm(lp,plPos(nxt.x.eircode))); if(mins+add+plDrive(plKm(plPos(nxt.x.eircode),fin))>cap) break; mins+=add; pick.push(nxt.x); }
       const ord=[seed]; let at=plPos(seed.eircode), rest=pick.filter(x=>x!==seed); while(rest.length){ rest.sort((a,b)=>plKm(at,plPos(a.eircode))-plKm(at,plPos(b.eircode))); const n=rest.shift(); ord.push(n); at=plPos(n.eircode); }
       ord.forEach((x,i)=>{ const prev=i?ord[i-1]:null; used.add(x.id); placed++;
-        const why=x===seed?(crew>1?`👷 ${crew}-man day — all ${firstName(prof(tid).full_name)}'s ${crew}-man jobs together · longest waiting ${jaDays(x.since)} days`:x.kind==='cancelled'?`⭐ Priority — cancelled by the customer · waiting ${jaDays(x.since)} days`:`⭐ Longest waiting in ${firstName(prof(tid).full_name)}'s areas — ${jaDays(x.since)} days`)
+        const why=x===seed?(crew>1?`👷 ${crew}-man day — all ${firstName(prof(tid).full_name)}'s ${crew}-man jobs together · longest waiting ${jaDays(x.since)} days`:x.kind==='cancelled'?`⭐ Priority — cancelled by the customer · waiting ${jaDays(x.since)} days`:`⭐ Longest waiting in ${firstName(prof(tid).full_name)}'s areas${x!==cand[0]?' that fits the day':''} — ${jaDays(x.since)} days`)
           :`${crew>1?`👷 ${crew}-man job · `:''}📍 ${Math.max(1,Math.round(plKm(plPos((prev||seed).eircode),plPos(x.eircode))))} km from ${prev?esc(prev.name):esc(seed.name)} · waiting ${jaDays(x.since)} days`;
         planItems.push({id:x.id, tid, day, pos:i, name:x.name, why}); }); } }
   return placed; }
@@ -8322,11 +8334,20 @@ function plProposeBox(){ if(!hasPlan) return toast('Run update-45 in Supabase fi
       <div>⭐ Starts with the <b>longest waiting</b> job in that man's areas (🔴 cancelled by the customer first)</div><div>📍 Adds the <b>nearest</b> waiting jobs to it (within 30 km)</div>
       <div>⏱ Until the day is full — job times + driving, from his start Eircode, plus anything already live that day</div><div>🔁 Never puts a job in two places · skips jobs with no Eircode or no sheet${plMatOnly?' · 📦 only jobs with material ready by that day':''} · days that already have a proposal are left alone</div></div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="pl-go" onclick="plGo()">✨ Make proposals</button></div>`); }
-function plGo(){ const men=[...plBox.men].filter(id=>plCfg(id).calls&&!noJobs(id)), days=[...plBox.days].sort();
+async function plGo(){ const men=[...plBox.men].filter(id=>plCfg(id).calls&&!noJobs(id)), days=[...plBox.days].sort();
   if(!men.length||!days.length) return toast('Pick at least one day and one man.');
-  planWeek=plBox.week; const before=plPool().length, n=plPropose(men, days), left=plPool().filter(x=>!planItems.some(p=>p.id===x.id)); plBox=null; plSyncSoon();
+  // 📍 make sure every start / finish Eircode and every waiting job in their areas is on the map before planning (Update 115)
+  { const b=$('pl-go'); if(b){ b.disabled=true; b.innerHTML='<span class="spin"></span> Finding Eircodes on the map…'; }
+    try{ await loadRouteData(); }catch(e){}
+    const areas=new Set(men.flatMap(id=>plCfg(id).counties)), want=new Set();
+    men.forEach(id=>{ const c=plCfg(id); [c.home, c.end].forEach(e=>{ if(e&&eirValid(e)&&!geoCache.get(normEir(e))) want.add(normEir(e)); }); });
+    plPool().forEach(x=>{ if(x.eircode&&eirValid(x.eircode)&&!geoCache.has(normEir(x.eircode))&&areas.has((eirPlace(x.eircode)||{}).county)) want.add(normEir(x.eircode)); });
+    const list=[...want].slice(0,80); for(let i=0;i<list.length;i+=4) await Promise.all(list.slice(i,i+4).map(e=>{ geoCache.delete(e); return geocodeEir(e).catch(()=>null); })); }
+  if(!plBox) return; planWeek=plBox.week; const before=plPool().length, n=plPropose(men, days), left=plPool().filter(x=>!planItems.some(p=>p.id===x.id)); plBox=null; plSyncSoon();
   const per=men.map(t=>({t, d:new Set(planItems.filter(p=>p.tid===t&&days.includes(p.day)).map(p=>p.day)).size, n:planItems.filter(p=>p.tid===t&&days.includes(p.day)).length})).filter(o=>o.n);
   openModal(`<h2>✨ Proposals ready</h2><div class="pl-done">${per.map(o=>`<div class="pl-done-r"><span class="avatar sm" style="--c:${esc(prof(o.t).colour)}">${esc(initials(prof(o.t).full_name))}</span><div class="pl-done-t"><div><b>${esc(firstName(prof(o.t).full_name))}</b> ${o.d} day${o.d===1?'':'s'} · ${o.n} jobs</div><div>${days.filter(d=>plDayCrew(o.t,d)>1&&plItemsFor(o.t,d).length).map(d=>` <span class="cf-chip c${plDayCrew(o.t,d)}">🚩 ${plDayCrew(o.t,d)}-man ${esc(dayLabel(d))}</span>`).join('')}</div></div><button class="btn-outline" onclick="closeModal();plOpen('${o.t}')">🧩 Check →</button></div>`).join('')||'<div class="empty">No jobs could be placed.</div>'}</div>
+    ${(()=>{ const r=men.map(t=>({t, l:days.filter(d=>plWhyNot[t+'|'+d]&&!plItemsFor(t,d).length).map(d=>({d, w:plWhyNot[t+'|'+d]}))})).filter(o=>o.l.length);
+      return r.length?`<div class="pl-why"><b>Why some days were left empty</b>${r.map(o=>`<div class="pl-why-r"><span class="avatar sm" style="--c:${esc(prof(o.t).colour)}">${esc(initials(prof(o.t).full_name))}</span><div><b>${esc(firstName(prof(o.t).full_name))}</b>${[...new Set(o.l.map(x=>x.w))].map(w=>`<div>${esc(o.l.filter(x=>x.w===w).map(x=>dayLabel(x.d)).join(', '))} — ${esc(w)}</div>`).join('')}</div></div>`).join('')}</div>`:''; })()}
     <p class="pl-sub"><b>${n}</b> of ${before} waiting jobs proposed. <b>${left.length}</b> left in Job allocations — ${left.filter(x=>!x.eircode).length} with no Eircode, <b>${plMatOnly?left.filter(x=>x.eircode&&!days.some(d=>matOkFor(x.id,d))).length:0} waiting on material</b> (📦 not ready on these days), the rest outside the men's areas or no room on these days.</p>
     <div class="modal-actions"><button class="btn-primary" onclick="closeModal();renderAlloc()">OK</button></div>`); }
 function plOpen(tid){ jaOpen=false; document.body.classList.remove('ja-wide'); dept='calls'; ocView='plan'; openPortal(tid); }
