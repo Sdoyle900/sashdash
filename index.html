@@ -2325,7 +2325,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-13-1130';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-18-0930';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -3861,8 +3861,30 @@ async function ttFetch(url, opt){
   return r.json();
 }
 // Eircode → spot. Exact house, or 'approx' when TomTom only knows the area. Office-placed pins always win.
+// 🧭 Update 118 — TomTom sometimes puts an Eircode in the wrong place (Y14 Y407, Toberpatrick Co. Wicklow, came back near Celbridge).
+// Every pin that isn't one the office placed is checked against its Eircode's own area (Y14 = Arklow, Co. Wicklow): more than 45 km
+// away → it's moved to the Eircode's town in the right county (or the area itself), marked approximate, and saved.
+const EIR_FAR=45000, eirChecked=new Set(), areaPos=new Map();
+async function ttPlace(q, county){ try{ const d=await ttFetch(`${TT}/search/2/geocode/${encodeURIComponent(q)}.json?key=${encodeURIComponent(mapKey())}&countrySet=IE&limit=1`);
+    const r=d&&d.results&&d.results[0]; if(!r||!r.position) return null; const a=r.address||{};
+    if(county && !new RegExp(county,'i').test([a.countrySecondarySubdivision,a.countrySubdivision,a.freeformAddress].join(' '))) return null;   // wrong county → don't trust it
+    return {lat:+r.position.lat, lng:+r.position.lon}; }catch(e){ return null; } }
+async function areaCentre(a){ if(areaPos.has(a.key)) return areaPos.get(a.key);
+  let c=null; try{ c=JSON.parse(localStorage.getItem('sd-area-'+a.key)||'null'); }catch(e){}
+  if(!c){ c=await ttPlace(`${a.town}, County ${a.county}, Ireland`, a.county); try{ if(c) localStorage.setItem('sd-area-'+a.key, JSON.stringify(c)); }catch(e){} }
+  areaPos.set(a.key,c); return c; }
+async function eirSanity(eir, p){ if(!p || p.manual || !mapKey()) return p; const a=eirArea(eir); if(!a) return p;
+  const c=await areaCentre(a); if(!c || haversine(p,c)<=EIR_FAR) return p;
+  const town=(eirTowns.get(eir)||{}).town; let q=town&&town.toLowerCase()!==a.town.toLowerCase()?await ttPlace(`${town}, County ${a.county}, Ireland`, a.county):null;
+  if(!q || haversine(q,c)>EIR_FAR) q=c;
+  const f={lat:q.lat, lng:q.lng, approx:true, manual:false, moved:true};
+  sb.from('eircode_geo').upsert({eircode:eir, lat:f.lat, lng:f.lng, approx:true, manual:false}).then(()=>{},()=>{});
+  console.warn(`📍 ${eir}: TomTom's spot was ${Math.round(haversine(p,c)/1000)} km from the ${a.town} area — moved to ${town||a.town}, Co. ${a.county}`);
+  return f; }
 async function geocodeEir(eir){
-  eir=normEir(eir); if(geoCache.has(eir)) return geoCache.get(eir);
+  eir=normEir(eir); if(geoCache.has(eir)){ const c=geoCache.get(eir);
+    if(c && !c.manual && !eirChecked.has(eir)){ eirChecked.add(eir); const f=await eirSanity(eir,c); if(f!==c) geoCache.set(eir,f); }
+    return geoCache.get(eir); }
   if(!mapKey()) return null;
   let p=null;
   try{
@@ -3874,8 +3896,9 @@ async function geocodeEir(eir){
       p={lat:+r.position.lat, lng:+r.position.lon, approx:!exact, manual:false};
     }
   }catch(e){ if(e.message==='quota') toast('⚠️ TomTom free allowance used up for now — try again later',6000); return null; }
+  eirChecked.add(eir); const p0=p; p=await eirSanity(eir,p);
   geoCache.set(eir,p);
-  if(p) sb.from('eircode_geo').upsert({eircode:eir, lat:p.lat, lng:p.lng, approx:p.approx, manual:false}).then(()=>{},()=>{});
+  if(p && p===p0) sb.from('eircode_geo').upsert({eircode:eir, lat:p.lat, lng:p.lng, approx:p.approx, manual:false}).then(()=>{},()=>{});
   return p;
 }
 // Office drags a pin / taps the map → that's where this Eircode is from now on
