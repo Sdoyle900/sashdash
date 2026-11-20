@@ -1967,6 +1967,11 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .ja-mtag{font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;white-space:nowrap}.ja-mtag.b{background:#dcfce7;color:#14532d}.ja-mtag.p{background:#f5f3ff;color:#5b21b6}.ja-mtag.l{background:#e0e7ff;color:#3730a3}
 
 .sc-fwd{margin-top:6px;font-size:12.5px;padding:6px 10px}
+.et-box{display:flex;gap:12px;align-items:flex-start;margin:10px 0 14px;padding:12px 14px;border:1.5px solid #f59e0b;background:#fffbeb;border-radius:14px}   /* 🧰 Update 119 */
+.et-box.ok{border-color:#86efac;background:#f0fdf4;align-items:center}.et-box b{display:block;font-size:15px}.et-box small{display:block;color:var(--slate);font-size:12.5px;margin-top:2px}
+.et-ic{font-size:22px}.et-row{display:flex;gap:8px;margin-top:8px;max-width:420px}.et-row input{flex:1}.et-chips{margin-top:8px;font-size:12.5px;color:var(--slate);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.et-chip{border:1px solid #fcd34d;background:#fff;border-radius:999px;padding:3px 10px;font:inherit;font-weight:700;cursor:pointer}
+.et-stamp{margin:0 0 12px;padding:8px 12px;border-radius:10px;background:#eef2ff;border:1px solid #c7d2fe;font-size:13.5px;text-align:left}.et-stamp b{display:inline}.et-stamp span{color:var(--slate);font-size:12px}
 .sc-live{margin-top:8px;font-size:12.5px;padding:6px 10px;background:#16a34a;border-color:#16a34a}.sc-live:hover{background:#15803d}   /* Update 117 */
 .bf-wa{font-size:12.5px;font-weight:700;margin-top:4px}.bf-free .bf-wa{color:#15803d}.bf-sent .bf-wa{color:#b45309}.bf-ok .bf-wa{color:#b91c1c}
 .pj-row.bf-ok{border-color:#fca5a5;background:#fff7f7}
@@ -2311,7 +2316,8 @@ function dayLabel(s){ return parseYmd(s).toLocaleDateString('en-IE',{weekday:'sh
 function dayLong(s){ return parseYmd(s).toLocaleDateString('en-IE',{weekday:'long',day:'numeric',month:'long'}); }
 function todayYmd(){ return ymd(new Date()); }
 function roleLabel(r){return r==='admin'?'Office':r==='service_office'?'Service dept':'';}
-function firstName(n){return (n||'').split(' ')[0];}
+function firstName(n){ if(/^extra service team$/i.test(String(n||'').trim())) return 'Extra Service Team';   // 🧰 Update 119: never shortened to "Extra"
+  return (n||'').split(' ')[0];}
 function unreadForMe(j){return isOffice?j.admin_unread:j.tech_unread;}
 function msgCount(j){return (j.comments||[]).filter(c=>c.kind==='message').length;}   // real messages only, not status notes
 // notes on a job from anyone — the man and the office: text messages, notes added to All done / Re-book / Not home, and photos
@@ -2325,7 +2331,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-18-0930';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-20-1000';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -2599,7 +2605,7 @@ async function loadData(){
   const [pr, si, jo] = await Promise.all([
     sb.from('profiles').select('*').order('sort_order').order('full_name'),
     sb.from('sites').select('*').order('created_at'),
-    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+(hasWa?WA_COLS:'')+(hasWa&&hasSms?',wa_via':'')+(hasSig?',sig_path,sig_name,sig_at,sig_note':'')+(hasCrew?',est_minutes,crew':'')+(hasFollow?',followed_by':'')+(hasMat?MAT_COLS:'')+(hasWait?',wait_since,cancel_at':'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
+    sb.from('jobs').select(JOB_COLS+(hasContact?CONTACT_COLS:'')+(hasRoute?ROUTE_COLS:'')+(hasHist?',hist_skip':'')+(hasWa?WA_COLS:'')+(hasWa&&hasSms?',wa_via':'')+(hasSig?',sig_path,sig_name,sig_at,sig_note':'')+(hasCrew?',est_minutes,crew':'')+(hasFollow?',followed_by':'')+(hasMat?MAT_COLS:'')+(hasWait?',wait_since,cancel_at':'')+(hasDoneBy?',done_by':'')+',comments(kind,author_id,photo_path,body,created_at)').order('created_at',{ascending:false})
   ]);
   if(jo.error && hasSms && /wa_via/i.test(jo.error.message)){ hasSms=false; return loadData(); }   // database not updated yet (update-112)
   if(jo.error && hasWa && /wa_/i.test(jo.error.message)){ hasWa=false; return loadData(); }   // database not updated yet (update-21)
@@ -2609,7 +2615,8 @@ async function loadData(){
   if(jo.error && hasCrew && /est_minutes|crew/i.test(jo.error.message)){ hasCrew=false; return loadData(); }
   if(jo.error && hasFollow && /followed_by/i.test(jo.error.message)){ hasFollow=false; return loadData(); }   // database not updated yet (update-33)
   if(jo.error && hasMat && /mat_/i.test(jo.error.message)){ hasMat=false; return loadData(); }   // database not updated yet (update-44)
-  if(jo.error && hasWait && /wait_since|cancel_at/i.test(jo.error.message)){ hasWait=false; return loadData(); }   // database not updated yet (update-45)
+  if(jo.error && hasWait && /wait_since|cancel_at/i.test(jo.error.message)){ hasWait=false; return loadData(); }
+  if(jo.error && hasDoneBy && /done_by/i.test(jo.error.message)){ hasDoneBy=false; hasEt=false; return loadData(); }   // database not updated yet (update-119)   // database not updated yet (update-45)
   if(jo.error && hasRoute && /eircode|avail/i.test(jo.error.message)){ hasRoute=false; return loadData(); }   // database not updated yet (update-15)   // database not updated yet (update-10)
   const err = pr.error||si.error||jo.error;
   if(err){ toast('Could not load: '+err.message, 5000); return; }
@@ -3695,7 +3702,7 @@ function renderPortal(){
     ${isOffice&&hasShares&&!sharedSite&&sJobs.length?`<button class="btn-outline sh-btn" onclick="openShareModal(${site.work_date?`{kind:'days',date:'${site.work_date}'}`:`{kind:'site',siteId:'${site.id}'}`})" title="Let another service man cover ${site.work_date?'this day':'this folder'}">🤝 Share</button>`:''}
     ${isOffice&&!sharedSite?`<button class="btn-outline" onclick="openSiteModal('${site.id}')">✎ ${site.work_date?'Day':D.one[0].toUpperCase()+D.one.slice(1)}</button>${site.work_date?'':'<button class="btn-primary" onclick="openUploadModal()">⬆ Upload job</button>'}`:''}
     ${sharedSite?`<span class="tag share">🤝 ${esc(firstName(prof(site.serviceman_id).full_name))}'s folder — shared</span>`:''}
-  </div>`;
+  </div>${etBox(site)}`;
   // Private Calls day: numbered job boxes — Job 1, Job 2, Job 3… plus a drop box for the next one
   if(site.work_date){
   { const c=Math.max(1,...sJobs.filter(isOpenJob).map(j=>+j.crew||1)); if(isOffice&&c>1&&site.work_date>=todayYmd()) html+=crewBox(c,site.serviceman_id,site.work_date,`${sJobs.filter(j=>isOpenJob(j)&&+j.crew>1).length} of the jobs need ${c} men`); }
@@ -4545,7 +4552,7 @@ function pastCalls(j){
     if(keysMatch(k,[r.phone_key,r.phone2_key],r.eir_key)) out.push({key:r.id, src:'hist', date:r.work_date, man:r.serviceman_name, outcome:r.outcome, note:r.note||'', job_no:r.job_no, name:r.cust_name, srcJob:r.source_job_id||null}); }
   for(const x of jobs){ if(x.id===j.id || deptOf(x)!=='calls' || skip.has(x.id)) continue; const xd=jobDay(x); if(xd>=d) continue;
     const xk=jobKeys(x); if(!keysMatch(k,xk.phones,xk.eir)) continue;
-    out.push({key:x.id, src:'live', date:xd, man:prof(x.serviceman_id).full_name, outcome:jobOutcome(x), note:histNote(x), job_no:x.ref_no, name:custName(x), job:x}); }
+    out.push({key:x.id, src:'live', date:xd, man:etWho(x)||prof(x.serviceman_id).full_name, outcome:jobOutcome(x), note:histNote(x), job_no:x.ref_no, name:custName(x), job:x}); }
   for(const c of out) c.imp=callImports.find(i=>i.job_id===j.id && i.call_key===c.key)||null;
   return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
 }
@@ -4559,7 +4566,7 @@ function histNote(j){
 function histRow(j, outcome){
   const k=jobKeys(j), t=prof(j.serviceman_id);
   return {phone_key:k.phones[0]||null, phone2_key:k.phones[1]||null, eir_key:k.eir||null, cust_name:custName(j), job_no:j.ref_no||null,
-    work_date:jobDay(j), serviceman_id:j.serviceman_id, serviceman_name:t.full_name||'', outcome:outcome||jobOutcome(j)||null, note:histNote(j), source_job_id:j.id};
+    work_date:jobDay(j), serviceman_id:j.serviceman_id, serviceman_name:etWho(j)||t.full_name||'', outcome:outcome||jobOutcome(j)||null, note:histNote(j), source_job_id:j.id};
 }
 async function saveHistRows(rows){
   if(!hasHist || !rows.length) return;
@@ -5328,7 +5335,7 @@ function promptTargets(j){ const out=[j.serviceman_id]; const t=todayYmd();
   return out.filter(Boolean); }
 function promptBtnRefresh(){
   const b=$('jv-show'); if(!b) return;
-  const ok=hasPrompt && isOffice && !previewing && job && prof(job.serviceman_id).role==='serviceman';
+  const ok=hasPrompt && isOffice && !previewing && job && prof(job.serviceman_id).role==='serviceman' && !isExtra(job.serviceman_id);   // 🧰 no phone to show it to
   b.classList.toggle('hidden', !ok); if(!ok) return;
   const t=promptTargets(job); b.innerHTML=`📲 <span class="lbl">Show to ${esc(firstName(prof(t[0]).full_name))}${t.length>1?' ▾':''}</span>`;
   promptStatus();
@@ -5988,6 +5995,7 @@ function jaCrewChips(all){ const base=all.filter(jaKindOk), n=c=>base.filter(x=>
 
 // ══ ✍️ Customer signature — when the service man ticks All done, the customer signs on his phone ══
 let hasSig=true, hasCrew=true, hasFollow=true, hasWait=true;
+let hasDoneBy=true, hasEt=true;   // 🧰 Extra Service Team (update-119)
 function sigCapture(j){
   return new Promise(res=>{
     const t=prof(j.serviceman_id), st=sites.find(x=>x.id===j.site_id)||{}, pl=(typeof eirPlace==='function'&&j.eircode)?eirPlace(j.eircode):null;
@@ -6933,7 +6941,7 @@ function updateJobHeader(){
   if(!job) return; try{ promptBtnRefresh(); }catch(e){}
   const s=sites.find(x=>x.id===job.site_id)||{}, t=prof(job.serviceman_id);
   $('jv-title').textContent=job.title;
-  $('jv-sub').textContent=[DEPT[deptOf(job)].label, s.name, isOffice?t.full_name:null, job.ref_no?('#'+job.ref_no):null].filter(Boolean).join(' · ');
+  $('jv-sub').textContent=[DEPT[deptOf(job)].label, s.name, isOffice?t.full_name:null, isOffice&&job.done_by?`👤 Done by ${job.done_by}`:null, job.ref_no?('#'+job.ref_no):null].filter(Boolean).join(' · ');
   $('jv-cc').innerHTML=contactChips(job)+eirChip(job)+(isOffice?availChip(job):'')+estChip(job)+crewChip(job)+sigChip(job); $('jv-cc').classList.toggle('hidden', !$('jv-cc').innerHTML);
   const cur=jobOutcome(job);
   document.querySelectorAll('#oc-group .done-btn').forEach(b=>{ const on=b.dataset.o===cur; b.classList.toggle('on',on); b.querySelector('.box').textContent=on?'✓':''; });
@@ -6972,12 +6980,14 @@ async function setOutcome(o){
   const id=job&&job.id, j0=jobs.find(x=>x.id===id), had=hasMat&&j0&&(j0.mat_ready||j0.mat_due), was=j0&&jobOutcome(j0);
   const r=await (async()=>{ if(blockPreview()) return;
   const cur=jobOutcome(job), want = cur===o ? null : o;   // tapping the ticked one again clears it
+  const etJob=isExtra(job.serviceman_id)&&deptOf(job)==='calls', et=etJob?etName(job.serviceman_id,jobDay(job)):'';   // 🧰 Update 119
+  if(want&&etJob&&!et){ toast(`🧰 First fill in who worked this ${ET_LABEL} day — the box at the top of the day.`,6000); return; }
   let note=null, sig=null;
   if(want==='done' && !isOffice && hasSig && deptOf(job)==='calls'){
     sig=await sigCapture(job); if(!sig) return;
   } else if(want==='done'){
     const ok=await confirmBox({icon:'✅', title:'All done?',
-      body:`Do you want to proceed with this, as it will remove the file from the dashboard?<br><span style="font-size:12px">It moves to the <b>Done</b> tab — nothing is deleted.</span>`,
+      body:`${et?`<div class="et-stamp">👤 <b>Done by ${esc(et)}</b> (🧰 ${ET_LABEL})</div>`:''}Do you want to proceed with this, as it will remove the file from the dashboard?<br><span style="font-size:12px">It moves to the <b>Done</b> tab — nothing is deleted.</span>`,
       ok:'✓ Yes, all done', okClass:'btn-primary'});
     if(!ok) return;
   } else if(want){
@@ -6993,6 +7003,7 @@ async function setOutcome(o){
   }
   if(error) return toast('Error: '+error.message+(/outcome/i.test(error.message)?' — run update-7 in Supabase':''),7000);
   job.outcome=want; job.completed=want==='done'; job.completed_at=want==='done'?new Date().toISOString():null;
+  if(etJob){ const v=want?et:null; const r2=await sb.from('jobs').update({done_by:v}).eq('id',job.id); if(!r2.error){ job.done_by=v; const jj=jobs.find(x=>x.id===job.id); if(jj) jj.done_by=v; } }
   if(sig){ try{ await sigSave(job, sig); }catch(e){ toast('Job done, but the signature didn\'t save: '+(e.message||e),7000); } }
   updateJobHeader();
   toast(want?`${OUTCOME[want].icon} ${outcomeText(job)}`:'Status cleared'); scheduleReload();
@@ -7003,11 +7014,12 @@ async function setOutcome(o){
   return r;
 }
 function outcomeNoteBox(o){
-  const p=new Promise(res=>{
+  const p=new Promise(res=>{ const et=job&&isExtra(job.serviceman_id)&&deptOf(job)==='calls'?etName(job.serviceman_id,jobDay(job)):'';
     const t = o==='rebook' ? 'Re-book — job unfinished?' : 'Customer not home?';
     const ph = o==='rebook' ? 'e.g. need 2 more hinges, back Tuesday' : 'e.g. called twice, left a card';
     openModal(`<div style="text-align:center"><div style="font-size:40px">${OUTCOME[o].icon}</div><h2 style="margin:6px 0 4px">${t}</h2>
       <p style="color:var(--slate);font-size:13px;margin-bottom:12px">The job stays open and is flagged <b>${OUTCOME[o].label}</b> so the office can re-book it.</p></div>
+      ${et?`<div class="et-stamp">👤 <b>Done by ${esc(et)}</b> (🧰 ${ET_LABEL}) <span>— kept on the job, in Customer history and in Statistics</span></div>`:''}
       <div class="field-group"><label>Note for the office <span class="optional">(optional)</span></label><textarea id="oc-note" rows="2" placeholder="${ph}"></textarea></div>
       <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="oc-ok">${OUTCOME[o].icon} Confirm</button></div>`);
     window._confirmResolve=v=>res(v===false?null:v);
@@ -8278,7 +8290,33 @@ async function loadCrew(){ if(!hasCrewDays||!me) return;
   try{ const r=await sb.from('plan_crew').select('*'); if(r.error){ if(/plan_crew/i.test(r.error.message)) hasCrewDays=false; return; }
     const m={}; (r.data||[]).forEach(x=>{ m[chKey(x.man_id,String(x.day).slice(0,10))]={men:x.men||[], others:x.others||[]}; }); crewHelp=m;
     if(!isOffice){ const q=await sb.rpc('my_crew_days'); crewRemote=q.error?[]:(q.data||[]); }
+    if(isOffice&&hasEt){ const e=await sb.from('extra_team_days').select('*');   // 🧰 Update 119
+      if(e.error){ if(/extra_team/i.test(e.error.message)) hasEt=false; } else { const n={}; (e.data||[]).forEach(x=>{ n[chKey(x.man_id,String(x.day).slice(0,10))]=x.worker; }); etDays=n; } }
   }catch(e){ console.warn('crew',e); } }
+// 🧰 Extra Service Team (Update 119): a diary with no login — the service department books its calls and marks the results.
+// One man who isn't on SashDash works it each day; his name is kept for the day (extra_team_days) and stamped on every result (jobs.done_by).
+let etDays={};
+const isExtra=id=>!!(profiles.find(p=>p.id===id)||{}).extra_team;
+const etName=(tid,day)=>etDays[chKey(tid,day)]||'';
+const ET_LABEL='Extra Service Team';
+const etWho=j=>j&&j.done_by?`${j.done_by} (${ET_LABEL})`:'';
+function etRecent(){ const c={}; Object.values(etDays).forEach(n=>{ c[n]=(c[n]||0)+1; }); return Object.keys(c).sort((a,b)=>c[b]-c[a]).slice(0,6); }
+function etBox(site){ if(!isOffice||!site.work_date||!isExtra(site.serviceman_id)) return ''; const tid=site.serviceman_id, day=site.work_date, n=etName(tid,day);
+  if(!hasEt) return `<div class="et-box"><span class="et-ic">⚠</span><div><b>Run update-119 in Supabase</b><small>so SashDash can keep who worked each ${ET_LABEL} day.</small></div></div>`;
+  if(n) return `<div class="et-box ok"><span class="et-ic">👤</span><div style="flex:1"><b>Worked by ${esc(n)}</b><small>🧰 ${ET_LABEL} day · every result on this day is stamped “Done by ${esc(n)}”</small></div>${previewing?'':`<button class="btn-outline" onclick="etEdit('${tid}','${day}')">✎ Change</button>`}</div>`;
+  const rec=etRecent();
+  return `<div class="et-box"><span class="et-ic">⚠</span><div style="flex:1"><b>Who's working this ${ET_LABEL} day?</b><small>Type the man's name — he isn't on SashDash. Results can't be marked until it's filled in.</small>
+    ${previewing?'':`<div class="et-row"><input id="et-name" placeholder="e.g. Pat Kelly" maxlength="60" onkeydown="if(event.key==='Enter')etSave('${tid}','${day}')"><button class="btn-primary" onclick="etSave('${tid}','${day}')">✓ Save</button></div>
+    ${rec.length?`<div class="et-chips">Used before: ${rec.map(r=>`<button class="et-chip" onclick="$('et-name').value=this.textContent;etSave('${tid}','${day}')">${esc(r)}</button>`).join('')}</div>`:''}`}</div></div>`; }
+function etEdit(tid,day){ delete etDays[chKey(tid,day)]; rerenderCurrent(); setTimeout(()=>{ const i=$('et-name'); if(i) i.focus(); },50); }
+async function etSave(tid,day){ if(blockPreview()) return; const v=(($('et-name')||{}).value||'').trim().replace(/\s+/g,' '); if(!v) return toast('Type his name first.');
+  const { error }=await sb.from('extra_team_days').upsert({man_id:tid, day, worker:v, set_by:me.id, set_at:new Date().toISOString()},{onConflict:'man_id,day'});
+  if(error) return toast('Not saved: '+error.message+(/extra_team/i.test(error.message)?' — run update-119 in Supabase':''),7000);
+  etDays[chKey(tid,day)]=v;
+  // results already marked that day (before the name was filled in) get the name too
+  const ids=jobs.filter(j=>j.serviceman_id===tid&&jobDay(j)===day&&jobOutcome(j)&&!j.done_by).map(j=>j.id);
+  if(ids.length){ const r=await sb.from('jobs').update({done_by:v}).in('id',ids); if(!r.error) jobs.forEach(j=>{ if(ids.includes(j.id)) j.done_by=v; }); }
+  toast(`👤 ${v} saved for this ${ET_LABEL} day`,3500); rerenderCurrent(); }
 const chKey=(tid,day)=>tid+'|'+day;
 const chOf=(tid,day)=>crewHelp[chKey(tid,day)]||{men:[],others:[]};
 const chCount=(tid,day)=>{ const h=chOf(tid,day); return h.men.length+h.others.length; };
@@ -8713,9 +8751,10 @@ async function openStats(){
   const r=await (async()=>{ if(!isOffice) return; const today=todayYmd(), from=ymd(addDays(parseYmd(today),-stP)), cj=jobs.filter(j=>deptOf(j)==='calls');
   if(!stHist[from+'|'+today]) openModal(`<div class="st"><h2>📊 Statistics — Service Department</h2><div class="empty"><span class="spin"></span> Adding up the visits…</div></div>`);
   const hist=await stLoadHist(from,today);
-  const live=cj.filter(j=>{ const d=jobDay(j); return d&&d>=from&&d<=today&&(j.completed||jobOutcome(j)); }).map(j=>({id:j.id, man:j.serviceman_id, day:jobDay(j), o:jobOutcome(j), j, name:custName(j), key:phoneKey(j.customer_phone||j.ref_no)}));
+  const live=cj.filter(j=>{ const d=jobDay(j); return d&&d>=from&&d<=today&&(j.completed||jobOutcome(j)); }).map(j=>({id:j.id, man:isExtra(j.serviceman_id)&&j.done_by?'et:'+j.done_by:j.serviceman_id, day:jobDay(j), o:jobOutcome(j), j, name:custName(j), key:phoneKey(j.customer_phone||j.ref_no)}));
   const seen=new Set(live.map(v=>v.id+'|'+v.day));
-  const visits=[...live, ...hist.filter(h=>h.outcome&&h.outcome!=='cancelled'&&!seen.has(h.source_job_id+'|'+h.work_date)).map(h=>({id:h.source_job_id, man:h.serviceman_id, day:String(h.work_date).slice(0,10), o:h.outcome, j:null, name:h.cust_name||'', key:h.phone_key}))].filter(v=>['done','rebook','not_home'].includes(v.o));
+  const etHist=h=>isExtra(h.serviceman_id)&&/\(Extra Service Team\)$/.test(h.serviceman_name||'')?'et:'+h.serviceman_name.replace(/\s*\(Extra Service Team\)$/,''):h.serviceman_id;
+  const visits=[...live, ...hist.filter(h=>h.outcome&&h.outcome!=='cancelled'&&!seen.has(h.source_job_id+'|'+h.work_date)).map(h=>({id:h.source_job_id, man:etHist(h), day:String(h.work_date).slice(0,10), o:h.outcome, j:null, name:h.cust_name||'', key:h.phone_key}))].filter(v=>['done','rebook','not_home'].includes(v.o));
   const inP=cj.filter(j=>{ const d=jobDay(j); return d&&d>=from&&d<=today; }), fin=visits;
   const cnt=k=>fin.filter(v=>v.o===k).length, done=cnt('done'), rb=cnt('rebook'), nh=cnt('not_home'), cx=cj.filter(j=>jobOutcome(j)==='cancelled').length, tot=done+rb+nh||1;
   const pct=(a,b)=>b?Math.round(a/b*100)+'%':'—';
@@ -8724,7 +8763,8 @@ async function openStats(){
   const wa=cj.filter(j=>j.wa_status&&jobDay(j)>=from), wOk=wa.filter(j=>['confirmed','phone_ok'].includes(j.wa_status)).length, wNr=wa.filter(j=>j.wa_status==='noreply').length, wCant=wa.filter(j=>j.wa_status==='cant').length, wSent=wa.filter(j=>!['no_wa','stopped'].includes(j.wa_status)).length;
   const doneLive=live.filter(v=>v.o==='done'), signed=doneLive.filter(v=>v.j.sig_at).length;
   const tile=(v,l,sub,cls)=>`<div class="st-tile ${cls||''}"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:''}</div>`;
-  const men=profiles.filter(p=>p.role==='serviceman'&&(visits.some(v=>v.man===p.id)||cj.some(j=>j.serviceman_id===p.id&&isOpenJob(j)))).map(p=>{ const f=fin.filter(v=>v.man===p.id), d=f.filter(v=>v.o==='done').length, r=f.filter(v=>v.o==='rebook').length, n=f.filter(v=>v.o==='not_home').length;
+  const etRows=[...new Set(visits.map(v=>v.man).filter(m=>String(m).startsWith('et:')))].map(k=>({id:k, full_name:`${k.slice(3)} (🧰 ${ET_LABEL})`, role:'serviceman', colour:'#0d9488'}));
+  const men=[...profiles,...etRows].filter(p=>p.role==='serviceman'&&(visits.some(v=>v.man===p.id)||cj.some(j=>j.serviceman_id===p.id&&isOpenJob(j)))).map(p=>{ const f=fin.filter(v=>v.man===p.id), d=f.filter(v=>v.o==='done').length, r=f.filter(v=>v.o==='rebook').length, n=f.filter(v=>v.o==='not_home').length;
     const days=new Set(f.map(v=>v.day)).size, ahead=cj.filter(j=>j.serviceman_id===p.id&&isOpenJob(j)&&jobDay(j)>today).length;
     return {p, d, r, n, t:d+r+n, days, ahead, sig:doneLive.filter(v=>v.man===p.id&&v.j.sig_at).length, dl:doneLive.filter(v=>v.man===p.id).length}; }).sort((a,b)=>b.t-a.t);
   const bars=(rows,unit)=>{ const mx=Math.max(1,...rows.map(r=>r[1])); return `<div class="st-bars">${rows.map(([l,v,s])=>`<div class="st-bar"><span class="st-bl">${esc(l)}</span><span class="st-bt"><i style="width:${(v/mx*100).toFixed(1)}%"></i></span><b>${v}</b>${s?`<small>${esc(s)}</small>`:''}</div>`).join('')}</div>`; };
