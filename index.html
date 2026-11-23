@@ -1967,6 +1967,56 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .ja-mtag{font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;white-space:nowrap}.ja-mtag.b{background:#dcfce7;color:#14532d}.ja-mtag.p{background:#f5f3ff;color:#5b21b6}.ja-mtag.l{background:#e0e7ff;color:#3730a3}
 
 .sc-fwd{margin-top:6px;font-size:12.5px;padding:6px 10px}
+/* 🚐 Update 120 — Vans (office + office admin) */
+body:not(.vn-on) #view-vans{display:none!important}
+body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-on #view-fit{display:none!important}
+.d-vans.on{background:#0f766e!important;color:#fff!important;border-color:#0f766e!important}
+.vn-wrap{max-width:1260px;margin:0 auto;padding:18px 20px 60px}
+.vn-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}.vn-head h1{font-size:24px;margin:0}.vn-head .sub{color:var(--slate);font-size:13px}
+.vn-alerts{border:1.5px solid #fca5a5;background:#fff1f2;border-radius:14px;padding:12px 14px;margin-bottom:16px}
+.vn-alerts h3{margin:0 0 8px;font-size:15px;color:#9f1239}.vn-al{display:flex;gap:10px;align-items:center;padding:7px 0;border-top:1px solid #fecdd3;font-size:14px}.vn-al:first-of-type{border-top:0}
+.vn-al b{min-width:110px}.vn-al .when{margin-left:auto;font-weight:800}.vn-al.amber .when{color:#b45309}.vn-al.red .when{color:#be123c}
+.vn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.vn-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.04)}.vn-card:hover{border-color:#5eead4;box-shadow:0 4px 14px rgba(15,118,110,.12)}
+.vn-reg{display:inline-block;font-family:Arial,sans-serif;font-weight:800;letter-spacing:.06em;background:#fff;border:2px solid #111;border-radius:6px;padding:2px 8px 2px 4px;font-size:16px}
+.vn-reg i{font-style:normal;background:#1d4ed8;color:#fde047;font-size:9px;padding:6px 3px;margin-right:6px;border-radius:3px;vertical-align:2px}
+.vn-model{color:var(--slate);font-size:13px;margin:6px 0 10px}.vn-drv{display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:10px}
+.vn-rows{display:grid;grid-template-columns:1fr 1fr;gap:6px}.vn-chip{border-radius:10px;padding:6px 8px;font-size:12px;background:#f1f5f9;color:#334155}.vn-chip b{display:block;font-size:13.5px;color:#0f172a}
+.vn-chip.ok{background:#f0fdf4}.vn-chip.amber{background:#fffbeb;box-shadow:inset 0 0 0 1px #fcd34d}.vn-chip.red{background:#fff1f2;box-shadow:inset 0 0 0 1px #fda4af}
+.vn-bar{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-top:4px}.vn-bar i{display:block;height:100%;background:#14b8a6}.vn-bar.amber i{background:#f59e0b}.vn-bar.red i{background:#e11d48}
+.vn-det{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.vn-dh{display:flex;gap:16px;align-items:center;padding:16px;background:linear-gradient(90deg,#f0fdfa,#fff);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.vn-tabs{display:flex;gap:6px;padding:10px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap}.vn-tab{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer}.vn-tab.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.vn-body{padding:16px}.vn-kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}.vn-kv div{border:1px solid var(--border);border-radius:12px;padding:10px 12px}.vn-kv small{display:block;color:var(--slate);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700}.vn-kv b{font-size:15px}
+.vn-ren{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}.vn-rc{border-radius:14px;padding:14px;border:1px solid var(--border)}.vn-rc h4{margin:0 0 6px;font-size:15px}.vn-rc .big{font-size:22px;font-weight:800}.vn-rc small{color:var(--slate)}
+.vn-rc.ok{background:#f0fdf4;border-color:#bbf7d0}.vn-rc.amber{background:#fffbeb;border-color:#fcd34d}.vn-rc.red{background:#fff1f2;border-color:#fda4af}
+.vn-svc{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}@media(max-width:900px){.vn-svc{grid-template-columns:1fr}}
+.vn-hist{border:1px solid var(--border);border-radius:12px;overflow:hidden}.vn-hi{padding:10px 12px;border-top:1px solid var(--border);font-size:13.5px}.vn-hi:first-child{border-top:0}.vn-hi .t{display:flex;gap:8px;align-items:baseline}.vn-hi .t b{font-size:14.5px}.vn-hi .t span{margin-left:auto;color:var(--slate);font-size:12.5px}
+.vn-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}.vn-tags span{background:#ecfeff;border:1px solid #a5f3fc;border-radius:999px;padding:1px 8px;font-size:12px}
+.vn-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vn-form .full{grid-column:1/-1}.vn-form label{font-size:12px;font-weight:700;color:var(--slate);display:block;margin-bottom:3px}.vn-form input,.vn-form select,.vn-form textarea{width:100%}
+.vn-ticks{display:grid;grid-template-columns:1fr 1fr;gap:6px}.vn-ticks label{display:flex;gap:6px;align-items:center;font-size:13.5px;border:1px solid var(--border);border-radius:10px;padding:7px 9px;font-weight:600;color:#0f172a}
+.vn-chk{display:grid;grid-template-columns:1fr auto;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden}.vn-chk>div{padding:8px 12px;border-top:1px solid var(--border);font-size:14px}.vn-chk>div:nth-child(-n+2){border-top:0}
+.vn-ok3{display:flex;gap:4px}.vn-ok3 span{border:1px solid var(--border);border-radius:8px;padding:2px 9px;font-size:12.5px;font-weight:700}.vn-ok3 .g{background:#dcfce7;border-color:#86efac}.vn-ok3 .r{background:#fee2e2;border-color:#fca5a5}
+.vn-docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}.vn-doc{border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;gap:10px;align-items:center}.vn-doc .ic{font-size:28px}.vn-doc small{display:block;color:var(--slate)}
+.vn-note{font-size:12.5px;color:var(--slate);margin-top:10px}
+.vn-src{margin-left:auto;white-space:nowrap;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 8px}.vn-src.app{background:#eef2ff;color:#3730a3}.vn-src.off{background:#fef3c7;color:#92400e}
+.vn-seg{display:inline-flex;border:1px solid var(--border);border-radius:999px;overflow:hidden}.vn-seg button{border:0;background:#fff;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer}.vn-seg button.on{background:#0f766e;color:#fff}
+.vnp-ban{display:flex;align-items:center;gap:10px;margin:10px 12px;padding:12px 14px;border-radius:16px;background:#0f766e;color:#fff;box-shadow:0 4px 14px rgba(15,118,110,.3)}.vnp-ban .i{font-size:26px}.vnp-ban b{display:block;font-size:16px}.vnp-ban small{opacity:.85}.vnp-ban .go{margin-left:auto;background:#fff;color:#0f766e;font-weight:800;border-radius:999px;padding:6px 12px}
+.vnp{position:fixed;inset:0;background:#f8fafc;z-index:9000;display:flex;flex-direction:column}.vnp-top{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0f172a;color:#fff}.vnp-top button{background:none;border:0;color:#fff;font-size:24px}.vnp-top b{font-size:17px}.vnp-top span{margin-left:auto}.vnp-top .vn-reg{font-size:12px;color:#111}
+.vnp-body{flex:1;overflow:auto;padding:12px}.vnp-km{display:block;font-weight:700;font-size:14px;margin-bottom:10px}.vnp-km input{display:block;width:100%;margin-top:6px;font-size:24px;font-weight:800;padding:10px;border-radius:12px}
+.vnp-row{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:8px}.vnp-row .i{font-size:24px}.vnp-row b{display:block;font-size:15.5px}.vnp-row small{color:var(--slate);font-size:12.5px}.vnp-row>div{flex:1}
+.vnp-row button{width:48px;height:44px;border-radius:12px;border:1.5px solid var(--border);background:#fff;font-size:20px;font-weight:800}.vnp-row .ok.on{background:#16a34a;color:#fff;border-color:#16a34a}.vnp-row .bad.on{background:#e11d48;color:#fff;border-color:#e11d48}
+.vnp-row.ok{border-color:#86efac}.vnp-row.bad{border-color:#fda4af;background:#fff1f2}.vnp-fault{display:flex;gap:8px;margin:-4px 0 10px}.vnp-fault textarea{flex:1;border-radius:12px;min-height:54px}.vnp-fault .ph{border:1.5px dashed #fda4af;background:#fff;border-radius:12px;padding:0 12px;font-weight:700}
+.vnp-foot{padding:12px;background:#fff;border-top:1px solid var(--border);text-align:center}.vnp-send{width:100%;border:0;border-radius:14px;background:#0f766e;color:#fff;font-size:17px;font-weight:800;padding:14px}.vnp-send.off{background:#cbd5e1}.vnp-foot small{display:block;margin-top:6px;color:var(--slate)}
+.vnp-done{flex:1;text-align:center;padding:40px 20px}.vnp-done .big{font-size:64px}.vnp-done h2{margin:10px 0 4px}.vnp-sum{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;margin:16px 0;display:flex;flex-direction:column;gap:4px}
+
+.vn-allok{border:1.5px solid #86efac;background:#f0fdf4;border-radius:14px;padding:12px 14px;margin-bottom:16px;font-weight:700;color:#166534}
+.vn-al{cursor:pointer}.vn-next{font-size:14px;color:#92400e;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:8px 12px;margin-top:10px}
+.vn-tags span.bad{background:#fff1f2;border-color:#fda4af;color:#9f1239}.vn-doc{cursor:pointer;position:relative}.vn-doc.add{border-style:dashed;justify-content:center;color:var(--slate)}
+.vn-x{position:absolute;top:6px;right:6px;border:0;background:none;color:#94a3b8;cursor:pointer;font-size:14px}.vn-x:hover{color:#b91c1c}
+.vn-ok3 span{cursor:pointer}.vn-switch{display:flex;gap:8px;align-items:flex-start;margin-top:8px;padding:9px 11px;border:1.5px solid #c7d2fe;background:#eef2ff;border-radius:10px;font-size:13.5px;font-weight:600;color:#0f172a}.vn-switch small{font-weight:400;color:var(--slate)}.vn-switch input{width:auto;margin-top:3px}
+.vnp-fault .ph{display:flex;align-items:center;cursor:pointer}.vnp-ph{font-size:13px;color:var(--slate);margin:-4px 0 10px}
+
 .et-box{display:flex;gap:12px;align-items:flex-start;margin:10px 0 14px;padding:12px 14px;border:1.5px solid #f59e0b;background:#fffbeb;border-radius:14px}   /* 🧰 Update 119 */
 .et-box.ok{border-color:#86efac;background:#f0fdf4;align-items:center}.et-box b{display:block;font-size:15px}.et-box small{display:block;color:var(--slate);font-size:12.5px;margin-top:2px}
 .et-ic{font-size:22px}.et-row{display:flex;gap:8px;margin-top:8px;max-width:420px}.et-row input{flex:1}.et-chips{margin-top:8px;font-size:12.5px;color:var(--slate);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -2134,6 +2184,7 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
   <main id="view-portal" class="page hidden"></main>
   <main id="view-oa" class="page hidden"></main>
   <main id="view-fit" class="page hidden"></main>
+  <main id="view-vans" class="page hidden"></main>
 </div>
 
 <!-- ═════════ JOB VIEW ═════════ -->
@@ -2331,7 +2382,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-20-1000';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-23-1030';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -2508,6 +2559,7 @@ async function startApp(user){
   subscribeRealtime();
   promptWatch();
   try{ ocWatch(); }catch(e){}
+  try{ vnStart(); vnLoadMine().then(()=>vnPhoneBanner()); }catch(e){}   // 🚐 Update 120
   initNotifications();
   openJobFromLink();
   await ensureWeeks();
@@ -2745,7 +2797,7 @@ function renderDeptBar(){   // 8 parts, folded in the tidy-up (Stage 3) — each
 };
   const part1=function(){ const r=part0.apply(this,arguments); try{ oaBtn(); }catch(e){ console.warn(e); } return r; };
   const part2=function(){ const r=part1.apply(this,arguments); try{ fitBtn(); }catch(e){ console.warn(e); } return r; };
-  const part3=function(){ const r=part2.apply(this,arguments); try{ fySplitBar(); }catch(e){ console.warn(e); } try{ fyBrandHeader(); }catch(e){ console.warn(e); } return r; };
+  const part3=function(){ const r=part2.apply(this,arguments); try{ vnBtn(); }catch(e){ console.warn(e); } try{ fySplitBar(); }catch(e){ console.warn(e); } try{ fyBrandHeader(); }catch(e){ console.warn(e); } return r; };
   const part4=function(){ const r=part3.apply(this,arguments); try{ if(prodSt==='idle'&&(oaAllowed()||fitAllowed())) setTimeout(()=>prodLoad(),0); }catch(e){} return r; };
   // ── the department bar: only their own button (tablets: no bar at all) ──
   const part5=function(){ const R=u83R(); if(!R) return part4.apply(this,arguments);
@@ -2754,6 +2806,7 @@ function renderDeptBar(){   // 8 parts, folded in the tidy-up (Stage 3) — each
   if(R.kind==='tab'){ bar.classList.add('hidden'); bar.innerHTML=''; return; }
   bar.classList.remove('hidden'); bar.innerHTML='<div class="dept-inner"></div>';
   try{ if(R.kind==='oa') oaBtn(); else fitBtn(); }catch(e){ console.warn(e); }
+  try{ vnBtn(); }catch(e){ console.warn(e); }   // 🚐 Update 120: office admin login
   if(R.kind==='dept'){ const b=bar.querySelector('.d-fit'); if(b){ const n=prodSt==='ready'?u83DeptOpen():null; b.innerHTML=`<span class="di">🏭</span>${R.btn}${n!=null?`<span class="dc">${n}</span>`:''}`; b.setAttribute('onclick',"fitOpen('alloc')"); b.title=R.lab.replace(/^\S+\s/,''); } }
   try{ fySplitBar(); }catch(e){ console.warn(e); } try{ fyBrandHeader(); }catch(e){} };
   // department bar: a team login has none (just its phone); the yard has one button
@@ -3725,13 +3778,13 @@ function renderPortal(){
       ${!list.length&&!(isOffice&&(jobFilter==='all'||jobFilter==='open'))&&!(jobFilter==='all'&&coverJobsFor(currentTechId,'calls').some(j=>{const x=siteOf(j);return x&&x.work_date===site.work_date;}))?`<div class="empty" style="grid-column:1/-1;margin:0"><div class="big">☕</div>${jobFilter==='all'?'No jobs for this day yet.':'No jobs with this status on this day.'}</div>`:''}
     </div>`;
     if(jobFilter==='all') html+=coverDayHtml(currentTechId, site.work_date);
-    $('view-portal').innerHTML=html; attachSlotDrop(); if(isOffice && !previewing && jobFilter==='all') attachSlotReorder(site.id);
+    $('view-portal').innerHTML=html; try{ vnPhoneBanner(); }catch(e){} attachSlotDrop(); if(isOffice && !previewing && jobFilter==='all') attachSlotReorder(site.id);
     if(hasRoute && isOffice && dayMapOn()) drawDayMap(site.id); return;
   }
   html+= shown.length
     ? `<div class="job-list">${shown.map(jobCard).join('')}</div>`
     : `<div class="empty"><div class="big">${jobFilter==='done'?'📋':'✅'}</div>${jobFilter==='done'?`No completed jobs for this ${D.one} yet.`:jobFilter==='open'?`All jobs for this ${D.one} are done.`:`No jobs for this ${D.one} yet.`}${isOffice&&jobFilter!=='done'?'<br><br><button class="btn-primary" onclick="openUploadModal()">⬆ Upload job</button>':''}</div>`;
-  $('view-portal').innerHTML=html;
+  $('view-portal').innerHTML=html; try{ vnPhoneBanner(); }catch(e){}   // 🚐 Update 120
 }
 // ══════════════════════════════════════════════════════════════════
 //  🗺 EIRCODE DAY ROUTE — Eircode + when the customer is in, day map,
@@ -8897,7 +8950,7 @@ function oaLate(o){ const s=oaStageOf(o); return s!=='paid' && oaDays(oaStageAt(
 
 function oaOff(){   // 2 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(){ if(!oaOn) return; oaOn=false; document.body.classList.remove('oa-on'); };
-  const part1=function(){ part0.apply(this,arguments); const v=$('view-oa'); if(v) v.classList.add('hidden'); };
+  const part1=function(){ part0.apply(this,arguments); const v=$('view-oa'); if(v) v.classList.add('hidden'); try{ vnOff(); }catch(e){} };
   return part1.apply(this,arguments);
 }
 function oaOpen(){
@@ -12242,6 +12295,252 @@ function qcSheetPage(oid){ const j=fitFJ(oid); if(!qcHasSheet(j)) return ''; con
 let qcCapturing=false;
 
 // ════════ Update 107 — 📱 team phone: only ✅ All done (the QC checklist flags everything) ════════
+
+// ════════ Update 120 — 🚐 Vans (update-120-vans.sql) ════════
+// Office full access (admin) + the Office Admin login (prod_oa) only. Vans, renewals, services, weekly van checks, documents, log.
+// A service man only sees his own van's weekly check — when the office has switched it on for him (vans.phone_check).
+let vnOn=false, vnHas=true, vnVans=[], vnLastChk={}, vnSet={svcKm:5000, cvrtDays:61, taxDays:30, insDays:30, checkDays:7, kmDays:14}, vnSel=null, vnTab='over', vnDet={}, vnMine=null, vnToastDone=false;
+const vnAllowed=()=>!!(realMe&&['admin','prod_oa'].includes(realMe.role)&&!previewing);
+const vnToday=()=>todayYmd();
+const vnD=(a,b)=>Math.round((parseYmd(b)-parseYmd(a))/864e5);
+const vnDate=s=>s?parseYmd(String(s).slice(0,10)).toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'}):'—';
+const vnKm=n=>n==null||n===''?'—':(+n).toLocaleString('en-IE')+' km';
+const vnNum=s=>{ const n=parseInt(String(s||'').replace(/[^\d]/g,''),10); return isNaN(n)?null:n; };
+const vnReg=r=>`<span class="vn-reg"><i>IRL</i>${esc(r||'')}</span>`;
+const vnDriver=v=>v.driver_id?(prof(v.driver_id).full_name||'—'):(v.driver_name||'— no driver —');
+const vnPhone=v=>v.driver_id?(prof(v.driver_id).phone||''):(v.driver_phone||'');
+const vnMonday=d=>ymd(mondayOf(parseYmd(d||vnToday())));
+async function vnLoad(){ if(!vnHas||!vnAllowed()) return;
+  try{ const [v,c,s]=await Promise.all([sb.from('vans').select('*').eq('archived',false).order('reg'), sb.from('van_checks').select('van_id,date,faults,source').order('date',{ascending:false}).limit(2000), sb.from('van_settings').select('*').eq('id','global').maybeSingle()]);
+    if(v.error){ if(/vans|is_vans_staff/i.test(v.error.message)) vnHas=false; return; }
+    vnVans=v.data||[]; vnLastChk={}; (c.data||[]).forEach(x=>{ if(!vnLastChk[x.van_id]) vnLastChk[x.van_id]=x; });
+    if(s.data&&s.data.data) vnSet=Object.assign(vnSet, s.data.data);
+  }catch(e){ console.warn('vans',e); } }
+function vnSvc(v){ const next=v.next_svc_km||((v.last_svc_km||0)+(v.svc_every||20000)); if(v.km==null||v.last_svc_km==null&&!v.next_svc_km) return {next:v.last_svc_km==null&&!v.next_svc_km?null:next, left:null, used:0, st:'ok'};
+  const left=next-v.km, span=next-(v.last_svc_km??(next-(v.svc_every||20000))), used=Math.max(0,Math.min(1,1-left/Math.max(1,span))); return {next,left,used,st:left<0?'red':left<=vnSet.svcKm?'amber':'ok'}; }
+function vnDue(date,notice){ if(!date) return {d:null, st:'none', txt:'not set'}; const d=vnD(vnToday(),String(date).slice(0,10)); return {d, st:d<0?'red':d<=notice?'amber':'ok', txt:d<0?`${-d} day${d===-1?'':'s'} overdue`:d===0?'today':d<62?`in ${d} days`:`in ${Math.round(d/30.4)} months`}; }
+function vnAll(v){ return {s:vnSvc(v), c:vnDue(v.cvrt_due,vnSet.cvrtDays), t:vnDue(v.tax_due,vnSet.taxDays), i:vnDue(v.ins_due,vnSet.insDays)}; }
+function vnChkInfo(v){ const c=vnLastChk[v.id]; if(!c||!c.date) return {txt:'none yet', st:'amber', d:null, c}; const d=vnD(c.date,vnToday()); return {txt:d===0?'today':d===1?'yesterday':`${d} days ago`, st:d>vnSet.checkDays?'amber':c.faults?'amber':'ok', d, c}; }
+function vnAlerts(){ const out=[]; vnVans.forEach(v=>{ const a=vnAll(v), k=vnChkInfo(v);
+  if(a.s.st!=='ok'&&a.s.left!=null) out.push({v, st:a.s.st, ico:'🔧', what:'Service', when:a.s.left<0?`${vnKm(-a.s.left)} over`:`${vnKm(a.s.left)} to go`, sort:a.s.left/50});
+  [['c','🛠','CVRT (DOE)','cvrt_due'],['t','🧾','Motor tax','tax_due'],['i','🛡','Insurance','ins_due']].forEach(([x,ico,what,f])=>{ if(['red','amber'].includes(a[x].st)) out.push({v, st:a[x].st, ico, what, when:a[x].txt+' · '+vnDate(v[f]), sort:a[x].d}); });
+  if(k.c&&k.c.faults&&k.d!=null&&k.d<=vnSet.checkDays) out.push({v, st:'amber', ico:'⚠', what:'Van check fault', when:`${k.c.faults} fault${k.c.faults>1?'s':''} · ${vnDate(k.c.date)}`, sort:5});
+  if(!k.c||k.d>vnSet.checkDays) out.push({v, st:'amber', ico:'✅', what:'Van check', when:k.c?`last one ${k.txt}`:'none yet', sort:40});
+  if(v.km_at&&vnD(v.km_at,vnToday())>vnSet.kmDays) out.push({v, st:'amber', ico:'🔢', what:'Km not updated', when:`since ${vnDate(v.km_at)}`, sort:60}); });
+  return out.sort((a,b)=>(a.st==='red'?-1e6:0)+a.sort-((b.st==='red'?-1e6:0)+b.sort)); }
+// ── the 🚐 Vans button (Service side of the bar) ──
+function vnBtn(){ if(!vnAllowed()) return; const inner=document.querySelector('#dept-bar .dept-inner'); if(!inner||inner.querySelector('.d-vans')) return;
+  if(!inner.dataset.vnWatch){ inner.dataset.vnWatch='1'; $('dept-bar').addEventListener('click',e=>{ if(e.target.closest('.dept-btn')&&!e.target.closest('.d-vans')) vnOff(); },true); }
+  const n=vnHas?vnAlerts().filter(a=>a.what!=='Km not updated').length:0, b=document.createElement('button'); b.className='dept-btn d-vans'+(vnOn?' on':''); b.onclick=()=>vnOpen();
+  b.title='Vans — Office and Office Admin only'; b.innerHTML=`${n?'<span class="dot"></span>':''}<span class="di">🚐</span>Vans<span class="dc">${vnVans.length}</span>`;
+  if(vnOn) inner.querySelectorAll('.dept-btn.on').forEach(x=>x.classList.remove('on'));
+  const svc=inner.querySelector('.fy-grp.svc .fy-gbtns'); if(svc) svc.appendChild(b); else{ const first=inner.querySelector('.dept-btn.d-oa,.dept-btn.d-fit'); first?inner.insertBefore(b,first):inner.appendChild(b); } }
+async function vnStart(){ if(!vnAllowed()) return; await vnLoad(); try{ renderDeptBar(); }catch(e){}
+  if(!vnToastDone&&vnHas){ vnToastDone=true; const n=vnAlerts().filter(a=>a.st==='red'||a.what!=='Km not updated').length; if(n) toast(`🚐 ${n} van reminder${n>1?'s':''} — open 🚐 Vans`,6000); } }
+function vnOff(){ if(!vnOn) return; vnOn=false; document.body.classList.remove('vn-on'); const v=$('view-vans'); if(v) v.classList.add('hidden'); }
+async function vnOpen(){ if(!vnAllowed()) return;
+  if(job){ if(dirty && !confirm('You have unsaved mark-up on this sheet. Leave without saving?')) return; dirty=false; closeJob(); }
+  if(typeof jaOpen!=='undefined'&&jaOpen){ document.body.classList.remove('ja-wide'); jaOpen=false; try{ jaSel.clear(); if(jaMap){ jaMap.remove(); jaMap=null; jaMarkers.clear(); } }catch(e){} }
+  try{ oaOff(); }catch(e){} try{ fitOff(); }catch(e){}
+  vnOn=true; document.body.classList.add('vn-on'); $('view-vans').classList.remove('hidden');
+  if(!vnSel) $('view-vans').innerHTML='<div class="vn-wrap"><div class="empty"><span class="spin"></span> Loading vans…</div></div>';
+  await vnLoad(); renderDeptBar(); vnSel?vnOpenVan(vnSel.id):vnRender(); window.scrollTo(0,0); }
+function vnRender(){ vnSel=null; const m=$('view-vans'); if(!m) return;
+  if(!vnHas){ m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><h1>🚐 Vans</h1></div><div class="empty">Run <b>update-120-vans.sql</b> in Supabase to turn on 🚐 Vans.</div></div>`; return; }
+  const al=vnAlerts();
+  m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><h1>🚐 Vans</h1><span class="sub">${vnVans.length} van${vnVans.length===1?'':'s'} · only the office and office admin can see this</span>
+    <span style="margin-left:auto"></span><button class="btn-outline" onclick="vnSettings()">🔔 Reminder settings</button><button class="btn-primary" onclick="vnEdit()">＋ Add a van</button></div>
+    ${al.length?`<div class="vn-alerts"><h3>🔔 Coming up — ${al.length} reminder${al.length>1?'s':''}</h3>${al.map(a=>`<div class="vn-al ${a.st}" onclick="vnOpenVan('${a.v.id}')"><span>${a.ico}</span><b>${esc(a.what)}</b>${vnReg(a.v.reg)}<span>${esc(vnDriver(a.v))}</span><span class="when">${esc(a.when)}</span></div>`).join('')}</div>`
+      :vnVans.length?'<div class="vn-allok">✅ Nothing due — every van is up to date.</div>':''}
+    ${vnVans.length?`<div class="vn-grid">${vnVans.map(v=>{ const a=vnAll(v), k=vnChkInfo(v);
+      return `<div class="vn-card" onclick="vnOpenVan('${v.id}','over')"><div style="display:flex;align-items:center;gap:8px">${vnReg(v.reg)}<span style="margin-left:auto" class="tag">${vnKm(v.km)}</span></div>
+        <div class="vn-model">${esc([v.make,v.year,v.colour].filter(Boolean).join(' · ')||'—')}</div>
+        <div class="vn-drv">👤 <b>${esc(vnDriver(v))}</b>${vnPhone(v)?`<span style="color:var(--slate)">· 📞 ${esc(vnPhone(v))}</span>`:''}${v.driver_id&&v.phone_check?'<span class="vn-src app">📱 own phone</span>':'<span class="vn-src off">📝 office</span>'}</div>
+        <div class="vn-chip ${a.s.st}" style="margin-bottom:6px">🔧 ${a.s.next?`Next service at <b style="display:inline">${vnKm(a.s.next)}</b> — ${a.s.left==null?'':a.s.left<0?`<b style="display:inline;color:#be123c">${vnKm(-a.s.left)} over</b>`:`${vnKm(a.s.left)} to go`}`:'No service recorded yet'}<div class="vn-bar ${a.s.st}"><i style="width:${(a.s.used*100).toFixed(0)}%"></i></div></div>
+        <div class="vn-rows"><div class="vn-chip ${a.c.st}">🛠 CVRT (DOE)<b>${vnDate(v.cvrt_due)}</b>${a.c.txt}</div><div class="vn-chip ${a.t.st}">🧾 Tax<b>${vnDate(v.tax_due)}</b>${a.t.txt}</div>
+          <div class="vn-chip ${a.i.st}">🛡 Insurance<b>${vnDate(v.ins_due)}</b>${a.i.txt}</div><div class="vn-chip ${k.st}">✅ Last van check<b>${k.c?vnDate(k.c.date):'—'}</b>${k.c?(k.c.faults?`⚠ ${k.c.faults} fault${k.c.faults>1?'s':''} · `:'')+k.txt:'none yet'}</div></div></div>`; }).join('')}</div>`
+      :`<div class="empty"><div class="big">🚐</div>No vans yet — <a href="#" onclick="vnEdit();return false">＋ add the first van</a>.</div>`}</div>`; }
+async function vnLoadDet(id){ const [s,c,f,l]=await Promise.all([sb.from('van_services').select('*').eq('van_id',id).order('date',{ascending:false}), sb.from('van_checks').select('*').eq('van_id',id).order('date',{ascending:false}).order('created_at',{ascending:false}).limit(60),
+    sb.from('van_files').select('*').eq('van_id',id).order('created_at',{ascending:false}), sb.from('van_log').select('*').eq('van_id',id).order('created_at',{ascending:false}).limit(100)]);
+  vnDet[id]={svc:s.data||[], chk:c.data||[], files:f.data||[], log:l.data||[]}; }
+async function vnOpenVan(id,tab){ const v=vnVans.find(x=>x.id===id); if(!v) return vnRender(); vnSel=v; if(tab) vnTab=tab; if(!vnDet[id]) await vnLoadDet(id); const a=vnAll(v), m=$('view-vans');
+  const tabs=[['over','📋 Overview'],['ren','📅 Renewals'],['svc','🔧 Service'],['chk','✅ Van checks'],['docs','📎 Documents'],['log','📝 Notes & log']];
+  m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><button class="btn-outline" onclick="vnRender()">‹ All vans</button></div>
+   <div class="vn-det"><div class="vn-dh">${vnReg(v.reg)}<div><b style="font-size:18px">${esc(v.make||'Van')}</b><div style="color:var(--slate);font-size:13px">${esc([v.year,v.colour].filter(Boolean).join(' · '))}${v.km!=null?` · ${vnKm(v.km)} <small>(updated ${vnDate(v.km_at)})</small>`:''}</div></div>
+     <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap"><button class="btn-outline" onclick="vnEdit('${v.id}')">✎ Edit</button><button class="btn-outline" onclick="vnKmBox()">🔢 Update km</button><button class="btn-outline" onclick="vnCheckBox()">✅ Van check</button><button class="btn-primary" onclick="vnSvcBox()">🔧 Add service</button></div></div>
+   <div class="vn-tabs">${tabs.map(([k,l])=>`<button class="vn-tab ${vnTab===k?'on':''}" onclick="vnOpenVan('${v.id}','${k}')">${l}</button>`).join('')}</div><div class="vn-body">${vnBody(v,a)}</div></div></div>`; window.scrollTo(0,0); }
+function vnBody(v,a){ const D=vnDet[v.id]||{svc:[],chk:[],files:[],log:[]};
+  if(vnTab==='over') return `<div class="vn-kv">
+    <div><small>Driver</small><b>👤 ${esc(vnDriver(v))}</b><br><small style="text-transform:none">${v.driver_id?(v.phone_check?'📱 does his van check on his phone':'📝 van check switched off on his phone — the office fills it in'):'📝 not on SashDash — the office fills in km and checks'}</small></div>
+    <div><small>Driver's mobile</small><b>📞 ${esc(vnPhone(v)||'—')}</b></div>
+    <div><small>Kilometres</small><b>${vnKm(v.km)}</b><br><small style="text-transform:none">read ${vnDate(v.km_at)}</small></div>
+    <div><small>Next service</small><b>${vnKm(a.s.next)}</b><br><small style="text-transform:none">${a.s.left==null?'':a.s.left<0?vnKm(-a.s.left)+' over · ':vnKm(a.s.left)+' to go · '}every ${vnKm(v.svc_every)}</small></div>
+    <div><small>CVRT (DOE) due</small><b>${vnDate(v.cvrt_due)}</b></div><div><small>Motor tax due</small><b>${vnDate(v.tax_due)}</b></div>
+    <div><small>Insurance renews</small><b>${vnDate(v.ins_due)}</b><br><small style="text-transform:none">${esc([v.insurer,v.policy_no].filter(Boolean).join(' · '))}</small></div>
+    <div><small>Breakdown cover</small><b>${esc(v.breakdown||'—')}</b>${v.breakdown_due?`<br><small style="text-transform:none">to ${vnDate(v.breakdown_due)}</small>`:''}</div>
+    <div><small>Fuel card</small><b>⛽ ${esc(v.fuel_card||'—')}</b></div><div><small>Toll tag</small><b>🛣 ${esc(v.toll_tag||'—')}</b></div><div><small>Last tyres</small><b>🛞 ${vnDate(v.tyres_date)}</b></div>
+    <div><small>Chassis (VIN)</small><b style="font-family:monospace;font-size:13px">${esc(v.vin||'—')}</b></div></div>
+    ${v.next_note?`<div class="vn-next">📌 For the next service: <b>${esc(v.next_note)}</b></div>`:''}${v.notes?`<div class="vn-note" style="font-size:14px">📝 ${esc(v.notes)}</div>`:''}`;
+  if(vnTab==='ren'){ const rc=(k,ico,h,f,due,extra,notice)=>`<div class="vn-rc ${due.st}"><h4>${ico} ${h}</h4><div class="big">${vnDate(v[f])}</div><b>${due.txt}</b>${extra?`<div><small>${extra}</small></div>`:''}<div class="vn-note">🔔 Reminder ${notice} before</div>
+      <div style="margin-top:8px;display:flex;gap:6px"><button class="btn-outline" style="font-size:12.5px;padding:5px 10px" onclick="vnRenew('${f}','${h}')">✓ Renewed — new date</button><button class="btn-outline" style="font-size:12.5px;padding:5px 10px" onclick="vnAddDoc('${k}')">📎 Add cert</button></div></div>`;
+    const m=d=>d>=58?`${Math.round(d/30.4)} month${Math.round(d/30.4)>1?'s':''}`:`${d} days`;
+    return `<div class="vn-ren">${rc('cvrt','🛠','CVRT (DOE test)','cvrt_due',a.c,'',m(vnSet.cvrtDays))}${rc('tax','🧾','Motor tax','tax_due',a.t,'',m(vnSet.taxDays))}
+      ${rc('ins','🛡','Insurance','ins_due',a.i,esc([v.insurer,v.policy_no].filter(Boolean).join(' · ')),m(vnSet.insDays))}${rc('breakdown','🚨','Breakdown cover','breakdown_due',vnDue(v.breakdown_due,vnSet.insDays),esc(v.breakdown||''),m(vnSet.insDays))}</div>`; }
+  if(vnTab==='svc') return `<div class="vn-svc"><div>
+      <div class="vn-rc ${a.s.st}"><h4>🔧 Service</h4><div style="display:flex;justify-content:space-between;font-size:13.5px"><span>Last: <b>${vnKm(v.last_svc_km)}</b> · ${vnDate(v.last_svc_date)}</span><span>Next: <b>${vnKm(a.s.next)}</b></span></div>
+        <div class="vn-bar ${a.s.st}" style="height:14px;margin:8px 0"><i style="width:${(a.s.used*100).toFixed(0)}%"></i></div>
+        <div class="big">${a.s.left==null?'—':a.s.left<0?vnKm(-a.s.left)+' over':vnKm(a.s.left)+' to go'}</div><small>Now ${vnKm(v.km)} · 🔔 reminder at ${vnKm(vnSet.svcKm)} to go</small></div>
+      ${v.next_note?`<div class="vn-next" style="margin-top:10px">📌 For the next service: <b>${esc(v.next_note)}</b></div>`:''}</div>
+      <div><h4 style="margin:0 0 8px">🕘 Service history</h4><div class="vn-hist">${D.svc.map(x=>`<div class="vn-hi"><div class="t"><b>${vnDate(x.date)}</b> · ${vnKm(x.km)}<span>${esc([x.cost,x.by_name?'entered by '+x.by_name:''].filter(Boolean).join(' · '))}</span></div>${x.garage?`<div style="color:var(--slate);font-size:12.5px">🏪 ${esc(x.garage)}</div>`:''}
+        ${(x.did||[]).length?`<div class="vn-tags">${x.did.map(d=>`<span>${esc(d)}</span>`).join('')}</div>`:''}${x.notes?`<div style="font-size:12.5px;margin-top:4px">📝 ${esc(x.notes)}</div>`:''}${vnFileLinks(x.files)}</div>`).join('')||'<div class="vn-hi">No services recorded yet — 🔧 Add service.</div>'}</div></div></div>`;
+  if(vnTab==='chk') return `<p style="margin:0 0 10px;color:var(--slate);font-size:13.5px">A quick weekly walk-round check (tyres, lights, oil, damage). ${v.driver_id&&v.phone_check?`📱 ${esc(firstName(vnDriver(v)))} does it on his phone every week.`:'📝 The office fills it in (✅ Van check).'}</p>
+      <div class="vn-hist">${D.chk.map(x=>`<div class="vn-hi"><div class="t"><b>${vnDate(x.date)}</b> · ${esc(x.by_name||'')} · ${vnKm(x.km)} ${x.source==='phone'?'<span class="vn-src app" style="margin-left:6px">📱 on his phone</span>':''}<span>${x.faults?`<b style="color:#b45309">⚠ ${x.faults} fault${x.faults>1?'s':''}</b>`:'<b style="color:#15803d">✓ No faults</b>'}</span></div>
+        ${x.faults?`<div class="vn-tags">${Object.entries(x.items||{}).filter(([,s])=>s==='bad').map(([k])=>`<span class="bad">✗ ${esc((VN_ITEMS.find(i=>i[0]===k)||[k,'',k])[2])}</span>`).join('')}</div>`:''}${x.note?`<div style="font-size:12.5px;margin-top:4px">📝 ${esc(x.note)}</div>`:''}${vnFileLinks(x.files)}</div>`).join('')||'<div class="vn-hi">No van checks yet.</div>'}</div>`;
+  if(vnTab==='docs') return `<div class="vn-docs">${D.files.map(f=>`<div class="vn-doc" onclick="vnOpenFile('${esc(f.path)}')"><span class="ic">${({ins:'🛡',cvrt:'🛠',tax:'🧾',logbook:'📘',invoice:'🔧',photo:'📷',breakdown:'🚨'})[f.kind]||'📄'}</span><div><b>${esc(f.title||'Document')}</b><small>${vnDate(f.created_at)}</small></div><button class="vn-x" title="Delete" onclick="event.stopPropagation();vnDelDoc('${f.id}')">✕</button></div>`).join('')}
+      <div class="vn-doc add" onclick="vnAddDoc()">＋ Add a document or photo</div></div>`;
+  return `<div class="vn-hist">${D.log.map(x=>`<div class="vn-hi"><div class="t"><b>${esc(x.what)}</b><span>${new Date(x.created_at).toLocaleString('en-IE',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})} · ${esc(x.by_name||'')}</span></div></div>`).join('')||'<div class="vn-hi">Nothing yet.</div>'}</div>
+    <div class="vn-note">Every change is kept here, so you can see who changed what and when.</div>`; }
+const VN_ITEMS=[['tyres','🛞','Tyres','tread & pressure look OK'],['lights','💡','Lights & indicators','all working'],['oil','🛢','Oil & water','levels OK'],['screen','🪟','Windscreen & wipers','no cracks, wipers OK'],['body','🚐','Bodywork','no new damage'],['kit','🧯','Safety kit','first aid & fire extinguisher']];
+const vnFileLinks=fs=>(fs&&fs.length)?`<div style="font-size:12.5px;margin-top:4px">${fs.map((f,i)=>`<a href="#" onclick="vnOpenFile('${esc(f.path)}');return false">📎 ${esc(f.name||('Photo '+(i+1)))}</a>`).join(' · ')}</div>`:'';
+async function vnOpenFile(path){ const r=await sb.storage.from(BUCKET).createSignedUrl(path,600); if(r.error||!r.data) return toast('Couldn\'t open it — check the internet'); window.open(r.data.signedUrl,'_blank'); }
+async function vnUp(file,vanId){ const ext=(file.name.match(/\.\w+$/)||['.jpg'])[0].toLowerCase(), isImg=/^image\//.test(file.type)||/\.(jpe?g|png|heic|webp)$/i.test(file.name);
+  let blob=file, type=file.type||'application/octet-stream', e2=ext; if(isImg){ try{ const im=await imageToJpeg(file,1600); blob=new Blob([im.bytes],{type:'image/jpeg'}); type='image/jpeg'; e2='.jpg'; }catch(e){} }
+  const path=`officechat/van-${vanId}/${uuid()}${e2}`; const r=await sb.storage.from(BUCKET).upload(path,blob,{contentType:type}); if(r.error) throw r.error; return {path, name:file.name, bytes:blob.size}; }
+const vnMe=()=>(realMe||me).full_name||'';
+async function vnLog(vanId,what){ try{ await sb.from('van_log').insert({van_id:vanId, what, by_name:vnMe(), created_by:realMe.id}); }catch(e){} }
+async function vnSave(id,patch,what){ const r=await sb.from('vans').update(Object.assign({},patch,{updated_at:new Date().toISOString(), updated_by:realMe.id})).eq('id',id);
+  if(r.error){ toast('Not saved: '+r.error.message,7000); return false; } const v=vnVans.find(x=>x.id===id); if(v) Object.assign(v,patch); if(what) await vnLog(id,what); return true; }
+const vnVal=id=>{ const e=$(id); return e?String(e.value||'').trim():''; };
+// ── add / edit a van ──
+let vnDrvMode='app';
+function vnEdit(id){ const v=id?vnVans.find(x=>x.id===id):{svc_every:20000}; vnDrvMode=v.driver_id||!id?'app':'other'; if(id&&!v.driver_id) vnDrvMode='other';
+  const men=profiles.filter(p=>p.role==='serviceman'&&!p.extra_team);
+  const f=(k,l,val,o)=>`<div class="${o&&o.full?'full':''}"><label>${l}</label><input id="vf-${k}" ${o&&o.type?`type="${o.type}"`:''} value="${esc(val==null?'':String(val).slice(0,o&&o.type==='date'?10:999))}" placeholder="${esc(o&&o.ph||'')}" ${o&&o.style?`style="${o.style}"`:''}></div>`;
+  openModal(`<h2>${id?'✎ '+esc(v.reg):'＋ Add a van'}</h2><div class="vn-form">
+    ${f('reg','Registration',v.reg,{ph:'e.g. 242-D-11873',style:'font-weight:800;letter-spacing:.05em'})}${f('make','Make & model',v.make,{ph:'e.g. Ford Transit Custom'})}
+    ${f('year','Year',v.year,{ph:'2024'})}${f('colour','Colour',v.colour,{ph:'White'})}
+    <div class="full"><label>Driver</label><div class="vn-seg"><button type="button" class="${vnDrvMode==='app'?'on':''}" onclick="vnDrvMode='app';vnDrvSwap()">👤 On SashDash</button><button type="button" class="${vnDrvMode==='other'?'on':''}" onclick="vnDrvMode='other';vnDrvSwap()">✍ Not on SashDash</button></div></div>
+    <div class="full vn-drv-app ${vnDrvMode==='app'?'':'hidden'}"><select id="vf-driver_id"><option value="">— no driver (spare van) —</option>${men.map(p=>`<option value="${p.id}" ${v.driver_id===p.id?'selected':''}>${esc(p.full_name)}</option>`).join('')}</select>
+      <label class="vn-switch"><input type="checkbox" id="vf-phone_check" ${v.phone_check?'checked':''}> 📱 <b>Show the weekly van check on his phone</b> <small>— off until you switch it on. He only ever sees his own van's check (km + 6 ticks), never dates or costs.</small></label></div>
+    <div class="vn-drv-other ${vnDrvMode==='other'?'':'hidden'} full"><div class="vn-form">${f('driver_name',"Driver's name",v.driver_name,{ph:'e.g. Mick Flood'})}${f('driver_phone',"Driver's mobile",v.driver_phone,{ph:'087…'})}
+      <div class="full vn-note" style="margin:0">📝 Not on SashDash — the office fills in his km and weekly van check.</div></div></div>
+    ${f('km','Kilometres now',v.km,{ph:'e.g. 121,200'})}${f('svc_every','Service every (km)',v.svc_every,{ph:'20,000'})}
+    ${f('last_svc_km','Last service at (km)',v.last_svc_km,{ph:'e.g. 105,000'})}${f('last_svc_date','Last service date',v.last_svc_date,{type:'date'})}
+    ${f('cvrt_due','CVRT (DOE) due',v.cvrt_due,{type:'date'})}${f('tax_due','Motor tax due',v.tax_due,{type:'date'})}
+    ${f('ins_due','Insurance renews',v.ins_due,{type:'date'})}${f('insurer','Insurer',v.insurer,{ph:'e.g. FBD'})}
+    ${f('policy_no','Policy number',v.policy_no)}${f('breakdown','Breakdown cover',v.breakdown,{ph:'e.g. AA Business 6631022'})}
+    ${f('breakdown_due','Breakdown cover renews',v.breakdown_due,{type:'date'})}${f('tyres_date','Last tyres',v.tyres_date,{type:'date'})}
+    ${f('fuel_card','Fuel card',v.fuel_card,{ph:'e.g. Circle K •••• 4471'})}${f('toll_tag','Toll tag',v.toll_tag,{ph:'e.g. eFlow 88213'})}
+    ${f('vin','Chassis number (VIN)',v.vin,{full:true,style:'font-family:monospace'})}${f('next_note','📌 For the next service',v.next_note,{full:true,ph:'e.g. front pads ~20% left'})}
+    <div class="full"><label>Notes</label><textarea id="vf-notes" rows="2">${esc(v.notes||'')}</textarea></div></div>
+    <div class="modal-actions">${id?`<button class="btn-outline" style="margin-right:auto;color:#b91c1c" onclick="vnArchive('${id}')">🗑 Remove van</button>`:''}<button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="vf-save" onclick="vnEditSave(${id?`'${id}'`:'null'})">✓ ${id?'Save':'Add van'}</button></div>`); }
+function vnDrvSwap(){ document.querySelectorAll('.vn-seg button').forEach((b,i)=>b.classList.toggle('on',(i===0)===(vnDrvMode==='app'))); document.querySelector('.vn-drv-app').classList.toggle('hidden',vnDrvMode!=='app'); document.querySelector('.vn-drv-other').classList.toggle('hidden',vnDrvMode!=='other'); }
+async function vnEditSave(id){ const reg=vnVal('vf-reg').toUpperCase(); if(!reg) return toast('Type the registration.');
+  const d=k=>vnVal('vf-'+k)||null, n=k=>vnNum(vnVal('vf-'+k));
+  const row={reg, make:d('make'), year:n('year'), colour:d('colour'), vin:d('vin'), km:n('km'), svc_every:n('svc_every')||20000, last_svc_km:n('last_svc_km'), last_svc_date:d('last_svc_date'),
+    cvrt_due:d('cvrt_due'), tax_due:d('tax_due'), ins_due:d('ins_due'), insurer:d('insurer'), policy_no:d('policy_no'), breakdown:d('breakdown'), breakdown_due:d('breakdown_due'),
+    tyres_date:d('tyres_date'), fuel_card:d('fuel_card'), toll_tag:d('toll_tag'), next_note:d('next_note'), notes:vnVal('vf-notes')||null};
+  if(vnDrvMode==='app'){ row.driver_id=vnVal('vf-driver_id')||null; row.driver_name=null; row.driver_phone=null; row.phone_check=!!(row.driver_id&&$('vf-phone_check').checked); }
+  else { row.driver_id=null; row.driver_name=d('driver_name'); row.driver_phone=d('driver_phone'); row.phone_check=false; }
+  const old=id?vnVans.find(x=>x.id===id):null; if(row.km!=null&&(!old||old.km!==row.km)) row.km_at=vnToday();
+  $('vf-save').disabled=true;
+  if(id){ const ch=[]; if(old.driver_id!==row.driver_id||old.driver_name!==row.driver_name) ch.push(`👤 Driver: ${vnDriver(old)} → ${row.driver_id?prof(row.driver_id).full_name:(row.driver_name||'none')}`);
+      if(!!old.phone_check!==row.phone_check) ch.push(row.phone_check?'📱 Van check switched ON on his phone':'📱 Van check switched OFF on his phone');
+      [['cvrt_due','🛠 CVRT'],['tax_due','🧾 Tax'],['ins_due','🛡 Insurance']].forEach(([k,l])=>{ if((old[k]||null)!==(row[k]||null)) ch.push(`${l} date → ${vnDate(row[k])}`); });
+      if(old.km!==row.km&&row.km!=null) ch.push(`🔢 km → ${vnKm(row.km)}`);
+      if(await vnSave(id,row,ch.length?ch.join(' · '):'✎ Van details changed')){ closeModal(); toast('✓ Saved'); vnOpenVan(id); } else $('vf-save').disabled=false; return; }
+  const r=await sb.from('vans').insert(Object.assign(row,{updated_by:realMe.id})).select().single();
+  if(r.error){ $('vf-save').disabled=false; return toast('Not saved: '+r.error.message+(/vans/i.test(r.error.message)?' — run update-120 in Supabase':''),7000); }
+  vnVans.push(r.data); vnVans.sort((a,b)=>a.reg<b.reg?-1:1); await vnLog(r.data.id,'🚐 Van added'); closeModal(); toast(`🚐 ${reg} added`); renderDeptBar(); vnOpenVan(r.data.id,'over'); }
+async function vnArchive(id){ const v=vnVans.find(x=>x.id===id); const ok=await confirmBox({icon:'🗑', title:`Remove ${esc(v.reg)}?`, body:'It goes off the Vans page and stops reminding. Its history is kept.', ok:'Remove van', okClass:'btn-danger'}); if(!ok) return;
+  if(await vnSave(id,{archived:true,phone_check:false},'🗑 Van removed')){ vnVans=vnVans.filter(x=>x.id!==id); closeModal(); renderDeptBar(); vnRender(); } }
+// ── km, renewals, service, van check, documents, settings ──
+function vnKmBox(){ const v=vnSel; openModal(`<h2>🔢 Update kilometres — ${esc(v.reg)}</h2><div class="vn-form"><div><label>Date</label><input type="date" id="vk-date" value="${vnToday()}"></div><div><label>Kilometres on the clock</label><input id="vk-km" inputmode="numeric" placeholder="${v.km?esc(String(v.km)):''}" style="font-size:20px;font-weight:800"></div>
+  <div class="full vn-note" style="font-size:13.5px">Last reading: <b>${vnKm(v.km)}</b> on ${vnDate(v.km_at)}.</div></div>
+  <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="vnKmSave()">✓ Save</button></div>`); setTimeout(()=>$('vk-km')&&$('vk-km').focus(),50); }
+async function vnKmSave(){ const v=vnSel, km=vnNum(vnVal('vk-km')); if(km==null) return toast('Type the kilometres.');
+  if(v.km&&km<v.km&&!(await confirmBox({icon:'🔢', title:'Lower than last time?', body:`Last reading was ${vnKm(v.km)}. Save ${vnKm(km)} anyway?`, ok:'Save', okClass:'btn-primary'}))) return;
+  if(await vnSave(v.id,{km, km_at:vnVal('vk-date')||vnToday()},`🔢 km updated to ${vnKm(km)}`)){ closeModal(); delete vnDet[v.id]; renderDeptBar(); vnOpenVan(v.id); } }
+function vnRenew(f,h){ const v=vnSel; openModal(`<h2>✓ ${esc(h)} renewed — ${esc(v.reg)}</h2><div class="vn-form"><div class="full"><label>New date</label><input type="date" id="vr-date" value="${v[f]?ymd(addDays(parseYmd(String(v[f]).slice(0,10)),f==='cvrt_due'||f==='tax_due'||f==='ins_due'||f==='breakdown_due'?365:0)):''}"></div></div>
+  <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="vnRenewSave('${f}','${esc(h)}')">✓ Save</button></div>`); }
+async function vnRenewSave(f,h){ const d=vnVal('vr-date'); if(!d) return toast('Pick the new date.'); if(await vnSave(vnSel.id,{[f]:d},`✓ ${h} renewed — next ${vnDate(d)}`)){ closeModal(); delete vnDet[vnSel.id]; renderDeptBar(); vnOpenVan(vnSel.id,'ren'); } }
+const VN_DID=['Oil & oil filter','Air filter','Fuel filter','Cabin / pollen filter','Brake pads','Brake discs','Tyres','Timing belt / chain','Clutch','Battery','Wipers','Coolant / AdBlue'];
+function vnSvcBox(){ const v=vnSel; openModal(`<h2>🔧 Add a service — ${esc(v.reg)}</h2><div class="vn-form">
+  <div><label>Date</label><input type="date" id="vs-date" value="${vnToday()}"></div><div><label>Kilometres at service</label><input id="vs-km" inputmode="numeric" value="${v.km||''}"></div>
+  <div class="full"><label>Garage</label><input id="vs-garage" placeholder="e.g. Kenny Motors, Roscommon"></div>
+  <div class="full"><label>What was done</label><div class="vn-ticks">${VN_DID.map((x,i)=>`<label><input type="checkbox" class="vs-did" value="${esc(x)}"> ${esc(x)}</label>`).join('')}</div></div>
+  <div class="full"><label>Notes</label><textarea id="vs-notes" rows="2" placeholder="anything the garage said"></textarea></div>
+  <div><label>Cost</label><input id="vs-cost" placeholder="€"></div><div><label>Next service at (km)</label><input id="vs-next" inputmode="numeric" placeholder="blank = ${vnKm(v.svc_every)} from now"></div>
+  <div class="full"><label>📌 For the next service</label><input id="vs-nextnote" value="" placeholder="e.g. front tyres"></div>
+  <div class="full"><label>Invoice / photos</label><input type="file" id="vs-files" multiple accept="image/*,application/pdf"></div></div>
+  <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="vs-save" onclick="vnSvcSave()">✓ Save service</button></div>`); }
+async function vnSvcSave(){ const v=vnSel, km=vnNum(vnVal('vs-km')), date=vnVal('vs-date'); if(!date) return toast('Pick the date.'); $('vs-save').disabled=true; $('vs-save').innerHTML='<span class="spin"></span> Saving…';
+  const files=[]; try{ for(const fl of Array.from($('vs-files').files||[])) files.push(await vnUp(fl,v.id)); }catch(e){ $('vs-save').disabled=false; $('vs-save').textContent='✓ Save service'; return toast('Invoice not uploaded: '+(e.message||e),7000); }
+  const did=[...document.querySelectorAll('.vs-did:checked')].map(x=>x.value), next=vnNum(vnVal('vs-next'));
+  const r=await sb.from('van_services').insert({van_id:v.id, date, km, garage:vnVal('vs-garage')||null, did, notes:vnVal('vs-notes')||null, cost:vnVal('vs-cost')||null, next_km:next, files, by_name:vnMe(), created_by:realMe.id});
+  if(r.error){ $('vs-save').disabled=false; $('vs-save').textContent='✓ Save service'; return toast('Not saved: '+r.error.message,7000); }
+  const patch={last_svc_km:km, last_svc_date:date, next_svc_km:next||null, next_note:vnVal('vs-nextnote')||null}; if(km!=null&&(v.km==null||km>v.km)){ patch.km=km; patch.km_at=date; }
+  await vnSave(v.id,patch,`🔧 Service added — ${vnKm(km)}${did.length?' · '+did.join(', '):''}`); closeModal(); delete vnDet[v.id]; renderDeptBar(); vnOpenVan(v.id,'svc'); }
+let vnChk={};
+function vnCheckBox(){ const v=vnSel; vnChk={}; openModal(`<h2>✅ Weekly van check — ${esc(v.reg)}</h2><div class="vn-form" style="margin-bottom:10px"><div><label>Checked by</label><input id="vc-by" value="${esc(vnDriver(v))}"></div><div><label>Kilometres</label><input id="vc-km" inputmode="numeric" placeholder="${v.km?esc(String(v.km)):''}"></div></div>
+  <div class="vn-chk">${VN_ITEMS.map(([k,i,h])=>`<div>${i} ${h}</div><div class="vn-ok3" id="vc-${k}"><span onclick="vnChkSet('${k}','ok')">✓ OK</span><span onclick="vnChkSet('${k}','bad')">✗ Fault</span></div>`).join('')}</div>
+  <div class="vn-form" style="margin-top:10px"><div class="full"><label>Fault details</label><textarea id="vc-note" rows="2"></textarea></div><div class="full"><label>Photos</label><input type="file" id="vc-files" multiple accept="image/*"></div></div>
+  <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="vc-save" onclick="vnCheckSave()">✓ Save check</button></div>`); }
+function vnChkSet(k,s){ vnChk[k]=s; const e=$('vc-'+k); if(e){ e.children[0].className=s==='ok'?'g':''; e.children[1].className=s==='bad'?'r':''; } }
+async function vnCheckSave(){ const v=vnSel; if(Object.keys(vnChk).length<VN_ITEMS.length) return toast('Tick ✓ or ✗ for each line.'); const faults=Object.values(vnChk).filter(s=>s==='bad').length, km=vnNum(vnVal('vc-km'));
+  if(faults&&!vnVal('vc-note')) return toast('Say what the fault is.'); $('vc-save').disabled=true;
+  const files=[]; try{ for(const fl of Array.from($('vc-files').files||[])) files.push(await vnUp(fl,v.id)); }catch(e){ $('vc-save').disabled=false; return toast('Photo not uploaded: '+(e.message||e),7000); }
+  const r=await sb.from('van_checks').insert({van_id:v.id, date:vnToday(), km, items:vnChk, faults, note:vnVal('vc-note')||null, files, by_name:vnVal('vc-by')||vnMe(), source:'office', created_by:realMe.id});
+  if(r.error){ $('vc-save').disabled=false; return toast('Not saved: '+r.error.message,7000); }
+  vnLastChk[v.id]={van_id:v.id, date:vnToday(), faults, source:'office'};
+  const patch=km!=null&&(v.km==null||km>v.km)?{km, km_at:vnToday()}:{}; await vnSave(v.id,patch,`✅ Van check (office) — ${faults?faults+' fault'+(faults>1?'s':''):'no faults'}${km!=null?' · '+vnKm(km):''}`);
+  closeModal(); delete vnDet[v.id]; renderDeptBar(); vnOpenVan(v.id,'chk'); }
+function vnAddDoc(kind){ const v=vnSel; openModal(`<h2>📎 Add a document — ${esc(v.reg)}</h2><div class="vn-form">
+  <div><label>What is it?</label><select id="vd-kind">${[['ins','🛡 Insurance cert'],['cvrt','🛠 CVRT cert'],['tax','🧾 Motor tax'],['logbook','📘 Logbook (VLC)'],['breakdown','🚨 Breakdown cover'],['invoice','🔧 Invoice'],['photo','📷 Photo / damage'],['other','📄 Other']].map(([k,l])=>`<option value="${k}" ${kind===k?'selected':''}>${l}</option>`).join('')}</select></div>
+  <div><label>Title</label><input id="vd-title" placeholder="e.g. FBD cert to May 2027"></div><div class="full"><label>File</label><input type="file" id="vd-file" multiple accept="image/*,application/pdf"></div></div>
+  <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="vd-save" onclick="vnDocSave()">✓ Add</button></div>`); }
+async function vnDocSave(){ const v=vnSel, fl=Array.from($('vd-file').files||[]); if(!fl.length) return toast('Pick a file.'); $('vd-save').disabled=true; $('vd-save').innerHTML='<span class="spin"></span> Uploading…';
+  const kind=vnVal('vd-kind'), label=$('vd-kind').selectedOptions[0].textContent.replace(/^\S+\s/,'');
+  try{ for(const f of fl){ const u=await vnUp(f,v.id); const r=await sb.from('van_files').insert({van_id:v.id, kind, title:vnVal('vd-title')||label, path:u.path, bytes:u.bytes, created_by:realMe.id}); if(r.error) throw r.error; } }
+  catch(e){ $('vd-save').disabled=false; $('vd-save').textContent='✓ Add'; return toast('Not uploaded: '+(e.message||e),7000); }
+  await vnLog(v.id,`📎 ${vnVal('vd-title')||label} added`); closeModal(); delete vnDet[v.id]; vnOpenVan(v.id,'docs'); }
+async function vnDelDoc(id){ const v=vnSel, f=(vnDet[v.id].files||[]).find(x=>x.id===id); if(!f) return; const ok=await confirmBox({icon:'🗑', title:`Delete ${esc(f.title||'this document')}?`, body:'The file is removed.', ok:'Delete', okClass:'btn-danger'}); if(!ok) return;
+  await sb.from('van_files').delete().eq('id',id); try{ await sb.storage.from(BUCKET).remove([f.path]); }catch(e){} await vnLog(v.id,`🗑 ${f.title||'Document'} deleted`); delete vnDet[v.id]; vnOpenVan(v.id,'docs'); }
+function vnSettings(){ const s=vnSet, f=(k,l,u)=>`<div><label>${l}</label><div style="display:flex;gap:6px;align-items:center"><input id="vset-${k}" inputmode="numeric" value="${esc(String(s[k]))}" style="width:110px"> <span style="color:var(--slate)">${u}</span></div></div>`;
+  openModal(`<h2>🔔 Van reminder settings</h2><div class="vn-form">${f('svcKm','🔧 Service — remind when within','km')}${f('cvrtDays','🛠 CVRT (DOE) — remind','days before')}
+    ${f('taxDays','🧾 Motor tax — remind','days before')}${f('insDays','🛡 Insurance & breakdown — remind','days before')}${f('checkDays','✅ Van check — remind if none for','days')}${f('kmDays','🔢 Kilometres — remind if not updated for','days')}</div>
+    <p class="vn-note">Reminders show on 🚐 Vans (red = overdue, amber = coming up), as a dot on the 🚐 Vans button, and as a message when the office or office admin opens SashDash. 📱 Men with the van check switched on get it on their phone every Monday until it's done.</p>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="vnSettingsSave()">✓ Save</button></div>`); }
+async function vnSettingsSave(){ const n={}; ['svcKm','cvrtDays','taxDays','insDays','checkDays','kmDays'].forEach(k=>{ const x=vnNum(vnVal('vset-'+k)); if(x!=null) n[k]=x; });
+  const r=await sb.from('van_settings').upsert({id:'global', data:Object.assign({},vnSet,n), updated_by:realMe.id, updated_at:new Date().toISOString()},{onConflict:'id'}); if(r.error) return toast('Not saved: '+r.error.message,7000);
+  Object.assign(vnSet,n); closeModal(); toast('🔔 Saved'); renderDeptBar(); vnSel?vnOpenVan(vnSel.id):vnRender(); }
+// ── 📱 a service man's phone: his weekly van check (only when the office has switched it on for him) ──
+async function vnLoadMine(){ vnMine=null; if(!vnHas||!me||isOffice||me.role!=='serviceman') return; try{ const r=await sb.rpc('my_van'); if(r.error){ if(/my_van/i.test(r.error.message)) vnHas=false; return; } vnMine=(r.data||[])[0]||null; }catch(e){} }
+const vnMineDue=()=>!!(vnMine&&!previewing&&(!vnMine.last_check||String(vnMine.last_check).slice(0,10)<vnMonday()));
+function vnPhoneBanner(){ const p=$('view-portal'); if(!p||!vnMineDue()||p.querySelector('.vnp-ban')) return;
+  p.insertAdjacentHTML('afterbegin',`<div class="vnp-ban" onclick="vnPhoneCheck()"><span class="i">🚐</span><div><b>Weekly van check</b><small>${esc(vnMine.reg)} · takes 1 minute</small></div><span class="go">Start ›</span></div>`); }
+let vnPh={};
+function vnPhoneCheck(){ vnPh={}; const el=document.querySelector('.vnp')||document.body.appendChild(Object.assign(document.createElement('div'),{className:'vnp'})); vnPhDraw(); }
+function vnPhDraw(){ const el=document.querySelector('.vnp'); if(!el) return; const n=VN_ITEMS.filter(([k])=>vnPh[k]).length, ready=n===VN_ITEMS.length&&vnNum(vnPh.km)!=null&&(!VN_ITEMS.some(([k])=>vnPh[k]==='bad')||String(vnPh.note||'').trim());
+  el.innerHTML=`<div class="vnp-top"><button onclick="document.querySelector('.vnp').remove()">‹</button><b>Weekly van check</b><span>${vnReg(vnMine.reg)}</span></div>
+   <div class="vnp-body"><label class="vnp-km">Kilometres on the clock<input id="vnp-km" inputmode="numeric" value="${esc(vnPh.km||'')}" placeholder="${vnMine.km?'last: '+esc((+vnMine.km).toLocaleString('en-IE')):'e.g. 121,480'}" oninput="vnPh.km=this.value;vnPhFoot()"></label>
+   ${VN_ITEMS.map(([k,i,h,s])=>{ const st=vnPh[k]; return `<div class="vnp-row ${st||''}"><span class="i">${i}</span><div><b>${h}</b><small>${s}</small></div>
+     <button class="ok ${st==='ok'?'on':''}" onclick="vnPh['${k}']='ok';vnPhDraw()">✓</button><button class="bad ${st==='bad'?'on':''}" onclick="vnPh['${k}']='bad';vnPhDraw()">✗</button></div>`; }).join('')}
+   ${VN_ITEMS.some(([k])=>vnPh[k]==='bad')?`<div class="vnp-fault"><textarea id="vnp-note" placeholder="What's wrong?" oninput="vnPh.note=this.value;vnPhFoot()">${esc(vnPh.note||'')}</textarea><label class="ph">📷 Photo<input type="file" accept="image/*" multiple hidden onchange="vnPh.files=[...(vnPh.files||[]),...this.files];vnPhDraw()"></label></div>${(vnPh.files||[]).length?`<div class="vnp-ph">📷 ${(vnPh.files||[]).length} photo${vnPh.files.length>1?'s':''} added</div>`:''}`:''}
+   </div><div class="vnp-foot"><button class="vnp-send ${ready?'':'off'}" id="vnp-send" onclick="vnPhSend()">Send to office</button><small id="vnp-n">${n} of ${VN_ITEMS.length} done${vnNum(vnPh.km)==null?' · km needed':''}</small></div>`; }
+function vnPhFoot(){ const b=$('vnp-send'); if(!b) return; const n=VN_ITEMS.filter(([k])=>vnPh[k]).length, ready=n===VN_ITEMS.length&&vnNum(vnPh.km)!=null&&(!VN_ITEMS.some(([k])=>vnPh[k]==='bad')||String(vnPh.note||'').trim());
+  b.classList.toggle('off',!ready); $('vnp-n').textContent=`${n} of ${VN_ITEMS.length} done${vnNum(vnPh.km)==null?' · km needed':''}`; }
+async function vnPhSend(){ const b=$('vnp-send'); if(!b||b.classList.contains('off')){ const bad=VN_ITEMS.some(([k])=>vnPh[k]==='bad')&&!String(vnPh.note||'').trim(); return toast(vnNum(vnPh.km)==null?'Type the kilometres first.':bad?'Say what the fault is.':'Tick ✓ or ✗ for every line.'); }
+  b.disabled=true; b.innerHTML='<span class="spin"></span> Sending…'; const items={}; VN_ITEMS.forEach(([k])=>{ items[k]=vnPh[k]; });
+  const files=[]; for(const f of (vnPh.files||[])){ try{ const im=await imageToJpeg(f,1600), path=`officechat/${me.id}/van-${uuid()}.jpg`; const u=await sb.storage.from(BUCKET).upload(path,new Blob([im.bytes],{type:'image/jpeg'}),{contentType:'image/jpeg'}); if(!u.error) files.push({path, name:f.name}); }catch(e){} }
+  const r=await sb.rpc('submit_van_check',{p_van:vnMine.van_id, p_km:vnNum(vnPh.km), p_items:items, p_note:String(vnPh.note||'').trim()||null, p_files:files});
+  if(r.error){ b.disabled=false; b.textContent='Send to office'; return toast('Not sent: '+r.error.message,7000); }
+  const faults=Object.values(items).filter(s=>s==='bad').length; vnMine.last_check=todayYmd(); vnMine.km=Math.max(vnMine.km||0,vnNum(vnPh.km)||0);
+  const nxt=ymd(addDays(mondayOf(new Date()),7)), el=document.querySelector('.vnp');
+  el.innerHTML=`<div class="vnp-top"><button onclick="document.querySelector('.vnp').remove()">‹</button><b>Van check</b></div>
+    <div class="vnp-done"><div class="big">✅</div><h2>Thanks ${esc(firstName(me.full_name))}</h2><p>Your van check is sent to the office.</p><div class="vnp-sum"><b>${esc(vnMine.reg)} · ${vnKm(vnNum(vnPh.km))}</b><span>${VN_ITEMS.length-faults} OK${faults?` · <b style="color:#be123c">${faults} fault${faults>1?'s':''}</b>`:''}</span></div>
+    <p style="font-size:13px;color:var(--slate)">Next one due ${esc(dayLong(nxt))}.</p><button class="vnp-send" onclick="document.querySelector('.vnp').remove()">Done</button></div>`;
+  const ban=document.querySelector('.vnp-ban'); if(ban) ban.remove(); }
 </script>
 </body>
 </html>
