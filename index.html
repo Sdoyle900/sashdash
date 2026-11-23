@@ -1967,6 +1967,180 @@ button.pl-chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:700}butt
 .ja-mtag{font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;white-space:nowrap}.ja-mtag.b{background:#dcfce7;color:#14532d}.ja-mtag.p{background:#f5f3ff;color:#5b21b6}.ja-mtag.l{background:#e0e7ff;color:#3730a3}
 
 .sc-fwd{margin-top:6px;font-size:12.5px;padding:6px 10px}
+/* 📅 Update 121 — Fitting: diary page (Day view) · 📥 Scanned in · Manufacturing switch */
+.u121pg{position:relative;background:#fffdf6;border:1px solid #e9dfc6;border-radius:4px 10px 10px 4px;box-shadow:0 1px 0 #e9dfc6,0 6px 0 -3px #fbf6e8,0 6px 0 -2px #e9dfc6,0 12px 0 -6px #f8f1de,0 12px 0 -5px #e9dfc6,0 18px 28px -12px rgba(15,23,42,.25);padding:24px 28px 24px 74px;margin:4px 0 14px}
+.u121pg:before{content:"";position:absolute;left:18px;top:18px;bottom:18px;width:16px;background:radial-gradient(circle at 8px 8px,#d6ccb2 0 5px,#fff 5.5px 7px,transparent 7.5px) 0 0/16px 42px repeat-y}
+.u121pg:after{content:"";position:absolute;left:52px;top:0;bottom:0;border-left:2px solid #f4b8b8;pointer-events:none}
+.u121fold{position:absolute;right:0;top:0;width:0;height:0;border-style:solid;border-width:0 34px 34px 0;border-color:transparent var(--bg) #e7dcc0 transparent;border-radius:0 10px 0 0}
+.u121hd{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid #1f2937;padding-bottom:12px}
+.u121brand{font-size:11px;font-weight:900;letter-spacing:3px;color:#9a8a5e;text-transform:uppercase}
+.u121wk{font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#1f2937;margin-top:4px}
+.u121tabs{display:flex;gap:4px;margin-top:12px;flex-wrap:wrap}
+.u121tabs button{border:1px solid #e2d6b8;background:#f8f1de;color:#7c6a3e;border-radius:8px 8px 0 0;padding:6px 12px;font-weight:800;font-size:12.5px;cursor:pointer;font-family:inherit;line-height:1.2}
+.u121tabs button em{font-style:normal;display:block;font-size:10px;font-weight:700;opacity:.85}
+.u121tabs button.on{background:#1f2937;color:#fff;border-color:#1f2937}
+.u121tabs button.today:not(.on){border-color:#ea580c;color:#c2410c}
+.u121date{display:flex;align-items:center;gap:14px;text-align:right;margin-right:26px}
+.u121date .num{font-family:Georgia,'Times New Roman',serif;font-size:74px;line-height:.9;font-weight:700;color:#b91c1c}
+.u121date .wd{font-size:20px;font-weight:900;letter-spacing:4px;color:#1f2937;text-transform:uppercase}
+.u121date .my{font-family:Georgia,serif;font-size:17px;color:#6b7280;margin-top:2px}
+.u121date .td{display:inline-block;margin-top:6px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:900;border-radius:999px;padding:2px 9px;letter-spacing:1px}
+.u121cols{display:grid;grid-template-columns:220px 1fr;font-size:11px;font-weight:900;letter-spacing:1.5px;color:#9a8a5e;text-transform:uppercase;padding:10px 0 6px;border-bottom:1px solid #e2d6b8}
+.u121cols .u121jc,.u121jr{display:grid;grid-template-columns:70px minmax(190px,1fr) 80px minmax(220px,424px) 132px;gap:12px}
+.u121cols .u121jc{padding-left:16px}
+.u121row{display:grid;grid-template-columns:220px 1fr;border-bottom:1px solid #e2d6b8;min-height:64px}
+.u121row.ft-over{background:#f0fdfa}
+.u121team{border-right:1px dashed #e2d6b8;padding:12px 12px 12px 14px;text-align:left}
+.u121team .u121tn{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:900;color:#0f172a}
+.u121team .u121tn i{width:12px;height:12px;border-radius:3px;display:inline-block;flex:none}
+.u121team .u121ld{font-size:13px;margin-top:4px;color:#334155}
+.u121team .u121mn{font-size:12.5px;color:#64748b;margin-top:2px;line-height:1.45}
+.u121team .u121vn{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:800;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:2px 7px;color:#334155}
+.u121jobs{display:flex;flex-direction:column;min-width:0}
+.u121job{padding:12px 0 12px 12px;border-bottom:1px dotted #e2d6b8;border-left:4px solid var(--tc,#db2777);margin-left:4px}
+.u121job:last-child{border-bottom:0}
+.u121job.u92hl,.u121job.hl{background:linear-gradient(90deg,#fef9c3,#fffdf6 70%)}
+.u121job.cx{background:#fef2f2}
+.u121job>.u92tag,.u121job>.u108dtag{display:inline-block;margin:0 0 6px 82px}
+.u121time{font-family:Georgia,serif;font-size:19px;font-weight:700;color:#1f2937;padding-top:2px;cursor:grab}
+.u121time small{display:block;font-family:inherit;font-size:9px;color:#94a3b8;font-weight:800;letter-spacing:0}
+.u121cust{min-width:0}
+.u121cust b{font-size:16px;color:#0f172a}
+.u121cust .sub{font-size:12.5px;color:#64748b;margin-top:2px;line-height:1.45}
+.u121cust .tp{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:2px;background:#eef2ff;color:#3730a3}
+.u121cust .tp.site{background:#dcfce7;color:#166534}.u121cust .tp.builder{background:#ffedd5;color:#9a3412}
+.u121cust .dd{display:inline-block;margin-top:5px;font-size:11.5px;font-weight:800;color:#7c3aed;background:#f5f3ff;border-radius:6px;padding:1px 7px}
+.u121cust .u121lk{font-size:12px;font-weight:800;color:#0f766e;margin-top:3px}
+.u121cust .cxt{display:inline-block;font-size:11px;font-weight:900;color:#fff;background:#dc2626;border-radius:6px;padding:1px 7px;margin-bottom:4px}
+.u121cust a{color:#2563eb;font-weight:700;text-decoration:none}
+.u121sheet{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;border:0;background:none;padding:0;font-family:inherit}
+.u121sheet i{display:block;width:50px;height:68px;border:1px solid #cbd5e1;border-radius:3px;box-shadow:2px 2px 0 #e2e8f0;background:#fff repeating-linear-gradient(#fff 0 9px,#e2e8f0 9px 10px);background-clip:content-box;padding:12px 6px 6px;box-sizing:border-box;position:relative}
+.u121sheet i:before{content:"";position:absolute;left:6px;right:18px;top:5px;height:4px;background:#94a3b8;border-radius:2px}
+.u121sheet span{font-size:11px;font-weight:800;color:#2563eb;white-space:nowrap}
+.u121sheet:hover i{outline:2px solid #2563eb}
+.u121sn{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+.u121snc{border:1.5px solid #d6ccb2;background:#fff;border-radius:8px;padding:6px 7px;width:100px;box-sizing:border-box}
+.u121snc label{display:flex;justify-content:space-between;font-size:9.5px;font-weight:900;letter-spacing:1px;color:#9a8a5e;margin:0 0 2px;text-transform:uppercase}
+.u121snc label .u121x{color:#cbd5e1;cursor:pointer;font-size:12px;border:0;background:none;padding:0;line-height:1}
+.u121snc label .u121x:hover{color:#dc2626}
+.u121snc .si{width:100%;box-sizing:border-box;border:0;border-bottom:2px solid #1f2937;font-family:'Courier New',monospace;font-size:16px;font-weight:900;color:#b91c1c;padding:1px 2px;background:transparent;border-radius:0}
+.u121snc .jl{font-size:9px;font-weight:900;letter-spacing:1px;color:#94a3b8;margin-top:6px}
+.u121snc .ji{width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:5px;font-family:'Courier New',monospace;font-size:13px;font-weight:800;color:#0f172a;padding:2px 5px;margin-top:3px;background:#f8fafc}
+.u121snc .ji:placeholder-shown{background:#fefce8;border:1.5px solid #facc15}
+.u121snc .si:focus,.u121snc .ji:focus{outline:2px solid #2563eb;outline-offset:1px;border-radius:3px}
+.u121snc .ja{display:block;width:100%;margin-top:4px;border:1px dashed #93c5fd;background:#eff6ff;color:#1d4ed8;border-radius:5px;font-size:11px;font-weight:800;padding:2px 0;cursor:pointer;font-family:inherit}
+.u121snc .ja:hover{background:#2563eb;color:#fff}
+.u121snc .ja.u121full{border-color:#e2e8f0;background:#f8fafc;color:#94a3b8;cursor:default}
+.u121snc.ro .si,.u121snc.ro .ji{pointer-events:none}
+.u121sadd{align-self:stretch;min-height:60px;width:74px;border:1.5px dashed #93c5fd;background:#eff6ff;color:#1d4ed8;border-radius:8px;font-weight:800;font-size:11.5px;cursor:pointer;font-family:inherit;line-height:1.3}
+.u121sadd b{display:block;font-size:20px}
+.u121sadd:hover{background:#2563eb;color:#fff;border-style:solid}
+.u121none{font-size:12px;color:#94a3b8;font-style:italic}
+.u121st{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+.u121pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:800;border-radius:999px;padding:3px 9px;white-space:nowrap;border:1px solid}
+.u121pill.mo{background:#fef9c3;color:#854d0e;border-color:#fde047;cursor:default}.u121pill.mo.g{background:#dcfce7;color:#166534;border-color:#86efac;cursor:pointer}
+.u121saw{display:flex;flex-direction:column;gap:2px;margin-top:2px;width:124px}
+.u121saw .sb{border:1.5px dashed #c4b5fd;background:#faf5ff;color:#7c3aed;border-radius:8px;padding:4px 6px;font-weight:900;font-size:11.5px;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap}
+.u121saw .sb:hover{border-style:solid}
+.u121saw.on .sb{border:1.5px solid #7c3aed;background:#7c3aed;color:#fff}
+.u121saw.ro .sb{cursor:default}
+.u121saw label{font-size:9px;font-weight:900;letter-spacing:1px;color:#9a8a5e;margin:3px 0 0;text-transform:uppercase}
+.u121saw input{width:100%;box-sizing:border-box;border:0;border-bottom:1.5px solid #94a3b8;background:transparent;font-family:inherit;font-weight:800;font-size:12.5px;color:#1f2937;padding:1px 0;border-radius:0}
+.u121saw.on input{border-bottom-color:#7c3aed;color:#5b21b6}
+.u121saw input:focus{outline:2px solid #2563eb;outline-offset:1px;border-radius:3px;background:#fff}
+.u121open{font-size:11.5px;font-weight:800;color:#2563eb;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;text-align:left}
+.u121ot{display:flex;align-items:center;gap:8px;margin:8px 0 0 82px}
+.u121ot>span{font-size:10px;font-weight:900;letter-spacing:1.5px;color:#9a8a5e;width:62px;flex:none}
+#view-fit .u121ot .fy-ot{margin-top:0;max-width:none;flex-wrap:nowrap}
+.u121ot+.u121ot{margin-top:5px}
+.fy-ot.u121pt label.on{border-color:#7c3aed;background:#f5f3ff;color:#4c1d95}
+.fy-ot.u121pt input{accent-color:#7c3aed}
+.fy-ot.ro.u121pt span{border-color:#7c3aed;background:#f5f3ff;color:#4c1d95}
+.u121free{padding:16px 12px;display:flex;align-items:center;gap:12px;color:#b8a98a;font-family:Georgia,serif;font-style:italic;font-size:16px}
+.u121free button{font-family:inherit;font-style:normal;font-size:12.5px;font-weight:800;border:1.5px dashed #0f766e;color:#0f766e;background:#f0fdfa;border-radius:8px;padding:6px 12px;cursor:pointer}
+.u121free button:hover{background:#0f766e;color:#fff}
+.u121notes{margin-top:18px}
+.u121notes h4{margin:0 0 4px;font-size:11px;font-weight:900;letter-spacing:1.5px;color:#9a8a5e;text-transform:uppercase}
+.u121notes textarea{display:block;width:100%;box-sizing:border-box;min-height:84px;border:0;resize:vertical;background:repeating-linear-gradient(#fffdf6 0 27px,#d9cfb4 27px 28px);background-attachment:local;font-family:'Comic Sans MS','Segoe Print',cursive;color:#1e3a8a;font-size:15px;line-height:28px;padding:0 4px}
+.u121notes textarea:focus{outline:2px solid #93c5fd;border-radius:4px}
+.u121foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:#9a8a5e;font-weight:700}
+/* 📥 Scanned in (To allocate) */
+.ib-h{font-size:10.5px;font-weight:900;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;margin:4px 2px 6px;display:flex;align-items:center;gap:6px}
+.ib-h em{font-style:normal;background:#f97316;color:#fff;border-radius:999px;padding:0 7px;letter-spacing:0}
+.ib-item{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:#fff7ed;border:2px solid #fed7aa;border-radius:12px;padding:10px;margin-bottom:8px;cursor:pointer;font-family:inherit}
+.ib-item.on{border-color:#ea580c;background:#ffedd5}
+.ib-item .ib-ic{font-size:22px;line-height:1;flex:none;margin-top:2px}
+.ib-item b{font-size:13.5px;color:#0f172a;word-break:break-word}.ib-item .sub{font-size:12px;color:#64748b;margin-top:2px}
+.ib-item .ib-fill{color:#c2410c;font-weight:800}
+.ib-none{margin:0 4px 8px;font-size:12.5px}
+.ib-up{width:100%;border:2px dashed #94a3b8;background:#f8fafc;color:#334155;border-radius:12px;padding:12px;font-weight:800;font-size:13px;cursor:pointer;margin:2px 0 6px;font-family:inherit}
+.ib-up small{display:block;font-weight:600;color:#64748b;font-size:11.5px;margin-top:2px;word-break:break-all}
+.ib-up:hover{border-color:#2563eb;background:#eff6ff;color:#1d4ed8}
+.ib-mail{width:100%;border:1px solid #e2e8f0;background:#fff;color:#334155;border-radius:10px;padding:7px;font-weight:800;font-size:12.5px;cursor:pointer;margin:0 0 16px;font-family:inherit}
+.u121warn{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;border-radius:10px;padding:9px 11px;font-size:12.5px;margin-bottom:14px}
+.ib-view{border:1px solid #e2e8f0;border-radius:10px;background:#e2e8f0;padding:8px;min-height:420px;display:flex;align-items:stretch;justify-content:center}
+.ib-view .fx-pdf{width:100%;min-height:600px;border:0;background:#fff}
+.ib-view .fx-img{max-width:100%;align-self:flex-start}
+.ib-view .u121ldg{align-self:center;color:#64748b;font-weight:700}
+.ib-form label{font-size:11px;font-weight:900;letter-spacing:.5px;color:#475569;text-transform:uppercase;display:block;margin:10px 0 4px}
+.ib-form label .optional{text-transform:none;font-weight:600;color:#94a3b8}
+.ib-form input,.ib-form select,.ib-form textarea{width:100%;box-sizing:border-box;border:1.5px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff}
+.ib-form .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ib-form .hint{font-size:11.5px;color:#16a34a;font-weight:700;margin-top:3px;min-height:14px}
+.ib-types{display:flex;gap:6px}
+.ib-types button{flex:1;border:1.5px solid #cbd5e1;background:#fff;border-radius:8px;padding:8px 4px;font-weight:800;font-size:12.5px;font-family:inherit;cursor:pointer}
+.ib-types button.on{border-color:#4f46e5;background:#eef2ff;color:#3730a3}
+.ib-form .u121sn .u121snc{width:110px}
+.ib-go{width:100%;margin-top:14px;padding:12px;font-size:15px;background:#ea580c!important}
+.ib-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.u121ta{display:flex;flex-direction:column;gap:6px;margin:4px 0 12px}
+.u121ta .u121ot{margin:0}
+.u121ta .u121snw{display:flex;align-items:flex-start;gap:8px}
+.u121ta .u121snw>span{font-size:10px;font-weight:900;letter-spacing:1.5px;color:#9a8a5e;width:62px;flex:none;margin-top:8px}
+.u121drop{border:2.5px dashed #2563eb;background:#eff6ff;border-radius:14px;padding:26px;text-align:center;color:#1e40af;font-weight:800;cursor:pointer}
+.u121drop.over{background:#dbeafe}
+.u121drop big{display:block;font-size:34px}
+.u121files{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.u121files div{display:flex;align-items:center;gap:10px;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;font-size:13px}
+.u121files div span{margin-left:auto;font-weight:800;font-size:12px;white-space:nowrap}
+.u121thumbs{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;padding:8px 0;max-height:52vh;overflow:auto}
+.u121thumbs .tp{width:96px;flex:none;text-align:center;font-size:11px;font-weight:800;color:#475569}
+.u121thumbs .tp canvas,.u121thumbs .tp .ph{width:84px;height:118px;object-fit:contain;border:3px solid #cbd5e1;border-radius:4px;background:#fff;display:block;margin:0 auto 4px;box-sizing:border-box}
+.u121thumbs .cut{width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#94a3b8;font-size:16px;border:0;background:none;padding:0}
+.u121thumbs .cut b{display:block;width:3px;flex:1;background:repeating-linear-gradient(#cbd5e1 0 5px,transparent 5px 9px);margin:4px 0}
+.u121thumbs .cut.on{color:#dc2626}.u121thumbs .cut.on b{background:#dc2626}
+.u121ords{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.u121ords span{font-size:12px;font-weight:800;border-radius:8px;padding:5px 10px;background:#f1f5f9}
+.u121mail{font-family:'Courier New',monospace;font-size:17px;font-weight:900;background:#0f172a;color:#fff;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;word-break:break-all}
+.u121mail button{margin-left:auto;font-family:inherit;font-size:12px;flex:none}
+.u121steps{margin:10px 0 0;padding-left:20px;font-size:13.5px;line-height:1.7;color:#334155}
+.u121kv{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:13px;margin:10px 0}
+.u121kv>div:nth-child(odd){color:#64748b;font-weight:700}
+.u121sw{display:flex;align-items:center;gap:12px;border:2px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin:8px 0;cursor:pointer;width:100%;text-align:left;background:#fff;font-family:inherit}
+.u121sw small{display:block;font-size:12.5px;color:#64748b;font-weight:600}
+.u121sw .tg{width:46px;height:26px;border-radius:13px;background:#cbd5e1;position:relative;flex:none}
+.u121sw .tg:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.u121sw .tg.on{background:#16a34a}.u121sw .tg.on:after{left:23px}
+.u121pick{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto}
+.u121pick>div{display:flex;align-items:center;gap:12px;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px}
+.u121pick>div b{font-size:14px}
+.u121pick>div .sub{color:#64748b}
+.u121pick>div button{margin-left:auto;flex:none}
+.u121gate{max-width:560px;margin:40px auto;text-align:center;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:30px}
+@media (max-width:760px){
+ .u121pg{padding:16px 12px 16px 30px}.u121pg:before{left:6px;width:12px;background-size:12px 36px}.u121pg:after{left:24px}
+ .u121hd{flex-direction:column-reverse;gap:8px}.u121date{margin-right:0;align-self:flex-end}.u121date .num{font-size:52px}.u121date .wd{font-size:15px}
+ .u121tabs button{padding:4px 8px;font-size:11.5px}
+ .u121cols{display:none}
+ .u121row{grid-template-columns:1fr}.u121team{border-right:0;border-bottom:1px dashed #e2d6b8;padding:10px 0 8px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+ .u121team .u121ld,.u121team .u121mn,.u121team .u121vn{margin-top:0}
+ .u121job{padding:10px 0 10px 8px;margin-left:0}
+ .u121jr{grid-template-columns:52px 1fr 60px;row-gap:8px}
+ .u121jr .u121sn,.u121jr .u121st{grid-column:1/-1}.u121jr .u121st{flex-direction:row;flex-wrap:wrap;align-items:flex-end}
+ .u121ot{margin:8px 0 0;flex-wrap:wrap}#view-fit .u121ot .fy-ot{flex-wrap:wrap}
+ .u121job>.u92tag,.u121job>.u108dtag{margin-left:0}
+ .ib-form .row2{grid-template-columns:1fr}
+}
 /* 🚐 Update 120 — Vans (office + office admin) */
 body:not(.vn-on) #view-vans{display:none!important}
 body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-on #view-fit{display:none!important}
@@ -2299,6 +2473,7 @@ body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-o
    PRODUCTION DATABASE ......................... prod*  (prodLoad, prodSync, prodQueue, prodGate)
    QUALITY CHECK (✅ QC) ........................ qc*   (qcStart, qcRender, qcEd* = the office's checklist editor)
    LATER PRODUCTION UPDATES .................... u83* … u113*  (numbered by the update that added them)
+   FITTING DIARY PAGE · SCANNED IN ............. u121*  (u121DayHtml, u121JobHtml, u121IbList, u121IbMain, u121Up, u121Split, u121Settings)
 
    HOW TO CHANGE THINGS (from the tidy-up on):
    • Change a function where it is. Don't add "const _x=F; F=function(){…}" wrappers any more.
@@ -2382,7 +2557,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-23-1030';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-23-1200';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -9302,7 +9477,7 @@ function fitFJw(oid){ if(!fitData.jobs[oid]){ const j=fitFJ(oid); delete j._ghos
 function fitBk(oid){ const bs=fitData.bookings.filter(b=>b.oid===oid); return bs.filter(b=>!b.second).slice(-1)[0]||bs.slice(-1)[0]||null; }
 // fitReady: replaced in a later update — the earlier version could never run and was removed in the tidy-up (Stage 2)
 function fitReady(o,j){ return (j.lines||[]).length ? j.lines.every(l=>l.ready) : !!(o.stamps&&o.stamps.ready); }
-function fitStatus(o){   // 4 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
+function fitStatus(o){   // 5 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(o){ const j=fitFJ(o.id), b=fitBk(o.id);
   if(j.sentSD) return 'sd'; if(j.outcome==='unf') return 'unf'; if(j.outcome==='snag') return 'snag'; if(j.outcome==='done') return 'fitted';
   if(j.isNew) return 'new'; if(b) return 'booked'; return fitReady(o,j)?'ready':'mfg'; };   // replaced the original: 🆕 = still in 📥 To allocate
@@ -9311,7 +9486,10 @@ function fitStatus(o){   // 4 parts, folded in the tidy-up (Stage 2) — each pa
   const part2=function(o){ const st=part1.apply(this,arguments); if(st==='mfg'||st==='ready'){ const j=fitFJ(o.id); if(!(j.lines||[]).length&&!j.hold&&!fitBk(o.id)) return 'new'; } return st; };
   // a booked job that hasn't gone to the departments yet stays "new" (on To allocate)
   const part3=function(o){ const st=part2.apply(this,arguments); if(st==='booked'){ const j=fitFJ(o.id); if(j.isNew&&!(j.lines||[]).length) return 'new'; } return st; };
-  return part3.apply(this,arguments);
+  // Update 121: 🏭 Manufacturing hidden → a job not booked yet waits in 📥 To allocate; a booked one is on the diary (not To allocate)
+  const part4=function(o){ const st=part3.apply(this,arguments); if(!fitData||u121Mfg()) return st; const b=fitBk(o.id);
+    if((st==='mfg'||st==='ready')&&!b) return 'new'; if(st==='new'&&b) return 'booked'; return st; };
+  return part4.apply(this,arguments);
 }
 function fitPill(st){ const s=FIT_ST[st]; return `<span class="ft-pill" style="background:${s[2]};color:${s[3]}">${s[0]} ${s[1]}</span>`; }
 function fitCrewTxt(t){ return t? [t.leader&&('⭐ '+t.leader),...(t.men||[])].filter(Boolean).join(', '):''; }
@@ -9337,15 +9515,17 @@ function fitBtn(){ const bar=$('dept-bar'); if(!bar||!fitAllowed()) return; cons
   if(fitOn) inner.querySelectorAll('.dept-btn.on').forEach(b=>b.classList.remove('on'));
   fitLoad(); const nNew=fitOrders().filter(o=>['new','unf','snag'].includes(fitStatus(o))).length, open=fitOrders().filter(o=>!['fitted','sd'].includes(fitStatus(o))).length;
   inner.insertAdjacentHTML('beforeend', `<button class="dept-btn d-fit ${fitOn?'on':''}" onclick="fitOpen('diary')" title="Fitting — Office (full access) only">${nNew?'<span class="dot" style="background:#facc15"></span>':''}<span class="di">🔧</span>Fitting<span class="dc">${open}</span></button>`); }
-function fitGo(v){   // 3 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
+function fitGo(v){   // 4 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(v,extra){ fitView=v; if(extra) Object.assign(window,extra); fitRender(); window.scrollTo(0,0); };
   const part1=function(v){ if(v==='stats'&&!u101Can()) v='diary'; return part0.apply(this,[v].concat([].slice.call(arguments,1))); };
   const part2=function(v){ if(v==='qc'&&!qcCanEdit()) v='diary'; if(fitView==='qc'&&v!=='qc'&&qcEdDirty&&!confirm('The QC checklist has changes that aren\'t saved. Leave without saving?')) return; if(v==='qc'&&fitView!=='qc') qcEdLoad(); return part1.apply(this,[v].concat([].slice.call(arguments,1))); };
-  return part2.apply(this,arguments);
+  // Update 121: 🏭 Manufacturing hidden → its pages open the diary (the departments and tablets get a "not in use yet" page)
+  const part3=function(v){ const R=u83R(); if(['alloc','tablets'].includes(v)&&fitData&&prodSt==='ready'&&!u121Mfg()&&!(R&&(R.kind==='dept'||R.kind==='tab'))) v='diary'; return part2.apply(this,[v].concat([].slice.call(arguments,1))); };
+  return part3.apply(this,arguments);
 }
 
 // ── main render ──
-function fitRender(){   // 23 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
+function fitRender(){   // 24 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(){ const el=$('view-fit'); if(!el||!fitOn) return; fitLoad(); if(fitView==='main') fitView='diary';
   const cnt={toalloc:fitOrders().filter(o=>fitStatus(o)==='new').length, after:fyAfterList().filter(o=>['unf','snag'].includes(fitStatus(o))||fitFJ(o.id).yard).length, load:fyLoadBk(fyLoadDay()).length}, ncx=fyCancelList().length;
   const nav=`<div class="oa-views ft-nav">${FX_NAV.map(([k,l])=>`<button class="${fitView===k||(k==='alloc'&&['job','tablets'].includes(fitView))||(k==='teams'&&fitView==='log')?'on':''}" onclick="fitGo('${k}')">${l}${cnt[k]?`<span class="n" style="background:${k==='toalloc'?'#facc15;color:#422006':k==='load'?'#0f766e;color:#fff':'#f59e0b;color:#fff'}">${cnt[k]}</span>`:''}</button>`).join('')}</div>`;
@@ -9451,13 +9631,29 @@ function fitRender(){   // 23 parts, folded in the tidy-up (Stage 2) — each pa
   const part22=function(){ if(fitView==='qc'&&!qcCanEdit()) fitView='diary'; const r=part21.apply(this,arguments);
   try{ const v=$('view-fit'); if(v&&!qcCanEdit()) v.querySelectorAll('.ft-nav button').forEach(b=>{ if(/fitGo\('qc'\)/.test(b.getAttribute('onclick')||'')) b.remove(); });
     if(v&&fitView==='job'&&fitJobId&&!fitQ.trim()) qcStripIn(v,fitJobId); }catch(e){ console.warn(e); } return r; };
-  return part22.apply(this,arguments);
+  // ── Update 121: 🏭 Manufacturing hidden for now · 📥 Scanned in count · ⚙ Fitting settings · a box being typed in stays put when the page redraws ──
+  const part23=function(){ const R=u83R(), hid=prodSt==='ready'&&!!fitData&&!u121Mfg();
+    if(hid&&fitOn&&R&&(R.kind==='dept'||R.kind==='tab')){ const el=$('view-fit'); if(el) el.innerHTML=(typeof u84Banner==='function'?u84Banner():'')+`<div class="u121gate"><div style="font-size:44px">🏭</div><h2>Manufacturing isn't in use yet</h2><p class="sub">The office turns it on when the factory is ready to use SashDash.</p></div>`; return; }
+    if(hid&&['alloc','tablets'].includes(fitView)&&!(R&&['dept','tab','team','yard'].includes(R.kind))) fitView='diary';
+    const ae=document.activeElement, v0=$('view-fit'), keep=ae&&ae.id&&/^u121/.test(ae.id)&&v0&&v0.contains(ae)?{id:ae.id,val:ae.value,typed:ae.value!==ae.defaultValue,s:ae.selectionStart,e:ae.selectionEnd}:null;
+    const r=part22.apply(this,arguments);
+    try{ const v=$('view-fit'); if(!fitOn||!v||prodSt!=='ready') return r;
+      if(u121IbCan()&&u121IbSt==='idle') u121IbLoad();
+      if(hid){ v.querySelectorAll('.ft-nav button').forEach(b=>{ if(/fitGo\('alloc'\)/.test(b.getAttribute('onclick')||'')) b.remove(); });
+        v.querySelectorAll('.achips .a1,.achips .a2').forEach(b=>b.remove()); v.querySelectorAll('.dtabs button.r').forEach(b=>b.remove()); }
+      const n=u121IbCan()?u121Ib.length:0, tb=[...v.querySelectorAll('.ft-nav button')].find(b=>/fitGo\('toalloc'\)/.test(b.getAttribute('onclick')||''));
+      if(tb&&n&&!tb.querySelector('.u121n')) tb.insertAdjacentHTML('beforeend',`<span class="n u121n" style="background:#f97316;color:#fff" title="Scanned in — waiting to be filled in">📥 ${n}</span>`);
+      if(fitView==='teams'&&u121Admin()&&!v.querySelector('.u121set')){ const h=v.querySelector('.fx-h'); if(h) h.insertAdjacentHTML('beforeend','<button class="btn-outline u121set" onclick="u121Settings()">⚙ Fitting settings</button>'); }
+      if(keep){ const el=$(keep.id); if(el){ if(keep.typed&&el.value!==keep.val) el.value=keep.val; el.focus(); try{ el.setSelectionRange(keep.s,keep.e); }catch(e){} } }
+      else if(u121Focus){ const el=$(u121Focus); u121Focus=null; if(el) el.focus(); }
+    }catch(e){ console.warn(e); } return r; };
+  return part23.apply(this,arguments);
 }
 
 // ── main page ──
 // fitSearchText: replaced in a later update — the earlier version could never run and was removed in the tidy-up (Stage 2)
 function fitSearchText(o){ const j=fitFJ(o.id), bs=fitData.bookings.filter(b=>b.oid===o.id);
-  return [oaTitle(o),o.name,o.siteName,o.phone,o.contact,o.eir,o.siteEir,(o.pages||[]).join(' '),...j.lines.map(l=>l.nums.join(' ')+' '+fitProd(l.prod)[2]+' '+l.custom),...bs.map(b=>'team '+b.team+' '+fitCrewTxt(fitTeam(b.team)))].join(' ').toLowerCase(); }
+  return [oaTitle(o),o.name,o.siteName,o.phone,o.contact,o.eir,o.siteEir,(o.pages||[]).join(' '),...j.lines.map(l=>l.nums.join(' ')+' '+fitProd(l.prod)[2]+' '+l.custom),...bs.map(b=>'team '+b.team+' '+fitCrewTxt(fitTeam(b.team))),...u121Sn(o.id).map(x=>'sheet '+x.no+' '+x.jobs.join(' '))].join(' ').toLowerCase(); }   // Update 121: sheet nos. › job nos.
 
 // ── Job allocations ──
 const FIT_ORDER={new:0,unf:1,snag:2,ready:3,mfg:4,booked:5,sd:6,fitted:7};
@@ -9486,7 +9682,7 @@ function fitJobHtml(){
   const outBox = (st==='unf'||st==='snag') ? `<div class="oa-warn" style="${st==='unf'?'background:#dbeafe;color:#1e3a8a':''}"><b>${st==='unf'?'⟲ Unfinished':'⚠ Snag'}</b> — ${b?'Team '+b.team+' · '+fitDL(b.start):''}<br>${j.out.type?esc(j.out.type)+' — ':''}${esc(j.out.text||'')}${j.out.need?'<br>Needs: '+esc(j.out.need):''}${(j.out.photos||[]).length?`<div style="display:flex;gap:6px;margin-top:6px">${j.out.photos.map(p=>`<img src="${p}" style="width:70px;height:56px;object-fit:cover;border-radius:6px">`).join('')}</div>`:''}<div style="margin-top:8px;display:flex;gap:8px"><button class="btn-outline" onclick="fitAllocate('${o.id}')">🗓 Re-book a team</button><button class="btn-primary" style="background:#be185d" onclick="fitSendSD('${o.id}')">➡ Send to service department</button></div></div>`
    : st==='sd' ? `<div class="oa-warn" style="background:#fce7f3;color:#9d174d">🛠️ Sent to the service department ${oaDT(j.sentSD.at)} by ${esc(j.sentSD.by)} · ⏱ ${esc(j.sentSD.time)} · 👷 ${esc(j.sentSD.men)} · 📦 ${esc(j.sentSD.mat)}<br>${esc(j.sentSD.note||'')}<br><small>In the preview nothing is really sent — in the real build it lands in Service Department 📋 Job allocations as a 🆕 new call "🔧 From Fitting".</small><div style="margin-top:6px"><button class="btn-outline" onclick="fitUnsend('${o.id}')">↩ Take back</button></div></div>`
    : st==='fitted' ? `<div class="oa-warn" style="background:#dcfce7;color:#166534">✅ Fitted${b?' by Team '+b.team:''} · ${j.sig?(j.sig.name?'✍️ signed by '+esc(j.sig.name):'⚠️ not signed — '+esc(j.sig.reason||'')):''} <button class="btn-outline" style="margin-left:8px" onclick="fitReport('${o.id}')">🖨 Report</button></div>` : '';
-  return `<div class="fx-h"><button class="btn-outline" onclick="fitGo('alloc')">← Manufacturing</button><h2>${t.icon} ${esc(oaTitle(o))}</h2><span class="pill p-${o.type}">${t.label.replace(/s$/,'')}</span>${fitPill(st)}<span class="spacer"></span><button class="btn-outline" onclick="fitReport('${o.id}')">🖨 Report</button><button class="btn-primary" style="background:#0f766e" onclick="fitAllocate('${o.id}')">🗓 ${b?'Move booking':'Allocate to a team'}</button></div>
+  return `<div class="fx-h"><button class="btn-outline" onclick="fitGo(u121Mfg()?'alloc':'diary')">${u121Mfg()?'← Manufacturing':'← Diary'}</button><h2>${t.icon} ${esc(oaTitle(o))}</h2><span class="pill p-${o.type}">${t.label.replace(/s$/,'')}</span>${fitPill(st)}<span class="spacer"></span><button class="btn-outline" onclick="fitReport('${o.id}')">🖨 Report</button><button class="btn-primary" style="background:#0f766e" onclick="fitAllocate('${o.id}')">🗓 ${b?'Move booking':'Allocate to a team'}</button></div>
   ${j.isNew?`<div class="newbar"><span style="font-size:24px">🆕</span><div style="flex:1"><b>New from Office Administration</b> — stamped 🏭 Sent to manufacturing ${oaDT(S.factory.at)} by ${esc(S.factory.by)}.<br>Fill in what's needed and press <b>💾 Save</b>. It then joins the normal list and the 🆕 goes away.</div></div>`:''}
   ${outBox}
   <div class="oa-stamps" style="grid-template-columns:repeat(6,minmax(0,1fr));margin-bottom:14px">${stamp(!!S.received,'Order received',S.received?oaDate(S.received.at)+' · '+esc(S.received.by):'')}${stamp(!!S.account,'Account made',S.account?oaDate(S.account.at)+' · '+esc(S.account.by):'')}${stamp(!!S.factory,'Sent to manufacturing',S.factory?oaDate(S.factory.at)+' · '+esc(S.factory.by):'')}${stamp(!!S.ready,'Ready for fitting',S.ready?oaDate(S.ready.at)+' · '+esc(S.ready.by):'when every sub-heading is Ready')}${stamp(!!b,'🔧 Fitting booked',b?`Team ${b.team} · ${fitDL(b.start)}`:'not yet')}${stamp(j.outcome==='done','✅ Fitted',j.outcome==='done'?'by Team '+(b?b.team:''):'set by the team')}</div>
@@ -9542,7 +9738,7 @@ function fitAlForm(){   // 5 parts, folded in the tidy-up (Stage 2) — each par
   const grid=fitTeamsUsed().map(t=>{ const busy=wkDays.filter(v=>fitOnDay(t.n,v).filter(b=>b.id!==a.bid).length).length;
     return `<div class="fx-tp ${a.team===t.n?'sel':''} ${busy>=4?'busy':''}" style="cursor:pointer" onclick="fitAl.team=${t.n};fitAlForm()"><b>Team ${t.n}</b>⭐ ${esc(t.leader.split(' ')[0])} · 👷 ${fitSize(t)}<br><span style="color:var(--slate)">${busy?busy+' day'+(busy>1?'s':'')+' booked':'free'} that week</span></div>`; }).join('');
   const T=a.team&&fitTeam(a.team), warn=[];
-  if(st==='mfg') warn.push(`🏭 <b>Not all made / ready yet</b> — ${j.lines.length?j.lines.filter(l=>!l.ready).length+' sub-heading(s) not ticked Ready':'no factory sub-headings yet'}. You can still book.`);
+  if(st==='mfg'&&u121Mfg()) warn.push(`🏭 <b>Not all made / ready yet</b> — ${j.lines.length?j.lines.filter(l=>!l.ready).length+' sub-heading(s) not ticked Ready':'no factory sub-headings yet'}. You can still book.`);
   if(T && fitSize(T)<j.men) warn.push(`👷 This job needs <b>${j.men} men</b>. Team ${T.n} has <b>${fitSize(T)}</b>.`);
   if(T){ const clash=dates.filter(v=>fitOnDay(T.n,v).some(b=>b.id!==a.bid&&b.oid!==a.oid)); if(clash.length) warn.push(`📅 Team ${T.n} already has a job on ${clash.map(fitDL).join(', ')}.`); }
   if(dates.some(v=>v<todayYmd())) warn.push('⏪ That start day is in the past.');
@@ -9953,14 +10149,16 @@ var FX_BAR=()=>`<div class="oa-demo fx-demo"><span>🧪 <b>Sample data</b> — O
 
 // ── main render ──
 const FX_NAV=[['diary','📅 Diary'],['map','🗺 Map'],['toalloc','📥 To allocate'],['alloc','🏭 Manufacturing'],['load','🚚 Loading'],['after','🔧 After install'],['teams','👥 Teams'],['phone','📱 Team phone']];
-function fxNs(){   // 3 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
+function fxNs(){   // 4 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(){ const out=[], A=fxAl(); fitOrders().forEach(o=>{ const st=fitStatus(o); if(!fxOpenSt(st)) return; const b=fitBk(o.id); if(!b) return; const n=fxDaysTo(fyFloor(b)); if(n<0) return; fitFJ(o.id).lines.forEach(l=>{ if(!l.made&&n<=A.ns) out.push({o,l,b,n}); if(l.made&&!l.ready&&n<=A.nf) out.push({o,l,b,n,nf:true}); }); }); return out; };
   const part1=function(){ const r=part0.apply(this,arguments), R=u83Dept(); return R?r.filter(x=>R.depts.includes(fxDept(x.l))):r; };
   // the factory: "keep the original day" still works to that day (alarms, tablets); "hold on the floor" waits
   const part2=function(){ const out=part1.apply(this,arguments), A=fxAl();
   u93List().forEach(o=>{ const h=fitFJ(o.id).hold; if(h.floor!=='keep'||!h.keepDay) return; const n=fxDaysTo(h.keepDay); if(n<0) return; const b=Object.assign({},h.b||{},{start:h.keepDay});
     fitFJ(o.id).lines.forEach(l=>{ if(!l.made&&n<=A.ns) out.push({o,l,b,n}); if(l.made&&!l.ready&&n<=A.nf) out.push({o,l,b,n,nf:true}); }); }); return out; };
-  return part2.apply(this,arguments);
+  // Update 121: 🏭 Manufacturing hidden → no 🚨 not started / ⏰ not finished alarms
+  const part3=function(){ if(fitData&&!u121Mfg()) return []; return part2.apply(this,arguments); };
+  return part3.apply(this,arguments);
 }
 function fxSearchHtml(q){ const res=fitOrders().filter(o=>fitSearchText(o).includes(q));
   return `<div class="fx-h"><h2>🔍 Search</h2><span class="sub" style="color:var(--slate)">${res.length} found for “${esc(fitQ.trim())}”</span><span class="spacer"></span><button class="btn-outline" onclick="fitQ='';fitRender()">✕ Clear search</button></div>${res.length?fxTable(res,true):'<div class="oa-empty">Nothing found.</div>'}`; }
@@ -9980,7 +10178,7 @@ function fxScanBox(o){   // 2 parts, folded in the tidy-up (Stage 2) — each pa
   return part1.apply(this,arguments);
 }
 function fxDraft(oid){ const j=fitFJw(oid); if(!j.draft) j.draft={secs:{},note:'',days:j.days||1,men:j.men||2}; return j.draft; }
-function fxToAllocHtml(){   // 2 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
+function fxToAllocHtml(){   // 3 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(){ const list=fitOrders().filter(o=>fitStatus(o)==='new').sort((a,b)=>new Date(b.stamps.factory.at)-new Date(a.stamps.factory.at));
   if(!list.length) return `<div class="fx-h"><h2>📥 To allocate</h2></div><div class="oa-empty">✔ Nothing to allocate. New jobs land here when Office Administration stamps 🏭 Sent to manufacturing.</div>`;
   if(!list.some(o=>o.id===fxTaSel)) fxTaSel=list[0].id;
@@ -10005,7 +10203,19 @@ function fxToAllocHtml(){   // 2 parts, folded in the tidy-up (Stage 2) — each
   // swap the allocate panel for the booking panel
   let depth=1,k=j; const re=/<div\b|<\/div>/g; re.lastIndex=j; let m; while((m=re.exec(h))){ depth+=m[0]==='</div>'?-1:1; if(!depth){ k=m.index; break; } }
   return h.slice(0,j)+tabs+u108Html(o)+h.slice(k); };
-  return part1.apply(this,arguments);
+  // ── Update 121: 📥 Scanned in above the Office Administration jobs · PRODUCT boxes + sheet no. › job no. · with 🏭 Manufacturing hidden, only 📅 Book day and crew ──
+  const part2=function(){ const hid=fitData&&!u121Mfg(); if(hid) u108Tab='book';
+    const ibSel=typeof fxTaSel==='string'&&fxTaSel.startsWith('ib:')?fxTaSel.slice(3):null, ibOk=!!ibSel&&u121IbCan()&&u121Ib.some(x=>x.id===ibSel), nOA=fitOrders().filter(o=>fitStatus(o)==='new').length;
+    const hdr=`<div class="fx-h"><h2>📥 To allocate</h2>${u121IbCan()&&u121Ib.length?`<span class="ft-pill" style="background:#ffedd5;color:#9a3412">📥 ${u121Ib.length} scanned in</span>`:''}${nOA?`<span class="ft-pill" style="background:#fef9c3;color:#854d0e">🆕 ${nOA} new from Office Administration</span>`:''}<span class="sub" style="color:var(--slate)">Newest at the top · ${hid?'fill in scans, then book a day and team':'give each job to the departments that make it'}</span></div>`;
+    if(ibOk||(!nOA&&u121IbCan())) return hdr+`<div class="ta-wrap"><div class="ta-list">${u121IbList()}${u121TaItems()}</div><div class="ta-main">${ibOk?u121IbMain(ibSel):`<div class="oa-empty">✔ Nothing to allocate. Upload an order, scan one to ${esc(u121Mail())}, or wait for Office Administration.</div>`}</div></div>`;
+    if(ibSel) fxTaSel=null;
+    let h=part1.apply(this,arguments); if(!nOA) return h;
+    h=h.replace(/^<div class="fx-h">[\s\S]*?<\/div>/,hdr);
+    if(u121IbCan()) h=h.replace('<div class="ta-list">','<div class="ta-list">'+u121IbList());
+    if(fxTaSel&&oaFind(fxTaSel)) h=h.replace('<div class="ta-grid">',`<div class="u121ta"><div class="u121ot"><span>PRODUCT</span>${u121PtBoxes(fxTaSel,true)}</div><div class="u121snw"><span>SHEET › JOB</span>${u121SnCards('o:'+fxTaSel,u121Can())}</div></div><div class="ta-grid">`);
+    if(hid) h=h.replace(/<button class="[^"]*" onclick="u108Tab='alloc';fitRender\(\)">🏭 Allocate to departments<\/button>/,'').replace('This stays the original — departments add their own updated job sheet later.','This stays the original order sheet.');
+    return h; };
+  return part2.apply(this,arguments);
 }
 function fxTaSec(oid,k,on){ const d=fxDraft(oid); if(on) d.secs[k]=[{prod:FX_GROUPS[k][0],qty:1,custom:''}]; else delete d.secs[k]; fitSave(); fitRender(); }
 function fxTaAdd(oid,k){ const d=fxDraft(oid); (d.secs[k]=d.secs[k]||[]).push({prod:FX_GROUPS[k][0],qty:1,custom:''}); fitSave(); fitRender(); }
@@ -10245,18 +10455,22 @@ function fxFromDiary(oid){   // 3 parts, folded in the tidy-up (Stage 2) — eac
   const part0=function(oid){ const st=fitStatus(oaFind(oid)); fitQ='';
   if(['unf','snag','sd','fitted'].includes(st)){ fxAfter='all'; fitGo('after'); return; }
   if(st==='new'){ fxTaSel=oid; fitGo('toalloc'); return; }
+  if(!u121Mfg()){ fitOpenJob(oid); return; }   // Update 121
   fxHL=oid; fxSub='all'; fxSt='all'; fitFilter='all'; fitGo('alloc'); };
   const part1=function(oid){ if(u83Dept()){ fxHL=oid; fitGo('alloc'); return; } return part0.apply(this,arguments); };
   const part2=function(oid){ if(u85K()==='yard') return fxJS(oid); return part1.apply(this,arguments); };
   return part2.apply(this,arguments);
 }
-function fxChips(){   // 3 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
+function fxChips(){   // 4 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(oid){ const m=fxMat(oid), p=fxMoney(oid), o=oaFind(oid);
   return `<span class="sc ${m?'g':''}" title="Goes green when Manufacturing has every line ✔ READY">${m?'✔ Material ready':'⏳ Material'}</span><span class="sc ${p?'g':''}" ${p?`onclick="event.stopPropagation();fxMoneyInfo('${oid}')" style="cursor:pointer"`:''} title="Goes green when Office Administration confirms the money is collected">${p?'✔ Money collected':'💶 Money'}</span>`; };
   const part1=function(oid){ let h=part0.apply(this,arguments); const m=u87M(oid); if(!m||m.ready) return h;
   return h.replace('⏳ Material',m.due?`⏳ Material ${parseYmd(m.due).toLocaleDateString('en-IE',{day:'numeric',month:'short'})}`:'❓ Material').replace('title="Goes green when Manufacturing has every line ✔ READY"',`title="Re-book: ${m.due?'material will be ready '+fitDL(m.due):'material not confirmed'} — goes green when it's ticked ready"`); };
   const part2=function(){ const h=part1.apply(this,arguments); return u98Ro()?h.replace(/<span class="sc[^"]*"[^>]*title="Goes green when Office Administration confirms the money is collected">[^<]*<\/span>/,''):h; };
-  return part2.apply(this,arguments);
+  // Update 121: 🏭 Manufacturing hidden → the Material chip shows 🪚 Gone to saw instead
+  const part3=function(oid){ const h=part2.apply(this,arguments); if(!fitData||u121Mfg()) return h; const g=u121Saw(oid);
+    return h.replace(/<span class="sc[^"]*" title="Goes green when Manufacturing has every line ✔ READY">[^<]*<\/span>/,`<span class="sc ${g?'g':''}" title="🪚 Gone to saw — tick it on the Day page">${g?'🪚 Saw '+(g.date?parseYmd(g.date).toLocaleDateString('en-IE',{day:'numeric',month:'short'}):'✓'):'🪚 Not at saw'}</span>`); };
+  return part3.apply(this,arguments);
 }
 function fxMoneyInfo(oid){ const o=oaFind(oid); if(!o||!o.moneyIn) return; openModal(`<h2 style="color:#15803d">✔ Money collected</h2><div style="font-size:15px">Confirmed by <b>Office Administration</b>${o.moneyIn.by?' ('+esc(o.moneyIn.by)+')':''}</div><div class="sub" style="margin-top:4px">${oaDT(o.moneyIn.at)}</div><div class="oa-hint" style="margin-top:12px">Only Office Administration can change this. Amounts are never shown in Fitting.</div><div class="modal-actions"><button class="btn-primary" onclick="closeModal()">Close</button></div>`); fxModal(); }
 
@@ -10360,12 +10574,12 @@ function fxDiaryHtml(){ if(!fitDay) fitWkToday(); if(parseYmd(fitDay).getDay()==
   const bar=`<div class="week-bar" style="margin-top:0;margin-bottom:10px"><button class="wk-nav" onclick="fxNav(-1)">‹</button><div class="wk-label">${lab}</div><button class="wk-nav" onclick="fxNav(1)">›</button><button class="btn-outline" onclick="fitMonth=null;fitWkToday()">Today</button><span class="spacer"></span>
    <div class="dvsw">${vb('day','Day')}${vb('week','Week')}${vb('month','Month')}</div>
    <select class="dsel" onchange="fxTP=+this.value;fitRender()"><option value="0">👷 All teams</option>${fitTeamsUsed().map(t=>`<option value="${t.n}" ${fxTP===t.n?'selected':''}>Team ${t.n} · ${esc(t.leader)}</option>`).join('')}</select>
-   <button class="btn-primary wk-new" onclick="fxSub='all';fxSt='ready';fitGo('alloc')">🏭 Manufacturing (${fitOrders().filter(o=>fitStatus(o)==='ready').length} ready to fit)</button></div>
+   ${u121Mfg()?`<button class="btn-primary wk-new" onclick="fxSub='all';fxSt='ready';fitGo('alloc')">🏭 Manufacturing (${fitOrders().filter(o=>fitStatus(o)==='ready').length} ready to fit)</button>`:''}${v==='day'?'<button class="btn-outline" onclick="u121Print()">🖨 Print day</button>':''}</div>
    <div class="dtabs"><button class="${fxDTab==='diary'?'on':''}" onclick="fxDTab='diary';fitRender()">📅 Diary</button><button class="r ${fxDTab==='ready'?'on':''}" onclick="fxDTab='ready';fitRender()">✔ All ready <em>${ready}</em></button></div>`;
   if(fxDTab==='ready') return bar+fxAllReadyHtml();
   const body= v==='day'?fxDayHtml(): v==='month'?fxMonthHtml(): fxWeekHtml();
-  const help=`<div class="dhelp">👆 <b>Click a job</b> — opens it on 🏭 Manufacturing · <b>📄 Job sheet</b> — the order, the latest version and the factory's updates · ✋ <b>Drag a job</b> to another day or team (asks first: move it, or add a 2nd crew) · <b class="g">⋮</b> <b>drag its right edge</b> to make it longer or shorter (skips Sundays).</div>`;
-  if(v==='month') return bar+body+help;
+  const help=v==='day'?`<div class="dhelp">✏️ <b>Type sheet nos. and job nos. straight onto the page</b> — they save as you go · tick <b>Order</b>, <b>Product</b> and <b>🪚 Gone to saw</b> · ✋ <b>drag a job by its time</b> onto another team · 📄 <b>Order sheet</b> opens the scan</div>`:`<div class="dhelp">👆 <b>Click a job</b> — opens it${u121Mfg()?' on 🏭 Manufacturing':''} · <b>📄 Job sheet</b> — the order, the latest version and the factory's updates · ✋ <b>Drag a job</b> to another day or team (asks first: move it, or add a 2nd crew) · <b class="g">⋮</b> <b>drag its right edge</b> to make it longer or shorter (skips Sundays).</div>`;
+  if(v==='month'||v==='day') return bar+body+help;   // Update 121: the Day page is full width
   return bar+`<div class="dwrap"><aside>${fxMini()}</aside><div class="dmain">${body}${help}</div></div>`; }
 function fxNav(n){ if(fxDV==='day'){ let d=addDays(parseYmd(fitDay),n); if(d.getDay()===0) d=addDays(d,n); fitDay=ymd(d); }
   else if(fxDV==='week'){ fitDay=ymd(addDays(parseYmd(fitDay),7*n)); }
@@ -10409,14 +10623,7 @@ function fxWeekHtml(){   // 2 parts, folded in the tidy-up (Stage 2) — each pa
   const part1=function(){ return part0.apply(this,arguments).replace(/<td class="tm" style="border-left:5px solid #d97706"><b>Team 0<\/b><span>[^<]*<\/span>/,`<td class="tm f6tm" style="border-left:5px dashed #d97706"><b>${F6_LAB}</b><span>booked — pick a team</span>`).replace('<tr><td class="tm f6tm"','<tr class="f6row"><td class="tm f6tm"'); };
   return part1.apply(this,arguments);
 }
-function fxDayHtml(){   // 2 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
-  const part0=function(){ const v=fitDay;
-  return `<div class="dayg" style="grid-template-columns:repeat(${Math.max(1,Math.min(6,fxTeamsShown().length))},minmax(0,1fr))">${fxTeamsShown().map(T=>{ const bs=fitOnDay(T.n,v).sort((a,b)=>(a.time==='pm')-(b.time==='pm')), van=fyVanTxt(T.n);
-    return `<div class="dcol fx-cell" style="--tc:${T.col}" data-team="${T.n}" data-day="${v}"><div class="dch"><b>Team ${T.n}</b><span>⭐ ${esc(T.leader)}${T.men.length?' · '+esc(T.men.join(', ')):''}</span>${van?`<span class="fy-van">${esc(van)}</span>`:''}</div>${bs.map(b=>{ const o=oaFind(b.oid); if(!o) return ''; const ds=fxDates(b), main=b.second?fitBk(b.oid):null, sec=fitData.bookings.filter(x=>x.oid===b.oid&&x.second&&fxDates(x).includes(v)&&x.id!==b.id), ph=o.phone||o.contact, ll=o.type==='builder'?o.siteCoords:o.coords, cx=fyCancelOn(o,b,v);
-      return `<div class="dcard ${cx?'fy-cxc':''}" draggable="true" data-bid="${b.id}">${cx?'<div class="fy-tag">🔴 CANCELLED BY CUSTOMER</div>':''}<div class="tm2">${fxTimeTxt(b)} · day ${ds.indexOf(v)+1} of ${ds.length}${b.days===0.5?' · ½ day':''}</div><b>${esc(oaTitle(o))}</b><div class="sub">${esc(oaPlace(o.type==='builder'?o.siteEir:o.eir)||oaWhere(o))}</div>${main?`<div class="lk">🔗 helping Team ${main.team}${ds.length===1?' — today only':''}</div>`:''}${sec.length?`<div class="lk">🔗 Team ${sec.map(x=>x.team).join(', ')} helping today</div>`:''}${fyOtChips(o.id)}<div class="st2 big">${fxChips(o.id)}</div><button class="jsb big" onclick="fxJS('${o.id}')">📄 Job sheet</button><div class="dact"><button class="btn-outline ft-sm" onclick="fxFromDiary('${o.id}')">🏭 Open</button>${ph?`<a class="btn-outline ft-sm" href="tel:${esc(String(ph).replace(/\s/g,''))}">📞 Ring</a>`:''}${ll||o.eir?`<a class="btn-outline ft-sm" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ll||(o.type==='builder'?o.siteEir:o.eir))}">🗺 Directions</a>`:''}</div></div>`; }).join('')||'<div class="free" style="padding:18px 0">free</div>'}</div>`; }).join('')||'<div class="sub">No teams shown — tick a team on the left.</div>'}</div>`; };
-  const part1=function(){ return part0.apply(this,arguments).replace(/<div class="dcol fx-cell" style="--tc:#d97706" data-team="0"([^>]*)><div class="dch"><b>Team 0<\/b><span>[^<]*<\/span>/,`<div class="dcol fx-cell f6col" style="--tc:#d97706" data-team="0"$1><div class="dch"><b>${F6_LAB}</b><span>booked — pick a team</span>`); };
-  return part1.apply(this,arguments);
-}
+function fxDayHtml(){ return u121DayHtml(); }   // Update 121: the Day view is a diary page (a row for each team) — was a column per team
 function fxMonthHtml(){   // 2 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(){ const d=parseYmd(fitDay), first=fitMonth?parseYmd(fitMonth):new Date(d.getFullYear(),d.getMonth(),1), start=mondayOf(first), T=fxTeamsShown().map(t=>t.n);
   let h='<div class="mgrid">'+['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x=>`<div class="mh">${x}</div>`).join('');
@@ -10833,10 +11040,10 @@ try{ fyBrandHeader(); }catch(e){}
 // scans, cutting lists, job-sheet versions and team files go to the private 'prod-files' storage bucket (index: prod_files).
 // Only Office (full access) logins can read or write any of it (RLS). Sites / Service Department are not touched.
 var prodMoney={}, prodWriting=new Set(), prodSt='idle', prodErr='', prodVer={}, prodSaved={}, prodStateSaved={}, prodIdx={}, prodGot={}, prodBusy=0, prodTimer=null, prodChan=null, prodLastOA=null, prodLastJS=null, prodLocal=null;
-const PROD_STATE_KEYS=['teams','vans','tablets','alarms','hide','log','yard'];
+const PROD_STATE_KEYS=['teams','vans','tablets','alarms','hide','log','yard','cfg','daynotes'];   // cfg + daynotes: Update 121
 function prodEmptyFit(){   // 2 parts, folded in the tidy-up (Stage 2) — each part runs the one before it
   const part0=function(){ const teams=[]; for(let n=1;n<=20;n++) teams.push({n,leader:'',phone:'',men:[],col:FIT_COLS[(n-1)%FIT_COLS.length],inuse:false,van:''});
-  return {teams, vans:[], log:[], jobs:{}, bookings:[], hide:[], alarms:{ns:7,nf:4}, yard:{t:{},done:{}}, v:3,
+  return {teams, vans:[], log:[], jobs:{}, bookings:[], hide:[], alarms:{ns:7,nf:4}, yard:{t:{},done:{}}, v:3, cfg:{mfg:false}, daynotes:{},
     tablets:[{n:1,name:'PVC windows saw',col:'#2563eb',see:['upvc'],people:[]},{n:2,name:'PVC doors',col:'#0891b2',see:['upvcd','upvcp','upvcf'],people:[]},{n:3,name:'Composite doors',col:'#7c3aed',see:['comp'],people:[]},{n:4,name:'Hardwood shop',col:'#a16207',see:['timw','timd'],people:[]},{n:5,name:'Aluminium shop',col:'#475569',see:['aluw','alusd','alup','aluls','aluf'],people:[]}]}; };
   const part1=function(){ const f=part0.apply(this,arguments); f.qc=qcDefault(); return f; };
   return part1.apply(this,arguments);
@@ -11893,11 +12100,13 @@ function u108Html(o){   // 2 parts, folded in the tidy-up (Stage 2) — each par
     <div class="sub" style="margin-top:6px;font-size:12px">or <a href="#" onclick="event.preventDefault();u87Start('${oid}')">pick the day on the 📅 Diary</a> · the job still needs <b>🏭 Allocate to departments</b> before the factory sees it</div>`; };
   const part1=function(o){ let h=part0.apply(this,arguments); const F=u108Form(o.id);
   h=h.replace(/<input type="date"[^>]*u108F\[[^\]]*\]\.start=this\.value[^>]*>/,u109Btn('tab',F.start));
-  return h.replace(/or <a href="#" onclick="event\.preventDefault\(\);u87Start\('[^']+'\)">pick the day on the 📅 Diary<\/a> · /,''); };
+  h=h.replace(/or <a href="#" onclick="event\.preventDefault\(\);u87Start\('[^']+'\)">pick the day on the 📅 Diary<\/a> · /,'');
+  if(!u121Mfg()) h=h.replace("<span>It's on the diary. The job stays here until you send it to the departments.</span>","<span>It's on the diary.</span>").replace('the job still needs <b>🏭 Allocate to departments</b> before the factory sees it','booking it takes it off 📥 To allocate and puts it on the diary');   // Update 121
+  return h; };
   return part1.apply(this,arguments);
 }
 function u108Book(oid){ const F=u108Form(oid), d=fxDraft(oid), j=fitFJw(oid), was=j.isNew;
-  fitAllocate(oid); if(!fitAl) return; fitAl.team=F.team; fitAl.start=F.start; fitAl.time=F.time; fitAl.days=d.days||1; j.men=d.men; fitAlSave(); j.isNew=was; fitSave(); u108Tab='book'; fitRender(); }
+  fitAllocate(oid); if(!fitAl) return; fitAl.team=F.team; fitAl.start=F.start; fitAl.time=F.time; fitAl.days=d.days||1; j.men=d.men; fitAlSave(); j.isNew=u121Mfg()?was:false; fitSave(); u108Tab='book'; fitRender(); }   // Update 121: Manufacturing hidden → booked = off To allocate
 function u108Un(oid){ if(!confirm('Take this booking off the diary?')) return; const b=fitBk(oid); if(!b) return; fitData.bookings=fitData.bookings.filter(x=>x.id!==b.id); fxLog(oid,'📅',oaWho(),'Booking taken off (To allocate)'); delete u108F[oid]; fitSave(); fitRender(); toast('Unbooked'); }
 
 
@@ -11966,14 +12175,15 @@ function u111Lock(lid){ u111Edit.delete(lid); fitRender(); }
 
 
 // ════════ Update 105 — 🆕 a "new to process" strip under the Production button (departments: lines not sent to the saw · fitting manager / office: jobs in 📥 To allocate) ════════
-function u112Kind(){ const R=typeof u83R==='function'&&u83R(); if(R) return R.kind==='dept'?'dept':R.kind==='fit'?'fit':null; return realMe&&realMe.role==='admin'&&!previewing?'fit':null; }
+function u112Kind(){ const R=typeof u83R==='function'&&u83R(); if(R&&R.kind==='dept'&&fitData&&!u121Mfg()) return null;   // Update 121
+  if(R) return R.kind==='dept'?'dept':R.kind==='fit'?'fit':null; return realMe&&realMe.role==='admin'&&!previewing?'fit':null; }
 function u112Info(){ const k=u112Kind(); if(!k||typeof prodSt==='undefined'||prodSt!=='ready') return null;
   if(k==='dept'){ const R=u83R(), ds=(R&&R.depts)||[], by={}; ds.forEach(d=>by[d]=0);
     const os=fitOrders().filter(o=>{ let hit=false; (fitFJ(o.id).lines||[]).forEach(l=>{ const d=fxDept(l); if(!l.saw&&!l.ready&&ds.includes(d)){ hit=true; } }); return hit; });
     ds.forEach(d=>by[d]=fitOrders().filter(o=>(fitFJ(o.id).lines||[]).some(l=>!l.saw&&!l.ready&&fxDept(l)===d)).length);
     const per=ds.length>1?ds.filter(d=>by[d]).map(d=>fxDeptName(d)+' '+by[d]).join(' · '):'';   // PVC & Comp: say which page the new jobs are on
     return {k,n:os.length,by,lab:n=>n?(per?`🆕 New to process: ${per}`:`🆕 ${n} new job${n===1?'':'s'} to process`):'✓ Nothing new to process'}; }
-  const n=fitOrders().filter(o=>fitStatus(o)==='new').length; return {k,n,lab:n=>n?`🆕 ${n} new job${n===1?'':'s'} to allocate`:'✓ Nothing new to allocate'}; }
+  const n=fitOrders().filter(o=>fitStatus(o)==='new').length+(typeof u121IbCan==='function'&&u121IbCan()?u121Ib.length:0); return {k,n,lab:n=>n?`🆕 ${n} new job${n===1?'':'s'} to allocate`:'✓ Nothing new to allocate'}; }   // Update 121: + 📥 scans
 function u112Go(){ const I=u112Info(); if(!I) return;
   if(I.k==='dept'){ const first=(I.by[fxSub]?fxSub:Object.keys(I.by).find(d=>I.by[d]))||fxSub; if(first&&first!=='all') fxSub=first; fxSt=I.n?'new':'all'; fitFilter='all'; fitQ=''; fitOpen('alloc'); }
   else { fitQ=''; fitOpen('toalloc'); } }
@@ -12541,6 +12751,284 @@ async function vnPhSend(){ const b=$('vnp-send'); if(!b||b.classList.contains('o
     <div class="vnp-done"><div class="big">✅</div><h2>Thanks ${esc(firstName(me.full_name))}</h2><p>Your van check is sent to the office.</p><div class="vnp-sum"><b>${esc(vnMine.reg)} · ${vnKm(vnNum(vnPh.km))}</b><span>${VN_ITEMS.length-faults} OK${faults?` · <b style="color:#be123c">${faults} fault${faults>1?'s':''}</b>`:''}</span></div>
     <p style="font-size:13px;color:var(--slate)">Next one due ${esc(dayLong(nxt))}.</p><button class="vnp-send" onclick="document.querySelector('.vnp').remove()">Done</button></div>`;
   const ban=document.querySelector('.vnp-ban'); if(ban) ban.remove(); }
+
+// ════════ Update 121 — 🏭 Manufacturing hidden for now · 📥 Scanned in (upload / scan to email) · 📅 the Day view as a diary page ════════
+// Fitting only. fitData.cfg.mfg (prod_state "cfg") switches 🏭 Manufacturing back on — off until Sean / Kenny turn it on in 👥 Teams › ⚙ Fitting settings.
+// On each fitting job: j.snos = [{no, jobs:[up to 3]}] (sheet no. › job nos.), j.gsaw = {on, date, by, at} (🪚 Gone to saw).
+// On each order: o.ptype = ['pvc','alu','timber','comp'] (PRODUCT boxes, beside the ORDER boxes o.otype). Notes for the day: prod_state "daynotes".
+// Scans waiting to be filled in: table prod_inbox + storage prod-files/inbox/… (update-121-scanned-in.sql); the Edge Function orders-inbox takes the copier's emails.
+function u121Mfg(){ return !!(fitData&&fitData.cfg&&fitData.cfg.mfg); }
+function u121Cfg(){ if(!fitData.cfg||typeof fitData.cfg!=='object') fitData.cfg={mfg:false}; return fitData.cfg; }
+function u121Admin(){ return !!(realMe&&realMe.role==='admin'&&!previewing&&!prodAs); }
+function u121Can(){ if(previewing) return false; if(typeof u98Ro==='function'&&u98Ro()) return false; return ['admin','prod_fit','prod_oa'].includes((realMe&&realMe.role)||''); }
+let u121Focus=null;
+function u121WeekNo(d){ const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const n=(t.getUTCDay()+6)%7; t.setUTCDate(t.getUTCDate()-n+3); const f=new Date(Date.UTC(t.getUTCFullYear(),0,4)); return 1+Math.round(((t-f)/864e5-3+((f.getUTCDay()+6)%7))/7); }
+
+// ── sheet no. › job no. (up to 3 job nos. on a sheet) ──
+function u121Sn(oid){ const j=fitFJ(oid); if(Array.isArray(j.snos)) return j.snos; const o=oaFind(oid); return ((o&&o.pages)||[]).filter(Boolean).map(p=>({no:String(p),jobs:['']})); }
+function u121SnW(oid){ const j=fitFJw(oid); if(!Array.isArray(j.snos)) j.snos=u121Sn(oid).map(s=>({no:s.no,jobs:s.jobs.slice()})); return j.snos; }
+const u121F={};   // the fill-in form for a scan, kept while you go about (by inbox id)
+function u121Form(id){ if(!u121F[id]) u121F[id]={type:'private',name:'',phone:'',eir:'',rep:'',site:'',unit:'',addr:'',ot:[],pt:[],snos:[{no:'',jobs:['']}],days:1,men:2,note:''}; return u121F[id]; }
+function u121SnArr(key,w){ return key.startsWith('f:')?u121Form(key.slice(2)).snos:(w?u121SnW(key.slice(2)):u121Sn(key.slice(2))); }
+function u121SnKeyId(key){ return key.replace(/[^\w]/g,'_'); }
+function u121SnCards(key,can){ const S=u121SnArr(key,false), k=esc(key), kid=u121SnKeyId(key);
+  if(!can) return S.length?`<div class="u121sn">${S.map(s=>`<div class="u121snc ro"><label>Sheet no.</label><div class="si">${esc(s.no||'—')}</div>${s.jobs.filter(Boolean).length?`<div class="jl">JOB NO${s.jobs.filter(Boolean).length>1?'S':''}.</div>${s.jobs.filter(Boolean).map(n=>`<div class="ji">${esc(n)}</div>`).join('')}`:''}</div>`).join('')}</div>`:'<span class="u121none">no sheet no. yet</span>';
+  return `<div class="u121sn" onclick="event.stopPropagation()">${S.map((s,si)=>`<div class="u121snc"><label>Sheet no. <button class="u121x" title="Remove this sheet" onclick="u121SnDel('${k}',${si})">✕</button></label><input class="si" id="u121s-${kid}-${si}" value="${esc(s.no)}" placeholder="Sheet no." inputmode="numeric" onchange="u121SnIn('${k}',${si},this.value)">
+     <div class="jl">JOB NO${s.jobs.length>1?'S':''}.</div>${s.jobs.map((n,ji)=>`<input class="ji" id="u121j-${kid}-${si}-${ji}" value="${esc(n)}" placeholder="Job no." onchange="u121JnIn('${k}',${si},${ji},this.value)">`).join('')}
+     ${s.jobs.length>=3?'<button class="ja u121full" title="Up to 3 job numbers on a sheet" disabled>3 of 3 ✓</button>':`<button class="ja" onclick="u121JnAdd('${k}',${si})">＋ job no.</button>`}</div>`).join('')}
+    <button class="u121sadd" onclick="u121SnAdd('${k}')"><b>＋</b>Add sheet no.</button></div>`; }
+function u121SnDone(key,txt,redraw){ if(key.startsWith('o:')){ const oid=key.slice(2); if(txt) fxLog(oid,'🧾',oaWho(),txt); fitSave(); } if(redraw) fitRender(); }
+function u121SnIn(key,si,v){ const S=u121SnArr(key,true), s=S[si]; if(!s) return; v=String(v||'').trim(); const old=s.no; if(old===v) return; s.no=v;
+  u121SnDone(key, v?(old?`Sheet no. ${old} → ${v}`:`Sheet no. ${v} added`):`Sheet no. ${old} cleared`); }
+function u121JnIn(key,si,ji,v){ const S=u121SnArr(key,true), s=S[si]; if(!s) return; v=String(v||'').trim(); const old=s.jobs[ji]||''; if(old===v) return;
+  if(!v&&s.jobs.length>1){ s.jobs.splice(ji,1); u121SnDone(key,`Job no. ${old} taken off sheet ${s.no||''}`,true); return; }
+  s.jobs[ji]=v; u121SnDone(key, v?`Job no. ${v} on sheet ${s.no||'(no sheet no.)'}${old?' (was '+old+')':''}`:`Job no. ${old} cleared`); }
+function u121JnAdd(key,si){ const S=u121SnArr(key,true), s=S[si]; if(!s||s.jobs.length>=3) return; s.jobs.push(''); u121Focus=`u121j-${u121SnKeyId(key)}-${si}-${s.jobs.length-1}`; u121SnDone(key,'',true); }
+function u121SnAdd(key){ const S=u121SnArr(key,true); S.push({no:'',jobs:['']}); u121Focus=`u121s-${u121SnKeyId(key)}-${S.length-1}`; u121SnDone(key,'',true); }
+function u121SnDel(key,si){ const S=u121SnArr(key,true), s=S[si]; if(!s) return; const js=s.jobs.filter(Boolean);
+  if((s.no||js.length)&&!confirm(`Take sheet ${s.no||'(no number)'}${js.length?' and job no. '+js.join(', '):''} off this job?`)) return;
+  S.splice(si,1); u121SnDone(key,`Sheet no. ${s.no||''} taken off${js.length?' (job no. '+js.join(', ')+')':''}`,true); }
+
+// ── PRODUCT boxes: PVC · Alu · Timber · Comp (until someone ticks them, they follow the job's factory lines) ──
+const U121_PT=[['pvc','PVC'],['alu','Alu'],['timber','Timber'],['comp','Comp']];
+function u121Pt(oid){ const o=oaFind(oid); if(o&&Array.isArray(o.ptype)) return o.ptype; const s=new Set();
+  (fitFJ(oid).lines||[]).forEach(l=>{ const d=fxDept(l); s.add(d==='hw'?'timber':d); }); return U121_PT.map(x=>x[0]).filter(k=>s.has(k)); }
+function u121PtName(k){ return (U121_PT.find(x=>x[0]===k)||[k,k])[1]; }
+function u121PtSet(oid,k,on){ if(!u121Can()){ toast('The fitting manager sets this'); return; } const o=oaFind(oid); if(!o) return; const cur=u121Pt(oid).filter(x=>x!==k); if(on) cur.push(k);
+  o.ptype=U121_PT.map(x=>x[0]).filter(x=>cur.includes(x)); fxLog(oid,'🧩',oaWho(),`Product ${on?'ticked':'unticked'}: ${u121PtName(k)}`); oaSave(); }
+function u121PtBoxes(oid,big){ const s=u121Pt(oid);
+  if(!u121Can()) return s.length?`<div class="fy-ot ro u121pt ${big?'big':''}">${s.map(k=>`<span class="on">✓ ${esc(u121PtName(k))}</span>`).join('')}</div>`:'<span class="u121none">—</span>';
+  return `<div class="fy-ot u121pt ${big?'big':''}" onclick="event.stopPropagation()">${U121_PT.map(([k,l])=>`<label class="${s.includes(k)?'on':''}"><input type="checkbox" ${s.includes(k)?'checked':''} onchange="u121PtSet('${oid}','${k}',this.checked);this.parentNode.classList.toggle('on',this.checked)">${l}</label>`).join('')}</div>`; }
+function u121Ticks(oid){ const ot=fyOtBoxes(oid);
+  return `<div class="u121ot"><span>ORDER</span>${ot||'<span class="u121none">—</span>'}</div><div class="u121ot"><span>PRODUCT</span>${u121PtBoxes(oid)}</div>`; }
+
+// ── 🪚 Gone to saw + the date (typed in, or today when the button is tapped) ──
+function u121Saw(oid){ const g=fitFJ(oid).gsaw; return g&&g.on?g:null; }
+function u121SawTap(oid){ if(!u121Can()) return; const j=fitFJw(oid);
+  if(j.gsaw&&j.gsaw.on){ if(!confirm('Take “Gone to saw” off this job?')) return; j.gsaw=null; fxLog(oid,'🪚',oaWho(),'Gone to saw taken off'); }
+  else { j.gsaw={on:true,date:todayYmd(),by:oaWho(),at:fxNow()}; fxLog(oid,'🪚',oaWho(),'Gone to saw · '+fitDL(todayYmd())); toast('🪚 Gone to saw — today’s date is in; type over it to change it'); }
+  fitSave(); fitRender(); }
+function u121SawDate(oid,v){ if(!u121Can()) return; const j=fitFJw(oid); v=String(v||'').trim(); const was=j.gsaw&&j.gsaw.on?j.gsaw.date:null; if(v&&!/^\d{4}-\d{2}-\d{2}$/.test(v)) return; if(was===v) return;
+  if(!v){ if(j.gsaw) j.gsaw.date=''; fitSave(); return; }
+  j.gsaw={on:true,date:v,by:oaWho(),at:fxNow()}; fxLog(oid,'🪚',oaWho(),'Gone to saw · '+fitDL(v)+(was?' (was '+fitDL(was)+')':'')); fitSave(); fitRender(); }
+function u121SawHtml(oid){ const g=u121Saw(oid), can=u121Can();
+  if(!can) return g?`<div class="u121saw on ro"><span class="sb">🪚 ✓ Gone to saw</span>${g.date?`<label>Date</label><b style="font-size:12.5px;color:#5b21b6">${parseYmd(g.date).toLocaleDateString('en-IE',{day:'2-digit',month:'2-digit',year:'2-digit'})}</b>`:''}</div>`:'';
+  return `<div class="u121saw ${g?'on':''}" onclick="event.stopPropagation()"><button class="sb" onclick="u121SawTap('${oid}')" title="${g?'Gone to saw'+(g.by?' — '+esc(g.by):'')+' · tap to take it off':'Tap when this job has gone to the saw — today’s date goes in'}">${g?'🪚 ✓ Gone to saw':'🪚 Gone to saw'}</button><label>Date</label><input type="date" id="u121d-${oid}" value="${g&&g.date?g.date:''}" onchange="u121SawDate('${oid}',this.value)" title="Type or pick the day it went to the saw"></div>`; }
+
+// ── 📅 the Day view: a diary page — the date in the corner, a row for each team ──
+function u121DayHtml(){ const v=fitDay, d=parseYmd(v), mon=mondayOf(d), T=fxTeamsShown(), can=u121Can(), td=v===todayYmd();
+  const tabs=[0,1,2,3,4,5].map(i=>{ const x=ymd(addDays(mon,i)), xd=parseYmd(x); return `<button class="${x===v?'on':''} ${x===todayYmd()?'today':''}" onclick="fitDay='${x}';fitRender()">${xd.toLocaleDateString('en-IE',{weekday:'short'})}<em>${xd.getDate()} ${xd.toLocaleDateString('en-IE',{month:'short'})}${x===todayYmd()?' · today':''}</em></button>`; }).join('');
+  let nJobs=0, nOut=0;
+  const rows=T.map(t=>{ const bs=fitOnDay(t.n,v).sort((a,b)=>(a.time==='pm')-(b.time==='pm')).filter(b=>oaFind(b.oid)); nJobs+=bs.length; if(bs.length) nOut++;
+    const van=t.n?fyVanTxt(t.n):'', men=(t.men||[]).filter(Boolean);
+    const team=t.n===0?`<div class="u121team" style="box-shadow:inset 4px 0 0 #d97706"><div class="u121tn">${F6_LAB}</div><div class="u121mn">booked — pick a team</div></div>`
+      :`<div class="u121team" style="box-shadow:inset 4px 0 0 ${t.col}"><div class="u121tn"><i style="background:${t.col}"></i>Team ${t.n}</div>${t.leader?`<div class="u121ld">⭐ ${esc(t.leader)}</div>`:''}${men.length?`<div class="u121mn">${esc(men.join(', '))}</div>`:''}${van?`<span class="u121vn">${esc(van)}</span>`:''}</div>`;
+    const jobs=bs.map(b=>u121JobHtml(b,v,can)).join('')||`<div class="u121free">free — nothing booked${can&&t.n!==0&&parseYmd(v).getDay()!==0?`<button onclick="u121Book(${t.n},'${v}')">＋ Book a job</button>`:''}</div>`;
+    return `<div class="u121row fx-cell" data-team="${t.n}" data-day="${v}">${team}<div class="u121jobs">${jobs}</div></div>`; }).join('')||'<div class="u121free">No teams shown — pick “All teams” or tick the teams in the Week view.</div>';
+  const note=(fitData.daynotes&&fitData.daynotes[v])||'';
+  return `<div class="u121pg"><div class="u121fold"></div><div class="u121hd"><div><div class="u121brand">Sean Doyle Windows · Fitting diary</div><div class="u121wk">Week ${u121WeekNo(d)} · ${d.toLocaleDateString('en-IE',{month:'long',year:'numeric'})}</div><div class="u121tabs">${tabs}</div></div>
+    <div class="u121date"><div><div class="wd">${d.toLocaleDateString('en-IE',{weekday:'long'})}</div><div class="my">${d.toLocaleDateString('en-IE',{month:'long',year:'numeric'})}</div>${td?'<span class="td">TODAY</span>':''}</div><div class="num">${d.getDate()}</div></div></div>
+   <div class="u121cols"><div>Team</div><div class="u121jc"><span>Time</span><span>Customer</span><span>Order sheet</span><span>Sheet no. › job no.</span><span>Status</span></div></div>
+   ${rows}
+   <div class="u121notes"><h4>📝 Notes for the day</h4>${can?`<textarea id="u121note" rows="3" placeholder="Anything for the day — yard, vans, materials…" onchange="u121NoteSet('${v}',this.value)">${esc(note)}</textarea>`:`<div style="font-family:'Comic Sans MS',cursive;color:#1e3a8a;white-space:pre-wrap">${esc(note)||'—'}</div>`}</div>
+   <div class="u121foot"><span>${nOut} of ${T.filter(t=>t.n!==0).length} team${T.filter(t=>t.n!==0).length===1?'':'s'} out · ${nJobs} job${nJobs===1?'':'s'}</span><span>${can?'Sheet nos., job nos. and ticks save as you go':''}</span></div></div>`; }
+function u121JobHtml(b,v,can){ const o=oaFind(b.oid); if(!o) return ''; const j=fitFJ(o.id), ds=fxDates(b), ty=OA_TYPES[o.type]||OA_TYPES.private, eir=o.type==='builder'?o.siteEir:o.eir, pl=oaPlace(eir), cx=fyCancelOn(o,b,v),
+    main=b.second?fitBk(b.oid):null, sec=fitData.bookings.filter(x=>x.oid===b.oid&&x.second&&fxDates(x).includes(v)&&x.id!==b.id), ph=o.phone||o.contact, ro=typeof u98Ro==='function'&&u98Ro();
+  const tm=b.time==='pm'?['PM','AFTERNOON']:b.time==='any'?['ANY','ANY TIME']:['AM','MORNING'];
+  const st=b.team===0?['#d97706','❓ No team yet']:(typeof u91St==='function'?U91[u91St(b)]:['#db2777','📅 Booked']);
+  const money=ro?'':(fxMoney(o.id)?`<span class="u121pill mo g" onclick="event.stopPropagation();fxMoneyInfo('${o.id}')">✔ Money collected</span>`:`<span class="u121pill mo">💶 Money to collect</span>`);
+  return `<div class="u121job ${cx?'cx':''}" draggable="${can?'true':'false'}" data-bid="${b.id}" style="--tc:${st[0]}"><div class="u121jr">
+    <div class="u121time" title="${can?'Drag to another team or day':''}">${tm[0]}<small>${tm[1]}</small></div>
+    <div class="u121cust">${cx?'<span class="cxt">🔴 CANCELLED BY CUSTOMER</span><br>':''}<b>${esc(oaTitle(o))}</b><span class="tp ${o.type}">${ty.icon} ${esc(ty.label.replace(/s$/,''))}</span>
+      <div class="sub">📍 ${esc(pl||oaWhere(o)||'—')}${eir?' · '+esc(eir):''}</div><div class="sub">⏱ ${b.second?ds.length+' day'+(ds.length>1?'s':''):fitDaysTxt(b.days)} · 👷 ${j.men||2}-man${ph&&!ro?` · <a href="tel:${esc(String(ph).replace(/\s/g,''))}" onclick="event.stopPropagation()">📞 ${esc(ph)}</a>`:''}</div>
+      ${ds.length>1?`<span class="dd">Day ${ds.indexOf(v)+1} of ${ds.length}</span>`:''}${main?`<div class="u121lk">🔗 helping Team ${main.team}</div>`:''}${sec.length?`<div class="u121lk">🔗 Team ${sec.map(x=>x.team).join(', ')} helping today</div>`:''}</div>
+    <button class="u121sheet" onclick="event.stopPropagation();fxJS('${o.id}')" title="Open the order sheet"><i></i><span>📄 Order sheet</span></button>
+    ${u121SnCards('o:'+o.id,can)}
+    <div class="u121st"><span class="u121pill" style="color:${st[0]};border-color:${st[0]};background:#fff">${st[1]}</span>${money}${u121SawHtml(o.id)}
+      ${b.team===0&&can?`<button class="f6pick" onclick="event.stopPropagation();fyNewDate('${b.id}')">👷 Pick team</button>`:''}<button class="u121open" onclick="event.stopPropagation();fxFromDiary('${o.id}')">Open job ›</button></div>
+   </div>${u121Ticks(o.id)}</div>`; }
+function u121NoteSet(v,t){ if(!u121Can()) return; if(!fitData.daynotes||typeof fitData.daynotes!=='object'||Array.isArray(fitData.daynotes)) fitData.daynotes={}; const D=fitData.daynotes; t=String(t||'').trim(); if((D[v]||'')===t) return;
+  if(t) D[v]=t; else delete D[v]; const cut=ymd(addDays(new Date(),-120)); Object.keys(D).forEach(k=>{ if(k<cut) delete D[k]; }); fitSave(); }
+// the job rows can be dragged to another team — but never while typing in a box on them
+document.addEventListener('pointerdown',e=>{ const j=e.target.closest&&e.target.closest('.u121job[data-bid]'); if(!j) return; if(e.target.closest('input,textarea,select,button,label,a')){ j.draggable=false; const back=()=>{ if(u121Can()) j.draggable=true; document.removeEventListener('pointerup',back,true); }; document.addEventListener('pointerup',back,true); } },true);
+
+// ── 🖨 Print day: one A4 page (landscape) ──
+function u121Print(){ const v=fitDay, d=parseYmd(v), T=fxTeamsShown();
+  const tick=(on,l)=>`<span style="display:inline-block;border:1px solid #444;padding:0 4px;margin:1px 2px 1px 0;font-size:10.5px;${on?'background:#111;color:#fff':''}">${esc(l)}</span>`;
+  const rows=T.map(t=>{ const bs=fitOnDay(t.n,v).sort((a,b)=>(a.time==='pm')-(b.time==='pm')).filter(b=>oaFind(b.oid)), tc=t.n===0?`<b>${F6_LAB}</b>`:`<b>Team ${t.n}</b>${t.leader?'<br>⭐ '+esc(t.leader):''}${(t.men||[]).filter(Boolean).length?'<br>'+esc(t.men.filter(Boolean).join(', ')):''}${fyVanTxt(t.n)?'<br>'+esc(fyVanTxt(t.n)):''}`;
+    if(!bs.length) return `<tr><td style="border-left:5px solid ${t.col}">${tc}</td><td colspan="6" style="color:#999;font-style:italic">free</td></tr>`;
+    return bs.map((b,i)=>{ const o=oaFind(b.oid), j=fitFJ(o.id), ds=fxDates(b), eir=o.type==='builder'?o.siteEir:o.eir, g=u121Saw(o.id), ot=fyOt(o.id), pt=u121Pt(o.id);
+      return `<tr>${i===0?`<td rowspan="${bs.length}" style="border-left:5px solid ${t.col}">${tc}</td>`:''}<td><b>${b.time==='pm'?'PM':b.time==='any'?'Any':'AM'}</b></td>
+        <td><b>${esc(oaTitle(o))}</b><br>${esc(oaPlace(eir)||oaWhere(o))}${eir?' · '+esc(eir):''}<br>${fitDaysTxt(b.days)} · ${j.men||2}-man${ds.length>1?' · day '+(ds.indexOf(v)+1)+' of '+ds.length:''}${(o.phone||o.contact)?'<br>📞 '+esc(o.phone||o.contact):''}</td>
+        <td>${u121Sn(o.id).map(s=>`<b>${esc(s.no||'—')}</b> › ${esc(s.jobs.filter(Boolean).join(', ')||'—')}`).join('<br>')||'—'}</td>
+        <td>${FY_OT.map(([k,l])=>tick(ot.includes(k),l==='Batton on bottom'?'Batton':l)).join('')}<br>${U121_PT.map(([k,l])=>tick(pt.includes(k),l)).join('')}</td>
+        <td>${g?'🪚 '+(g.date?parseYmd(g.date).toLocaleDateString('en-IE',{day:'2-digit',month:'2-digit',year:'2-digit'}):'✓'):'—'}</td><td style="width:90px"></td></tr>`; }).join(''); }).join('');
+  const note=(fitData.daynotes&&fitData.daynotes[v])||'';
+  fyPrint('prod','📅 Fitting diary — '+d.toLocaleDateString('en-IE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),'Week '+u121WeekNo(d),
+   `<style>@page{size:A4 landscape;margin:10mm}body{margin:10mm}</style><table><tr><th style="width:150px">Team</th><th style="width:40px">Time</th><th>Customer</th><th style="width:170px">Sheet no. › job nos.</th><th style="width:260px">Order · Product</th><th style="width:80px">Gone to saw</th><th>Signed out</th></tr>${rows}</table>${note?`<h2>Notes for the day</h2><div class="box" style="white-space:pre-wrap">${esc(note)}</div>`:''}`); }
+
+// ── ＋ Book a job on a free team (from 📥 To allocate and jobs not booked yet) ──
+function u121Book(team,day){ if(!u121Can()) return; const T=fitTeam(team);
+  const L=fitOrders().filter(o=>['new','ready','mfg'].includes(fitStatus(o))&&!fitBk(o.id)).sort((a,b)=>String((a.stamps.factory||{}).at||'').localeCompare(String((b.stamps.factory||{}).at||'')));
+  openModal(`<h2>＋ Book a job · Team ${team} · ${fitDL(day)}</h2><div style="color:var(--slate);margin:-6px 0 10px">${esc(fitCrewTxt(T))}${fyVanTxt(team)?' · '+esc(fyVanTxt(team)):''}</div>
+   <div class="u121pick">${L.map(o=>{ const t=OA_TYPES[o.type]||OA_TYPES.private, j=fitFJ(o.id), sn=u121Sn(o.id).map(s=>s.no).filter(Boolean); return `<div><span class="oa-tbar" style="background:${t.col};height:40px"></span><div><b>${esc(oaTitle(o))}</b> · ${t.icon} ${esc(t.label.replace(/s$/,''))}<div class="sub">${esc(oaPlace(o.type==='builder'?o.siteEir:o.eir)||oaWhere(o)||'')}${sn.length?' · sheet '+esc(sn.join(', ')):''} · ⏱ ${fitDaysTxt(j.days||1)} · 👷 ${j.men||2}-man</div></div><button class="btn-primary ft-sm" style="background:#0f766e" onclick="u121BookGo('${o.id}',${team},'${day}')">Book on ${fitDL(day)}</button></div>`; }).join('')||'<div class="sub" style="padding:10px">Nothing waiting — every job is booked.</div>'}</div>
+   <div class="sub" style="font-size:12.5px;color:#64748b;margin-top:8px">From 📥 To allocate and jobs not booked yet, oldest first. You check and confirm in the next box. Nothing already booked moves.</div>
+   <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button></div>`); }
+function u121BookGo(oid,team,day){ closeModal(); fitAllocate(oid); if(!fitAl) return; fitAl.team=team; fitAl.start=day; fitAlForm(); }
+
+// ── ⚙ Fitting settings: 🏭 Manufacturing on / off (Office full access) ──
+function u121Settings(){ if(!u121Admin()) return; const c=u121Cfg();
+  openModal(`<h2>⚙ Fitting settings</h2><div style="color:var(--slate);margin:-6px 0 10px">Office (full access) only</div>
+   <button class="u121sw" onclick="u121MfgSet(${!c.mfg})"><span class="tg ${c.mfg?'on':''}"></span><div><b>🏭 Manufacturing ${c.mfg?'is on':'is hidden for now'}</b><small>${c.mfg?'Tap to hide it again':'Tap to turn it on when the factory is ready to use SashDash'}</small></div></button>
+   <div class="u121kv"><div>While it's hidden</div><div>No 🏭 Manufacturing tab, no 🚨 not started / ⏰ not finished alarms, no “Allocate to departments” step in 📥 To allocate, no “Manufacturing (n ready to fit)” button or “not made yet” warning. Booking a job takes it off 📥 To allocate.</div>
+    <div>Factory logins</div><div>PVC, Composite, Hardwood, Aluminium and the tablets see “Manufacturing isn't in use yet”.</div>
+    <div>Job numbers</div><div>Typed on the 📅 Day page (and in 📥 To allocate) under each sheet no.</div>
+    <div>Nothing deleted</div><div>Factory lines, cutting lists and saw / ready ticks already in SashDash are kept and come back when it's turned on.</div></div>
+   <div class="modal-actions"><button class="btn-outline" onclick="u121MailBox()">📧 Scan to email</button><button class="btn-primary" onclick="closeModal()">Close</button></div>`); }
+function u121MfgSet(on){ if(!u121Admin()) return; if(on&&!confirm('Turn 🏭 Manufacturing back on?\n\nThe factory departments and tablets will see their jobs again.')) return;
+  u121Cfg().mfg=!!on; (fitData.log=fitData.log||[]).unshift({at:fxNow(),by:oaWho(),text:`🏭 Manufacturing ${on?'turned on':'hidden'}`}); fitSave(); closeModal(); fitRender(); toast(on?'🏭 Manufacturing is on':'🏭 Manufacturing is hidden'); }
+
+// ══ 📥 Scanned in: order scans waiting to be filled in (uploaded here, or emailed from the copier) ══
+let u121Ib=[], u121IbSt='idle', u121IbChan=null, u121IbClean=false; const u121IbUrl={};
+const U121_MAIL='sdw.orders.scan@gmail.com';
+function u121Mail(){ return (fitData&&fitData.cfg&&fitData.cfg.mail)||U121_MAIL; }
+function u121IbCan(){ return typeof u108Can==='function'&&u108Can(); }
+async function u121IbLoad(force){ if(!sb||!u121IbCan()) return; if(u121IbSt==='loading'||(u121IbSt==='ready'&&!force)) return; u121IbSt='loading';
+  try{ const r=await sb.from('prod_inbox').select('*').is('done_at',null).order('created_at',{ascending:false});
+    if(r.error){ u121IbSt=prodNoTable(r.error)?'nosql':'error'; console.warn('prod_inbox',r.error); }
+    else { u121Ib=r.data||[]; u121IbSt='ready'; u121IbWatch(); u121IbTidy(); } }
+  catch(e){ u121IbSt='error'; console.warn(e); }
+  if(fitOn&&!document.querySelector('#modal-root .modal')) fitRender(); }
+function u121IbWatch(){ if(u121IbChan||!sb||!sb.channel) return;
+  try{ u121IbChan=sb.channel('sashdash-inbox').on('postgres_changes',{event:'*',schema:'public',table:'prod_inbox'},()=>{ clearTimeout(u121IbWatch.t); u121IbWatch.t=setTimeout(()=>{ u121IbSt='idle'; u121IbLoad(); },500); }).subscribe(); }catch(e){ console.warn(e); } }
+// scans already added as orders: their inbox copy is removed 14 days later (the order keeps its own copy)
+async function u121IbTidy(){ if(u121IbClean||!u121Admin()) return; u121IbClean=true;
+  try{ const cut=new Date(Date.now()-14*864e5).toISOString(), r=await sb.from('prod_inbox').select('id,path').not('done_at','is',null).lt('done_at',cut).limit(200); if(r.error||!(r.data||[]).length) return;
+    const P=r.data.map(x=>x.path).filter(Boolean); if(P.length) await sb.storage.from('prod-files').remove(P); await sb.from('prod_inbox').delete().in('id',r.data.map(x=>x.id)); }catch(e){ console.warn(e); } }
+function u121IbName(it){ return it.name||'Scan'; }
+function u121IbWhen(it){ return it.created_at?oaDT(it.created_at):''; }
+function u121IbSrc(it){ return it.source==='email'?`📧 ${esc(it.sender||'by email')} · ${u121IbWhen(it)}`:it.source==='split'?`✂ split from a scan · ${u121IbWhen(it)}`:`⬆ uploaded by ${esc(it.created_by||'')} · ${u121IbWhen(it)}`; }
+async function u121IbFile(it){ if(u121IbUrl[it.id]) return u121IbUrl[it.id]; if(u121IbFile.p[it.id]) return u121IbFile.p[it.id];
+  return u121IbFile.p[it.id]=(async()=>{ try{ const r=await sb.storage.from('prod-files').download(it.path); if(r.error||!r.data) throw r.error||new Error('not found');
+      const f=new File([r.data],it.name||'scan.pdf',{type:it.type||r.data.type||'application/pdf'}); return u121IbUrl[it.id]={file:f,url:URL.createObjectURL(f)}; } finally { delete u121IbFile.p[it.id]; } })(); }
+u121IbFile.p={};
+function u121IbList(){ if(!u121IbCan()) return '';
+  if(u121IbSt==='nosql') return `<div class="ib-h">📥 Scanned in</div><div class="u121warn">Run <b>update-121-scanned-in.sql</b> in Supabase → SQL Editor to switch on 📥 Scanned in (uploading orders and scan to email).</div><div class="ib-h">🧾 From Office Administration</div>`;
+  const L=u121Ib;
+  return `<div class="ib-h">📥 Scanned in ${L.length?`<em>${L.length}</em>`:''}</div>${u121IbSt==='loading'&&!L.length?'<div class="sub ib-none">⏳ Loading…</div>':''}
+   ${L.map(it=>`<button class="ib-item ${fxTaSel==='ib:'+it.id?'on':''}" onclick="fxTaSel='ib:${it.id}';fitRender()"><span class="ib-ic">${it.source==='email'?'📧':'📄'}</span><div><b>${esc(u121IbName(it))}</b><div class="sub">${u121IbSrc(it)}${it.pages?' · '+it.pages+' page'+(it.pages>1?'s':''):''}</div><div class="sub ib-fill">✎ fill in the details</div></div></button>`).join('')}
+   ${!L.length&&u121IbSt!=='loading'?'<div class="sub ib-none">Nothing waiting.</div>':''}
+   <button class="ib-up" onclick="u121Up()">⬆ Upload orders<small>PDFs or photos · or scan to ${esc(u121Mail())}</small></button><button class="ib-mail" onclick="u121MailBox()">📧 Scan to email</button>
+   <div class="ib-h">🧾 From Office Administration</div>`; }
+function u121TaItems(){ const list=fitOrders().filter(o=>fitStatus(o)==='new').sort((a,b)=>new Date(b.stamps.factory.at)-new Date(a.stamps.factory.at));
+  return list.map(x=>{ const tt=OA_TYPES[x.type]; return `<button class="ta-item ${x.id===fxTaSel?'on':''}" onclick="fxTaSel='${x.id}';fitRender()"><span class="oa-tbar" style="background:${tt.col};height:52px"></span><div><b>${esc(oaTitle(x))}</b><div class="sub">${tt.icon} ${tt.label.replace(/s$/,'')} · Pg ${esc((x.pages||[]).join(' · '))}</div><div class="sub">🏭 ${oaDT(x.stamps.factory.at)}</div></div><span class="ta-new">🆕</span></button>`; }).join('')||'<div class="sub ib-none">Nothing from Office Administration.</div>'; }
+function u121IbMain(id){ const it=u121Ib.find(x=>x.id===id); if(!it) return '<div class="oa-empty">That scan has gone — it may have been added on another computer.</div>';
+  const got=u121IbUrl[id], F=u121Form(id), can=u83Can('orders'), pdf=/pdf/.test(it.type||'')||/\.pdf$/i.test(it.name||'');
+  if(!got) u121IbFile(it).then(()=>{ if(fitOn&&fitView==='toalloc'&&fxTaSel==='ib:'+id&&!document.querySelector('#modal-root .modal')) fitRender(); }).catch(e=>{ console.warn(e); toast('⚠ Couldn’t open that scan — check the internet',6000); });
+  const viewer=got?(pdf?`<iframe class="fx-pdf" src="${got.url}"></iframe>`:`<img class="fx-img" src="${got.url}">`):'<div class="u121ld">⏳ Opening the scan…</div>';
+  const fld=(k,lab,ph,extra)=>`<div><label>${lab}</label><input id="u121f-${k}-${id}" value="${esc(F[k]||'')}" placeholder="${esc(ph||'')}" oninput="u121F['${id}'].${k}=this.value" ${extra||''}></div>`;
+  const tb=(arr,list,fn)=>`<div class="fy-ot big ${fn==='pt'?'u121pt':''}">${list.map(([k,l])=>`<label class="${arr.includes(k)?'on':''}"><input type="checkbox" ${arr.includes(k)?'checked':''} onchange="u121FTick('${id}','${fn}','${k}',this.checked);this.parentNode.classList.toggle('on',this.checked)">${l}</label>`).join('')}</div>`;
+  const who=F.type==='site'?`<div class="row2">${fld('name','Contractor','Abbey Homes Ltd')}${fld('site','Site name','Herons Lock')}</div><div class="row2">${fld('unit','Unit','Terrace 2 › No. 7')}${fld('phone','Contact number','01 555 0100','inputmode="tel"')}</div>`
+    :F.type==='builder'?`<div class="row2">${fld('name','Builder','Keane Construction')}${fld('phone','Phone','086 555 1212','inputmode="tel"')}</div>${fld('addr','Site address','Ballymurray, Co. Roscommon')}`
+    :`<div class="row2">${fld('name','Customer name','Mary White')}${fld('phone','Phone','087 123 4567','inputmode="tel"')}</div>`;
+  return `<div class="ta-top"><span class="oa-tbar" style="background:#f97316;height:56px"></span><div style="flex:1;min-width:0"><h3>${it.source==='email'?'📧':'📄'} ${esc(u121IbName(it))}</h3><div class="sub">${u121IbSrc(it)}${it.pages?' · '+it.pages+' page'+(it.pages>1?'s':''):''}${it.subject?' · “'+esc(it.subject)+'”':''}</div></div>
+     <div class="ib-acts">${got?`<button class="btn-outline ft-sm" onclick="window.open(u121IbUrl['${id}'].url,'_blank')">↗ Open</button>`:''}${pdf&&(it.pages||0)>1?`<button class="btn-outline ft-sm" onclick="u121Split('${id}')">✂ Split</button>`:''}<button class="btn-outline ft-sm" style="color:#dc2626" onclick="u121IbDel('${id}')">🗑 Not an order</button></div></div>
+   <div class="ta-grid"><div class="ta-pdf"><div class="js-tabs"><button class="on">📄 The scan</button></div><div class="ib-view">${viewer}</div><div class="js-note">The scan is kept as the job's order sheet — tap 📄 Order sheet on the diary to open it.</div></div>
+    <div><div class="js-tabs"><button class="on" style="border-bottom:3px solid #ea580c">✎ Fill in from the sheet</button></div><div class="ib-form">
+     <label>Type</label><div class="ib-types">${Object.entries(OA_TYPES).map(([k,t])=>`<button class="${F.type===k?'on':''}" onclick="u121F['${id}'].type='${k}';fitRender()">${t.icon} ${t.label.replace(/s$/,'')}</button>`).join('')}</div>
+     ${who}
+     <div class="row2"><div><label>Eircode</label><input id="u121f-eir-${id}" value="${esc(F.eir)}" placeholder="F42 X1Y2" style="text-transform:uppercase" oninput="u121F['${id}'].eir=this.value;$('u121f-eirh-${id}').textContent=oaPlace(this.value)"><div class="hint" id="u121f-eirh-${id}">${esc(oaPlace(F.eir))}</div></div>${fld('rep','Sales rep <span class="optional">(optional)</span>','Mick')}</div>
+     <label>Order</label>${tb(F.ot,FY_OT,'ot')}
+     <label>Product</label>${tb(F.pt,U121_PT,'pt')}
+     <label>Sheet no. › job no. <span class="optional">(job nos. can go in later, on the diary)</span></label>${u121SnCards('f:'+id,true)}
+     <div class="row2"><div><label>Days on site</label><select onchange="u121F['${id}'].days=+this.value">${[0.5,1,2,3,4,5].map(x=>`<option value="${x}" ${+F.days===x?'selected':''}>⏱ ${fitDaysTxt(x)}</option>`).join('')}</select></div><div><label>Men needed</label><select onchange="u121F['${id}'].men=+this.value">${[1,2,3,4].map(x=>`<option value="${x}" ${+F.men===x?'selected':''}>👷 ${x}-man</option>`).join('')}</select></div></div>
+     <label>Note <span class="optional">(optional)</span></label><input id="u121f-note-${id}" value="${esc(F.note)}" placeholder="e.g. Ring before you go" oninput="u121F['${id}'].note=this.value">
+     <button class="btn-primary ib-go" ${can?'':'disabled'} onclick="u121IbAdd('${id}')">✔ Add to To allocate</button>
+     <div class="sub" style="font-size:12px;color:#64748b;margin-top:6px">${can?'It goes into 📥 To allocate as a new job (and into Office Administration), with the scan as its order sheet — then book the day and team.':'Office Administration or the office (Sean / Kenny) adds scans as orders.'}</div></div></div></div>`; }
+function u121FTick(id,fn,k,on){ const F=u121Form(id), a=F[fn].filter(x=>x!==k); if(on) a.push(k); F[fn]=a; }
+async function u121IbAdd(id){ if(!u83Can('orders')){ toast('Office Administration or the office adds scans as orders'); return; } const it=u121Ib.find(x=>x.id===id); if(!it) return; const F=u121Form(id);
+  const need=F.type==='site'?[['name','contractor'],['site','site name']]:[['name',F.type==='builder'?'builder':'customer name']];
+  for(const [k,lab] of need){ if(!String(F[k]||'').trim()){ toast('Enter the '+lab); const el=$(`u121f-${k}-${id}`); if(el) el.focus(); return; } }
+  const pages=F.snos.map(s=>String(s.no||'').trim()).filter(Boolean); if(!pages.length){ toast('Enter the sheet no.'); const el=$(`u121s-${u121SnKeyId('f:'+id)}-0`); if(el) el.focus(); return; }
+  const dup=[]; pages.forEach(p=>oaOrders.forEach(o=>{ if((o.pages||[]).includes(p)) dup.push(`${p} is already on ${oaTitle(o)}`); })); if(dup.length&&!confirm('⚠ Sheet no. '+dup.join('\n⚠ Sheet no. ')+'\n\nAdd it anyway?')) return;
+  let got; try{ got=await u121IbFile(it); }catch(e){ toast('⚠ Couldn’t open the scan — check the internet and try again',6000); return; }
+  const now=new Date().toISOString(), who=oaWho(), t=s=>String(s||'').trim();
+  const o={id:'oa'+Date.now().toString(36), type:F.type, name:t(F.name), phone:t(F.phone), eir:t(F.eir).toUpperCase(), coords:'', rep:t(F.rep), pages, total:0, payments:[], notes:[],
+    stamps:{received:{at:now,by:t(F.rep)||who}, factory:{at:now,by:who}}, otype:FY_OT.map(x=>x[0]).filter(k=>F.ot.includes(k)), ptype:U121_PT.map(x=>x[0]).filter(k=>F.pt.includes(k)),
+    from:{kind:it.source==='email'?'email':'upload',at:it.created_at||now,who:it.sender||it.created_by||'',name:it.name||''}, scan:{name:got.file.name}};
+  if(F.type==='site') Object.assign(o,{siteName:t(F.site), contact:t(F.phone), unitType:'', block:'', unitNo:t(F.unit)});
+  if(F.type==='builder') Object.assign(o,{siteAddr:t(F.addr), siteEir:o.eir, siteCoords:''});
+  if(t(F.note)) o.notes.push({at:now,by:who,text:t(F.note)});
+  oaOrders.unshift(o); const j=fitFJw(o.id); j.days=+F.days||1; j.men=+F.men||2; if(t(F.note)) j.notes=t(F.note);
+  j.snos=F.snos.filter(s=>t(s.no)||s.jobs.some(Boolean)).map(s=>({no:t(s.no),jobs:s.jobs.map(t).filter(Boolean).slice(0,3).concat([]).slice(0,3)})).map(s=>({no:s.no,jobs:s.jobs.length?s.jobs:['']}));
+  fxLog(o.id,'📥',who,`Added from 📥 Scanned in — ${it.source==='email'?'emailed from the copier':'uploaded'} (${it.name||'scan'})`);
+  oaScans[o.id]={files:[got.file],url:got.url};   // saved to SashDash as the order's scan
+  fitSave();
+  try{ const r=await sb.from('prod_inbox').update({done_at:now,done_by:who,order_id:o.id}).eq('id',id); if(r.error) throw r.error; }catch(e){ console.warn(e); }
+  u121Ib=u121Ib.filter(x=>x.id!==id); delete u121F[id]; fxTaSel=o.id; u108Tab='book'; fitRender(); toast('✔ Added to To allocate — now book the day and team'); }
+async function u121IbDel(id){ const it=u121Ib.find(x=>x.id===id); if(!it) return; if(!confirm(`Remove “${u121IbName(it)}” from 📥 Scanned in?\n\nThe scan is deleted from SashDash.`)) return;
+  try{ await sb.storage.from('prod-files').remove([it.path]); const r=await sb.from('prod_inbox').delete().eq('id',id); if(r.error) throw r.error; }
+  catch(e){ toast('⚠ Couldn’t remove it — check the internet',6000); console.warn(e); return; }
+  u121Ib=u121Ib.filter(x=>x.id!==id); if(fxTaSel==='ib:'+id) fxTaSel=null; fitRender(); toast('🗑 Removed'); }
+async function u121PdfPages(blob){ try{ return (await PDFLib.PDFDocument.load(await blob.arrayBuffer(),{ignoreEncryption:true})).getPageCount(); }catch(e){ return null; } }
+async function u121IbPut(blob,name,extra){ const id=uuid(), pdf=/pdf/.test(blob.type), path=`inbox/${id}${pdf?'.pdf':/png/.test(blob.type)?'.png':'.jpg'}`;
+  await prodPut(path,blob,blob.type); const row=Object.assign({id,name,path,type:blob.type,bytes:blob.size,pages:pdf?await u121PdfPages(blob):1,source:'upload',created_by:prodWho()},extra||{});
+  const r=await sb.from('prod_inbox').insert(row); if(r.error){ try{ await sb.storage.from('prod-files').remove([path]); }catch(e){} throw r.error; }
+  u121Ib.unshift(Object.assign({created_at:new Date().toISOString()},row)); return row; }
+// ⬆ Upload orders — PDFs or photos, as many as you like; each one waits in 📥 Scanned in
+function u121Up(){ if(!u121IbCan()) return; if(u121IbSt==='nosql'){ toast('Run update-121-scanned-in.sql first'); return; }
+  openModal(`<h2>⬆ Upload orders</h2><div style="color:var(--slate);margin:-6px 0 12px">PDFs or photos of the order sheets · one file per order · as many as you like at once</div>
+   <div class="u121drop" id="u121drop" onclick="$('u121upf').click()"><big>📄</big>Drop the files here<br><small style="font-weight:600">or tap to pick them · on a phone: 📷 take a photo of the sheet</small></div><input type="file" id="u121upf" multiple accept="application/pdf,image/*" style="display:none" onchange="u121UpGo(this.files)">
+   <div class="u121files" id="u121files"></div>
+   <div style="font-size:12.5px;color:#64748b;margin-top:10px">Each file lands in <b>📥 Scanned in</b>. Photos become a PDF and are shrunk, like the service sheets. A file with several orders in it can be ✂ split there.</div>
+   <div class="modal-actions"><button class="btn-primary" onclick="closeModal();fitRender()">Done</button></div>`);
+  const z=$('u121drop'); ['dragenter','dragover'].forEach(ev=>z.addEventListener(ev,e=>{ e.preventDefault(); z.classList.add('over'); })); ['dragleave','dragend'].forEach(ev=>z.addEventListener(ev,()=>z.classList.remove('over')));
+  z.addEventListener('drop',e=>{ e.preventDefault(); z.classList.remove('over'); if(e.dataTransfer&&e.dataTransfer.files) u121UpGo(e.dataTransfer.files); }); }
+async function u121UpGo(files){ const list=$('u121files'), fs=[...(files||[])]; let first=null;
+  for(const f of fs){ const row=document.createElement('div'); row.innerHTML=`${/pdf/.test(f.type)||/\.pdf$/i.test(f.name)?'📄':'🖼'} <b>${esc(f.name)}</b><span style="color:#2563eb">⏳ uploading…</span>`; if(list) list.appendChild(row);
+    try{ const pdf=/pdf/.test(f.type)||/\.pdf$/i.test(f.name), img=/^image\//.test(f.type);
+      if(!pdf&&!img) throw new Error('Only PDFs or photos');
+      const blob=pdf?new Blob([await f.arrayBuffer()],{type:'application/pdf'}):new Blob([await buildUploadPdf([f])],{type:'application/pdf'});
+      const r=await u121IbPut(blob,pdf?f.name:f.name.replace(/\.[^.]+$/,'')+'.pdf'); if(!first) first=r.id;
+      row.querySelector('span').outerHTML='<span style="color:#16a34a">✓ in</span>'; }
+    catch(e){ console.warn(e); row.querySelector('span').outerHTML=`<span style="color:#dc2626">⚠ ${esc(e.message||'didn’t upload')}</span>`; } }
+  const i=$('u121upf'); if(i) i.value=''; if(first) fxTaSel='ib:'+first; }
+// ✂ one scan with several orders in it → one scan per order
+let u121Cut=null;
+async function u121Split(id){ const it=u121Ib.find(x=>x.id===id); if(!it) return; let got; try{ got=await u121IbFile(it); }catch(e){ toast('⚠ Couldn’t open the scan'); return; }
+  const n=it.pages||await u121PdfPages(got.file)||1; if(n<2){ toast('Only one page — nothing to split'); return; } u121Cut={id,n,cuts:new Set()}; u121SplitForm();
+  try{ const doc=await pdfjsLib.getDocument({data:new Uint8Array(await got.file.arrayBuffer())}).promise;
+    for(let p=1;p<=n;p++){ const c=document.getElementById('u121tp-'+p); if(!c) break; const pg=await doc.getPage(p), vp=pg.getViewport({scale:1}), k=110/vp.height, v2=pg.getViewport({scale:k*2});
+      c.width=v2.width; c.height=v2.height; await pg.render({canvasContext:c.getContext('2d'),viewport:v2}).promise; } }catch(e){ console.warn(e); } }
+function u121SplitRanges(){ const C=u121Cut, R=[]; let s=1; for(let p=1;p<=C.n;p++){ if(C.cuts.has(p)||p===C.n){ R.push([s,p]); s=p+1; } } return R; }
+function u121SplitForm(){ const C=u121Cut; if(!C) return; const R=u121SplitRanges(), col=['#2563eb','#ea580c','#16a34a','#7c3aed','#db2777','#0891b2'], of=p=>R.findIndex(r=>p>=r[0]&&p<=r[1]);
+  const keep=document.querySelectorAll('#modal-root .u121thumbs canvas').length?[...document.querySelectorAll('#modal-root .u121thumbs canvas')]:null;
+  let h=''; for(let p=1;p<=C.n;p++){ h+=`<div class="tp"><canvas id="u121tp-${p}" style="border-color:${col[of(p)%col.length]}"></canvas>Page ${p}</div>`; if(p<C.n) h+=`<button class="cut ${C.cuts.has(p)?'on':''}" title="${C.cuts.has(p)?'Join these pages back':'A new order starts after page '+p}" onclick="u121Cut.cuts.${C.cuts.has(p)?'delete':'add'}(${p});u121SplitForm()">✂<b></b></button>`; }
+  openModal(`<h2>✂ One scan, several orders?</h2><div style="color:var(--slate);margin:-6px 0 10px">${C.n} pages. Tap ✂ between two pages where a new order starts.</div>
+   <div class="u121thumbs">${h}</div><div class="u121ords">${R.map((r,i)=>`<span style="color:${col[i%col.length]}">Order ${i+1} · page${r[0]===r[1]?' '+r[0]:'s '+r[0]+'–'+r[1]}</span>`).join('')}</div>
+   <div class="modal-actions"><button class="btn-outline" onclick="u121Cut=null;closeModal()">Cancel</button><button class="btn-primary" ${R.length<2?'disabled':''} onclick="u121SplitGo()">✂ Split into ${R.length} order${R.length>1?'s':''}</button></div>`);
+  const m=document.querySelector('#modal-root .modal'); if(m){ m.style.maxWidth='780px'; m.style.width='780px'; }
+  if(keep) keep.forEach(c=>{ const n=document.getElementById(c.id); if(n){ n.width=c.width; n.height=c.height; n.getContext('2d').drawImage(c,0,0); } }); }
+async function u121SplitGo(){ const C=u121Cut; if(!C) return; const it=u121Ib.find(x=>x.id===C.id); if(!it) return; const R=u121SplitRanges(); if(R.length<2) return;
+  const btn=document.querySelector('#modal-root .modal-actions .btn-primary'); if(btn){ btn.disabled=true; btn.textContent='⏳ Splitting…'; }
+  try{ const src=await PDFLib.PDFDocument.load(await u121IbUrl[it.id].file.arrayBuffer(),{ignoreEncryption:true}), base=(it.name||'scan').replace(/\.pdf$/i,''); let first=null;
+    const made=[];
+    for(const [a,b] of R){ const out=await PDFLib.PDFDocument.create(); (await out.copyPages(src,Array.from({length:b-a+1},(_,i)=>a-1+i))).forEach(p=>out.addPage(p));
+      const r=await u121IbPut(new Blob([await out.save()],{type:'application/pdf'}),`${base} · page${a===b?' '+a:'s '+a+'–'+b}.pdf`,{source:'split',sender:it.sender||null,subject:it.subject||null,created_by:it.created_by||prodWho()}); made.push(r.id); if(!first) first=r.id; }
+    await sb.storage.from('prod-files').remove([it.path]); await sb.from('prod_inbox').delete().eq('id',it.id);
+    const mine=made.map(id=>u121Ib.find(x=>x.id===id)).filter(Boolean); u121Ib=mine.concat(u121Ib.filter(x=>x.id!==it.id&&!made.includes(x.id)));   // order 1 first
+    u121Cut=null; closeModal(); fxTaSel='ib:'+first; fitRender(); toast(`✂ Split into ${R.length} orders`); }
+  catch(e){ console.warn(e); toast('⚠ Couldn’t split it — check the internet and try again',6000); if(btn){ btn.disabled=false; btn.textContent='✂ Split'; } } }
+// 📧 Scan to email — the address, the last scan in, and how to set up the copier
+async function u121MailBox(){ let last=null; try{ const r=await sb.from('prod_inbox').select('created_at,sender,name,pages').eq('source','email').order('created_at',{ascending:false}).limit(1); if(!r.error&&r.data&&r.data[0]) last=r.data[0]; }catch(e){}
+  const a=u121Mail();
+  openModal(`<h2>📧 Scan to email</h2><div style="color:var(--slate);margin:-6px 0 12px">Anything the copier emails to this address lands in <b>📥 Scanned in</b> within about 5 minutes.</div>
+   <div class="u121mail">✉ ${esc(a)} <button class="btn-outline" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(a)}');toast('📋 Copied')">📋 Copy</button></div>
+   <div class="u121kv"><div>Last scan in</div><div>${last?`${oaDT(last.created_at)} · ${esc(last.name||'')}${last.pages?' ('+last.pages+' page'+(last.pages>1?'s':'')+')':''}${last.sender?' · from '+esc(last.sender):''}`:'None yet — send a test scan once it’s set up'}</div>
+    <div>Kept</div><div>PDF and photo attachments only. The email is then archived in the Gmail.</div></div>
+   <div style="font-weight:900;margin-top:8px">On the copier (once)</div><ol class="u121steps"><li>Add an address-book entry <b>“SashDash orders”</b> with the address above.</li><li>Scan the order sheets → <b>Scan to email</b> → <b>SashDash orders</b> → Start.</li><li>A few minutes later it's in 📥 To allocate, ready to fill in. Several orders in one scan? Use <b>✂ Split</b>.</li></ol>
+   ${u121Admin()?`<div class="field-group" style="margin-top:10px"><label>Address shown here</label><input id="u121ma" value="${esc(a)}"></div>`:''}
+   <div class="modal-actions">${u121Admin()?`<button class="btn-outline" onclick="const v=$('u121ma').value.trim();if(v){u121Cfg().mail=v;fitSave();}closeModal();fitRender()">💾 Save address</button>`:''}<button class="btn-primary" onclick="closeModal()">Close</button></div>`); }
 </script>
 </body>
 </html>
