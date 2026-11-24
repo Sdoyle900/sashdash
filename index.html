@@ -2198,7 +2198,16 @@ body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-o
 .vnp-done{flex:1;text-align:center;padding:40px 20px}.vnp-done .big{font-size:64px}.vnp-done h2{margin:10px 0 4px}.vnp-sum{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;margin:16px 0;display:flex;flex-direction:column;gap:4px}
 
 .vn-allok{border:1.5px solid #86efac;background:#f0fdf4;border-radius:14px;padding:12px 14px;margin-bottom:16px;font-weight:700;color:#166534}
-.vn-al{cursor:pointer}.vn-next{font-size:14px;color:#92400e;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:8px 12px;margin-top:10px}
+.vn-al{cursor:pointer}.vn-alh{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}.vn-alerts.shut{padding-bottom:10px}.vn-alerts.shut .vn-alh{margin-bottom:6px}
+.vn-car{display:inline-block;width:16px;color:#9f1239;font-size:13px}
+.vn-alsum{display:inline-flex;gap:6px;margin-left:8px;font-size:12px;font-weight:800}.vn-alsum span,.vn-alkinds span{padding:2px 8px;border-radius:999px}
+.vn-alsum .r,.vn-alkinds .r{background:#fee2e2;color:#be123c}.vn-alsum .a,.vn-alkinds .a{background:#fef3c7;color:#b45309}
+.vn-altip{margin-left:auto;font-size:12.5px;font-weight:700;color:#9f1239;border:1px solid #fda4af;background:#fff;border-radius:999px;padding:3px 10px}
+.vn-alkinds{cursor:pointer;display:flex;flex-wrap:wrap;gap:6px;font-size:12.5px;font-weight:700}
+.vn-alg{border-top:1px solid #fecdd3}.vn-alg:first-of-type{border-top:0}.vn-alg .vn-al{padding-left:22px}
+.vn-algh{display:flex;gap:10px;align-items:center;padding:8px 0;font-size:14px;cursor:pointer;user-select:none}.vn-algh b{min-width:110px}.vn-algh .vn-alsum{margin-left:0}
+.vn-alerts>.vn-al+.vn-alg,.vn-alg+.vn-al{border-top:1px solid #fecdd3}
+.vn-next{font-size:14px;color:#92400e;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:8px 12px;margin-top:10px}
 .vn-tags span.bad{background:#fff1f2;border-color:#fda4af;color:#9f1239}.vn-doc{cursor:pointer;position:relative}.vn-doc.add{border-style:dashed;justify-content:center;color:var(--slate)}
 .vn-x{position:absolute;top:6px;right:6px;border:0;background:none;color:#94a3b8;cursor:pointer;font-size:14px}.vn-x:hover{color:#b91c1c}
 .vn-ok3 span{cursor:pointer}.vn-switch{display:flex;gap:8px;align-items:flex-start;margin-top:8px;padding:9px 11px;border:1.5px solid #c7d2fe;background:#eef2ff;border-radius:10px;font-size:13.5px;font-weight:600;color:#0f172a}.vn-switch small{font-weight:400;color:var(--slate)}.vn-switch input{width:auto;margin-top:3px}
@@ -2570,7 +2579,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-23-1245';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-24-1215';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -12573,7 +12582,7 @@ function vnRender(){ vnSel=null; const m=$('view-vans'); if(!m) return;
   const al=vnAlerts();
   m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><h1>🚐 Vans</h1><span class="sub">${vnVans.length} van${vnVans.length===1?'':'s'} · only the office and office admin can see this</span>
     <span style="margin-left:auto"></span><button class="btn-outline" onclick="vnExport()">📤 Export</button><button class="btn-outline" onclick="vnSettings()">🔔 Reminder settings</button><button class="btn-primary" onclick="vnEdit()">＋ Add a van</button></div>
-    ${al.length?`<div class="vn-alerts"><h3>🔔 Coming up — ${al.length} reminder${al.length>1?'s':''}</h3>${al.map(a=>`<div class="vn-al ${a.st}" onclick="vnOpenVan('${a.v.id}')"><span>${a.ico}</span><b>${esc(a.what)}</b>${vnReg(a.v.reg)}<span>${esc(vnDriver(a.v))}</span><span class="when">${esc(a.when)}</span></div>`).join('')}</div>`
+    ${al.length?vnAlBox(al)
       :vnVans.length?'<div class="vn-allok">✅ Nothing due — every van is up to date.</div>':''}
     ${vnVans.length?`<div class="vn-grid">${vnVans.map(v=>{ const a=vnAll(v), k=vnChkInfo(v);
       return `<div class="vn-card" onclick="vnOpenVan('${v.id}','over')"><div style="display:flex;align-items:center;gap:8px">${vnReg(v.reg)}<span style="margin-left:auto" class="tag">${vnKm(v.km)}</span></div>
@@ -13095,6 +13104,20 @@ function vnPdf(){ const R=vnRows(vnExp.what), fmt=c=>c instanceof Date?c.toLocal
   $('print-root').innerHTML=`<div class="vx-p"><div class="vx-head"><img src="${SD_LOGO()}" alt="Sean Doyle Windows"><div><div class="t">${esc(R.title)}</div><div class="s">${vnVans.length} vans · ${esc(R.today)} · ${esc(vnMe())}</div></div></div><div class="vx-key"><span class="red">Overdue / out of date</span><span class="amber">Due soon</span>${vnExp.what==='needed'?'<span class="none">No date in SashDash</span>':''}</div>${body}
     <div class="vx-foot">Sean Doyle Windows Ltd · SashDash 🚐 Vans · printed ${esc(new Date().toLocaleString('en-IE',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}))}</div></div>`;
   closeModal(); document.body.classList.add('printing'); setTimeout(()=>{ window.print(); setTimeout(()=>document.body.classList.remove('printing'),500); },120); }
+
+// ════════ Update 123 — 🚐 Vans: the 🔔 Coming up reminders fold away (whole box, and each kind) — remembered per login ════════
+function vnFold(){ try{ return JSON.parse(localStorage.getItem('sd-vn-fold-'+realMe.id)||'{}')||{}; }catch(e){ return {}; } }
+function vnAlTog(key){ const f=vnFold(); if(key){ f.g=f.g||{}; f.g[key]=!f.g[key]; } else f.shut=!f.shut;
+  try{ localStorage.setItem('sd-vn-fold-'+realMe.id, JSON.stringify(f)); }catch(e){} const y=window.scrollY; vnRender(); window.scrollTo(0,y); }
+function vnAlBox(al){ const f=vnFold(), g=f.g||{}, cnt=l=>{ const r=l.filter(a=>a.st==='red').length, a=l.length-r;
+    return `${r?`<span class="r">${r} overdue</span>`:''}${a?`<span class="a">${a} due soon</span>`:''}`; };
+  const row=a=>`<div class="vn-al ${a.st}" onclick="vnOpenVan('${a.v.id}')"><span>${a.ico}</span><b>${esc(a.what)}</b>${vnReg(a.v.reg)}<span>${esc(vnDriver(a.v))}</span><span class="when">${esc(a.when)}</span></div>`;
+  const kinds=[]; al.forEach(a=>{ let k=kinds.find(x=>x.what===a.what); if(!k) kinds.push(k={what:a.what,ico:a.ico,l:[]}); k.l.push(a); });
+  kinds.sort((x,y)=>(y.l.some(a=>a.st==='red')-x.l.some(a=>a.st==='red'))||(al.indexOf(x.l[0])-al.indexOf(y.l[0])));
+  const head=`<h3 class="vn-alh" onclick="vnAlTog()" title="${f.shut?'Show':'Hide'} the reminders"><span class="vn-car">${f.shut?'▸':'▾'}</span>🔔 Coming up — ${al.length} reminder${al.length>1?'s':''}<span class="vn-alsum">${cnt(al)}</span><span class="vn-altip">${f.shut?'Show':'Hide'}</span></h3>`;
+  if(f.shut) return `<div class="vn-alerts shut">${head}<div class="vn-alkinds" onclick="vnAlTog()" title="Show the reminders">${kinds.map(k=>`<span class="${k.l.some(a=>a.st==='red')?'r':'a'}">${k.ico} ${esc(k.what)} ${k.l.length}</span>`).join('')}</div></div>`;
+  return `<div class="vn-alerts">${head}${kinds.map(k=>{ if(k.l.length<2) return row(k.l[0]); const shut=!!g[k.what];
+    return `<div class="vn-alg${shut?' shut':''}"><div class="vn-algh" onclick="vnAlTog(this.dataset.k)" data-k="${esc(k.what)}"><span class="vn-car">${shut?'▸':'▾'}</span><span>${k.ico}</span><b>${esc(k.what)}</b><span class="vn-alsum">${cnt(k.l)}</span><span class="vn-altip">${shut?`Show ${k.l.length}`:'Hide'}</span></div>${shut?'':k.l.map(row).join('')}</div>`; }).join('')}</div>`; }
 </script>
 </body>
 </html>
