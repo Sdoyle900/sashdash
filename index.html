@@ -2283,7 +2283,7 @@ body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-o
 }
 .oc-req{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
 .oc-need{margin-top:6px;font-size:12.5px;color:#b45309;font-weight:600}.field-group.oc-ok .oc-need{display:none}
-.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.rb-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rb-chip{display:flex;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--border);background:#fff;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink,#0f172a)}
+.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.imp-where-ok{color:#166534;font-weight:600}.imp-where-bad{color:#b45309}.imp-where-bad ul{margin:4px 0 0 18px;padding:0;color:#475569;font-weight:400}.rb-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rb-chip{display:flex;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--border);background:#fff;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink,#0f172a)}
 .rb-chip span{font-size:18px}.rb-chip.on{border-color:#2563eb;background:#eff6ff;color:#1d4ed8;box-shadow:0 0 0 2px #bfdbfe}.rb-why.oc-bad .rb-chips{outline:2px solid #fca5a5;outline-offset:4px;border-radius:12px}
 #oc-ok:disabled{opacity:.45;cursor:not-allowed}
 .evt.evt-big{align-self:stretch;text-align:left;font-size:16px;line-height:1.4;color:#0f172a;background:#eff6ff;border:1.5px solid #93c5fd;border-left:5px solid #2563eb;border-radius:12px;padding:10px 14px;margin:8px 0}
@@ -2589,7 +2589,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-26-0915';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-26-1100';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -4947,7 +4947,7 @@ async function hcOpenCall(c, i){
   if(!c.imp && c.src!=='live'){
     v.innerHTML=head+`<div class="hc-ni"><div class="hc-card"><h3>${ocText(c.outcome).split(' ')[0]} ${hcLabel(i)} · ${esc(shortDate(c.date))}</h3><div class="hc-cs">The full job hasn't been imported.</div>
       <table><tr><td>Service man</td><td><b>${esc(c.man||'—')}</b></td></tr><tr><td>Result</td><td><b>${ocText(c.outcome)}</b></td></tr>${c.note?`<tr><td>Note</td><td>“${esc(c.note)}”</td></tr>`:''}<tr><td>Job number</td><td>${esc(c.job_no||'—')}</td></tr></table>
-      ${isOffice&&!previewing?`<button class="btn-primary" onclick="openImport('${job.id}','${c.key}')">📥 Import this call from computer</button><div class="hc-cs" style="margin-top:10px">Look in <b>🗜 ${esc(zipNameFor(hcCalls[hcCalls.length-1].date))}</b> <button class="btn-outline" style="padding:3px 9px;font-size:12px;margin-left:4px" onclick="copyText('${esc(zipSearch(hcCalls[hcCalls.length-1].date))}',this)">Copy search</button></div>`:`<div class="hc-cs">The office can import it from the computer.</div>`}</div></div>`;
+      ${isOffice&&!previewing?`<button class="btn-primary" onclick="openImport('${job.id}','${c.key}')">📥 Import this call from computer</button><div class="hc-cs" style="margin-top:10px">${hasBk&&canPickFolder?'SashDash finds it in this computer\'s 💾 backup for you.':`From before the backups started? Look in <b>🗜 ${esc(zipNameFor(hcCalls[hcCalls.length-1].date))}</b>`}</div>`:`<div class="hc-cs">The office can import it from the computer.</div>`}</div></div>`;
     return;
   }
   // the old call's files and conversation
@@ -5053,6 +5053,7 @@ async function histRemove(jobId, key){
 }
 function openImport(jobId, key){
   const j=jobs.find(x=>x.id===jobId); if(!j) return; impJobId=jobId; impKey=key||null; impFound=[];
+  { const c=key&&pastCalls(j).find(x=>x.key===key); impWant=c?c.date:null; impBefore=jobDay(j)||null; }
   const all=pastCalls(j), want=key?all.filter(c=>c.key===key):all.filter(c=>!c.imp&&c.src!=='live');
   const last=all.length?all[all.length-1]:null, look=last?[{zip:zipNameFor(last.date), calls:[last]}]:[];
   openModal(`<h2>📥 Import old calls — ${esc(custLabel(j))}</h2>
@@ -5072,7 +5073,7 @@ function openImport(jobId, key){
     m.addEventListener('dragleave',e=>{ if(e.target===m) m.classList.remove('imp-over'); });
     m.addEventListener('drop',e=>{ if(!hasFiles(e)) return; e.preventDefault(); m.classList.remove('imp-over');
       const z=[...e.dataTransfer.files].find(f=>/\.zip$/i.test(f.name)); if(z) impPickedZip(z); else toast('Drop the week\'s .zip file here.'); }); }
-  if(bkAutoArchive){ bkAutoArchive=false; setTimeout(impFromArchive,60); }
+  if(bkAutoArchive || (key && hasBk && canPickFolder)){ bkAutoArchive=false; setTimeout(impFromArchive,60); }   // 💾 Update 125: a call's Import button goes straight to the backup
 }
 // read every job folder (one with sheet-original.pdf) out of a list of {path, file|zipEntry}
 async function impScan(entries){
@@ -5092,10 +5093,10 @@ async function impScan(entries){
   found.forEach(f=>{ f.parent=found.find(o=>o!==f && f.dir.startsWith(o.dir)); });
   found.forEach(f=>{ f.match=keysMatch(k,[phoneKey(f.info.job_no),phoneKey(f.info.phone),phoneKey(f.info.phone2)],eirKey(f.info.eircode)); f.done=callImports.some(i=>i.job_id===j.id&&i.work_date===f.info.work_date); });
   found.forEach(f=>{ if(!f.match && f.parent && f.parent.match) f.match=true; });
-  impFound=found.filter(f=>f.match).sort((a,b)=>a.info.work_date<b.info.work_date?-1:1);
+  impFound=found.filter(f=>f.match && !(impBefore && f.info.work_date>=impBefore)).sort((a,b)=>a.info.work_date<b.info.work_date?-1:1);   // 💾 Update 125: not the current call itself
   if(!impFound.length){ box.innerHTML=`<div class="imp-none">⚠️ No job for this customer in what you picked${found.length?` (${found.length} other job${found.length===1?'':'s'} found)`:''}. Check the job number and pick again.</div>`; $('imp-go').classList.add('hidden'); return; }
   box.innerHTML=`<div class="imp-list">${impFound.map((f,i)=>{ const x=f.info, ph=f.entries.filter(e=>/\/photos\/[^/]+$/.test(e.path)).length;
-    return `<label class="imp-row ${f.done?'dis':''}"><input type="checkbox" data-i="${i}" ${f.done?'disabled':'checked'}>
+    return `<label class="imp-row ${f.done?'dis':''}"><input type="checkbox" data-i="${i}" ${f.done?'disabled':(!impWant||x.work_date===impWant?'checked':'')}>
       <span><b>${esc(x.name||'Job')} · ${esc(shortDate(x.work_date))}</b><br><span class="hc-cs">${esc(x.serviceman||'')} · ${ocText(x.outcome)} · job no. ${esc(x.job_no||'—')}</span><br>
       <span class="imp-what">📄 Sheet${get2(f,'sheet-marked-up.pdf')?' · ✏️ Mark-up':''}${ph?` · 🖼 ${ph} photo${ph===1?'':'s'}`:''} · 💬 ${(x.convo||[]).filter(m=>m.kind!=='event').length} messages</span>${f.done?'<br><span class="hc-cs">Already imported</span>':''}</span></label>`; }).join('')}</div>`;
   $('imp-go').classList.remove('hidden'); $('imp-go').textContent=`📥 Import ${impFound.filter(f=>!f.done).length===1?'this call':'these calls'}`;
@@ -5359,11 +5360,12 @@ async function bkChooseFolder(thenBackup){
 // ── 💾 Back up now ──
 async function runBackup(opts={}){
   const auto=!!opts.auto;
-  if(bkBusy) return; const a=bkAccount(); if(!a || previewing) return;
+  if(bkBusy){ if(!auto) bkBusyBox(); return; } const a=bkAccount();
+  if(!a || previewing){ if(!auto) toast(previewing?'💾 Leave 👁 View as first, then press Back up now.':'💾 This login doesn\'t do backups.',6000); return; }
   if(!canPickFolder) return toast('Backups need Edge or Chrome on a computer.',6000);
   bkDev=await bkDevice(); if(!bkThisIsBackupPC(bkDev)) return toast(`${bkSideName(a)} backups are done on the ${bkSideName(a)} backup computer.`,6000);
   let dir=await bkFolder(true); if(!dir){ const h=await kvGet(BK_DIR); if(!h) return bkChooseFolder(true); if(auto) return bkAutoAsk(h); return toast('SashDash needs permission to save into the folder — try again and click "Edit files".',7000); }
-  bkBusy=true; if(auto) closeModal();
+  bkBusy=true; bkBusyAt=Date.now(); bkProg=''; const gen=++bkGen; if(auto) closeModal();
   const show=(html)=>auto?bkPop(html):openModal(`<div class="bk-m">${html}</div>`);
   try{
     await loadData();
@@ -5378,10 +5380,13 @@ async function runBackup(opts={}){
     let nNew=0, nUpd=0, done=0; const saved=[], bkSkipped=[];
     for(const j of todo){
       const s=sites.find(x=>x.id===j.site_id)||{}, t=prof(j.serviceman_id), path=bkPathFor(j,idx), was=idx.calls[j.id];
+      if(gen!==bkGen) return;   // this backup was stopped (💾 Stop and start again) — leave quietly
+      bkProg=`${done+1} of ${todo.length}`; bkStepAt=Date.now();
       $('bk-now') && ($('bk-now').innerHTML=`<b>${done+1} of ${todo.length}</b> — ${esc(path.split('/').slice(0,2).join(' › '))}`);
       try{   // one job that can't be saved is skipped (and listed) instead of stopping the whole backup — Update 112
-        const mf=memFolder(); await writeJobFiles(mf, j, s, t, allC, {oldCalls:false});
-        if(was) await bkRemove(dir, was.path); await bkRemove(dir, path);
+        const mf=memFolder(); await bkTimeout(writeJobFiles(mf, j, s, t, allC, {oldCalls:false}), 120000, 'took too long (over 2 minutes) — the internet may have dropped');   // one stuck job can't hang the whole backup
+        if(was && bkKeepOld(j, was, path)) idx.calls[`${j.id}@${was.date}`]=Object.assign({}, was, {kept:true}); else if(was) await bkRemove(dir, was.path);   // 💾 Update 125: each visit keeps its own folder
+        await bkRemove(dir, path);
         for(const f of mf._files) await bkWriteFile(dir, `${path}/${f.path}`, f.data);
         idx.calls[j.id]=bkEntry(j, path); was?nUpd++:nNew++; saved.push({job_id:j.id, account:a, version:jobVersion(j), device_id:bkDev.id, backed_at:new Date().toISOString()});
       }catch(e){ console.warn('backup skipped', path, e); delete idx.calls[j.id]; bkSkipped.push({id:j.id, path, why:e.message||String(e)}); }
@@ -5416,7 +5421,7 @@ async function runBackup(opts={}){
   }catch(e){ console.error(e);
     if(auto) bkPop(`<div class="bk-a-h">⚠️ <b>Automatic backup stopped</b><button class="bk-a-x" onclick="bkPopClose()" aria-label="Close">✕</button></div><div class="bk-a-s">${esc(e.message||String(e))}<br>Nothing was cleared. Jobs saved so far are kept.</div><div class="bk-a-b"><button class="btn-primary" onclick="runBackup({auto:true})">💾 Try again</button></div>`,'err');
     else show(`<h2>⚠️ Backup stopped</h2><div class="sub">${esc(e.message||String(e))}</div><div class="bk-box">Nothing was cleared from SashDash. Jobs saved before it stopped are kept; press <b>Back up now</b> to finish.</div><div class="modal-actions"><button class="btn-primary" onclick="closeModal()">OK</button></div>`); }
-  finally{ bkBusy=false; }
+  finally{ if(gen===bkGen) bkBusy=false; }
 }
 // 🧹 clear the All done jobs that both backups have (Re-book / Not home and Sites are never cleared here)
 async function bkClearNow(){
@@ -5468,15 +5473,43 @@ async function bkFilesUnder(dir, base){ const out=[]; const walk=async(h,pre)=>{
   const d=await bkDirAt(dir, base); if(d) await walk(d, base+'/'); return out; }
 // 📁 import onto a job straight from this computer's archive — no searching
 async function impFromArchive(){
-  const where=$('imp-where'); const dir=await bkArchive(true);
+  const where=$('imp-where');
+  try{   // 💾 Update 125: always says what happened — never silent
+  const dir=await bkArchive(true);
   if(!dir){ where.innerHTML=(await kvGet(BK_DIR))?'⚠️ SashDash needs permission to read the backup folder — press the button again and allow it.':'⚠️ This computer has no backup folder yet — set it up under 💾 Last backup.'; return; }
   where.innerHTML='<span class="spin" style="border-color:#c7d2fe;border-top-color:#4f46e5"></span> Looking in this computer\'s backup…';
-  const j=jobs.find(x=>x.id===impJobId), k=jobKeys(j), idx=await bkReadIndex(dir);
-  const hits=Object.entries(idx.calls).filter(([id,e])=>id!==j.id && e.dept==='calls' && bkMatch(e,k.phones,k.eir)).map(([,e])=>e);
-  if(!hits.length){ where.innerHTML=`⚠️ No earlier calls for this customer in <b>${esc(dir.name)}</b>${bkLocalLast?` (backed up ${esc(bkWhen(bkLocalLast))})`:''}. A recent call may not be backed up yet — back up now, or pick an old zip.`; impFound=[]; $('imp-found').innerHTML=''; return; }
-  const entries=[]; for(const e of hits) entries.push(...await bkFilesUnder(dir, e.path));
-  where.innerHTML=`✅ Found <b>${hits.length} earlier call${hits.length===1?'':'s'}</b> in this computer's backup (<b>${esc(dir.name)}</b>)`;
-  impScan(entries);
+  const j=jobs.find(x=>x.id===impJobId), k=jobKeys(j), idx=await bkReadIndex(dir), before=jobDay(j);
+  // every earlier visit for this customer — other jobs AND this job's own earlier days (a re-booked call stays the same job)
+  const paths=new Set(Object.values(idx.calls).filter(e=>e.dept==='calls' && bkMatch(e,k.phones,k.eir) && (!before||!e.date||e.date<before)).map(e=>e.path));
+  // …plus any dated folder in the customer's own folder(s), even if the index doesn't list it
+  const pc=await bkDirAt(dir,'Private Calls'), custDirs=[];
+  if(pc){ for await (const [n,h] of pc.entries()){ if(h.kind==='directory' && k.phones.some(p=>p && n.startsWith(p+' '))) custDirs.push(n); } }
+  for(const cd of custDirs){ const h=await bkDirAt(dir,`Private Calls/${cd}`); if(!h) continue;
+    for await (const [n,x] of h.entries()){ const d=(n.match(/^(\d{4}-\d\d-\d\d)/)||[])[1]; if(x.kind==='directory' && d && (!before||d<before)) paths.add(`Private Calls/${cd}/${n}`); } }
+  if(!paths.size){ const look=[...k.phones.filter(Boolean), k.eir&&j.eircode].filter(Boolean);
+    where.innerHTML=`<div class="imp-where-bad">⚠️ No earlier calls for this customer in <b>${esc(dir.name)}</b>${bkLocalLast?` (backed up ${esc(bkWhen(bkLocalLast))})`:''} — looked for <b>${esc(look.join(' / ')||'—')}</b>.${custDirs.length?`<ul>${custDirs.map(n=>`<li>📁 ${esc(n)} — no earlier visits inside</li>`).join('')}</ul>`:''} Try 🔎 Find an old zip, 🗜 Pick a .zip or 📁 Pick a job folder.</div>`;
+    impFound=[]; $('imp-found').innerHTML=''; return; }
+  const entries=[]; for(const pth of paths) entries.push(...await bkFilesUnder(dir, pth));
+  where.innerHTML=`<span class="imp-where-ok">✅ Found <b>${paths.size} earlier call${paths.size===1?'':'s'}</b> in this computer's backup (<b>${esc(dir.name)}</b>)${impWant?` — the ${esc(niceDate(impWant))} call is ticked`:''}</span>`;
+  await impScan(entries);
+  }catch(e){ console.warn('import from backup', e); where.innerHTML=`<div class="imp-where-bad">⚠️ Couldn't read this computer's backup: ${esc(e.message||String(e))}. Try 📁 Pick a job folder.</div>`; }
+}
+let impWant=null, impBefore=null;
+// 💾 Update 125 — keep an old visit's folder when the same job has moved to another day (Re-book / Not home / cancelled)
+function bkKeepOld(j, was, path){ return deptOf(j)==='calls' && was && was.dept==='calls' && was.date && was.date!==jobDay(j) && was.path!==path && !!was.outcome && was.outcome!=='done'; }
+// 💾 Update 125 — save a Re-book / Not home call to this computer's backup before it moves to a new day (only if the folder is already allowed — never asks)
+async function bkSnapCall(j){
+  try{ if(!j || deptOf(j)!=='calls' || !['rebook','not_home','cancelled'].includes(jobOutcome(j))) return;
+    const dir=await kvGet(BK_DIR); if(!dir || !dir.queryPermission || (await dir.queryPermission({mode:'readwrite'}))!=='granted') return;
+    const idx=await bkReadIndex(dir), oldText=JSON.stringify(idx), day=jobDay(j), key=`${j.id}@${day}`, path=bkPathFor(j,idx);
+    const s=sites.find(x=>x.id===j.site_id)||{}, t=prof(j.serviceman_id), { data }=await sb.from('comments').select('*').eq('job_id',j.id).order('created_at');
+    const mf=memFolder(); await writeJobFiles(mf, j, s, t, data||[], {oldCalls:false});
+    await bkRemove(dir, path); for(const f of mf._files) await bkWriteFile(dir, `${path}/${f.path}`, f.data);
+    idx.calls[key]=Object.assign(bkEntry(j, path), {kept:true});
+    const cur=idx.calls[j.id]; if(cur && cur.path===path) delete idx.calls[j.id];   // the Monday backup saves the job's new day as a new folder
+    idx.updated_at=new Date().toISOString();
+    await bkWriteFile(dir,'index-previous.json', oldText); await bkWriteFile(dir,'index.json', JSON.stringify(idx));
+  }catch(e){ console.warn('backup of the call before moving it', e); }
 }
 
 // ── 🕘 Customer history (office + service): search by phone, name or Eircode ──
@@ -6153,7 +6186,7 @@ async function jaDoAllocate2(){
         const j=x.j, from=sites.find(s=>s.id===j.site_id)||{}, rest=(j.title||'').replace(/^job\s*\d+\s*/i,'');
         const upd={site_id:target.id, title:/^job\s*\d+/i.test(j.title||'')?`Job ${n}${rest?' '+rest:''}`:j.title, tech_unread:true, last_activity_at:now, outcome:null, completed:false, completed_at:null};
         if(hasWait && x.kind!=='booked') upd.wait_since=x.kind==='cancelled'?(j.wait_since||j.created_at):(x.since||now);
-        if(['rebook','not_home'].includes(jobOutcome(j))) await saveHistRows([histRow(j)]);
+        if(['rebook','not_home'].includes(jobOutcome(j))){ await bkSnapCall(j); await saveHistRows([histRow(j)]); }
         if(tid!==j.serviceman_id){ const oldPre=filePrefix('calls',j.serviceman_id)+'/', newPre=filePrefix('calls',tid)+'/';
           const mv=async p=>{ if(!p||!p.startsWith(oldPre)) return p; const np=newPre+p.slice(oldPre.length); const r=await sb.storage.from(BUCKET).move(p,np); if(r.error) throw r.error; return np; };
           upd.serviceman_id=tid; upd.pdf_path=await mv(j.pdf_path); upd.marked_path=await mv(j.marked_path); }
@@ -7753,7 +7786,7 @@ async function sendBackToAlloc(id){ if(blockPreview()) return;
     const row={id:newId, title:name||null, ref_no:j.ref_no||null, customer_phone:j.customer_phone||null, customer_phone2:j.customer_phone2||null, customer_email:j.customer_email||null,
       eircode:j.eircode||null, avail:j.avail||null, est_minutes:j.est_minutes||null, crew:j.crew||null, notes, hist_skip:Array.isArray(j.hist_skip)?j.hist_skip:[], pdf_path, pdf_bytes, created_by:me.id, ...matCopy(j)};
     const ins=await sb.from('new_calls').insert(row); if(ins.error){ if(pdf_path) await sb.storage.from(BUCKET).remove([pdf_path]); throw ins.error; }
-    if(['rebook','not_home'].includes(jobOutcome(j))) await saveHistRows([histRow(j)]);   // a visit that happened still counts as a call
+    if(['rebook','not_home'].includes(jobOutcome(j))){ await bkSnapCall(j); await saveHistRows([histRow(j)]); }   // a visit that happened still counts as a call
     const paths=[j.pdf_path,j.marked_path, ...await chatPhotoPaths([j.id]), ...importPathsFor([j.id])].filter(Boolean);
     if(paths.length) await sb.storage.from(BUCKET).remove(paths);
     const del=await sb.from('jobs').delete().eq('id',j.id); if(del.error) throw del.error;
@@ -7787,7 +7820,7 @@ async function doReschedule(){
     const n=nextJobNo(target.id), rest=(j.title||'').replace(/^job\s*\d+\s*/i,'');
     const newTitle=/^job\s*\d+/i.test(j.title||'') ? `Job ${n}${rest?' '+rest:''}` : j.title;
     const upd={site_id:target.id, title:newTitle, tech_unread:true, last_activity_at:new Date().toISOString()};
-    const wasFlagged=['rebook','not_home'].includes(jobOutcome(j));
+    const wasFlagged=['rebook','not_home'].includes(jobOutcome(j)); if(wasFlagged) await bkSnapCall(j);   // 💾 Update 125
     if(wasFlagged) await saveHistRows([histRow(j)]);
     if(wasFlagged){ upd.outcome=null; upd.completed=false; upd.completed_at=null; }   // back in the diary → out of the folder
     let movedPhotos=[];
@@ -13149,6 +13182,15 @@ function evtHtml(who, body, when){ const b=evText(body), m=b.match(/^(🔁|🚪)
   const rb=m[1]==='🔁', title=rb?`${m[2]} — ${m[3]||''}`.replace(/ — $/,''):m[2], note=rb?m[4]:[m[3],m[4]].filter(Boolean).join(' — ');
   const [why,...rest]=rb&&note&&RB_WHY.some(([,w])=>note.startsWith(w))&&/ — /.test(note)?note.split(' — '):[null,note];
   return `<div class="evt evt-big ${rb?'rb':'nh'}"><div class="eb-h"><span class="eb-i">${m[1]}</span><b>${esc(title)}</b><span class="eb-w">${esc(who)}${when?' · '+esc(when):''}</span></div>${why?`<div class="eb-why">${esc(why)}</div>`:''}${rest.join(' — ')?`<div class="eb-n">“${esc(rest.join(' — '))}”</div>`:''}</div>`; }
+
+// ════════ Update 126 — 💾 Back up now: never silent · a stuck backup can be stopped and started again ════════
+let bkBusyAt=0, bkStepAt=0, bkProg='', bkGen=0;
+function bkTimeout(pr, ms, why){ let tm; return Promise.race([pr, new Promise((_,rej)=>{ tm=setTimeout(()=>rej(new Error(why)), ms); })]).finally(()=>clearTimeout(tm)); }
+function bkBusyBox(){ const t=d=>new Date(d).toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'}), quiet=Math.round((Date.now()-(bkStepAt||bkBusyAt))/60000);
+  openModal(`<div class="bk-m"><h2>💾 A backup is already running</h2><div class="sub">Started at <b>${t(bkBusyAt)}</b> on this computer${bkProg?` — job <b>${esc(bkProg)}</b>`:''}.</div>
+    <div class="bk-box">${quiet>=5?`⚠️ Nothing has moved for <b>${quiet} minutes</b> — it looks stuck (the internet may have dropped). Press <b>Stop and start again</b>. Jobs already saved are kept.`:'Leave SashDash open and it will finish by itself. The little 💾 box bottom-left shows how far it is.'}</div>
+    <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button><button class="${quiet>=5?'btn-primary':'btn-outline'}" onclick="bkRestart()">🔄 Stop and start again</button></div></div>`); }
+function bkRestart(){ bkGen++; bkBusy=false; closeModal(); try{ bkPopClose(); }catch(e){} runBackup(); }
 </script>
 </body>
 </html>
