@@ -2283,7 +2283,17 @@ body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-o
 }
 .oc-req{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
 .oc-need{margin-top:6px;font-size:12.5px;color:#b45309;font-weight:600}.field-group.oc-ok .oc-need{display:none}
-.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}
+.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.rb-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rb-chip{display:flex;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--border);background:#fff;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink,#0f172a)}
+.rb-chip span{font-size:18px}.rb-chip.on{border-color:#2563eb;background:#eff6ff;color:#1d4ed8;box-shadow:0 0 0 2px #bfdbfe}.rb-why.oc-bad .rb-chips{outline:2px solid #fca5a5;outline-offset:4px;border-radius:12px}
+#oc-ok:disabled{opacity:.45;cursor:not-allowed}
+.evt.evt-big{align-self:stretch;text-align:left;font-size:16px;line-height:1.4;color:#0f172a;background:#eff6ff;border:1.5px solid #93c5fd;border-left:5px solid #2563eb;border-radius:12px;padding:10px 14px;margin:8px 0}
+.evt.evt-big.nh{background:#fff7ed;border-color:#fdba74;border-left-color:#ea580c}
+.evt-big .eb-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.evt-big .eb-i{font-size:20px}.evt-big .eb-h b{font-size:16px}.evt-big .eb-w{margin-left:auto;font-size:12.5px;color:#64748b}
+.evt-big .eb-why{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:999px;background:#dbeafe;color:#1e40af;font-size:13.5px;font-weight:700}.evt-big.nh .eb-why{background:#ffedd5;color:#9a3412}
+.evt-big .eb-n{margin-top:6px;font-size:18px;font-weight:600;color:#0f172a;white-space:pre-wrap}
+.rb-men{margin-top:10px;padding:10px 12px;border:1.5px solid #bfdbfe;background:#eff6ff;border-radius:12px}.rb-men[hidden]{display:none}.rb-men>div:first-child{font-size:13.5px;font-weight:700;color:#1e3a8a;margin-bottom:8px}
+.rb-men .rb-n{display:flex;gap:8px}.rb-men button{flex:1;min-width:0;border:1.5px solid var(--border);background:#fff;border-radius:10px;padding:9px 0;font:inherit;font-size:16px;font-weight:800;cursor:pointer}.rb-men button.on{border-color:#2563eb;background:#2563eb;color:#fff}.rb-men.oc-bad{border-color:#fca5a5;background:#fef2f2}
+
 #oc-ok:disabled{opacity:.45;cursor:not-allowed}
 /* 📈 How SashDash is helping (Update 66) */
 .si{border:1.5px solid #c7d2fe;background:linear-gradient(180deg,#eef2ff,#fff 70%);border-radius:14px;padding:12px 14px;margin-top:6px}
@@ -2579,7 +2589,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-24-1215';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-26-0915';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -4962,7 +4972,7 @@ async function hcOpenCall(c, i){
 function hcConvo(cv){
   if(!cv.length) return '<div class="loading">No messages on this call.</div>';
   return cv.map(m=>{ const when=m.at?fmtWhen(m.at):(m.when||'');
-    if(m.kind==='event') return `<div class="evt">${esc(firstName(m.who||''))} · ${esc(m.body)}${when?' · '+esc(when):''}</div>`;
+    if(m.kind==='event') return evtHtml(firstName(m.who||''), m.body, when);
     const photo=m.photo?`<div class="photo-wrap"><img class="chat-photo" data-path="${esc(m.photo)}" alt="Photo" onclick="openLightbox(this)"><span class="ph-load">📷</span></div>`:'';
     return `<div class="msg"><div class="who">${esc(m.who||'')}${m.role?' · '+esc(m.role):''}</div><div class="bub ${m.photo?'has-photo':''}">${photo}${m.body?`<div class="cap">${esc(m.body)}</div>`:''}</div><div class="when">${esc(when)}</div></div>`; }).join('');
 }
@@ -5209,7 +5219,7 @@ async function addOldCallsToZip(j, jd, get){
     const convo=(im.convo||[]).map(m=>({...m, photo_file:m.photo?m.photo.split('/').pop():null, photo:undefined}));
     od.file('job.json', JSON.stringify({sashdash:1, name:im.cust_name||c.name, job_no:im.job_no||c.job_no||'', phone:j.customer_phone||phoneKey(j.ref_no)||'', phone2:j.customer_phone2||'', eircode:j.eircode||'', work_date:c.date, serviceman:im.serviceman_name||c.man, outcome:c.outcome, note:c.note||'', convo, photos:pf},null,1));
     od.file('conversation.html', `<!doctype html><meta charset="utf-8"><title>${esc(ordN(i+1))} call</title><body style="font-family:Arial;max-width:820px;margin:20px auto"><h2>${esc(im.cust_name||c.name)} — ${ordN(i+1)} call · ${esc(shortDate(c.date))}</h2><p>${esc(im.serviceman_name||c.man)} · ${ocText(c.outcome)}</p>`
-      +(im.convo||[]).map(m=>m.kind==='event'?`<p style="color:#555">${esc(m.when||fmtWhen(m.at||''))} · ${esc(m.who)} · ${esc(m.body)}</p>`:`<div style="border:1px solid #ddd;border-radius:8px;padding:8px 12px;margin:8px 0"><b>${esc(m.who)}</b> <span style="color:#555">${esc(m.when||(m.at?fmtWhen(m.at):''))}</span><br>${esc(m.body).replace(/\n/g,'<br>')}${m.photo?`<br><img src="photos/${esc(m.photo.split('/').pop())}" style="max-width:100%;max-height:420px">`:''}</div>`).join(''));
+      +(im.convo||[]).map(m=>m.kind==='event'?`<p style="color:#555">${esc(m.when||fmtWhen(m.at||''))} · ${esc(m.who)} · ${esc(evText(m.body))}</p>`:`<div style="border:1px solid #ddd;border-radius:8px;padding:8px 12px;margin:8px 0"><b>${esc(m.who)}</b> <span style="color:#555">${esc(m.when||(m.at?fmtWhen(m.at):''))}</span><br>${esc(m.body).replace(/\n/g,'<br>')}${m.photo?`<br><img src="photos/${esc(m.photo.split('/').pop())}" style="max-width:100%;max-height:420px">`:''}</div>`).join(''));
   }
 }
 function importPathsFor(jobIds){ return callImports.filter(i=>jobIds.includes(i.job_id)).flatMap(i=>[i.sheet_path,i.marked_path,...(i.photos||[])]).filter(Boolean); }
@@ -5507,7 +5517,7 @@ async function arcView(e){
   const files=await bkFilesUnder(dir, e.path), get=n=>files.find(f=>f.path===e.path+'/'+n), url=f=>f?URL.createObjectURL(f.file):'';
   let info={}; try{ info=JSON.parse(await get('job.json').file.text()); }catch(x){}
   const photos=files.filter(f=>f.path.includes('/photos/')), pmap={}; photos.forEach(p=>pmap[p.path.split('/').pop()]=url(p));
-  const conv=(info.convo||[]).map(m=>m.kind==='event'?`<div class="evt">${esc(firstName(m.who||''))} · ${esc(m.body)} · ${esc(m.at?fmtWhen(m.at):(m.when||''))}</div>`
+  const conv=(info.convo||[]).map(m=>m.kind==='event'?evtHtml(firstName(m.who||''), m.body, m.at?fmtWhen(m.at):(m.when||''))
     :`<div class="msg"><div class="who">${esc(m.who||'')}${m.role?' · '+esc(m.role):''}</div><div class="bub ${m.photo_file?'has-photo':''}">${m.photo_file&&pmap[m.photo_file]?`<div class="photo-wrap loaded"><img class="chat-photo" src="${pmap[m.photo_file]}" onclick="openLightbox(this)"></div>`:''}${m.body?`<div class="cap">${esc(m.body)}</div>`:''}</div><div class="when">${esc(m.at?fmtWhen(m.at):(m.when||''))}</div></div>`).join('')||'<div class="loading">No messages.</div>';
   let ov=$('arc-view'); if(!ov){ ov=document.createElement('div'); ov.id='arc-view'; ov.className='job-view'; document.body.appendChild(ov); }
   ov.classList.remove('hidden'); ov.style.zIndex=130;
@@ -5659,7 +5669,7 @@ function peekTab(t){ const b=document.querySelector('#peek-view .pk-body'); if(b
 async function peekLoad(j){
   const { data:cm }=await sb.from('comments').select('*').eq('job_id',j.id).order('created_at');
   const l=$('pk-list'); if(!l) return;
-  l.innerHTML=(cm||[]).map(c=>{ if(c.kind==='event') return `<div class="evt">${esc(firstName(prof(c.author_id).full_name))} · ${esc(c.body)} · ${fmtWhen(c.created_at)}</div>`;
+  l.innerHTML=(cm||[]).map(c=>{ if(c.kind==='event') return evtHtml(firstName(prof(c.author_id).full_name), c.body, fmtWhen(c.created_at));
     const mine=c.author_id===me.id, a=prof(c.author_id), ph=c.photo_path?`<div class="photo-wrap"><img class="chat-photo" data-path="${esc(c.photo_path)}" onclick="openLightbox(this)"><span class="ph-load">📷</span></div>`:'';
     return `<div class="msg ${mine?'me':''}">${mine?'':`<div class="who">${esc(a.full_name)}${roleLabel(a.role)?' · '+roleLabel(a.role):''}</div>`}<div class="bub ${c.photo_path?'has-photo':''}">${ph}${c.body?`<div class="cap">${esc(c.body)}</div>`:''}</div><div class="when">${fmtWhen(c.created_at)}</div></div>`; }).join('')||'<div class="loading">No messages yet.</div>';
   l.querySelectorAll('img[data-path]').forEach(im=>loadChatPhoto(im,false)); l.scrollTop=l.scrollHeight;
@@ -6488,7 +6498,7 @@ async function jobReportPdf({title, rows, msgs, sheet}){
   y-=18; text('Conversation',{font:FB,size:13,gap:8});
   if(!msgs.length) text('No messages.',{color:grey});
   for(const m of msgs){
-    if(m.kind==='event'){ const ls=wrap(`${m.when} · ${m.who} · ${m.body}`,F,10,CW-16), h=ls.length*13+10; need(h+6);
+    if(m.kind==='event'){ const ls=wrap(`${m.when} · ${m.who} · ${evText(m.body)}`,F,10,CW-16), h=ls.length*13+10; need(h+6);
       page.drawRectangle({x:M,y:y-h,width:CW,height:h,color:P.rgb(.95,.96,.98)}); page.drawRectangle({x:M,y:y-h,width:3,height:h,color:grey});
       ls.forEach((l,i)=>page.drawText(l,{x:M+10,y:y-14-i*13,size:10,font:F,color:ink})); y-=h+6; continue; }
     need(40); y-=4;
@@ -6540,7 +6550,7 @@ async function writeJobFiles(jd, j, d, t, allC, opts){
       const cm=(allC||[]).filter(c=>c.job_id===j.id); let chat='', pi=0; const pmsgs=[], jm=[];
       for(const c of cm){
         const a=prof(c.author_id), when=new Date(c.created_at).toLocaleString('en-IE');
-        if(c.kind==='event'){ chat+=`<p class="evt">${esc(when)} · ${esc(a.full_name)} · ${esc(c.body)}</p>`; pmsgs.push({kind:'event', who:a.full_name, when, body:c.body}); jm.push({kind:'event', who:a.full_name, role:roleLabel(a.role), at:c.created_at, body:c.body}); continue; }
+        if(c.kind==='event'){ chat+=`<p class="evt">${esc(when)} · ${esc(a.full_name)} · ${esc(evText(c.body))}</p>`; pmsgs.push({kind:'event', who:a.full_name, when, body:c.body}); jm.push({kind:'event', who:a.full_name, role:roleLabel(a.role), at:c.created_at, body:c.body}); continue; }
         let img='', pb=null;
         if(c.photo_path){ const b=await get(c.photo_path); pb=b; const fn=`photo-${++pi}.jpg`; jd.folder('photos').file(fn,b); img=`<br><a href="photos/${fn}"><img src="${await blobToDataUrl(b)}"></a>`; }
         jm.push({kind:'msg', who:a.full_name, role:roleLabel(a.role), at:c.created_at, body:c.body||'', photo_file:pb?`photo-${pi}.jpg`:null});
@@ -7280,12 +7290,16 @@ function outcomeNoteBox(o){
     if(m.ready||m.due) fg.insertAdjacentHTML('beforebegin',`<div class="mat-rb">📦 This takes off the <b>Material ready</b> tick — the office ticks it again when the extra material is in. Say what's needed below.</div>`);
     $('oc-note').placeholder='e.g. need 2 more hinges + 1 sealed unit 900 x 1200'; fg.querySelector('label').innerHTML='What material is needed? <span class="optional">(goes to the office)</span>'; } }catch(e){ console.warn(e); }
   // ✍️ Update 64 — the men must write a note (3+ letters) for Re-book / Not home
-  try{ if(!isOffice && (o==='rebook'||o==='not_home')){ const ta=$('oc-note'), ok=$('oc-ok'), fg=ta.closest('.field-group'), lab=fg.querySelector('label');
+  try{ if((!isOffice||o==='rebook') && (o==='rebook'||o==='not_home')){ const ta=$('oc-note'), ok=$('oc-ok'), fg=ta.closest('.field-group'), lab=fg.querySelector('label');
     lab.innerHTML=lab.innerHTML.replace(/<span class="optional">[^<]*<\/span>/,'')+' <span class="oc-req">required</span>';
     if(o==='not_home') ta.placeholder='e.g. rang twice, no answer, left a card in the door';
+    if(o==='rebook'){ fg.insertAdjacentHTML('beforebegin',`<div class="field-group rb-why"><label>Why is the job unfinished? <span class="oc-req">required</span></label><div class="rb-chips">${RB_WHY.map(([i,w])=>`<button type="button" class="rb-chip" data-w="${esc(w)}" onclick="rbPick(this)"><span>${i}</span>${esc(w)}</button>`).join('')}</div><div class="rb-men" hidden><div>👷 How many men does the job need?</div><div class="rb-n">${[2,3,4,5,6].map(n=>`<button type="button" data-n="${n}" onclick="rbMen(${n})">${n}</button>`).join('')}</div></div></div>`);
+      lab.innerHTML=`What's needed to finish it? <span class="oc-req">required</span>`; ta.rows=3; }
     fg.insertAdjacentHTML('beforeend',`<div class="oc-need">✍️ Write a note to continue — say ${o==='rebook'?"what's needed to finish the job":'what happened (rang, knocked, left a card…)'}.</div>`);
-    const go=ok.onclick, chk=()=>{ const v=ta.value.trim().length>=3; ok.disabled=!v; fg.classList.toggle('oc-ok',v); };
-    ok.onclick=()=>{ if(ta.value.trim().length<3){ fg.classList.add('oc-bad'); ta.focus(); return; } go(); };
+    const why=()=>o!=='rebook'||rbReady();   // 🔁 Update 124: a reason must be picked too
+    const go=ok.onclick, chk=()=>{ const v=ta.value.trim().length>=3; ok.disabled=!(v&&why()); fg.classList.toggle('oc-ok',v); }; window._rbChk=chk;
+    ok.onclick=()=>{ if(!why()){ const m=document.querySelector('.rb-men'); (document.querySelector('.rb-chip.on')&&m&&!m.hidden?m:document.querySelector('.rb-why')).classList.add('oc-bad'); return; } if(ta.value.trim().length<3){ fg.classList.add('oc-bad'); ta.focus(); return; }
+      if(o==='rebook') ta.value=rbReason()+' — '+ta.value.trim(); go(); };
     ta.addEventListener('input',()=>{ fg.classList.remove('oc-bad'); chk(); }); chk(); setTimeout(()=>ta.focus(),50); } }catch(e){ console.warn(e); }
   return p;
 }
@@ -7625,7 +7639,7 @@ function appendComment(c, scroll){
   if(shownComments.has(c.id)) return; shownComments.add(c.id);
   const em=$('chat-empty'); if(em) em.remove();
   const el=document.createElement('div');
-  if(c.kind==='event'){ el.className='evt'; el.textContent=`${c._bk?firstName(c._who):firstName(prof(c.author_id).full_name)} · ${c.body} · ${fmtWhen(c.created_at)}${c._bk?' · 📎 backup':''}`; }
+  if(c.kind==='event'){ const h=document.createElement('div'); h.innerHTML=evtHtml(c._bk?firstName(c._who):firstName(prof(c.author_id).full_name), c.body, fmtWhen(c.created_at)+(c._bk?' · 📎 backup':'')); el.className=h.firstChild.className; el.innerHTML=h.firstChild.innerHTML; }
   else { const mine=!c._bk && c.author_id===me.id, a=c._bk?{full_name:c._who||'From the backup', role:(prof(c.author_id)||{}).role}:prof(c.author_id);
     el.className='msg'+(mine?' me':'');
     const photo=c.photo_path?`<div class="photo-wrap"><img class="chat-photo" data-path="${esc(c.photo_path)}" alt="Photo" onclick="openLightbox(this)"><span class="ph-load">📷</span></div>`:'';
@@ -7830,7 +7844,7 @@ async function printJob(id){
     const chat=[];
     for(const c of (cm||[])){
       const a=prof(c.author_id), when=new Date(c.created_at).toLocaleString('en-IE',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-      if(c.kind==='event'){ chat.push(`<div class="p-evt">${esc(when)} · ${esc(a.full_name)} · ${esc(c.body)}</div>`); continue; }
+      if(c.kind==='event'){ chat.push(`<div class="p-evt">${esc(when)} · ${esc(a.full_name)} · ${esc(evText(c.body))}</div>`); continue; }
       let img=''; if(c.photo_path){ try{ img=`<img class="p-photo" src="${await photoUrl(c.photo_path)}">`; }catch(e){ img='<i>[photo unavailable]</i>'; } }
       chat.push(`<div class="p-msg"><div class="p-who"><b>${esc(a.full_name)}</b>${roleLabel(a.role)?' ('+roleLabel(a.role)+')':''} · ${esc(when)}</div>${c.body?`<div>${esc(c.body).replace(/\n/g,'<br>')}</div>`:''}${img}</div>`);
     }
@@ -13118,6 +13132,23 @@ function vnAlBox(al){ const f=vnFold(), g=f.g||{}, cnt=l=>{ const r=l.filter(a=>
   if(f.shut) return `<div class="vn-alerts shut">${head}<div class="vn-alkinds" onclick="vnAlTog()" title="Show the reminders">${kinds.map(k=>`<span class="${k.l.some(a=>a.st==='red')?'r':'a'}">${k.ico} ${esc(k.what)} ${k.l.length}</span>`).join('')}</div></div>`;
   return `<div class="vn-alerts">${head}${kinds.map(k=>{ if(k.l.length<2) return row(k.l[0]); const shut=!!g[k.what];
     return `<div class="vn-alg${shut?' shut':''}"><div class="vn-algh" onclick="vnAlTog(this.dataset.k)" data-k="${esc(k.what)}"><span class="vn-car">${shut?'▸':'▾'}</span><span>${k.ico}</span><b>${esc(k.what)}</b><span class="vn-alsum">${cnt(k.l)}</span><span class="vn-altip">${shut?`Show ${k.l.length}`:'Hide'}</span></div>${shut?'':k.l.map(row).join('')}</div>`; }).join('')}</div>`; }
+
+// ════════ Update 124 — 🔁 Re-book: the man must say why · chat note bigger · no "Material ready taken off" sentence in the chat ════════
+const RB_WHY=[['📦','Material missing / wrong size'],['⏱','Ran out of time'],['👷','Needs extra men'],['🔧','Needs tools / equipment'],['🏠','Customer asked to come back'],['✏️','Other']];
+function rbPick(b){ document.querySelectorAll('.rb-chip').forEach(x=>x.classList.toggle('on',x===b)); const g=document.querySelector('.rb-why'); if(g) g.classList.remove('oc-bad');
+  const men=document.querySelector('.rb-men'); if(men) men.hidden=b.dataset.w!=='Needs extra men'; if(window._rbChk) window._rbChk(); }
+// 👷 Needs extra men — how many men the job needs (2–6)
+function rbMen(n){ document.querySelectorAll('.rb-men button').forEach(x=>x.classList.toggle('on',+x.dataset.n===n)); const m=document.querySelector('.rb-men'); m.dataset.n=n; m.classList.remove('oc-bad'); if(window._rbChk) window._rbChk(); }
+// the reason that goes into the chat, e.g. "Needs extra men · 3 men"
+function rbReason(){ const c=document.querySelector('.rb-chip.on'); if(!c) return ''; const m=document.querySelector('.rb-men'); return c.dataset.w==='Needs extra men'&&m&&m.dataset.n?`Needs extra men · ${m.dataset.n} men`:c.dataset.w; }
+function rbReady(){ const c=document.querySelector('.rb-chip.on'); if(!c) return false; if(c.dataset.w!=='Needs extra men') return true; const m=document.querySelector('.rb-men'); return !!(m&&m.dataset.n); }
+// the database adds "📦 Material ready taken off — the office ticks it again…" to the man's 🔁 line — it isn't shown any more
+const evText=b=>{ b=String(b||''); return /^🔁/.test(b)?b.replace(/\s*📦 Material ready taken off[\s\S]*$/,''):b; };
+function evtHtml(who, body, when){ const b=evText(body), m=b.match(/^(🔁|🚪)\s*(.+?)(?: — (.+?))?(?: — ([\s\S]+))?$/);
+  if(!m) return `<div class="evt">${esc(who)} · ${esc(b)}${when?' · '+esc(when):''}</div>`;
+  const rb=m[1]==='🔁', title=rb?`${m[2]} — ${m[3]||''}`.replace(/ — $/,''):m[2], note=rb?m[4]:[m[3],m[4]].filter(Boolean).join(' — ');
+  const [why,...rest]=rb&&note&&RB_WHY.some(([,w])=>note.startsWith(w))&&/ — /.test(note)?note.split(' — '):[null,note];
+  return `<div class="evt evt-big ${rb?'rb':'nh'}"><div class="eb-h"><span class="eb-i">${m[1]}</span><b>${esc(title)}</b><span class="eb-w">${esc(who)}${when?' · '+esc(when):''}</span></div>${why?`<div class="eb-why">${esc(why)}</div>`:''}${rest.join(' — ')?`<div class="eb-n">“${esc(rest.join(' — '))}”</div>`:''}</div>`; }
 </script>
 </body>
 </html>
