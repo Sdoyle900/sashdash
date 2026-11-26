@@ -2589,7 +2589,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-26-1100';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-26-1115';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -5364,7 +5364,8 @@ async function runBackup(opts={}){
   if(!a || previewing){ if(!auto) toast(previewing?'💾 Leave 👁 View as first, then press Back up now.':'💾 This login doesn\'t do backups.',6000); return; }
   if(!canPickFolder) return toast('Backups need Edge or Chrome on a computer.',6000);
   bkDev=await bkDevice(); if(!bkThisIsBackupPC(bkDev)) return toast(`${bkSideName(a)} backups are done on the ${bkSideName(a)} backup computer.`,6000);
-  let dir=await bkFolder(true); if(!dir){ const h=await kvGet(BK_DIR); if(!h) return bkChooseFolder(true); if(auto) return bkAutoAsk(h); return toast('SashDash needs permission to save into the folder — try again and click "Edit files".',7000); }
+  let dir; try{ dir=await bkTimeout(bkFolder(true), 8000, 'no answer'); }catch(e){ if(auto) return; return bkPermBox(); }   // Update 127
+  if(!dir){ const h=await kvGet(BK_DIR); if(!h) return bkChooseFolder(true); if(auto) return bkAutoAsk(h); return toast('SashDash needs permission to save into the folder — try again and click "Edit files".',7000); }
   bkBusy=true; bkBusyAt=Date.now(); bkProg=''; const gen=++bkGen; if(auto) closeModal();
   const show=(html)=>auto?bkPop(html):openModal(`<div class="bk-m">${html}</div>`);
   try{
@@ -5475,7 +5476,7 @@ async function bkFilesUnder(dir, base){ const out=[]; const walk=async(h,pre)=>{
 async function impFromArchive(){
   const where=$('imp-where');
   try{   // 💾 Update 125: always says what happened — never silent
-  const dir=await bkArchive(true);
+  let dir; try{ dir=await bkTimeout(bkArchive(true), 8000, 'no answer'); }catch(e){ where.innerHTML='⚠️ Edge didn\'t give SashDash permission to read the backup folder. Open 💾 Last backup → <b>📁 Change folder…</b>, pick your backup folder again and press <b>Edit files</b> — then try again.'; return; }   // Update 127
   if(!dir){ where.innerHTML=(await kvGet(BK_DIR))?'⚠️ SashDash needs permission to read the backup folder — press the button again and allow it.':'⚠️ This computer has no backup folder yet — set it up under 💾 Last backup.'; return; }
   where.innerHTML='<span class="spin" style="border-color:#c7d2fe;border-top-color:#4f46e5"></span> Looking in this computer\'s backup…';
   const j=jobs.find(x=>x.id===impJobId), k=jobKeys(j), idx=await bkReadIndex(dir), before=jobDay(j);
@@ -6585,7 +6586,8 @@ async function writeJobFiles(jd, j, d, t, allC, opts){
         const a=prof(c.author_id), when=new Date(c.created_at).toLocaleString('en-IE');
         if(c.kind==='event'){ chat+=`<p class="evt">${esc(when)} · ${esc(a.full_name)} · ${esc(evText(c.body))}</p>`; pmsgs.push({kind:'event', who:a.full_name, when, body:c.body}); jm.push({kind:'event', who:a.full_name, role:roleLabel(a.role), at:c.created_at, body:c.body}); continue; }
         let img='', pb=null;
-        if(c.photo_path){ const b=await get(c.photo_path); pb=b; const fn=`photo-${++pi}.jpg`; jd.folder('photos').file(fn,b); img=`<br><a href="photos/${fn}"><img src="${await blobToDataUrl(b)}"></a>`; }
+        if(c.photo_path){ const b=await get(c.photo_path).catch(e=>{ console.warn('photo missing', c.photo_path, e); return null; });   // 💾 Update 127: a missing photo doesn't stop the backup
+          if(!b) img='<br><i>📷 Photo no longer on the server</i>'; else { pb=b; const fn=`photo-${++pi}.jpg`; jd.folder('photos').file(fn,b); img=`<br><a href="photos/${fn}"><img src="${await blobToDataUrl(b)}"></a>`; } }
         jm.push({kind:'msg', who:a.full_name, role:roleLabel(a.role), at:c.created_at, body:c.body||'', photo_file:pb?`photo-${pi}.jpg`:null});
         pmsgs.push({kind:'msg', who:a.full_name+(roleLabel(a.role)?' ('+roleLabel(a.role)+')':''), when, body:c.body||'', img:pb});
         chat+=`<div class="msg"><b>${esc(a.full_name)}</b>${roleLabel(a.role)?' ('+roleLabel(a.role)+')':''} <span>${esc(when)}</span><br>${esc(c.body||'').replace(/\n/g,'<br>')}${img}</div>`;
@@ -13191,6 +13193,11 @@ function bkBusyBox(){ const t=d=>new Date(d).toLocaleTimeString('en-IE',{hour:'2
     <div class="bk-box">${quiet>=5?`⚠️ Nothing has moved for <b>${quiet} minutes</b> — it looks stuck (the internet may have dropped). Press <b>Stop and start again</b>. Jobs already saved are kept.`:'Leave SashDash open and it will finish by itself. The little 💾 box bottom-left shows how far it is.'}</div>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button><button class="${quiet>=5?'btn-primary':'btn-outline'}" onclick="bkRestart()">🔄 Stop and start again</button></div></div>`); }
 function bkRestart(){ bkGen++; bkBusy=false; closeModal(); try{ bkPopClose(); }catch(e){} runBackup(); }
+
+// ════════ Update 127 — 💾 Edge didn't answer the folder permission question ════════
+function bkPermBox(){ openModal(`<div class="bk-m"><h2>💾 Edge didn't give permission</h2><div class="sub">SashDash asked Edge for permission to save into your backup folder, but no answer came back — Edge sometimes hides that question.</div>
+  <div class="bk-box"><b>Fix:</b> press <b>📁 Change folder…</b>, pick <b>the same backup folder</b> again, and press <b>Edit files</b> when Edge asks. Then the backup starts.</div>
+  <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button>${canPickFolder?`<button class="btn-primary" onclick="bkChooseFolder(true)">📁 Change folder…</button>`:''}</div></div>`); }
 </script>
 </body>
 </html>
