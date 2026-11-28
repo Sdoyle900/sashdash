@@ -2283,7 +2283,7 @@ body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-o
 }
 .oc-req{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
 .oc-need{margin-top:6px;font-size:12.5px;color:#b45309;font-weight:600}.field-group.oc-ok .oc-need{display:none}
-.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.rb-h{font-size:12.5px;font-weight:600;color:var(--slate);margin-left:8px}
+.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.vn-kind{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px}.vn-kind.van{background:#e0f2fe;color:#075985}.vn-kind.car{background:#fce7f3;color:#9d174d}.vn-kinds{display:flex;gap:6px;margin:0 0 10px}.rb-h{font-size:12.5px;font-weight:600;color:var(--slate);margin-left:8px}
 .rb-wrap{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin:10px 0}.rb-bars .st-bar{grid-template-columns:300px 1fr 34px 150px;cursor:pointer;border-radius:6px;padding:2px 4px}.rb-bars .st-bar:hover{background:#f1f5f9}
 .rb-bt{display:flex}.rb-bt i{display:block;height:100%}.rb-office{background:#dc2626!important}.rb-customer{background:#7c3aed!important}.rb-plan{background:#2563eb!important}.rb-site{background:#ea580c!important}.rb-other{background:#64748b!important}.rb-none{background:#cbd5e1!important}
 .rb-est{background:repeating-linear-gradient(45deg,#94a3b8 0 4px,#cbd5e1 4px 8px)!important}.rb-esttxt{color:#64748b}
@@ -2602,7 +2602,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-28-1030';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-28-1045';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -12618,20 +12618,20 @@ function vnAll(v){ return {s:vnSvc(v), c:vnDue(v.cvrt_due,vnSet.cvrtDays), t:vnD
 function vnChkInfo(v){ const c=vnLastChk[v.id]; if(!c||!c.date) return {txt:'none yet', st:'amber', d:null, c}; const d=vnD(c.date,vnToday()); return {txt:d===0?'today':d===1?'yesterday':`${d} days ago`, st:d>vnSet.checkDays?'amber':c.faults?'amber':'ok', d, c}; }
 function vnAlerts(){ const out=[]; vnVans.forEach(v=>{ const a=vnAll(v), k=vnChkInfo(v);
   if(a.s.st!=='ok'&&a.s.left!=null) out.push({v, st:a.s.st, ico:'🔧', what:'Service', when:a.s.left<0?`${vnKm(-a.s.left)} over`:`${vnKm(a.s.left)} to go`, sort:a.s.left/50});
-  [['c','🛠','CVRT (DOE)','cvrt_due'],['t','🧾','Motor tax','tax_due'],['i','🛡','Insurance','ins_due']].forEach(([x,ico,what,f])=>{ if(['red','amber'].includes(a[x].st)) out.push({v, st:a[x].st, ico, what, when:a[x].txt+' · '+vnDate(v[f]), sort:a[x].d}); });
-  if(k.c&&k.c.faults&&k.d!=null&&k.d<=vnSet.checkDays) out.push({v, st:'amber', ico:'⚠', what:'Van check fault', when:`${k.c.faults} fault${k.c.faults>1?'s':''} · ${vnDate(k.c.date)}`, sort:5});
-  if(!k.c||k.d>vnSet.checkDays) out.push({v, st:'amber', ico:'✅', what:'Van check', when:k.c?`last one ${k.txt}`:'none yet', sort:40});
+  [['c',vnTest(v)[0],vnTest(v)[1],'cvrt_due'],['t','🧾','Motor tax','tax_due'],['i','🛡','Insurance','ins_due']].forEach(([x,ico,what,f])=>{ if(['red','amber'].includes(a[x].st)) out.push({v, st:a[x].st, ico, what, when:a[x].txt+' · '+vnDate(v[f]), sort:a[x].d}); });
+  if(k.c&&k.c.faults&&k.d!=null&&k.d<=vnSet.checkDays) out.push({v, st:'amber', ico:'⚠', what:'Weekly check fault', when:`${k.c.faults} fault${k.c.faults>1?'s':''} · ${vnDate(k.c.date)}`, sort:5});
+  if(!k.c||k.d>vnSet.checkDays) out.push({v, st:'amber', ico:'✅', what:'Weekly check', when:k.c?`last one ${k.txt}`:'none yet', sort:40});
   if(v.km_at&&vnD(v.km_at,vnToday())>vnSet.kmDays) out.push({v, st:'amber', ico:'🔢', what:'Km not updated', when:`since ${vnDate(v.km_at)}`, sort:60}); });
   return out.sort((a,b)=>(a.st==='red'?-1e6:0)+a.sort-((b.st==='red'?-1e6:0)+b.sort)); }
 // ── the 🚐 Vans button (Service side of the bar) ──
 function vnBtn(){ if(!vnAllowed()) return; const inner=document.querySelector('#dept-bar .dept-inner'); if(!inner||inner.querySelector('.d-vans')) return;
   if(!inner.dataset.vnWatch){ inner.dataset.vnWatch='1'; $('dept-bar').addEventListener('click',e=>{ if(e.target.closest('.dept-btn')&&!e.target.closest('.d-vans')) vnOff(); },true); }
   const n=vnHas?vnNewAlerts().length:0, b=document.createElement('button');  /* Update 122: dot only for something new since you last looked */ b.className='dept-btn d-vans'+(vnOn?' on':''); b.onclick=()=>vnOpen();
-  b.title='Vans — Office and Office Admin only'; b.innerHTML=`${n?'<span class="dot"></span>':''}<span class="di">🚐</span>Vans<span class="dc">${vnVans.length}</span>`; if(n) b.title=`🚐 ${n} new van reminder${n>1?'s':''} — open Vans`;
+  b.title='Vehicles — Office and Office Admin only'; b.innerHTML=`${n?'<span class="dot"></span>':''}<span class="di">🚗</span>Vehicles<span class="dc">${vnVans.length}</span>`; if(n) b.title=`🚗 ${n} new vehicle reminder${n>1?'s':''} — open Vans`;
   if(vnOn) inner.querySelectorAll('.dept-btn.on').forEach(x=>x.classList.remove('on'));
   const svc=inner.querySelector('.fy-grp.svc .fy-gbtns'); if(svc) svc.appendChild(b); else{ const first=inner.querySelector('.dept-btn.d-oa,.dept-btn.d-fit'); first?inner.insertBefore(b,first):inner.appendChild(b); } }
 async function vnStart(){ if(!vnAllowed()) return; await vnLoad(); try{ renderDeptBar(); }catch(e){}
-  if(!vnToastDone&&vnHas){ vnToastDone=true; const n=vnNewAlerts().length; if(n) toast(`🚐 ${n} new van reminder${n>1?'s':''} — open 🚐 Vans`,6000); } }
+  if(!vnToastDone&&vnHas){ vnToastDone=true; const n=vnNewAlerts().length; if(n) toast(`🚗 ${n} new vehicle reminder${n>1?'s':''} — open 🚗 Vehicles`,6000); } }
 function vnOff(){ if(!vnOn) return; vnOn=false; document.body.classList.remove('vn-on'); const v=$('view-vans'); if(v) v.classList.add('hidden'); }
 async function vnOpen(){ if(!vnAllowed()) return;
   if(job){ if(dirty && !confirm('You have unsaved mark-up on this sheet. Leave without saving?')) return; dirty=false; closeJob(); }
@@ -12641,28 +12641,30 @@ async function vnOpen(){ if(!vnAllowed()) return;
   if(!vnSel) $('view-vans').innerHTML='<div class="vn-wrap"><div class="empty"><span class="spin"></span> Loading vans…</div></div>';
   await vnLoad(); vnMarkSeen(); renderDeptBar(); vnSel?vnOpenVan(vnSel.id):vnRender(); window.scrollTo(0,0); }
 function vnRender(){ vnSel=null; const m=$('view-vans'); if(!m) return;
-  if(!vnHas){ m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><h1>🚐 Vans</h1></div><div class="empty">Run <b>update-120-vans.sql</b> in Supabase to turn on 🚐 Vans.</div></div>`; return; }
+  if(!vnHas){ m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><h1>🚗 Vehicles</h1></div><div class="empty">Run <b>update-120-vans.sql</b> in Supabase to turn on 🚗 Vehicles.</div></div>`; return; }
   const al=vnAlerts();
-  m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><h1>🚐 Vans</h1><span class="sub">${vnVans.length} van${vnVans.length===1?'':'s'} · only the office and office admin can see this</span>
-    <span style="margin-left:auto"></span><button class="btn-outline" onclick="vnExport()">📤 Export</button><button class="btn-outline" onclick="vnSettings()">🔔 Reminder settings</button><button class="btn-primary" onclick="vnEdit()">＋ Add a van</button></div>
+  const nVan=vnVans.filter(v=>!vnIsCar(v)).length, nCar=vnVans.length-nVan, shown=vnVans.filter(v=>vnKindF==='all'||(vnKindF==='car')===vnIsCar(v));   // 🚗 Update 129
+  m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><h1>🚗 Vehicles</h1><span class="sub">${nVan} van${nVan===1?'':'s'} · ${nCar} car${nCar===1?'':'s'} · only the office and office admin can see this</span>
+    <span style="margin-left:auto"></span><button class="btn-outline" onclick="vnExport()">📤 Export</button><button class="btn-outline" onclick="vnSettings()">🔔 Reminder settings</button><button class="btn-primary" onclick="vnEdit()">＋ Add a vehicle</button></div>
     ${al.length?vnAlBox(al)
-      :vnVans.length?'<div class="vn-allok">✅ Nothing due — every van is up to date.</div>':''}
-    ${vnVans.length?`<div class="vn-grid">${vnVans.map(v=>{ const a=vnAll(v), k=vnChkInfo(v);
-      return `<div class="vn-card" onclick="vnOpenVan('${v.id}','over')"><div style="display:flex;align-items:center;gap:8px">${vnReg(v.reg)}<span style="margin-left:auto" class="tag">${vnKm(v.km)}</span></div>
+      :vnVans.length?'<div class="vn-allok">✅ Nothing due — every vehicle is up to date.</div>':''}
+    ${nCar?`<div class="vn-kinds">${[['all','All',vnVans.length],['van','🚐 Vans',nVan],['car','🚗 Cars',nCar]].map(([k,l,n])=>`<button class="pl-chip ${vnKindF===k?'on':''}" onclick="vnKindF='${k}';vnRender()">${l} <b>${n}</b></button>`).join('')}</div>`:''}
+    ${vnVans.length?`<div class="vn-grid">${shown.map(v=>{ const a=vnAll(v), k=vnChkInfo(v);
+      return `<div class="vn-card" onclick="vnOpenVan('${v.id}','over')"><div style="display:flex;align-items:center;gap:8px">${vnReg(v.reg)}<span class="vn-kind ${vnIsCar(v)?'car':'van'}">${vnIsCar(v)?'🚗 Car':'🚐 Van'}</span><span style="margin-left:auto" class="tag">${vnKm(v.km)}</span></div>
         <div class="vn-model">${esc([v.make,v.year,v.colour].filter(Boolean).join(' · ')||'—')}</div>
         <div class="vn-drv">👤 <b>${esc(vnDriver(v))}</b>${vnPhone(v)?`<span style="color:var(--slate)">· 📞 ${esc(vnPhone(v))}</span>`:''}${v.driver_id&&v.phone_check?'<span class="vn-src app">📱 own phone</span>':'<span class="vn-src off">📝 office</span>'}</div>
         <div class="vn-chip ${a.s.st}" style="margin-bottom:6px">🔧 ${a.s.next?`Next service at <b style="display:inline">${vnKm(a.s.next)}</b> — ${a.s.left==null?'':a.s.left<0?`<b style="display:inline;color:#be123c">${vnKm(-a.s.left)} over</b>`:`${vnKm(a.s.left)} to go`}`:'No service recorded yet'}<div class="vn-bar ${a.s.st}"><i style="width:${(a.s.used*100).toFixed(0)}%"></i></div></div>
-        <div class="vn-rows"><div class="vn-chip ${a.c.st}">🛠 CVRT (DOE)<b>${vnDate(v.cvrt_due)}</b>${a.c.txt}</div><div class="vn-chip ${a.t.st}">🧾 Tax<b>${vnDate(v.tax_due)}</b>${a.t.txt}</div>
-          <div class="vn-chip ${a.i.st}">🛡 Insurance<b>${vnDate(v.ins_due)}</b>${a.i.txt}</div><div class="vn-chip ${k.st}">✅ Last van check<b>${k.c?vnDate(k.c.date):'—'}</b>${k.c?(k.c.faults?`⚠ ${k.c.faults} fault${k.c.faults>1?'s':''} · `:'')+k.txt:'none yet'}</div></div></div>`; }).join('')}</div>`
-      :`<div class="empty"><div class="big">🚐</div>No vans yet — <a href="#" onclick="vnEdit();return false">＋ add the first van</a>.</div>`}</div>`; }
+        <div class="vn-rows"><div class="vn-chip ${a.c.st}">${vnTest(v).join(' ')}<b>${vnDate(v.cvrt_due)}</b>${a.c.txt}</div><div class="vn-chip ${a.t.st}">🧾 Tax<b>${vnDate(v.tax_due)}</b>${a.t.txt}</div>
+          <div class="vn-chip ${a.i.st}">🛡 Insurance<b>${vnDate(v.ins_due)}</b>${a.i.txt}</div><div class="vn-chip ${k.st}">✅ Last check<b>${k.c?vnDate(k.c.date):'—'}</b>${k.c?(k.c.faults?`⚠ ${k.c.faults} fault${k.c.faults>1?'s':''} · `:'')+k.txt:'none yet'}</div></div></div>`; }).join('')}</div>`
+      :`<div class="empty"><div class="big">🚗</div>No vehicles yet — <a href="#" onclick="vnEdit();return false">＋ add the first one</a>.</div>`}</div>`; }
 async function vnLoadDet(id){ const [s,c,f,l]=await Promise.all([sb.from('van_services').select('*').eq('van_id',id).order('date',{ascending:false}), sb.from('van_checks').select('*').eq('van_id',id).order('date',{ascending:false}).order('created_at',{ascending:false}).limit(60),
     sb.from('van_files').select('*').eq('van_id',id).order('created_at',{ascending:false}), sb.from('van_log').select('*').eq('van_id',id).order('created_at',{ascending:false}).limit(100)]);
   vnDet[id]={svc:s.data||[], chk:c.data||[], files:f.data||[], log:l.data||[]}; }
 async function vnOpenVan(id,tab){ const v=vnVans.find(x=>x.id===id); if(!v) return vnRender(); vnSel=v; if(tab) vnTab=tab; if(!vnDet[id]) await vnLoadDet(id); const a=vnAll(v), m=$('view-vans');
-  const tabs=[['over','📋 Overview'],['ren','📅 Renewals'],['svc','🔧 Service'],['chk','✅ Van checks'],['docs','📎 Documents'],['log','📝 Notes & log']];
-  m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><button class="btn-outline" onclick="vnRender()">‹ All vans</button></div>
+  const tabs=[['over','📋 Overview'],['ren','📅 Renewals'],['svc','🔧 Service'],['chk','✅ Weekly checks'],['docs','📎 Documents'],['log','📝 Notes & log']];
+  m.innerHTML=`<div class="vn-wrap"><div class="vn-head"><button class="btn-outline" onclick="vnRender()">‹ All vehicles</button></div>
    <div class="vn-det"><div class="vn-dh">${vnReg(v.reg)}<div><b style="font-size:18px">${esc(v.make||'Van')}</b><div style="color:var(--slate);font-size:13px">${esc([v.year,v.colour].filter(Boolean).join(' · '))}${v.km!=null?` · ${vnKm(v.km)} <small>(updated ${vnDate(v.km_at)})</small>`:''}</div></div>
-     <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap"><button class="btn-outline" onclick="vnEdit('${v.id}')">✎ Edit</button><button class="btn-outline" onclick="vnKmBox()">🔢 Update km</button><button class="btn-outline" onclick="vnCheckBox()">✅ Van check</button><button class="btn-primary" onclick="vnSvcBox()">🔧 Add service</button></div></div>
+     <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap"><button class="btn-outline" onclick="vnEdit('${v.id}')">✎ Edit</button><button class="btn-outline" onclick="vnKmBox()">🔢 Update km</button><button class="btn-outline" onclick="vnCheckBox()">✅ Weekly check</button><button class="btn-primary" onclick="vnSvcBox()">🔧 Add service</button></div></div>
    <div class="vn-tabs">${tabs.map(([k,l])=>`<button class="vn-tab ${vnTab===k?'on':''}" onclick="vnOpenVan('${v.id}','${k}')">${l}</button>`).join('')}</div><div class="vn-body">${vnBody(v,a)}</div></div></div>`; window.scrollTo(0,0); }
 function vnBody(v,a){ const D=vnDet[v.id]||{svc:[],chk:[],files:[],log:[]};
   if(vnTab==='over') return `<div class="vn-kv">
@@ -12670,7 +12672,7 @@ function vnBody(v,a){ const D=vnDet[v.id]||{svc:[],chk:[],files:[],log:[]};
     <div><small>Driver's mobile</small><b>📞 ${esc(vnPhone(v)||'—')}</b></div>
     <div><small>Kilometres</small><b>${vnKm(v.km)}</b><br><small style="text-transform:none">read ${vnDate(v.km_at)}</small></div>
     <div><small>Next service</small><b>${vnKm(a.s.next)}</b><br><small style="text-transform:none">${a.s.left==null?'':a.s.left<0?vnKm(-a.s.left)+' over · ':vnKm(a.s.left)+' to go · '}every ${vnKm(v.svc_every)}</small></div>
-    <div><small>CVRT (DOE) due</small><b>${vnDate(v.cvrt_due)}</b></div><div><small>Motor tax due</small><b>${vnDate(v.tax_due)}</b></div>
+    <div><small>${vnTest(v)[1]} due</small><b>${vnDate(v.cvrt_due)}</b></div><div><small>Motor tax due</small><b>${vnDate(v.tax_due)}</b></div>
     <div><small>Insurance renews</small><b>${vnDate(v.ins_due)}</b><br><small style="text-transform:none">${esc([v.insurer,v.policy_no].filter(Boolean).join(' · '))}</small></div>
     <div><small>Breakdown cover</small><b>${esc(v.breakdown||'—')}</b>${v.breakdown_due?`<br><small style="text-transform:none">to ${vnDate(v.breakdown_due)}</small>`:''}</div>
     <div><small>Fuel card</small><b>⛽ ${esc(v.fuel_card||'—')}</b></div><div><small>Toll tag</small><b>🛣 ${esc(v.toll_tag||'—')}</b></div><div><small>Last tyres</small><b>🛞 ${vnDate(v.tyres_date)}</b></div>
@@ -12679,7 +12681,7 @@ function vnBody(v,a){ const D=vnDet[v.id]||{svc:[],chk:[],files:[],log:[]};
   if(vnTab==='ren'){ const rc=(k,ico,h,f,due,extra,notice)=>`<div class="vn-rc ${due.st}"><h4>${ico} ${h}</h4><div class="big">${vnDate(v[f])}</div><b>${due.txt}</b>${extra?`<div><small>${extra}</small></div>`:''}<div class="vn-note">🔔 Reminder ${notice} before</div>
       <div style="margin-top:8px;display:flex;gap:6px"><button class="btn-outline" style="font-size:12.5px;padding:5px 10px" onclick="vnRenew('${f}','${h}')">✓ Renewed — new date</button><button class="btn-outline" style="font-size:12.5px;padding:5px 10px" onclick="vnAddDoc('${k}')">📎 Add cert</button></div></div>`;
     const m=d=>d>=58?`${Math.round(d/30.4)} month${Math.round(d/30.4)>1?'s':''}`:`${d} days`;
-    return `<div class="vn-ren">${rc('cvrt','🛠','CVRT (DOE test)','cvrt_due',a.c,'',m(vnSet.cvrtDays))}${rc('tax','🧾','Motor tax','tax_due',a.t,'',m(vnSet.taxDays))}
+    return `<div class="vn-ren">${rc('cvrt',vnTest(v)[0],vnIsCar(v)?'NCT':'CVRT (DOE test)','cvrt_due',a.c,'',m(vnSet.cvrtDays))}${rc('tax','🧾','Motor tax','tax_due',a.t,'',m(vnSet.taxDays))}
       ${rc('ins','🛡','Insurance','ins_due',a.i,esc([v.insurer,v.policy_no].filter(Boolean).join(' · ')),m(vnSet.insDays))}${rc('breakdown','🚨','Breakdown cover','breakdown_due',vnDue(v.breakdown_due,vnSet.insDays),esc(v.breakdown||''),m(vnSet.insDays))}</div>`; }
   if(vnTab==='svc') return `<div class="vn-svc"><div>
       <div class="vn-rc ${a.s.st}"><h4>🔧 Service</h4><div style="display:flex;justify-content:space-between;font-size:13.5px"><span>Last: <b>${vnKm(v.last_svc_km)}</b> · ${vnDate(v.last_svc_date)}</span><span>Next: <b>${vnKm(a.s.next)}</b></span></div>
@@ -12711,17 +12713,19 @@ let vnDrvMode='app';
 function vnEdit(id){ const v=id?vnVans.find(x=>x.id===id):{svc_every:20000}; vnDrvMode=v.driver_id||!id?'app':'other'; if(id&&!v.driver_id) vnDrvMode='other';
   const men=profiles.filter(p=>p.role==='serviceman'&&!p.extra_team);
   const f=(k,l,val,o)=>`<div class="${o&&o.full?'full':''}"><label>${l}</label><input id="vf-${k}" ${o&&o.type?`type="${o.type}"`:''} value="${esc(val==null?'':String(val).slice(0,o&&o.type==='date'?10:999))}" placeholder="${esc(o&&o.ph||'')}" ${o&&o.style?`style="${o.style}"`:''}></div>`;
-  openModal(`<h2>${id?'✎ '+esc(v.reg):'＋ Add a van'}</h2><div class="vn-form">
+  vnFormKind=vnIsCar(v)?'car':'van';
+  openModal(`<h2>${id?'✎ '+esc(v.reg):'＋ Add a vehicle'}</h2><div class="vn-form">
+    <div class="full"><label>Type</label><div class="vn-seg vn-kseg"><button type="button" class="${vnFormKind==='van'?'on':''}" onclick="vnKindSwap('van')">🚐 Van</button><button type="button" class="${vnFormKind==='car'?'on':''}" onclick="vnKindSwap('car')">🚗 Car</button></div></div>
     ${f('reg','Registration',v.reg,{ph:'e.g. 242-D-11873',style:'font-weight:800;letter-spacing:.05em'})}${f('make','Make & model',v.make,{ph:'e.g. Ford Transit Custom'})}
     ${f('year','Year',v.year,{ph:'2024'})}${f('colour','Colour',v.colour,{ph:'White'})}
     <div class="full"><label>Driver</label><div class="vn-seg"><button type="button" class="${vnDrvMode==='app'?'on':''}" onclick="vnDrvMode='app';vnDrvSwap()">👤 On SashDash</button><button type="button" class="${vnDrvMode==='other'?'on':''}" onclick="vnDrvMode='other';vnDrvSwap()">✍ Not on SashDash</button></div></div>
-    <div class="full vn-drv-app ${vnDrvMode==='app'?'':'hidden'}"><select id="vf-driver_id"><option value="">— no driver (spare van) —</option>${men.map(p=>`<option value="${p.id}" ${v.driver_id===p.id?'selected':''}>${esc(p.full_name)}</option>`).join('')}</select>
+    <div class="full vn-drv-app ${vnDrvMode==='app'?'':'hidden'}"><select id="vf-driver_id"><option value="">— no driver (spare) —</option>${men.map(p=>`<option value="${p.id}" ${v.driver_id===p.id?'selected':''}>${esc(p.full_name)}</option>`).join('')}</select>
       <label class="vn-switch"><input type="checkbox" id="vf-phone_check" ${v.phone_check?'checked':''}> 📱 <b>Show the weekly van check on his phone</b> <small>— off until you switch it on. He only ever sees his own van's check (km + 6 ticks), never dates or costs.</small></label></div>
     <div class="vn-drv-other ${vnDrvMode==='other'?'':'hidden'} full"><div class="vn-form">${f('driver_name',"Driver's name",v.driver_name,{ph:'e.g. Mick Flood'})}${f('driver_phone',"Driver's mobile",v.driver_phone,{ph:'087…'})}
       <div class="full vn-note" style="margin:0">📝 Not on SashDash — the office fills in his km and weekly van check.</div></div></div>
     ${f('km','Kilometres now',v.km,{ph:'e.g. 121,200'})}${f('svc_every','Service every (km)',v.svc_every,{ph:'20,000'})}
     ${f('last_svc_km','Last service at (km)',v.last_svc_km,{ph:'e.g. 105,000'})}${f('last_svc_date','Last service date',v.last_svc_date,{type:'date'})}
-    ${f('cvrt_due','CVRT (DOE) due',v.cvrt_due,{type:'date'})}${f('tax_due','Motor tax due',v.tax_due,{type:'date'})}
+    ${f('cvrt_due',vnFormKind==='car'?'NCT due':'CVRT (DOE) due',v.cvrt_due,{type:'date'})}${f('tax_due','Motor tax due',v.tax_due,{type:'date'})}
     ${f('ins_due','Insurance renews',v.ins_due,{type:'date'})}${f('insurer','Insurer',v.insurer,{ph:'e.g. FBD'})}
     ${f('policy_no','Policy number',v.policy_no)}${f('breakdown','Breakdown cover',v.breakdown,{ph:'e.g. AA Business 6631022'})}
     ${f('breakdown_due','Breakdown cover renews',v.breakdown_due,{type:'date'})}${f('tyres_date','Last tyres',v.tyres_date,{type:'date'})}
@@ -12732,21 +12736,23 @@ function vnEdit(id){ const v=id?vnVans.find(x=>x.id===id):{svc_every:20000}; vnD
 function vnDrvSwap(){ document.querySelectorAll('.vn-seg button').forEach((b,i)=>b.classList.toggle('on',(i===0)===(vnDrvMode==='app'))); document.querySelector('.vn-drv-app').classList.toggle('hidden',vnDrvMode!=='app'); document.querySelector('.vn-drv-other').classList.toggle('hidden',vnDrvMode!=='other'); }
 async function vnEditSave(id){ const reg=vnVal('vf-reg').toUpperCase(); if(!reg) return toast('Type the registration.');
   const d=k=>vnVal('vf-'+k)||null, n=k=>vnNum(vnVal('vf-'+k));
-  const row={reg, make:d('make'), year:n('year'), colour:d('colour'), vin:d('vin'), km:n('km'), svc_every:n('svc_every')||20000, last_svc_km:n('last_svc_km'), last_svc_date:d('last_svc_date'),
+  const row={reg, kind:vnFormKind, make:d('make'), year:n('year'), colour:d('colour'), vin:d('vin'), km:n('km'), svc_every:n('svc_every')||20000, last_svc_km:n('last_svc_km'), last_svc_date:d('last_svc_date'),
     cvrt_due:d('cvrt_due'), tax_due:d('tax_due'), ins_due:d('ins_due'), insurer:d('insurer'), policy_no:d('policy_no'), breakdown:d('breakdown'), breakdown_due:d('breakdown_due'),
     tyres_date:d('tyres_date'), fuel_card:d('fuel_card'), toll_tag:d('toll_tag'), next_note:d('next_note'), notes:vnVal('vf-notes')||null};
   if(vnDrvMode==='app'){ row.driver_id=vnVal('vf-driver_id')||null; row.driver_name=null; row.driver_phone=null; row.phone_check=!!(row.driver_id&&$('vf-phone_check').checked); }
   else { row.driver_id=null; row.driver_name=d('driver_name'); row.driver_phone=d('driver_phone'); row.phone_check=false; }
   const old=id?vnVans.find(x=>x.id===id):null; if(row.km!=null&&(!old||old.km!==row.km)) row.km_at=vnToday();
+  if(!vnHasKind()){ if(row.kind==='car') return toast('🚗 Run update-129-vehicles.sql in Supabase first — then cars can be added.',8000); delete row.kind; }   // Update 129
   $('vf-save').disabled=true;
   if(id){ const ch=[]; if(old.driver_id!==row.driver_id||old.driver_name!==row.driver_name) ch.push(`👤 Driver: ${vnDriver(old)} → ${row.driver_id?prof(row.driver_id).full_name:(row.driver_name||'none')}`);
       if(!!old.phone_check!==row.phone_check) ch.push(row.phone_check?'📱 Van check switched ON on his phone':'📱 Van check switched OFF on his phone');
-      [['cvrt_due','🛠 CVRT'],['tax_due','🧾 Tax'],['ins_due','🛡 Insurance']].forEach(([k,l])=>{ if((old[k]||null)!==(row[k]||null)) ch.push(`${l} date → ${vnDate(row[k])}`); });
+      if((old.kind||'van')!==row.kind) ch.push(row.kind==='car'?'🚗 Now a car':'🚐 Now a van');
+      [['cvrt_due',vnFormKind==='car'?'🚘 NCT':'🛠 CVRT'],['tax_due','🧾 Tax'],['ins_due','🛡 Insurance']].forEach(([k,l])=>{ if((old[k]||null)!==(row[k]||null)) ch.push(`${l} date → ${vnDate(row[k])}`); });
       if(old.km!==row.km&&row.km!=null) ch.push(`🔢 km → ${vnKm(row.km)}`);
       if(await vnSave(id,row,ch.length?ch.join(' · '):'✎ Van details changed')){ closeModal(); toast('✓ Saved'); vnOpenVan(id); } else $('vf-save').disabled=false; return; }
   const r=await sb.from('vans').insert(Object.assign(row,{updated_by:realMe.id})).select().single();
   if(r.error){ $('vf-save').disabled=false; return toast('Not saved: '+r.error.message+(/vans/i.test(r.error.message)?' — run update-120 in Supabase':''),7000); }
-  vnVans.push(r.data); vnVans.sort((a,b)=>a.reg<b.reg?-1:1); await vnLog(r.data.id,'🚐 Van added'); closeModal(); toast(`🚐 ${reg} added`); renderDeptBar(); vnOpenVan(r.data.id,'over'); }
+  vnVans.push(r.data); vnVans.sort((a,b)=>a.reg<b.reg?-1:1); await vnLog(r.data.id,vnIsCar(r.data)?'🚗 Car added':'🚐 Van added'); closeModal(); toast(`${vnIsCar(r.data)?'🚗':'🚐'} ${reg} added`); renderDeptBar(); vnOpenVan(r.data.id,'over'); }
 async function vnArchive(id){ const v=vnVans.find(x=>x.id===id); const ok=await confirmBox({icon:'🗑', title:`Remove ${esc(v.reg)}?`, body:'It goes off the Vans page and stops reminding. Its history is kept.', ok:'Remove van', okClass:'btn-danger'}); if(!ok) return;
   if(await vnSave(id,{archived:true,phone_check:false},'🗑 Van removed')){ vnVans=vnVans.filter(x=>x.id!==id); closeModal(); renderDeptBar(); vnRender(); } }
 // ── km, renewals, service, van check, documents, settings ──
@@ -12791,7 +12797,7 @@ async function vnCheckSave(){ const v=vnSel; if(Object.keys(vnChk).length<VN_ITE
   const patch=km!=null&&(v.km==null||km>v.km)?{km, km_at:vnToday()}:{}; await vnSave(v.id,patch,`✅ Van check (office) — ${faults?faults+' fault'+(faults>1?'s':''):'no faults'}${km!=null?' · '+vnKm(km):''}`);
   closeModal(); delete vnDet[v.id]; renderDeptBar(); vnOpenVan(v.id,'chk'); }
 function vnAddDoc(kind){ const v=vnSel; openModal(`<h2>📎 Add a document — ${esc(v.reg)}</h2><div class="vn-form">
-  <div><label>What is it?</label><select id="vd-kind">${[['ins','🛡 Insurance cert'],['cvrt','🛠 CVRT cert'],['tax','🧾 Motor tax'],['logbook','📘 Logbook (VLC)'],['breakdown','🚨 Breakdown cover'],['invoice','🔧 Invoice'],['photo','📷 Photo / damage'],['other','📄 Other']].map(([k,l])=>`<option value="${k}" ${kind===k?'selected':''}>${l}</option>`).join('')}</select></div>
+  <div><label>What is it?</label><select id="vd-kind">${[['ins','🛡 Insurance cert'],['cvrt','🛠 CVRT / 🚘 NCT cert'],['tax','🧾 Motor tax'],['logbook','📘 Logbook (VLC)'],['breakdown','🚨 Breakdown cover'],['invoice','🔧 Invoice'],['photo','📷 Photo / damage'],['other','📄 Other']].map(([k,l])=>`<option value="${k}" ${kind===k?'selected':''}>${l}</option>`).join('')}</select></div>
   <div><label>Title</label><input id="vd-title" placeholder="e.g. FBD cert to May 2027"></div><div class="full"><label>File</label><input type="file" id="vd-file" multiple accept="image/*,application/pdf"></div></div>
   <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" id="vd-save" onclick="vnDocSave()">✓ Add</button></div>`); }
 async function vnDocSave(){ const v=vnSel, fl=Array.from($('vd-file').files||[]); if(!fl.length) return toast('Pick a file.'); $('vd-save').disabled=true; $('vd-save').innerHTML='<span class="spin"></span> Uploading…';
@@ -12802,9 +12808,9 @@ async function vnDocSave(){ const v=vnSel, fl=Array.from($('vd-file').files||[])
 async function vnDelDoc(id){ const v=vnSel, f=(vnDet[v.id].files||[]).find(x=>x.id===id); if(!f) return; const ok=await confirmBox({icon:'🗑', title:`Delete ${esc(f.title||'this document')}?`, body:'The file is removed.', ok:'Delete', okClass:'btn-danger'}); if(!ok) return;
   await sb.from('van_files').delete().eq('id',id); try{ await sb.storage.from(BUCKET).remove([f.path]); }catch(e){} await vnLog(v.id,`🗑 ${f.title||'Document'} deleted`); delete vnDet[v.id]; vnOpenVan(v.id,'docs'); }
 function vnSettings(){ const s=vnSet, f=(k,l,u)=>`<div><label>${l}</label><div style="display:flex;gap:6px;align-items:center"><input id="vset-${k}" inputmode="numeric" value="${esc(String(s[k]))}" style="width:110px"> <span style="color:var(--slate)">${u}</span></div></div>`;
-  openModal(`<h2>🔔 Van reminder settings</h2><div class="vn-form">${f('svcKm','🔧 Service — remind when within','km')}${f('cvrtDays','🛠 CVRT (DOE) — remind','days before')}
-    ${f('taxDays','🧾 Motor tax — remind','days before')}${f('insDays','🛡 Insurance & breakdown — remind','days before')}${f('checkDays','✅ Van check — remind if none for','days')}${f('kmDays','🔢 Kilometres — remind if not updated for','days')}</div>
-    <p class="vn-note">Reminders show on 🚐 Vans (red = overdue, amber = coming up), as a dot on the 🚐 Vans button, and as a message when the office or office admin opens SashDash. 📱 Men with the van check switched on get it on their phone every Monday until it's done.</p>
+  openModal(`<h2>🔔 Vehicle reminder settings</h2><div class="vn-form">${f('svcKm','🔧 Service — remind when within','km')}${f('cvrtDays','🛠 CVRT (DOE) / 🚘 NCT — remind','days before')}
+    ${f('taxDays','🧾 Motor tax — remind','days before')}${f('insDays','🛡 Insurance & breakdown — remind','days before')}${f('checkDays','✅ Weekly check — remind if none for','days')}${f('kmDays','🔢 Kilometres — remind if not updated for','days')}</div>
+    <p class="vn-note">Reminders show on 🚗 Vehicles (red = overdue, amber = coming up), as a dot on the 🚗 Vehicles button, and as a message when the office or office admin opens SashDash. 📱 Men with the van check switched on get it on their phone every Monday until it's done.</p>
     <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="vnSettingsSave()">✓ Save</button></div>`); }
 async function vnSettingsSave(){ const n={}; ['svcKm','cvrtDays','taxDays','insDays','checkDays','kmDays'].forEach(k=>{ const x=vnNum(vnVal('vset-'+k)); if(x!=null) n[k]=x; });
   const r=await sb.from('van_settings').upsert({id:'global', data:Object.assign({},vnSet,n), updated_by:realMe.id, updated_at:new Date().toISOString()},{onConflict:'id'}); if(r.error) return toast('Not saved: '+r.error.message,7000);
@@ -13121,7 +13127,7 @@ function vnSeen(){ try{ return new Set(JSON.parse(localStorage.getItem('sd-vn-se
 function vnNewAlerts(){ const s=vnSeen(); return vnAlerts().filter(a=>a.what!=='Km not updated'&&!s.has(vnAlertKey(a))); }
 function vnMarkSeen(){ try{ localStorage.setItem('sd-vn-seen-'+realMe.id, JSON.stringify(vnAlerts().map(vnAlertKey))); }catch(e){} }
 // what needs renewing in the next N days (and anything overdue)
-const VN_REN=[['tax_due','🧾','Motor tax','Tax disc'],['ins_due','🛡','Insurance','Insurance renewal'],['cvrt_due','🛠','CVRT (DOE)','Book the CVRT test'],['breakdown_due','🚨','Breakdown cover','Breakdown cover renewal']];
+const VN_REN=[['tax_due','🧾','Motor tax','Tax disc'],['ins_due','🛡','Insurance','Insurance renewal'],['cvrt_due','🛠','CVRT (DOE) / NCT','Book the CVRT test'],['breakdown_due','🚨','Breakdown cover','Breakdown cover renewal']];
 function vnNeeded(days){ const out=[]; vnVans.forEach(v=>{ VN_REN.forEach(([f,ico,what,todo])=>{ const due=vnDue(v[f],days); if(!v[f]){ if(f!=='breakdown_due') out.push({v,f,ico,what,todo,date:null,st:'none',txt:'no date in SashDash'}); return; }
     if(due.d<=days) out.push({v,f,ico,what,todo,date:v[f],st:due.st==='ok'?'amber':due.st,txt:due.txt,d:due.d}); });
     const s=vnSvc(v); if(s.left!=null&&s.left<=vnSet.svcKm) out.push({v,f:'svc',ico:'🔧',what:'Service',todo:'Book a service',date:null,st:s.left<0?'red':'amber',txt:s.left<0?`${vnKm(-s.left)} over`:`${vnKm(s.left)} to go`,d:s.left/100}); });
@@ -13143,7 +13149,7 @@ function vnRows(kind){ const today=vnDate(vnToday());
     return {title:`Van renewals — what's needed (next ${vnExp.days} days + overdue)`, head:['What','Registration','Van','Driver','Driver mobile','Due','Status','Insurer / policy','To do'],
       rows:n.map(x=>[x.what, x.v.reg, [x.v.make,x.v.year].filter(Boolean).join(' '), vnDriver(x.v), vnPhone(x.v), x.date?vnDx(x.date):(x.f==='svc'?`at ${vnKm(vnSvc(x.v).next)}`:''), x.st==='red'?'OVERDUE — '+x.txt:x.st==='none'?'Missing — '+x.txt:x.txt,
         x.f==='ins_due'?[x.v.insurer,x.v.policy_no].filter(Boolean).join(' · '):x.f==='breakdown_due'?(x.v.breakdown||''):'', x.todo]), rowSt:n.map(x=>x.st), n, today}; }
-  return {title:'Van list', head:['Registration','Make & model','Year','Colour','Driver','Driver mobile','Km','Km read','Next service at','Km to service','Last service','CVRT (DOE) due','Motor tax due','Insurance renews','Insurer','Policy no.','Breakdown cover','Breakdown renews','Fuel card','Toll tag','Last tyres','Chassis (VIN)','For next service','Notes'],
+  return {title:'Vehicle list', head:['Registration','Type','Make & model','Year','Colour','Driver','Driver mobile','Km','Km read','Next service at','Km to service','Last service','CVRT / NCT due','Motor tax due','Insurance renews','Insurer','Policy no.','Breakdown cover','Breakdown renews','Fuel card','Toll tag','Last tyres','Chassis (VIN)','For next service','Notes'],
     cellSt:vnVans.map(v=>({8:vnCellSt(v,'svc'),9:vnCellSt(v,'svc'),11:vnCellSt(v,'cvrt_due'),12:vnCellSt(v,'tax_due'),13:vnCellSt(v,'ins_due'),17:vnCellSt(v,'breakdown_due')})), rows:vnVans.map(v=>{ const s=vnSvc(v); return [v.reg,v.make||'',v.year||'',v.colour||'',vnDriver(v),vnPhone(v),v.km??'',vnDx(v.km_at),s.next??'',s.left??'',vnDx(v.last_svc_date),vnDx(v.cvrt_due),vnDx(v.tax_due),vnDx(v.ins_due),v.insurer||'',v.policy_no||'',v.breakdown||'',vnDx(v.breakdown_due),v.fuel_card||'',v.toll_tag||'',vnDx(v.tyres_date),v.vin||'',v.next_note||'',v.notes||'']; }), today}; }
 async function vnXlsx(){ try{ await vnLoadXlsx(); }catch(e){ return toast(e.message,6000); }
   const wb=XLSX.utils.book_new(), add=(kind,name)=>{ const R=vnRows(kind), aoa=[[R.title],[`Sean Doyle Windows Ltd · exported ${R.today} by ${vnMe()}`],[],R.head,...R.rows];
@@ -13156,16 +13162,16 @@ async function vnXlsx(){ try{ await vnLoadXlsx(); }catch(e){ return toast(e.mess
     const kr=4+R.rows.length+1; XLSX.utils.sheet_add_aoa(ws,[['Overdue / out of date'],['Due soon'],['No date in SashDash']],{origin:{r:kr,c:0}});
     ['red','amber','none'].forEach((s,j)=>{ const a=XLSX.utils.encode_cell({r:kr+j,c:0}); ws[a].s={fill:{fgColor:{rgb:C[s].fg}},font:{color:{rgb:C[s].fc},bold:true}}; });
     ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:3,c:0},e:{r:3+R.rows.length,c:R.head.length-1}})}; XLSX.utils.book_append_sheet(wb,ws,name); };
-  if(vnExp.what==='needed'){ add('needed',"What's needed"); add('all','All vans'); } else add('all','All vans');
+  if(vnExp.what==='needed'){ add('needed',"What's needed"); add('all','All vehicles'); } else add('all','All vehicles');
   XLSX.writeFile(wb,`SashDash vans — ${vnExp.what==='needed'?"what's needed":'van list'} ${vnDate(vnToday())}.xlsx`,{cellDates:true}); toast('📊 Excel file downloaded'); }
 function vnPdf(){ const R=vnRows(vnExp.what), fmt=c=>c instanceof Date?c.toLocaleDateString('en-IE',{day:'numeric',month:'short',year:'numeric'}):esc(String(c??''));
   let body;
   if(vnExp.what==='needed'){ const groups=[...VN_REN.map(r=>[r[0],r[1],r[2]]),['svc','🔧','Service']].map(([f,ico,what])=>({f,ico,what,items:R.n.filter(x=>x.f===f)})).filter(g=>g.items.length);
     body=groups.map(g=>`<h3>${g.ico} ${esc(g.what)} <span>${g.items.length}</span></h3><table class="vx-t"><thead><tr><th>Registration</th><th>Van</th><th>Driver</th><th>${g.f==='svc'?'Service at':'Due'}</th><th>Status</th>${g.f==='ins_due'?'<th>Insurer · policy</th>':''}<th class="vx-tick">Done</th></tr></thead><tbody>
       ${g.items.map(x=>`<tr class="${x.st}"><td><b>${esc(x.v.reg)}</b></td><td>${esc([x.v.make,x.v.year].filter(Boolean).join(' '))}</td><td>${esc(vnDriver(x.v))}</td><td>${x.date?vnDate(x.date):g.f==='svc'?vnKm(vnSvc(x.v).next):'—'}</td><td>${x.st==='red'?'<b>OVERDUE</b> · ':x.st==='none'?'<b>No date</b> · ':''}${esc(x.txt)}</td>${g.f==='ins_due'?`<td>${esc([x.v.insurer,x.v.policy_no].filter(Boolean).join(' · '))}</td>`:''}<td class="vx-tick">☐</td></tr>`).join('')}</tbody></table>`).join('')||'<p>Nothing due in this period. ✅</p>'; }
-  else body=`<table class="vx-t small"><thead><tr>${['Reg','Van','Driver','Mobile','Km','Next service','CVRT','Tax','Insurance','Insurer · policy'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${vnVans.map(v=>{ const s=vnSvc(v); return `<tr><td><b>${esc(v.reg)}</b></td><td>${esc([v.make,v.year].filter(Boolean).join(' '))}</td><td>${esc(vnDriver(v))}</td><td>${esc(vnPhone(v))}</td><td>${vnKm(v.km)}</td><td class="${vnCellSt(v,'svc')}">${vnKm(s.next)}</td><td class="${vnCellSt(v,'cvrt_due')}">${vnDate(v.cvrt_due)}</td><td class="${vnCellSt(v,'tax_due')}">${vnDate(v.tax_due)}</td><td class="${vnCellSt(v,'ins_due')}">${vnDate(v.ins_due)}</td><td>${esc([v.insurer,v.policy_no].filter(Boolean).join(' · '))}</td></tr>`; }).join('')}</tbody></table>`;
+  else body=`<table class="vx-t small"><thead><tr>${['Reg','Vehicle','Driver','Mobile','Km','Next service','CVRT / NCT','Tax','Insurance','Insurer · policy'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${vnVans.map(v=>{ const s=vnSvc(v); return `<tr><td><b>${esc(v.reg)}</b></td><td>${esc([v.make,v.year].filter(Boolean).join(' '))}</td><td>${esc(vnDriver(v))}</td><td>${esc(vnPhone(v))}</td><td>${vnKm(v.km)}</td><td class="${vnCellSt(v,'svc')}">${vnKm(s.next)}</td><td class="${vnCellSt(v,'cvrt_due')}">${vnDate(v.cvrt_due)}</td><td class="${vnCellSt(v,'tax_due')}">${vnDate(v.tax_due)}</td><td class="${vnCellSt(v,'ins_due')}">${vnDate(v.ins_due)}</td><td>${esc([v.insurer,v.policy_no].filter(Boolean).join(' · '))}</td></tr>`; }).join('')}</tbody></table>`;
   $('print-root').innerHTML=`<div class="vx-p"><div class="vx-head"><img src="${SD_LOGO()}" alt="Sean Doyle Windows"><div><div class="t">${esc(R.title)}</div><div class="s">${vnVans.length} vans · ${esc(R.today)} · ${esc(vnMe())}</div></div></div><div class="vx-key"><span class="red">Overdue / out of date</span><span class="amber">Due soon</span>${vnExp.what==='needed'?'<span class="none">No date in SashDash</span>':''}</div>${body}
-    <div class="vx-foot">Sean Doyle Windows Ltd · SashDash 🚐 Vans · printed ${esc(new Date().toLocaleString('en-IE',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}))}</div></div>`;
+    <div class="vx-foot">Sean Doyle Windows Ltd · SashDash 🚗 Vehicles · printed ${esc(new Date().toLocaleString('en-IE',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}))}</div></div>`;
   closeModal(); document.body.classList.add('printing'); setTimeout(()=>{ window.print(); setTimeout(()=>document.body.classList.remove('printing'),500); },120); }
 
 // ════════ Update 123 — 🚐 Vans: the 🔔 Coming up reminders fold away (whole box, and each kind) — remembered per login ════════
@@ -13276,6 +13282,14 @@ async function rbFixSave(key, w, back){ const was=rbFix[key]; if(w) rbFix[key]=w
   if(back!=null){ await openStats(); stRbList(back); } else { closeModal(); if(jaOpen) renderAlloc(); } }
 function rbSitePill(x){ if(x.kind!=='rebook') return ''; const key=x.id+'|'+x.booked, c=rbClassify(x.note, key);
   return `<button class="rb-sp ${c.r?'rbs-'+c.r[2]:'rbs-none'}" onclick="event.stopPropagation();rbFixBox('${key}')" title="Change the reason">${c.r?`${c.r[0]} ${esc(RB_SHORT[c.r[1]])}${c.est?' <i>≈ guessed</i>':''}${c.fixed?' <i>office</i>':''}`:'❔ No reason'} ✎</button> `; }
+
+// ════════ Update 129 — 🚐 Vans → 🚗 Vehicles: vans and cars · cars have an NCT instead of a CVRT ════════
+let vnKindF='all', vnFormKind='van';
+const vnIsCar=v=>!!v&&v.kind==='car';
+const vnHasKind=()=>!vnVans.length||vnVans.some(v=>'kind' in v);   // false until update-129 adds the column
+const vnTest=v=>vnIsCar(v)?['🚘','NCT']:['🛠','CVRT (DOE)'];
+function vnKindSwap(k){ vnFormKind=k; document.querySelectorAll('.vn-kseg button').forEach((b,i)=>b.classList.toggle('on',(i===1)===(k==='car')));
+  const l=$('vf-cvrt_due'); if(l&&l.previousElementSibling) l.previousElementSibling.textContent=k==='car'?'NCT due':'CVRT (DOE) due'; }
 </script>
 </body>
 </html>
