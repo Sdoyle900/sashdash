@@ -2283,7 +2283,10 @@ body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-o
 }
 .oc-req{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
 .oc-need{margin-top:6px;font-size:12.5px;color:#b45309;font-weight:600}.field-group.oc-ok .oc-need{display:none}
-.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.vn-kind{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px}.vn-kind.van{background:#e0f2fe;color:#075985}.vn-kind.car{background:#fce7f3;color:#9d174d}.vn-kinds{display:flex;gap:6px;margin:0 0 10px}.rb-h{font-size:12.5px;font-weight:600;color:var(--slate);margin-left:8px}
+.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.vn-reg{white-space:nowrap}.vn-chead{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap}.vn-chead .tag,.vn-kind{white-space:nowrap}.vn-chead .vn-kind{margin-left:auto}.vn-kmb{color:#334155;font-weight:700}.vn-drv{min-width:0}.vn-drv b{white-space:nowrap}.vn-ph{color:var(--slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}.vn-drv .vn-src{flex:0 0 auto;margin-left:auto}
+.fy-gbtns .dept-btn{min-width:0}
+@media (min-width:721px) and (max-width:1300px){ .fy-gbtns .dept-btn{flex:1 1 0;padding-left:6px;padding-right:6px;gap:6px} .fy-gbtns .dept-btn .dc{padding:1px 6px} }
+@media (min-width:721px) and (max-width:1050px){ .fy-gbtns .dept-btn{flex-direction:column;gap:2px;font-size:13px;line-height:1.15;text-align:center} .fy-gbtns .dept-btn .dc{font-size:11px;padding:0 6px;margin-top:1px} }.vn-kind{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px}.vn-kind.van{background:#e0f2fe;color:#075985}.vn-kind.car{background:#fce7f3;color:#9d174d}.vn-kinds{display:flex;gap:6px;margin:0 0 10px}.rb-h{font-size:12.5px;font-weight:600;color:var(--slate);margin-left:8px}
 .rb-wrap{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin:10px 0}.rb-bars .st-bar{grid-template-columns:300px 1fr 34px 150px;cursor:pointer;border-radius:6px;padding:2px 4px}.rb-bars .st-bar:hover{background:#f1f5f9}
 .rb-bt{display:flex}.rb-bt i{display:block;height:100%}.rb-office{background:#dc2626!important}.rb-customer{background:#7c3aed!important}.rb-plan{background:#2563eb!important}.rb-site{background:#ea580c!important}.rb-other{background:#64748b!important}.rb-none{background:#cbd5e1!important}
 .rb-est{background:repeating-linear-gradient(45deg,#94a3b8 0 4px,#cbd5e1 4px 8px)!important}.rb-esttxt{color:#64748b}
@@ -2602,7 +2605,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-28-1045';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-28-1100';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -12650,9 +12653,9 @@ function vnRender(){ vnSel=null; const m=$('view-vans'); if(!m) return;
       :vnVans.length?'<div class="vn-allok">✅ Nothing due — every vehicle is up to date.</div>':''}
     ${nCar?`<div class="vn-kinds">${[['all','All',vnVans.length],['van','🚐 Vans',nVan],['car','🚗 Cars',nCar]].map(([k,l,n])=>`<button class="pl-chip ${vnKindF===k?'on':''}" onclick="vnKindF='${k}';vnRender()">${l} <b>${n}</b></button>`).join('')}</div>`:''}
     ${vnVans.length?`<div class="vn-grid">${shown.map(v=>{ const a=vnAll(v), k=vnChkInfo(v);
-      return `<div class="vn-card" onclick="vnOpenVan('${v.id}','over')"><div style="display:flex;align-items:center;gap:8px">${vnReg(v.reg)}<span class="vn-kind ${vnIsCar(v)?'car':'van'}">${vnIsCar(v)?'🚗 Car':'🚐 Van'}</span><span style="margin-left:auto" class="tag">${vnKm(v.km)}</span></div>
-        <div class="vn-model">${esc([v.make,v.year,v.colour].filter(Boolean).join(' · ')||'—')}</div>
-        <div class="vn-drv">👤 <b>${esc(vnDriver(v))}</b>${vnPhone(v)?`<span style="color:var(--slate)">· 📞 ${esc(vnPhone(v))}</span>`:''}${v.driver_id&&v.phone_check?'<span class="vn-src app">📱 own phone</span>':'<span class="vn-src off">📝 office</span>'}</div>
+      return `<div class="vn-card" onclick="vnOpenVan('${v.id}','over')"><div class="vn-chead">${vnReg(v.reg)}<span class="vn-kind ${vnIsCar(v)?'car':'van'}">${vnIsCar(v)?'🚗 Car':'🚐 Van'}</span></div>
+        <div class="vn-model">${esc([v.make,v.year,v.colour].filter(Boolean).join(' · ')||'—')}${v.km!=null?` · <b class="vn-kmb">${vnKm(v.km)}</b>`:''}</div>
+        <div class="vn-drv">👤 <b>${esc(vnDriver(v))}</b>${vnPhone(v)?`<span class="vn-ph" title="${esc(vnPhone(v))}">📞&nbsp;${esc(vnPhone(v))}</span>`:''}${v.driver_id&&v.phone_check?'<span class="vn-src app">📱 own phone</span>':'<span class="vn-src off">📝 office</span>'}</div>
         <div class="vn-chip ${a.s.st}" style="margin-bottom:6px">🔧 ${a.s.next?`Next service at <b style="display:inline">${vnKm(a.s.next)}</b> — ${a.s.left==null?'':a.s.left<0?`<b style="display:inline;color:#be123c">${vnKm(-a.s.left)} over</b>`:`${vnKm(a.s.left)} to go`}`:'No service recorded yet'}<div class="vn-bar ${a.s.st}"><i style="width:${(a.s.used*100).toFixed(0)}%"></i></div></div>
         <div class="vn-rows"><div class="vn-chip ${a.c.st}">${vnTest(v).join(' ')}<b>${vnDate(v.cvrt_due)}</b>${a.c.txt}</div><div class="vn-chip ${a.t.st}">🧾 Tax<b>${vnDate(v.tax_due)}</b>${a.t.txt}</div>
           <div class="vn-chip ${a.i.st}">🛡 Insurance<b>${vnDate(v.ins_due)}</b>${a.i.txt}</div><div class="vn-chip ${k.st}">✅ Last check<b>${k.c?vnDate(k.c.date):'—'}</b>${k.c?(k.c.faults?`⚠ ${k.c.faults} fault${k.c.faults>1?'s':''} · `:'')+k.txt:'none yet'}</div></div></div>`; }).join('')}</div>`
