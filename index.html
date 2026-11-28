@@ -2283,7 +2283,7 @@ body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-o
 }
 .oc-req{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
 .oc-need{margin-top:6px;font-size:12.5px;color:#b45309;font-weight:600}.field-group.oc-ok .oc-need{display:none}
-.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.vn-reg{white-space:nowrap}.vn-chead{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap}.vn-chead .tag,.vn-kind{white-space:nowrap}.vn-chead .vn-kind{margin-left:auto}.vn-kmb{color:#334155;font-weight:700}.vn-drv{min-width:0}.vn-drv b{white-space:nowrap}.vn-ph{color:var(--slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}.vn-drv .vn-src{flex:0 0 auto;margin-left:auto}
+.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.eh-chip{border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:11.5px;font-weight:700;cursor:pointer}.eh-chip.far{border-color:#fca5a5;background:#fef2f2;color:#b91c1c}.s-sub+.eh-chip{margin-top:4px}.tt-pin.hand{outline:3px solid #fff;box-shadow:0 0 0 5px #7c3aed}.tt-pin.far{box-shadow:0 0 0 5px #dc2626}.eh-pop{display:flex;flex-direction:column;gap:6px;font-size:13px}.eh-list tr.eh-bad td{background:#fef2f2}.eh-list .btn-outline{font-size:12.5px;padding:4px 9px;display:inline-block;margin:2px 0;text-decoration:none}.eh-acts{text-align:right}#modal-root .modal:has(.eh-list){max-width:860px;width:min(860px,96vw)}.vn-reg{white-space:nowrap}.vn-chead{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap}.vn-chead .tag,.vn-kind{white-space:nowrap}.vn-chead .vn-kind{margin-left:auto}.vn-kmb{color:#334155;font-weight:700}.vn-drv{min-width:0}.vn-drv b{white-space:nowrap}.vn-ph{color:var(--slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}.vn-drv .vn-src{flex:0 0 auto;margin-left:auto}
 .fy-gbtns .dept-btn{min-width:0}
 @media (min-width:721px) and (max-width:1300px){ .fy-gbtns .dept-btn{flex:1 1 0;padding-left:6px;padding-right:6px;gap:6px} .fy-gbtns .dept-btn .dc{padding:1px 6px} }
 @media (min-width:721px) and (max-width:1050px){ .fy-gbtns .dept-btn{flex-direction:column;gap:2px;font-size:13px;line-height:1.15;text-align:center} .fy-gbtns .dept-btn .dc{font-size:11px;padding:0 6px;margin-top:1px} }.vn-kind{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px}.vn-kind.van{background:#e0f2fe;color:#075985}.vn-kind.car{background:#fce7f3;color:#9d174d}.vn-kinds{display:flex;gap:6px;margin:0 0 10px}.rb-h{font-size:12.5px;font-weight:600;color:var(--slate);margin-left:8px}
@@ -2605,7 +2605,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-28-1100';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-28-1215';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -4044,7 +4044,8 @@ function scRow(c={}){ return `<div class="sc-row"><input class="sc-name" placeho
 // otherwise the Eircode on its own. Never "<Eircode>, Ireland" — Google then goes to the middle of the postal area (H53 → Ballinasloe).
 function navDest(s){ const e=normEir(s);
   if(!eirValid(e)) return String(s||'').trim()+', Ireland';                 // an address, not an Eircode
-  const g=geoCache.get(e); return g&&(g.manual||!g.approx)?`${g.lat},${g.lng}`:e; }
+  const g=geoCache.get(e); if(g&&g.manual&&eirFarSync(e)) return e;   // 📍 Update 131: a pin dragged far away → use the Eircode
+  return g&&(g.manual||!g.approx)?`${g.lat},${g.lng}`:e; }
 function normEir(s){ const t=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); return t.length===7 ? t.slice(0,3)+' '+t.slice(3) : String(s||'').toUpperCase().trim(); }
 function eirValid(s){ return /^[ACDEFHKNPRTVWXY](\d\d|6W) [0-9ACDEFHKNPRTVWXY]{4}$/.test(normEir(s)); }
 function hm2min(s){ const m=/^(\d{1,2}):(\d{2})/.exec(s||''); return m? (+m[1])*60+(+m[2]) : null; }
@@ -4083,7 +4084,7 @@ function eirTownsQueue(list){ if(!isOffice || previewing || !hasEirTown) return;
     for(const n of todo){ const v=await eirTownLookup(n); if(v&&v.town) got++; }
     if(got && !$('modal-root').innerHTML.trim() && !job) rerenderCurrent(); }, 800); }
 function eirChip(j){ if(!j.eircode) return '';
-  return `<a class="cc eir" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(navDest(j.eircode))}&travelmode=driving" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Directions in Google Maps">📍 ${esc(j.eircode)}</a>`; }
+  return `<a class="cc eir" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(navDest(j.eircode))}&travelmode=driving" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Directions in Google Maps">📍 ${esc(j.eircode)}</a>${eirHandChip(j.eircode)}`; }
 
 // ── Settings (office): depot Eircode, TomTom key, start time, minutes per job ──
 async function loadRouteData(force){
@@ -4186,7 +4187,9 @@ async function geocodeEir(eir){
 }
 // Office drags a pin / taps the map → that's where this Eircode is from now on
 async function placeEir(eir, lat, lng){
-  eir=normEir(eir); const p={lat, lng, approx:false, manual:true}; geoCache.set(eir,p);
+  eir=normEir(eir); { const a=eirArea(eir), c=a&&await areaCentre(a), d=c?haversine({lat,lng},c):0;   // 📍 Update 131: far from its area → ask first
+    if(d>EIR_FAR){ const ok=await confirmBox({icon:'📍', title:`That's ${Math.round(d/1000)} km from ${a.town}`, body:`<b>${esc(eir)}</b> is in the <b>${esc(a.town)}</b> area (Co. ${esc(a.county)}). Are you sure the house is here?`, ok:'📍 Yes, save it here'}); if(!ok){ placing=null; if(currentSiteId) drawDayMap(currentSiteId); return; } } }
+  const p={lat, lng, approx:false, manual:true}; geoCache.set(eir,p);
   const { error }=await sb.from('eircode_geo').upsert({eircode:eir, lat, lng, approx:false, manual:true});
   toast(error?'Could not save the pin: '+error.message:`📍 ${eir} saved — it'll be used every time`,3500);
   placing=null; if(currentSiteId) drawDayMap(currentSiteId);
@@ -4410,8 +4413,10 @@ async function drawDayMap(siteId){
     L.marker([R.depot.lat,R.depot.lng],{icon:pin('<div class="tt-pin home">🏠</div>'), title:R.base&&R.base.custom?'His start':'Depot', zIndexOffset:-100}).addTo(tmapLayer);
     if(R.cfg.fin&&R.finP) L.marker([R.finP.lat,R.finP.lng],{icon:pin('<div class="tt-pin home">🏁</div>'), title:'His finish', zIndexOffset:-100}).addTo(tmapLayer);
     show.order.forEach((k,i)=>{ const s=R.stops[k], Lg=show.legs[i], c=Lg.late>0.5?'#dc2626':colour;
-      const m=L.marker([s.p.lat,s.p.lng],{icon:pin(`<div class="tt-pin ${s.p.approx?'approx':''}" style="background:${c}">${s.n}</div>`), title:`Job ${s.n} · ${nm(s)} · ${ampm(Lg.arr)}${s.p.approx?' · rough position — drag onto the house':''}`, draggable:officeCan}).addTo(tmapLayer);
-      if(officeCan) m.on('dragend',()=>{ const q=m.getLatLng(); placeEir(s.j.eircode, q.lat, q.lng); }); });
+      const far=s.p.manual&&eirFarSync(s.j.eircode);
+      const m=L.marker([s.p.lat,s.p.lng],{icon:pin(`<div class="tt-pin ${s.p.approx?'approx':''} ${s.p.manual?'hand':''} ${far?'far':''}" style="background:${c}">${s.n}</div>`), title:`Job ${s.n} · ${nm(s)} · ${ampm(Lg.arr)}${s.p.approx?' · rough position — drag onto the house':''}`, draggable:officeCan}).addTo(tmapLayer);
+      if(officeCan) m.on('dragend',()=>{ const q=m.getLatLng(); placeEir(s.j.eircode, q.lat, q.lng); });
+      if(officeCan&&s.p.manual) m.bindPopup(`<div class="eh-pop"><b>Job ${s.n} · ${esc(normEir(s.j.eircode))}</b><div>${far?`⚠️ Placed by hand <b>${far} km</b> from where the Eircode is`:'📍 Placed by hand'}</div><button class="btn-outline" onclick="eirResetAsk('${esc(normEir(s.j.eircode))}')">↩ Back to the Eircode</button></div>`); });
     const b=L.latLngBounds(pts.map(p=>[p.lat,p.lng])); if(pts.length>1) tmap.fitBounds(b,{padding:[34,34]}); else tmap.setView([R.depot.lat,R.depot.lng],12);
     if(show.order.length){
       const line=await routeLine(pts); if(tok!==mapDrawTok) return;   // a newer redraw has taken over
@@ -6034,7 +6039,7 @@ function _renderAlloc(){
   v.innerHTML=`<div id="ja-page">
     <div class="row ja-top"><button class="btn-outline" onclick="closeAlloc()">‹ Service Department</button>
       <div style="flex:1;min-width:220px"><div class="page-title">📋 Job allocations</div><div class="page-sub">Everything waiting for a service man and a day — <b>oldest first</b>. Tick jobs (or click a pin) and allocate them.</div></div>
-      ${plOn()&&!previewing?'<button class="btn-primary" style="background:#7c3aed;border-color:#7c3aed" onclick="plProposeBox()">✨ Propose days</button>':''}<button class="btn-outline ja-bulk" onclick="jaBulkAdd()">📥 Pile of sheets</button><button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new call</button></div>
+      ${plOn()&&!previewing?'<button class="btn-primary" style="background:#7c3aed;border-color:#7c3aed" onclick="plProposeBox()">✨ Propose days</button>':''}<button class="btn-outline" onclick="eirHandList()" title="Pins the office dragged on the map">📍 Hand-placed pins</button><button class="btn-outline ja-bulk" onclick="jaBulkAdd()">📥 Pile of sheets</button><button class="btn-primary ja-add" onclick="jaAddCalls()">＋ Add new call</button></div>
     <div id="ja-filters">${jaFiltersHtml(all,cnt,counties)}</div>
     <div id="ja-selbar">${jaSelBar()}</div>
     <div class="ja-grid ja-sgrid" id="ja-grid" style="${jaMapW()?'--ja-mapw:'+jaMapW()+'px':''}"><div class="ja-listwrap" id="ja-list">${listHtml}</div>
@@ -6073,7 +6078,7 @@ function jaListHtml(shown){
       <td class="ja-ck"><input type="checkbox" ${jaSel.has(x.id)?'checked':''} onclick="jaToggle('${x.id}')"></td>
       <td><div class="ja-name">${esc(x.name)}</div><div class="ja-sub2">${jaPill(x.kind)} <span class="s-sub">${esc(x.phone||'no phone')}</span>${jaManTag(x)}${x.kind==='cancelled'?'<span class="ja-prio" title="Cancelled by the customer — the planner puts it in first">⭐ Priority</span>':''}</div>${(()=>{ const p=plOn()&&planItems.find(q=>q.id===x.id); return p?`<span class="ja-plan" title="In a proposed day — open the man's 🧩 Proposed tab">🧩 Proposed · ${esc(dayLabel(p.day))} · ${esc(firstName(prof(p.tid).full_name))}</span>`:''; })()}${(()=>{ const o=jaLater(x); if(!o) return '';
         return `<div class="ja-again">📅 Booked again: <b>${esc(dayLabel(jobDay(o)))}</b> · ${esc(firstName(prof(o.serviceman_id).full_name))} (${esc((o.title||'').split(' – ')[0])}${custName(o)&&custName(o)!==x.name?' – '+esc(custName(o)):''})${isOffice&&!previewing?`<button class="btn-outline" onclick="jaLink('${x.id}','${o.id}')" title="Same phone and Eircode — take this one off the list (it stays in the history)">✓ Same job — take off list</button>`:''}</div>`; })()}</td>
-      <td>${pl?`<b class="ja-town">${esc(pl.town)}${pl.exact?'':' area'}</b><div class="s-sub">Co. ${esc(pl.county)} · ${esc(normEir(x.eircode))}</div>`:'<span class="s-sub">⚠ No Eircode</span>'}</td>
+      <td>${pl?`<b class="ja-town">${esc(pl.town)}${pl.exact?'':' area'}</b><div class="s-sub">Co. ${esc(pl.county)} · ${esc(normEir(x.eircode))}</div>${eirHandChip(x.eircode)}`:'<span class="s-sub">⚠ No Eircode</span>'}</td>
       <td class="ja-size">${(x.j||x.nc).est_minutes?`<b>⏱ ${esc(estLabel((x.j||x.nc).est_minutes))}</b>`:'<span class="s-sub">⏱ not set</span>'}<div>${crewMini(x.j||x.nc)}</div></td>
       <td>${t?`<div class="ja-man ${x.booked&&jobs.some(j=>j.id===x.id)?'ja-go':''}"${x.booked&&jobs.some(j=>j.id===x.id)?` onclick="event.stopPropagation();waGoDay('${x.id}')" title="Open ${esc(firstName(t.full_name))}'s diary on ${esc(dayLabel(x.booked))}" role="button"`:''}><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(firstName(t.full_name))}</div><div class="s-sub ${x.booked&&jobs.some(j=>j.id===x.id)?'ja-go':''}"${x.booked&&jobs.some(j=>j.id===x.id)?` onclick="event.stopPropagation();waGoDay('${x.id}')" title="Open ${esc(firstName(t.full_name))}'s diary on ${esc(dayLabel(x.booked))}" role="button"`:''}>${esc(dayLabel(x.booked))}</div>`:`<span class="s-sub">New · added ${esc(fmtWhen(x.since))}</span>`}</td>
       ${hasMat?`<td class="ja-mat">${matBoxes(x.id)}</td>`:''}
@@ -13293,6 +13298,33 @@ const vnHasKind=()=>!vnVans.length||vnVans.some(v=>'kind' in v);   // false unti
 const vnTest=v=>vnIsCar(v)?['🚘','NCT']:['🛠','CVRT (DOE)'];
 function vnKindSwap(k){ vnFormKind=k; document.querySelectorAll('.vn-kseg button').forEach((b,i)=>b.classList.toggle('on',(i===1)===(k==='car')));
   const l=$('vf-cvrt_due'); if(l&&l.previousElementSibling) l.previousElementSibling.textContent=k==='car'?'NCT due':'CVRT (DOE) due'; }
+
+// ════════ Update 131 — 📍 pins dragged by hand: ↩ back to the Eircode · a list of them · far ones flagged ════════
+function eirFarSync(e){ e=normEir(e); const g=geoCache.get(e), a=eirArea(e), c=a&&areaPos.get(a.key); if(!g||!c) return 0; const d=haversine(g,c); return d>EIR_FAR?Math.round(d/1000):0; }
+function eirHandChip(e){ if(!e||!isOffice||previewing) return ''; e=normEir(e); const g=geoCache.get(e); if(!g||!g.manual) return '';
+  const far=eirFarSync(e); return `<button class="cc eh-chip ${far?'far':''}" onclick="event.stopPropagation();eirResetAsk('${esc(e)}')" title="The office dragged this pin on the map — click to put it back where the Eircode is">${far?`⚠️ Pin ${far} km off`:'📍 Placed by hand'} · ↩</button>`; }
+async function eirResetAsk(e){ e=normEir(e); const a=eirArea(e), far=eirFarSync(e);
+  const ok=await confirmBox({icon:'↩', title:`Put ${esc(e)} back where the Eircode is?`, body:`${far?`The pin is <b>${far} km</b> from ${esc(a.town)}. `:''}The spot it was dragged to will be forgotten — SashDash looks <b>${esc(e)}</b> up again${a?` (the ${esc(a.town)} area, Co. ${esc(a.county)})`:''} and uses that for everyone.`, ok:'↩ Back to the Eircode'});
+  if(ok) await eirReset(e); else if(window._ehBack){ window._ehBack=0; eirHandList(); } }
+async function eirReset(e){ e=normEir(e); const old=geoCache.get(e); geoCache.delete(e); eirChecked.delete(e);
+  const p=await geocodeEir(e);
+  if(!p){ if(old) geoCache.set(e,old); return toast(`Couldn't look ${e} up just now — try again in a minute.`,6000); }
+  if(geoCache.get(e)===p) await sb.from('eircode_geo').upsert({eircode:e, lat:p.lat, lng:p.lng, approx:!!p.approx, manual:false});
+  toast(`↩ ${e} is back where the Eircode is${p.approx?' (rough — the area, not the exact house)':''}`,5000);
+  try{ if(window._ehBack){ window._ehBack=0; eirHandList(); } }catch(x){}
+  try{ if(currentSiteId) drawDayMap(currentSiteId); }catch(x){} try{ if(jaOpen) renderAlloc(); }catch(x){} try{ if(job) updateJobHeader(); }catch(x){} }
+async function eirHandList(){ openModal(`<div class="eh-list"><h2>📍 Hand-placed pins</h2><div class="empty"><span class="spin"></span> Checking…</div></div>`);
+  const r=await sb.from('eircode_geo').select('*').eq('manual',true); const rows=(r.data||[]).map(x=>({e:normEir(x.eircode), lat:+x.lat, lng:+x.lng}));
+  for(const x of rows){ const a=eirArea(x.e), c=a&&await areaCentre(a); x.a=a; x.km=c?Math.round(haversine(x,c)/1000):null; }
+  rows.sort((p,q)=>(q.km||0)-(p.km||0));
+  const who=e=>[...jobs.filter(j=>normEir(j.eircode)===e).map(custName), ...newCalls.filter(c=>normEir(c.eircode)===e).map(c=>c.title)].filter(Boolean);
+  const far=rows.filter(x=>x.km!=null&&x.km*1000>EIR_FAR).length;
+  openModal(`<div class="eh-list"><h2>📍 Hand-placed pins <span class="s-sub">${rows.length}</span></h2>
+   <p class="s-sub" style="margin:0 0 10px">Pins the office dragged on a map. SashDash uses these instead of TomTom's spot. ${far?`<b style="color:#b91c1c">⚠️ ${far} ${far===1?'is':'are'} more than ${EIR_FAR/1000} km from where the Eircode is</b> — probably dragged by mistake.`:'✅ None look wrong.'}</p>
+   ${rows.length?`<table class="s-table"><thead><tr><th>Eircode</th><th>Customer</th><th>How far off</th><th></th></tr></thead><tbody>
+   ${rows.map(x=>{ const bad=x.km!=null&&x.km*1000>EIR_FAR; return `<tr class="${bad?'eh-bad':''}"><td style="white-space:nowrap"><b>${esc(x.e)}</b><div class="s-sub">${x.a?`${esc(x.a.town)} area`:''}</div></td><td>${esc(who(x.e).slice(0,2).join(', ')||'—')}</td><td style="white-space:nowrap">${x.km==null?'—':bad?`⚠️ <b>${x.km} km</b>`:`${x.km} km ✓`}</td>
+     <td class="eh-acts"><a class="btn-outline" href="https://www.google.com/maps/search/?api=1&query=${x.lat},${x.lng}" target="_blank" rel="noopener">📍 Show</a> <button class="btn-outline" onclick="window._ehBack=1;eirResetAsk('${esc(x.e)}')">↩ Back to the Eircode</button></td></tr>`; }).join('')}</tbody></table>`:'<div class="empty">No pins have been dragged by hand.</div>'}
+   <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button></div></div>`); }
 </script>
 </body>
 </html>
