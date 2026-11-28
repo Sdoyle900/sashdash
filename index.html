@@ -2283,7 +2283,20 @@ body.vn-on #view-dashboard,body.vn-on #view-portal,body.vn-on #view-oa,body.vn-o
 }
 .oc-req{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
 .oc-need{margin-top:6px;font-size:12.5px;color:#b45309;font-weight:600}.field-group.oc-ok .oc-need{display:none}
-.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.imp-where-ok{color:#166534;font-weight:600}.imp-where-bad{color:#b45309}.imp-where-bad ul{margin:4px 0 0 18px;padding:0;color:#475569;font-weight:400}.rb-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rb-chip{display:flex;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--border);background:#fff;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink,#0f172a)}
+.field-group.oc-bad textarea{border-color:#dc2626;box-shadow:0 0 0 3px #fee2e2}.field-group.oc-bad .oc-need{color:#b91c1c}.rb-h{font-size:12.5px;font-weight:600;color:var(--slate);margin-left:8px}
+.rb-wrap{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin:10px 0}.rb-bars .st-bar{grid-template-columns:300px 1fr 34px 150px;cursor:pointer;border-radius:6px;padding:2px 4px}.rb-bars .st-bar:hover{background:#f1f5f9}
+.rb-bt{display:flex}.rb-bt i{display:block;height:100%}.rb-office{background:#dc2626!important}.rb-customer{background:#7c3aed!important}.rb-plan{background:#2563eb!important}.rb-site{background:#ea580c!important}.rb-other{background:#64748b!important}.rb-none{background:#cbd5e1!important}
+.rb-est{background:repeating-linear-gradient(45deg,#94a3b8 0 4px,#cbd5e1 4px 8px)!important}.rb-esttxt{color:#64748b}
+.rb-key{display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:#334155}.rb-key i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}.rb-mat{background:#fff7ed;border:1px solid #fdba74;border-radius:8px;padding:8px 10px}
+.rbg-office b{color:#dc2626}.rbg-customer b{color:#7c3aed}.rbg-plan b{color:#2563eb}.rbg-site b{color:#ea580c}.rbg-none b{color:#94a3b8}
+.rb-pill{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:#dbeafe;color:#1e40af}.rb-pill.est{background:#f1f5f9;color:#64748b}
+.rb-list td:last-child,.rb-list th:last-child{max-width:460px;text-align:left}.rb-t td,.rb-t th{text-align:center}.rb-t td:first-child,.rb-t th:first-child,.rb-t td:last-child,.rb-t th:last-child{text-align:left}.rb-t td:last-child{white-space:nowrap}
+.rb-pill.fix{background:#ede9fe;color:#6d28d9}.rb-fixb{border:1px solid var(--border);background:#fff;border-radius:6px;padding:1px 6px;font-size:12px;cursor:pointer;margin-left:4px}
+.rbg-cost b{color:#b45309;font-size:18px}.rbg-cost span{font-size:11px}
+.rb-sp{border:1px solid #cbd5e1;background:#f8fafc;border-radius:999px;padding:1px 8px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;margin-right:4px;white-space:nowrap}.rb-sp i{font-weight:500;color:#64748b}
+.rbs-office{border-color:#fca5a5;background:#fef2f2;color:#b91c1c}.rbs-customer{border-color:#c4b5fd;background:#f5f3ff;color:#6d28d9}.rbs-plan{border-color:#93c5fd;background:#eff6ff;color:#1d4ed8}.rbs-site{border-color:#fdba74;background:#fff7ed;color:#c2410c}
+@media print{ .st .rb-bars .st-bar{grid-template-columns:205px 1fr 26px 120px} .st-bt i.rb-office{background:#dc2626!important}.st-bt i.rb-customer{background:#7c3aed!important}.st-bt i.rb-plan{background:#2563eb!important}.st-bt i.rb-site{background:#ea580c!important}.st-bt i.rb-other{background:#64748b!important}.st-bt i.rb-none{background:#cbd5e1!important}.st-bt i.rb-est{background:repeating-linear-gradient(45deg,#94a3b8 0 3px,#cbd5e1 3px 6px)!important} .rb-key i.rb-office{background:#dc2626!important} .rb-key i.rb-est{background:#94a3b8!important} .rb-fixb,.rb-h{display:none} }
+.imp-where-ok{color:#166534;font-weight:600}.imp-where-bad{color:#b45309}.imp-where-bad ul{margin:4px 0 0 18px;padding:0;color:#475569;font-weight:400}.rb-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rb-chip{display:flex;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--border);background:#fff;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink,#0f172a)}
 .rb-chip span{font-size:18px}.rb-chip.on{border-color:#2563eb;background:#eff6ff;color:#1d4ed8;box-shadow:0 0 0 2px #bfdbfe}.rb-why.oc-bad .rb-chips{outline:2px solid #fca5a5;outline-offset:4px;border-radius:12px}
 #oc-ok:disabled{opacity:.45;cursor:not-allowed}
 .evt.evt-big{align-self:stretch;text-align:left;font-size:16px;line-height:1.4;color:#0f172a;background:#eff6ff;border:1.5px solid #93c5fd;border-left:5px solid #2563eb;border-radius:12px;padding:10px 14px;margin:8px 0}
@@ -2589,7 +2602,7 @@ function notesBadge(j){ const {notes,photos}=manNotes(j); if(!notes&&!photos&&!j
   return `<div class="note-badges" title="Notes on this job from the office and the service man — open it to read">${notes?`<span class="nb">💬 ${notes} note${notes===1?'':'s'}</span>`:''}${photos?`<span class="nb">📷 ${photos} photo${photos===1?'':'s'}</span>`:''}${j.marked_path?'<span class="nb">✏️ Marked up</span>':''}</div>`; }
 function autoGrow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 // ── Auto-update: phones pick up a new version as soon as it's on GitHub ──
-const APP_BUILD='2026-11-26-1115';   // bump on every release (YYYY-MM-DD-HHMM)
+const APP_BUILD='2026-11-28-1030';   // bump on every release (YYYY-MM-DD-HHMM)
 let updating=false;
 async function checkForUpdate(){
   if(updating || !navigator.onLine) return;
@@ -6062,7 +6075,7 @@ function jaListHtml(shown){
       <td>${t?`<div class="ja-man ${x.booked&&jobs.some(j=>j.id===x.id)?'ja-go':''}"${x.booked&&jobs.some(j=>j.id===x.id)?` onclick="event.stopPropagation();waGoDay('${x.id}')" title="Open ${esc(firstName(t.full_name))}'s diary on ${esc(dayLabel(x.booked))}" role="button"`:''}><span class="avatar sm" style="--c:${esc(t.colour)}">${esc(initials(t.full_name))}</span> ${esc(firstName(t.full_name))}</div><div class="s-sub ${x.booked&&jobs.some(j=>j.id===x.id)?'ja-go':''}"${x.booked&&jobs.some(j=>j.id===x.id)?` onclick="event.stopPropagation();waGoDay('${x.id}')" title="Open ${esc(firstName(t.full_name))}'s diary on ${esc(dayLabel(x.booked))}" role="button"`:''}>${esc(dayLabel(x.booked))}</div>`:`<span class="s-sub">New · added ${esc(fmtWhen(x.since))}</span>`}</td>
       ${hasMat?`<td class="ja-mat">${matBoxes(x.id)}</td>`:''}
       <td>${jaWhen(x)}</td>
-      <td class="ja-note">${x.note?esc(x.note):'<span class="s-sub">—</span>'}</td>
+      <td class="ja-note">${rbSitePill(x)}${x.note?esc(x.note):'<span class="s-sub">—</span>'}</td>
       <td class="ja-onote">${jaONoteCell(x.id)}</td>
       <td class="ja-act"><button class="btn-primary" onclick="jaAllocate(['${x.id}'])">🗓 Allocate</button><div>${x.eircode?`<button class="btn-outline" title="Show on the map" onclick="jaShowPin('${x.id}')">📍</button>`:''}<button class="btn-outline" onclick="jaOpenItem('${x.id}')">Open</button></div></td></tr>`; }).join('')}</tbody></table>`; }
 function jaToggle(id, fromPin){ jaSel.has(id)?jaSel.delete(id):jaSel.add(id);
@@ -8860,7 +8873,7 @@ const plDayKey=(tid,day)=>tid+'|'+day;
 async function loadPlan(){ if(!hasPlan || !isOffice) return; if(plSyncing || plSyncT) return;   // don't overwrite changes still being saved
   try{ const [st, it, dy]=await Promise.all([sb.from('plan_settings').select('*'), sb.from('plan_items').select('*'), sb.from('plan_days').select('*')]);
     if(st.error||it.error||dy.error){ if(/plan_/i.test((st.error||it.error||dy.error).message||'')) hasPlan=false; return; }
-    planCfg={}; (st.data||[]).forEach(r=>{ if(r.id==='global') plMatOnly=(r.data||{}).matOnly!==false; else planCfg[r.id]=r.data||{}; });
+    planCfg={}; (st.data||[]).forEach(r=>{ if(r.id==='global') plMatOnly=(r.data||{}).matOnly!==false; else if(r.id==='rbfix') rbFix=r.data||{}; else planCfg[r.id]=r.data||{}; });   // ✎ Update 128: rbfix = office re-book reason corrections
     planItems=(it.data||[]).map(r=>({id:r.item_id, tid:r.man_id, day:r.day, pos:r.pos||0, ok:!!r.ok, why:r.why||'', name:r.name||''}));
     planDayOk={}; planSent={}; (dy.data||[]).forEach(r=>{ if(r.ok) planDayOk[r.man_id+r.day]=true; if(r.sent_at) planSent[r.man_id+r.day]=true; });
     planSaved={items:new Map(planItems.map(p=>[p.id, JSON.stringify(plItemRow(p))])), days:new Map((dy.data||[]).map(r=>[plDayKey(r.man_id,r.day), JSON.stringify({ok:!!r.ok, sent:!!r.sent_at})]))};
@@ -9053,7 +9066,7 @@ async function openStats(){
   const live=cj.filter(j=>{ const d=jobDay(j); return d&&d>=from&&d<=today&&(j.completed||jobOutcome(j)); }).map(j=>({id:j.id, man:isExtra(j.serviceman_id)&&j.done_by?'et:'+j.done_by:j.serviceman_id, day:jobDay(j), o:jobOutcome(j), j, name:custName(j), key:phoneKey(j.customer_phone||j.ref_no)}));
   const seen=new Set(live.map(v=>v.id+'|'+v.day));
   const etHist=h=>isExtra(h.serviceman_id)&&/\(Extra Service Team\)$/.test(h.serviceman_name||'')?'et:'+h.serviceman_name.replace(/\s*\(Extra Service Team\)$/,''):h.serviceman_id;
-  const visits=[...live, ...hist.filter(h=>h.outcome&&h.outcome!=='cancelled'&&!seen.has(h.source_job_id+'|'+h.work_date)).map(h=>({id:h.source_job_id, man:etHist(h), day:String(h.work_date).slice(0,10), o:h.outcome, j:null, name:h.cust_name||'', key:h.phone_key}))].filter(v=>['done','rebook','not_home'].includes(v.o));
+  const visits=[...live, ...hist.filter(h=>h.outcome&&h.outcome!=='cancelled'&&!seen.has(h.source_job_id+'|'+h.work_date)).map(h=>({id:h.source_job_id, man:etHist(h), day:String(h.work_date).slice(0,10), o:h.outcome, j:null, name:h.cust_name||'', key:h.phone_key, note:h.note}))].filter(v=>['done','rebook','not_home'].includes(v.o));
   const inP=cj.filter(j=>{ const d=jobDay(j); return d&&d>=from&&d<=today; }), fin=visits;
   const cnt=k=>fin.filter(v=>v.o===k).length, done=cnt('done'), rb=cnt('rebook'), nh=cnt('not_home'), cx=cj.filter(j=>jobOutcome(j)==='cancelled').length, tot=done+rb+nh||1;
   const pct=(a,b)=>b?Math.round(a/b*100)+'%':'—';
@@ -9079,6 +9092,7 @@ async function openStats(){
     <div class="st-per">${[[7,'Last 7 days'],[28,'Last 4 weeks'],[91,'Last 3 months'],[365,'Last 12 months']].map(([d,l])=>`<button class="pl-chip ${stP===d?'on':''}" onclick="stP=${d};openStats()">${l}</button>`).join('')}<span class="s-sub">${esc(niceDate(from))} – ${esc(niceDate(today))} · ${visits.length} visits</span><button class="btn-outline" style="margin-left:auto" onclick="stPrint()">🖨 Print</button></div>
     <h3>✅ How the visits went</h3><div class="st-tiles">
       ${tile(done,'All done','jobs finished')}${tile(pct(done,tot),'Fixed first time','done ÷ all visits with a result','good')}${tile(pct(rb,tot),'Re-booked',rb+' visits — more material / time needed','warn')}${tile(pct(nh,tot),'Customer not home',nh+' wasted visits','bad')}${tile(cx,'Cancelled by customer','WhatsApp ❌')}${tile(pct(signed,doneLive.length),'Signed off',signed+' signatures · jobs still in SashDash')}</div>
+    ${stRbHtml(visits, men)}
     <h3>⏳ Waiting list</h3><div class="st-tiles">
       ${tile(wait.length,'Waiting now','in Job allocations')}${tile(avgWait+' days','Average wait')}${tile(oldest?jaDays(oldest.since)+' days':'—','Longest wait',oldest?esc(oldest.name):'','bad')}${tile(cj.filter(j=>isOpenJob(j)&&jobDay(j)>today).length,'Booked ahead','open jobs on future days')}</div>
     <div class="st-2"><div><h4>How long they've waited</h4>${bars(ageB)}</div><div><h4>What's waiting</h4>${bars(kinds)}</div></div>
@@ -13169,7 +13183,7 @@ function vnAlBox(al){ const f=vnFold(), g=f.g||{}, cnt=l=>{ const r=l.filter(a=>
     return `<div class="vn-alg${shut?' shut':''}"><div class="vn-algh" onclick="vnAlTog(this.dataset.k)" data-k="${esc(k.what)}"><span class="vn-car">${shut?'▸':'▾'}</span><span>${k.ico}</span><b>${esc(k.what)}</b><span class="vn-alsum">${cnt(k.l)}</span><span class="vn-altip">${shut?`Show ${k.l.length}`:'Hide'}</span></div>${shut?'':k.l.map(row).join('')}</div>`; }).join('')}</div>`; }
 
 // ════════ Update 124 — 🔁 Re-book: the man must say why · chat note bigger · no "Material ready taken off" sentence in the chat ════════
-const RB_WHY=[['📦','Material missing / wrong size'],['⏱','Ran out of time'],['👷','Needs extra men'],['🔧','Needs tools / equipment'],['🏠','Customer asked to come back'],['✏️','Other']];
+const RB_WHY=[['📦','Material not ready / not on the van'],['📏','Wrong size / wrong material sent'],['➕','Customer asked for work not on the sheet'],['🔍','More work found on site'],['👷','Needs extra men'],['🔧','Needs tools / access'],['⏱','Ran out of time'],['🏠','Customer asked to come back'],['✏️','Other']];   // Update 128
 function rbPick(b){ document.querySelectorAll('.rb-chip').forEach(x=>x.classList.toggle('on',x===b)); const g=document.querySelector('.rb-why'); if(g) g.classList.remove('oc-bad');
   const men=document.querySelector('.rb-men'); if(men) men.hidden=b.dataset.w!=='Needs extra men'; if(window._rbChk) window._rbChk(); }
 // 👷 Needs extra men — how many men the job needs (2–6)
@@ -13198,6 +13212,70 @@ function bkRestart(){ bkGen++; bkBusy=false; closeModal(); try{ bkPopClose(); }c
 function bkPermBox(){ openModal(`<div class="bk-m"><h2>💾 Edge didn't give permission</h2><div class="sub">SashDash asked Edge for permission to save into your backup folder, but no answer came back — Edge sometimes hides that question.</div>
   <div class="bk-box"><b>Fix:</b> press <b>📁 Change folder…</b>, pick <b>the same backup folder</b> again, and press <b>Edit files</b> when Edge asks. Then the backup starts.</div>
   <div class="modal-actions"><button class="btn-outline" onclick="closeModal()">Close</button>${canPickFolder?`<button class="btn-primary" onclick="bkChooseFolder(true)">📁 Change folder…</button>`:''}</div></div>`); }
+
+// ════════ Update 128 — 🔁 Why jobs were re-booked (Statistics) · 9 reasons · 📋 what material · ✎ office can correct the reason ════════
+const RB2=[ // icon, reason, who can fix it, guess from an older note
+ ['📦','Material not ready / not on the van','office',/material|not (on|in) (the )?van|didn'?t (come|arrive)|not arrived|no (glass|unit|parts?|handles?)|on order|out of stock|not ready|waiting (on|for) (the )?(glass|unit|parts?|material)/i],
+ ['📏','Wrong size / wrong material sent','office',/wrong|size|too (big|small|short|long|tight)|measure|doesn'?t fit|didn'?t fit|incorrect|wrong colour/i],
+ ['➕','Customer asked for work not on the sheet','customer',/customer (asked|wants|wanted|requested)|asked (for|me to)|also wants|wants (a |the )?(new|extra)|not on (the )?(sheet|docket|list|job)/i],
+ ['🔍','More work found on site','site',/rotten|rot\b|broken|damaged|cracked|seized|found|worse than|more work/i],
+ ['👷','Needs extra men','plan',/2 men|two men|another man|extra m[ae]n|second man|3 men|too heavy|need help/i],
+ ['🔧','Needs tools / access','plan',/scaffold|ladder|lift|tool|access|cherry ?picker|tower/i],
+ ['⏱','Ran out of time','plan',/time|ran out|finish (it )?tomorrow|no time|dark|late/i],
+ ['🏠','Customer asked to come back','customer',/come back|another day|rearrange|customer (not ready|busy|had to)|asked (me )?to leave|return/i],
+ ['✏️','Other','other',null]];
+const RB_OLD={'Material missing / wrong size':null,'Needs 2 men':'Needs extra men','Needs tools / equipment':'Needs tools / access'};
+const RB_GRP=[['office','🏭 Office / factory'],['customer','🙋 Customer'],['plan','🗓 Planning'],['site','🔍 Found on site'],['other','✏️ Other'],['none','❔ Not recorded']];
+const RB_SHORT={'Material not ready / not on the van':'Material not ready','Wrong size / wrong material sent':'Wrong size / material','Customer asked for work not on the sheet':'Extra work asked for','More work found on site':'Found on site','Needs extra men':'Extra men','Needs tools / access':'Tools / access','Ran out of time':'Out of time','Customer asked to come back':'Asked to come back','Other':'Other'};
+let rbFix={};   // office corrections: '<jobId>|<day>' → reason (saved in plan_settings id 'rbfix')
+function rbClassify(note, key){ if(key && rbFix[key]){ const f=RB2.find(r=>r[1]===rbFix[key]); if(f){ const c=rbClassify(note); return Object.assign(c,{r:f, est:false, fixed:true}); } } let n=String(note||'').replace(/\s*📦 Material ready taken off[\s\S]*$/,'').replace(/^job unfinished — /,'').trim(); const all=n;
+  for(const [old,nw] of Object.entries(RB_OLD)) if(n.startsWith(old+' — ')||n.startsWith(old+' ·')){ if(nw) n=nw+n.slice(old.length); else { const g=RB2.slice(0,2).find(r=>r[3].test(n.slice(old.length)))||RB2[0]; return {r:g, est:false, note:n.slice(old.length+3)}; } }
+  const real=RB2.find(r=>n.startsWith(r[1])); if(real){ let rest=n.slice(real[1].length), items=[]; const mi=rest.match(/^ · (.+?)(?= — |$)/); if(mi){ if(!/^\d+ men$/.test(mi[1])) items=mi[1].split('; ').map(s=>s.trim()).filter(Boolean); rest=rest.slice(mi[0].length); }
+    return {r:real, est:false, items, note:rest.replace(/^ — /,'')}; }
+  if(!n) return {r:null, est:false, note:''};
+  const g=RB2.find(r=>r[3]&&r[3].test(n)); return g?{r:g, est:true, note:all}:{r:null, est:false, note:all}; }
+let stRbRows=[];
+function stRbHtml(visits, men){
+  const rows=visits.filter(v=>v.o==='rebook').map(v=>{ const note=v.note!=null?v.note:((jaNotes[v.id]||{}).note||(v.j?histNote(v.j):'')), key=v.id+'|'+v.day; return Object.assign({v, key, matOff:/Material ready taken off/.test(note||'')}, rbClassify(note, key)); });
+  stRbRows=rows; if(!rows.length) return '';
+  const tot=rows.length, est=rows.filter(x=>x.est).length, pc=n=>Math.round(n/tot*100)+'%', grp=x=>x.r?x.r[2]:'none';
+  const gTiles=RB_GRP.map(([k,l])=>{ const n=rows.filter(x=>grp(x)===k).length; return n?`<div class="st-tile rbg-${k}"><b>${n}</b><span>${l}</span><small>${pc(n)} of re-books</small></div>`:''; }).join('');
+  const mx=Math.max(1,...RB2.map(r=>rows.filter(x=>x.r===r).length), rows.filter(x=>!x.r).length);
+  const bar=(i,ico,l,real,es,k)=>`<div class="st-bar rb-bar" onclick="stRbList(${i})" title="Click to see the jobs"><span class="st-bl">${ico} ${esc(l)}</span><span class="st-bt rb-bt"><i class="rb-${k}" style="width:${(real/mx*100).toFixed(1)}%"></i><i class="rb-est" style="width:${(es/mx*100).toFixed(1)}%"></i></span><b>${real+es}</b><small>${pc(real+es)}${es?` · <span class="rb-esttxt">${es} estimated</span>`:''}</small></div>`;
+  const bars=RB2.map((r,i)=>{ const f=rows.filter(x=>x.r===r); return f.length?bar(i,r[0],r[1],f.filter(x=>!x.est).length,f.filter(x=>x.est).length,r[2]):''; }).join('')+(()=>{ const n=rows.filter(x=>!x.r).length; return n?`<div class="st-bar rb-bar" onclick="stRbList(-1)" title="Click to see the jobs"><span class="st-bl">❔ Not recorded</span><span class="st-bt rb-bt"><i class="rb-none" style="width:${(n/mx*100).toFixed(1)}%"></i></span><b>${n}</b><small>${pc(n)} · no reason in his note</small></div>`:''; })();
+  const usedG=RB_GRP.filter(([k])=>rows.some(x=>grp(x)===k));
+  const manRows=men.filter(m=>m.r).map(m=>{ const f=rows.filter(x=>x.v.man===m.p.id); const top=RB2.map(r=>[r,f.filter(x=>x.r===r).length]).sort((a,b)=>b[1]-a[1])[0];
+    return `<tr><td><span class="avatar sm" style="--c:${esc(m.p.colour)}">${esc(initials(m.p.full_name))}</span> ${esc(firstName(m.p.full_name))}</td><td><b>${f.length}</b></td>${usedG.map(([k])=>{ const n=f.filter(x=>grp(x)===k).length; return `<td>${n||'—'}</td>`; }).join('')}<td>${top&&top[1]?`${top[0][0]} ${esc(RB_SHORT[top[0][1]])} (${top[1]})`:'—'}</td></tr>`; }).join('');
+  const matOff=rows.filter(x=>x.matOff).length;
+  // 💸 what re-books + not-homes cost in visits (at the men's own visits-a-day)
+  const nhV=visits.filter(v=>v.o==='not_home'), md=men.reduce((a,m)=>a+m.days,0), perDay=md?visits.length/md:0, extra=rows.length+nhV.length;
+  const cost=perDay?`<div class="st-tile rbg-cost"><b>≈ ${(extra/perDay).toFixed(1)} van-days</b><span>💸 Lost to return visits</span><small>${rows.length} re-book + ${nhV.length} not-home visits · at ${perDay.toFixed(1)} visits a man-day</small></div>`:'';
+  // 🚪 not home — what had WhatsApp said? (jobs still in SashDash)
+  const nhL=nhV.filter(v=>v.j), wc=s=>nhL.filter(v=>s.includes(v.j.wa_status||'')).length;
+  const nhWa=nhL.length?`<h4>🚪 Not home — what WhatsApp said beforehand</h4><div class="st-bars">${[['✅ Confirmed',wc(['confirmed','phone_ok'])],['🔕 Never replied',wc(['noreply'])],['📵 No WhatsApp sent',nhL.length-wc(['confirmed','phone_ok','noreply'])]].map(([l,n])=>`<div class="st-bar"><span class="st-bl">${l}</span><span class="st-bt"><i style="width:${(n/Math.max(1,nhL.length)*100).toFixed(1)}%"></i></span><b>${n}</b></div>`).join('')}</div>`:'';
+  return `<h3>🔁 Why jobs were re-booked <span class="rb-h">${tot} re-books · click a reason to see the jobs</span></h3>
+    <div class="st-tiles">${gTiles}${cost}</div>
+    <div class="rb-wrap"><div class="st-bars rb-bars">${bars}</div>
+      <div class="rb-key"><span><i class="rb-office"></i>Picked by the man</span><span><i class="rb-est"></i>Estimated from his note (before 26 Nov)</span>${matOff?`<span class="rb-mat">📦 <b>${matOff}</b> had material ticked <b>ready</b> but still weren't finished — the material was wrong or incomplete</span>`:''}${nhWa}</div></div>
+    <table class="s-table st-t rb-t"><thead><tr><th>Man</th><th>🔁 Re-books</th>${usedG.map(([,l])=>`<th>${l}</th>`).join('')}<th>Most common reason</th></tr></thead><tbody>${manRows}</tbody></table>`; }
+function stRbList(i){ const r=i>=0?RB2[i]:null, list=stRbRows.filter(x=>x.r===r).sort((a,b)=>a.v.day<b.v.day?1:-1);
+  openModal(`<div class="st"><h2>${r?r[0]+' '+esc(r[1]):'❔ Not recorded'} — ${list.length} re-book${list.length===1?'':'s'}</h2>
+   <div class="st-per"><button class="btn-outline" onclick="openStats()">‹ Back to Statistics</button></div>
+   <table class="s-table st-t rb-list"><thead><tr><th>Day</th><th>Customer</th><th>Man</th><th>Reason</th><th>His note</th></tr></thead><tbody>
+   ${list.map(x=>`<tr><td>${esc(niceDate(x.v.day))}</td><td><b>${esc(x.v.name||'')}</b></td><td>${esc(firstName((prof(x.v.man)||{}).full_name||''))}</td><td>${x.r?(x.fixed?'<span class="rb-pill fix">office</span>':x.est?'<span class="rb-pill est">estimated</span>':'<span class="rb-pill">picked</span>'):'—'} <button class="rb-fixb" title="Change the reason" onclick="rbFixBox('${x.key}',${i})">✎</button></td><td>${(x.items||[]).length?`<b>${esc(x.items.join(' · '))}</b><br>`:''}${esc(x.note||'')}</td></tr>`).join('')}</tbody></table></div>`); }
+
+// ✎ office corrects the reason (Job allocations / Statistics)
+function rbFixBox(key, back){ const cur=rbFix[key];
+  openModal(`<h2>✎ Change the re-book reason</h2><div class="s-sub" style="margin-bottom:10px">Use this when the man picked the wrong reason — Statistics counts yours instead. His note stays as it is.</div>
+   <div class="rb-chips">${RB2.map(([i,w])=>`<button type="button" class="rb-chip ${cur===w?'on':''}" onclick="rbFixSave('${key}',${JSON.stringify(w).replace(/"/g,'&quot;')},${back==null?'null':back})"><span>${i}</span>${esc(w)}</button>`).join('')}</div>
+   <div class="modal-actions">${cur?`<button class="btn-outline" onclick="rbFixSave('${key}',null,${back==null?'null':back})">↩ Use the man's reason</button>`:''}<button class="btn-outline" onclick="${back==null?'closeModal()':`stRbList(${back})`}">Cancel</button></div>`); }
+async function rbFixSave(key, w, back){ const was=rbFix[key]; if(w) rbFix[key]=w; else delete rbFix[key];
+  const r=await sb.from('plan_settings').upsert([{id:'rbfix', data:rbFix}],{onConflict:'id'});
+  if(r.error){ if(was) rbFix[key]=was; else delete rbFix[key]; return toast('Not saved: '+r.error.message,7000); }
+  toast(w?'✎ Reason changed':'↩ Back to the man\'s reason');
+  if(back!=null){ await openStats(); stRbList(back); } else { closeModal(); if(jaOpen) renderAlloc(); } }
+function rbSitePill(x){ if(x.kind!=='rebook') return ''; const key=x.id+'|'+x.booked, c=rbClassify(x.note, key);
+  return `<button class="rb-sp ${c.r?'rbs-'+c.r[2]:'rbs-none'}" onclick="event.stopPropagation();rbFixBox('${key}')" title="Change the reason">${c.r?`${c.r[0]} ${esc(RB_SHORT[c.r[1]])}${c.est?' <i>≈ guessed</i>':''}${c.fixed?' <i>office</i>':''}`:'❔ No reason'} ✎</button> `; }
 </script>
 </body>
 </html>
